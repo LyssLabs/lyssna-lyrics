@@ -3,6 +3,7 @@ import React from "react";
 import {
   $lineHoverBackground,
   $joinSplitWords,
+  $enableExperimentalWordSync,
   $duetLinePadding,
   $creditsFollowLastLine,
   $allowHidingSettings,
@@ -36,6 +37,7 @@ export default function LyricsSection({ query, sectionFilter, showHidden = false
   const smoothScrolling = useStore($smoothScrolling);
   const lineHoverBackground = useStore($lineHoverBackground);
   const joinSplitWords = useStore($joinSplitWords);
+  const experimentalWordSync = useStore($enableExperimentalWordSync);
   const duetLinePadding = useStore($duetLinePadding);
   const creditsFollowLastLine = useStore($creditsFollowLastLine);
   const allowHidingSettings = useStore($allowHidingSettings);
@@ -56,7 +58,8 @@ export default function LyricsSection({ query, sectionFilter, showHidden = false
   const skeleton = visible("lyrics-loading-skeleton") && matches(query, "Lyrics Loading Skeleton", "Show placeholder lines while lyrics load; disable to restore the spinner.");
   const credits = visible("lyrics-credits-follow-singer") && matches(query, "Credits Follow the Last Singer", "Align credits with the last duet line.");
   const joinSplit = matches(query, "Join Split Words", "Show a word that's sung in syllables as one word, when its parts line up evenly.");
-  if (![r3, r4, r5, r8, r9, r10, seek, early, lead, smooth, skeleton, credits, joinSplit].some(Boolean)) return null;
+  const wordSync = visible("lyrics-experimental-word-sync") && matches(query, "Experimental Word Sync", "Estimate word sync for line or static lyrics.");
+  if (![r3, r4, r5, r8, r9, r10, seek, early, lead, smooth, skeleton, credits, joinSplit, wordSync].some(Boolean)) return null;
 
   return <>
     <SectionTitle>Lyrics Display</SectionTitle>
@@ -73,6 +76,7 @@ export default function LyricsSection({ query, sectionFilter, showHidden = false
     {r9 && <Row settingId="lyrics-line-hover" label="Line Hover Background" description="Shows a highlight box behind a lyrics line when you hover over it"><Toggle checked={lineHoverBackground} onChange={(v) => $lineHoverBackground.set(v)} /></Row>}
     {r10 && <Row settingId="lyrics-wide-duet-padding" label="Wide duet line padding" description="Separate duet voices into wider columns. Disable for compact padding."><Toggle checked={duetLinePadding} onChange={(v) => $duetLinePadding.set(v)} /></Row>}
     {joinSplit && <Row label="Join Split Words" description="Show a word that's sung in syllables as one word, when its parts line up evenly."><Toggle checked={joinSplitWords} onChange={(value) => $joinSplitWords.set(value)} /></Row>}
+    {wordSync && <Row settingId="lyrics-experimental-word-sync" label="Experimental Word Sync" description="Estimate word sync for line or static lyrics."><Toggle checked={experimentalWordSync} onChange={(value) => $enableExperimentalWordSync.set(value)} /></Row>}
     {credits && <Row settingId="lyrics-credits-follow-singer" label="Credits Follow the Last Singer" description="Align credits with the last duet line."><Toggle checked={creditsFollowLastLine} onChange={(v) => $creditsFollowLastLine.set(v)} /></Row>}
   </>;
 }

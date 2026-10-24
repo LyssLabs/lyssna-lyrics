@@ -25,6 +25,7 @@ export const SETTING_CATALOG = [
   ["lyrics-line-hover", "Line Hover Background", "Shows a highlight box behind a lyrics line when you hover over it", "Lyrics Display"],
   ["lyrics-wide-duet-padding", "Wide duet line padding", "Separate duet voices into wider columns. Disable for compact padding.", "Lyrics Display"],
   ["lyrics-credits-follow-singer", "Credits Follow the Last Singer", "Align credits with the last duet line.", "Lyrics Display"],
+  ["lyrics-experimental-word-sync", "Experimental Word Sync", "Estimate word sync for line or static lyrics.", "Lyrics Display"],
   ["interface-no-lyrics-notice", "No Lyrics Notice", "Explain why a song has no lyrics. Errors always show their notice.", "Interface"],
   ["interface-lock-media-box", "Lock Media Box Size in Compact Mode", "Prevent the media box from resizing when Forced Compact Mode is active.", "Interface"],
   ["interface-disable-popup", "Disable Popup Lyrics Window", "Show or hide the Popup Lyrics button in the playback bar.", "Interface"],
