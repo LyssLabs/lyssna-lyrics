@@ -5,6 +5,7 @@ import {
   $animateFullscreenClose,
   $disableNpvLyrics,
   $escapeKeyFunction,
+  $externalCinemaLyricsAllowed,
   $hideNpvLyricsWhenUnavailable,
   $hiddenSettingIds,
   $lockedMediaBox,
@@ -32,6 +33,7 @@ export default function InterfaceSection({ query, sectionFilter, showHidden = fa
   const lockedMediaBox = useStore($lockedMediaBox);
   const allowHidingSettings = useStore($allowHidingSettings);
   const popupLyricsAllowed = useStore($popupLyricsAllowed);
+  const externalCinemaLyricsAllowed = useStore($externalCinemaLyricsAllowed);
   const openProfilesInBrowser = useStore($openProfilesInBrowser);
   const viewControlsPosition = useStore($viewControlsPosition);
   const alwaysShowInFullscreen = useStore($alwaysShowInFullscreen);
@@ -53,7 +55,8 @@ export default function InterfaceSection({ query, sectionFilter, showHidden = fa
     matches(query, "Remove Spotify's Lyrics Button", "Hide Spotify's built-in lyrics button from the playback bar."),
   ].map((matched, index) => matched && (showHidden ? hiddenSettingIds.includes(ids[index]) : !allowHidingSettings || !hiddenSettingIds.includes(ids[index]) || Boolean(query.trim())));
   const notice = matches(query, "No Lyrics Notice", "Explain why a song has no lyrics. Errors always show their notice.") && (showHidden ? hiddenSettingIds.includes("interface-no-lyrics-notice") : !allowHidingSettings || !hiddenSettingIds.includes("interface-no-lyrics-notice") || Boolean(query.trim()));
-  if (!rows.some(Boolean) && !notice) return null;
+  const cinema = matches(query, "Enable Cinema Lyrics Window", "Show or hide the Cinema Lyrics button in the playback bar. Requires Spotify DevTools.") && (showHidden ? hiddenSettingIds.includes("interface-cinema-window") : !allowHidingSettings || !hiddenSettingIds.includes("interface-cinema-window") || Boolean(query.trim()));
+  if (!rows.some(Boolean) && !notice && !cinema) return null;
   const normalizedAlwaysShow = alwaysShowInFullscreen === "All" ? "Both" : alwaysShowInFullscreen;
 
   return <>
@@ -61,6 +64,22 @@ export default function InterfaceSection({ query, sectionFilter, showHidden = fa
     {notice && <Row settingId="interface-no-lyrics-notice" label="No Lyrics Notice" description="Explain why a song has no lyrics. Errors always show their notice."><Toggle checked={showNoLyricsNotice} onChange={(v) => $showNoLyricsNotice.set(v)} /></Row>}
     {rows[0] && <Row settingId="interface-lock-media-box" label="Lock Media Box Size in Compact Mode" description="Prevent the media box from resizing when Forced Compact Mode is active."><Toggle checked={lockedMediaBox} onChange={(v) => $lockedMediaBox.set(v)} /></Row>}
     {rows[1] && <Row settingId="interface-disable-popup" label="Disable Popup Lyrics Window" description="Show or hide the Popup Lyrics button in the playback bar."><Toggle checked={!popupLyricsAllowed} onChange={(v) => $popupLyricsAllowed.set(!v)} /></Row>}
+    {cinema && <Row
+      settingId="interface-cinema-window"
+      label="Enable Cinema Lyrics Window"
+      description="Show or hide the Cinema Lyrics button in the playback bar. Requires Spotify DevTools."
+      labelAccessory={
+        <a
+          className="sl-sp-help-link"
+          href="https://github.com/iPixelGalaxy/spicy-lyrics/blob/dev/ENABLE_DEVTOOLS.md"
+          target="_blank"
+          rel="noreferrer"
+          onClick={(event) => event.stopPropagation()}
+        >
+          Help
+        </a>
+      }
+    ><Toggle checked={externalCinemaLyricsAllowed} onChange={(v) => $externalCinemaLyricsAllowed.set(v)} /></Row>}
     {rows[2] && <Row settingId="interface-view-controls" label="View Controls Position" description="Where the view controls (play, scroll, etc.) appear." disabled={!isGlobalNav} disabledReason="Only available in Spotify's new navigation layout"><Select value={viewControlsPosition} options={vcPositionOptions} onChange={(v) => $viewControlsPosition.set(v)} /></Row>}
     {rows[3] && <Row settingId="interface-always-fullscreen" label="Always Show In Fullscreen" description="Keep fullscreen time or controls visible."><Select value={normalizedAlwaysShow} options={fullscreenOptions} onChange={(v) => $alwaysShowInFullscreen.set(v)} /></Row>}
     {rows[4] && <Row settingId="interface-fullscreen-volume" label="Fullscreen Volume Slider" description="Show a volume slider in fullscreen and Cinema View."><Select value={showVolumeSliderFullscreen} options={volumeOptions} onChange={(v) => $showVolumeSliderFullscreen.set(v)} /></Row>}

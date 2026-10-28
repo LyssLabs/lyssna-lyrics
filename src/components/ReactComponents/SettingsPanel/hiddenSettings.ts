@@ -29,6 +29,7 @@ export const SETTING_CATALOG = [
   ["interface-no-lyrics-notice", "No Lyrics Notice", "Explain why a song has no lyrics. Errors always show their notice.", "Interface"],
   ["interface-lock-media-box", "Lock Media Box Size in Compact Mode", "Prevent the media box from resizing when Forced Compact Mode is active.", "Interface"],
   ["interface-disable-popup", "Disable Popup Lyrics Window", "Show or hide the Popup Lyrics button in the playback bar.", "Interface"],
+  ["interface-cinema-window", "Enable Cinema Lyrics Window", "Show or hide the Cinema Lyrics button in the playback bar. Requires Spotify DevTools.", "Interface"],
   ["interface-open-profiles-browser", "Open Profiles in Browser", "Open contributor profiles in your browser instead of inside Spotify.", "Interface"],
   ["interface-view-controls", "View Controls Position", "Where the view controls (play, scroll, etc.) appear.", "Interface"],
   ["interface-always-fullscreen", "Always Show In Fullscreen", "Keep fullscreen time or controls visible.", "Interface"],
