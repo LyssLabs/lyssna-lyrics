@@ -33,7 +33,7 @@ sl-generic-modal.SpicyLyricsModal .sl-modal-overlay .sl-modal.slmodal-settingsPa
   .sl-sp-tab:hover, .sl-sp-tab.sl-sp-tab--active:not(.sl-sp-tab--action):hover { background: transparent; box-shadow: none; color: #fff; }
   .sl-sp-tab.sl-sp-tab--active:not(.sl-sp-tab--action) { color: #fff; }
   .sl-sp-tab-icon { display: inline-flex; flex: 0 0 16px; width: 16px; height: 16px; }
-  .sl-sp-settings-scroll { display: flex; flex-direction: column; padding: 4px 20px 20px; scrollbar-gutter: auto; scrollbar-width: thin; scrollbar-color: #ffffff26 transparent; }
+  .sl-sp-settings-scroll { display: flex; flex-direction: column; padding: 4px 20px 0; scrollbar-gutter: auto; scrollbar-width: thin; scrollbar-color: #ffffff26 transparent; }
   .sl-sp-settings-content { min-height: 100%; flex: 0 0 auto; }
   .sl-sp-settings-content::after { content: ""; flex: 0 0 32px; }
   .sl-sp-settings-main { padding-bottom: 24px; }
