@@ -587,7 +587,7 @@ async function load() {
     const app = channelApp(channel);
     const configured = Spicetify.Config?.extensions ?? [];
     const enabled = Array.isArray(configured) ? configured : String(configured).split("|");
-    const separateSpicy = enabled.includes("lyssna-lyrics.mjs") && enabled.some(name => /^spicy-lyrics\.(?:mjs|js)$/.test(name));
+    const separateSpicy = enabled.some(name => /^spicy-lyrics\.(?:mjs|js)$/.test(name.trim()));
     if (app === "spicy" && (separateSpicy || window._spicy_lyrics || window.SpicyLyrics)) {
       Spicetify.showNotification?.("Spicy Lyrics is enabled separately. Select Lyssna in the Lyssna build-channel menu to run both.");
       return;

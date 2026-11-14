@@ -106,7 +106,7 @@ import {
   OpenExternalCinemaLyrics,
   CloseExternalCinemaLyrics,
 } from "./components/Utils/ExternalCinemaLyrics.ts";
-import { GetNPVCardElement, GetNPVElement, GetNPVObserverRoot, initNPVLyrics } from "./components/Utils/NPVLyrics.ts";
+import { GetNPVCardElement, GetNPVElement, GetNPVObserverRoot, initNPVLyrics, NPVCardOwnsPage } from "./components/Utils/NPVLyrics.ts";
 import { SyncNPVVisuals } from "./components/Utils/NPVVisuals.ts";
 import ReactDOM from "react-dom/client";
 import { runThemeMatcher } from "./utils/themeMatcher.ts";
@@ -580,7 +580,7 @@ async function main() {
       {
         Registered: false,
         Button: new SpotifyPlayer.Playbar.Button(
-          "Spicy Cinema Window",
+          "Lyssna Cinema Window",
           Icons.ExternalCinema,
           () => {
             if (IsExternalCinemaLyrics) {
@@ -652,6 +652,7 @@ async function main() {
     }
 
     if (e.key === "Escape") {
+      if (document.querySelector(".ll-notice-host, sl-generic-modal.SpicyLyricsModal, .sl-notice-host")) return;
       if (PopupModal.isConnected) {
         e.preventDefault();
         e.stopImmediatePropagation();
@@ -660,7 +661,11 @@ async function main() {
         else PopupModal.hide();
         return;
       }
-      if (!PageView.IsOpened || IsPIP) return;
+      if (!PageView.IsOpened || IsPIP || IsExternalCinemaLyrics || NPVCardOwnsPage()) return;
+      const inFullscreen = Fullscreen.IsOpen || Fullscreen.CinemaViewOpen || IsFullscreenClosing();
+      if (Defaults.EscapeKeyFunction === "Exit Fullscreen" && !inFullscreen) return;
+      if (Defaults.EscapeKeyFunction !== "Exit Fullscreen" && Defaults.EscapeKeyFunction !== "Exit Fully" &&
+          Fullscreen.IsOpen && !Fullscreen.CinemaViewOpen && document.fullscreenElement) return;
       e.preventDefault();
       e.stopImmediatePropagation();
       const handled = await handleEscapeKey();
