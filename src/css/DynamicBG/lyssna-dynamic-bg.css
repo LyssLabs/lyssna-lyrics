@@ -136,24 +136,26 @@ aside div:not(.yiy_EezkGycfPvS3, .XixZ4ftG53tYcM4KohE1, .pUIBQ9cykHKYx2A2ZIPA, .
   filter: brightness(0.9);
 }
 
-body:has(aside.lyssna-dynamic-bg-in-this) .VideoPlayer__container video,
-body:has(aside.lyssna-dynamic-bg-in-this) .main-nowPlayingView-canvasVisualEnhancement img,
-body:has(aside.lyssna-dynamic-bg-in-this) [data-testid="track-visual-enhancement"] + * img {
+/* app.tsx mirrors the aside state here; a body :has() made unrelated DOM changes
+   trigger document-wide restyles. Keep the existing selector specificity. */
+html body.LyssnaLyrics_NPVDynamicBackground .VideoPlayer__container video,
+html body.LyssnaLyrics_NPVDynamicBackground .main-nowPlayingView-canvasVisualEnhancement img,
+html body.LyssnaLyrics_NPVDynamicBackground [data-testid="track-visual-enhancement"] + * img {
   filter: none !important;
   -webkit-mask-image: none !important;
   mask-image: none !important;
 }
 
 
-body:has(aside.lyssna-dynamic-bg-in-this) .main-nowPlayingView-coverArtContainer :is(div, .E08D6ucrHuPJYzzGO7HG):has(video)::before, body:has(aside.lyssna-dynamic-bg-in-this) .main-nowPlayingView-coverArtContainer :is(div, .E08D6ucrHuPJYzzGO7HG):has(video)::after, body:has(aside.lyssna-dynamic-bg-in-this) div.Of__Db4QgB9osz_mFxhw:has(video)::before, body:has(aside.lyssna-dynamic-bg-in-this) div.Of__Db4QgB9osz_mFxhw:has(video)::after, body:has(aside.lyssna-dynamic-bg-in-this) div.UUydeXMsXVZofB0YAOgm:has(.main-trackInfo-container)::before, body:has(aside.lyssna-dynamic-bg-in-this) div.main-nowPlayingView-contextItemInfo:has(.main-trackInfo-container)::before, body:has(aside.lyssna-dynamic-bg-in-this) div.UUydeXMsXVZofB0YAOgm:has(.main-trackInfo-container)::after, body:has(aside.lyssna-dynamic-bg-in-this) div.main-nowPlayingView-contextItemInfo:has(.main-trackInfo-container)::after, body:has(aside.lyssna-dynamic-bg-in-this) :is(.main-nowPlayingView-nowPlayingWidget, .NowPlayingView, aside) :is(.main-nowPlayingView-coverArtVisualEnhancement ~ *, .main-nowPlayingView-coverArtVisualEnhancement *, .main-nowPlayingView-coverArtVisualEnhancement ~ * *):not(.main-nowPlayingView-coverArtVisualEnhancement):is(:has(video, .main-nowPlayingView-canvasVisualEnhancement img), .main-nowPlayingView-canvasVisualEnhancement:has(img), .main-nowPlayingView-canvasVisualEnhancement :has(img)):not(.main-image-image.cover-art-image)::before, body:has(aside.lyssna-dynamic-bg-in-this) :is(.main-nowPlayingView-nowPlayingWidget, .NowPlayingView, aside) :is(.main-nowPlayingView-coverArtVisualEnhancement ~ *, .main-nowPlayingView-coverArtVisualEnhancement *, .main-nowPlayingView-coverArtVisualEnhancement ~ * *):not(.main-nowPlayingView-coverArtVisualEnhancement):is(:has(video, .main-nowPlayingView-canvasVisualEnhancement img), .main-nowPlayingView-canvasVisualEnhancement:has(img), .main-nowPlayingView-canvasVisualEnhancement :has(img)):not(.main-image-image.cover-art-image)::after, body:has(aside.lyssna-dynamic-bg-in-this) :is(.NowPlayingView, aside) :is([data-testid="track-visual-enhancement"] ~ *, [data-testid="track-visual-enhancement"] ~ * *):has(video, img)::before, body:has(aside.lyssna-dynamic-bg-in-this) :is(.NowPlayingView, aside) :is([data-testid="track-visual-enhancement"] ~ *, [data-testid="track-visual-enhancement"] ~ * *):has(video, img)::after, body:has(aside.lyssna-dynamic-bg-in-this) :is(.NowPlayingView, aside) [data-testid="track-visual-enhancement"] *:has(video)::before, body:has(aside.lyssna-dynamic-bg-in-this) :is(.NowPlayingView, aside) [data-testid="track-visual-enhancement"] *:has(video)::after {
+html body.LyssnaLyrics_NPVDynamicBackground .main-nowPlayingView-coverArtContainer :is(div, .E08D6ucrHuPJYzzGO7HG):has(video)::before, html body.LyssnaLyrics_NPVDynamicBackground .main-nowPlayingView-coverArtContainer :is(div, .E08D6ucrHuPJYzzGO7HG):has(video)::after, html body.LyssnaLyrics_NPVDynamicBackground div.Of__Db4QgB9osz_mFxhw:has(video)::before, html body.LyssnaLyrics_NPVDynamicBackground div.Of__Db4QgB9osz_mFxhw:has(video)::after, html body.LyssnaLyrics_NPVDynamicBackground div.UUydeXMsXVZofB0YAOgm:has(.main-trackInfo-container)::before, html body.LyssnaLyrics_NPVDynamicBackground div.main-nowPlayingView-contextItemInfo:has(.main-trackInfo-container)::before, html body.LyssnaLyrics_NPVDynamicBackground div.UUydeXMsXVZofB0YAOgm:has(.main-trackInfo-container)::after, html body.LyssnaLyrics_NPVDynamicBackground div.main-nowPlayingView-contextItemInfo:has(.main-trackInfo-container)::after, html body.LyssnaLyrics_NPVDynamicBackground :is(.main-nowPlayingView-nowPlayingWidget, .NowPlayingView, aside) :is(.main-nowPlayingView-coverArtVisualEnhancement ~ *, .main-nowPlayingView-coverArtVisualEnhancement *, .main-nowPlayingView-coverArtVisualEnhancement ~ * *):not(.main-nowPlayingView-coverArtVisualEnhancement):is(:has(video, .main-nowPlayingView-canvasVisualEnhancement img), .main-nowPlayingView-canvasVisualEnhancement:has(img), .main-nowPlayingView-canvasVisualEnhancement :has(img)):not(.main-image-image.cover-art-image)::before, html body.LyssnaLyrics_NPVDynamicBackground :is(.main-nowPlayingView-nowPlayingWidget, .NowPlayingView, aside) :is(.main-nowPlayingView-coverArtVisualEnhancement ~ *, .main-nowPlayingView-coverArtVisualEnhancement *, .main-nowPlayingView-coverArtVisualEnhancement ~ * *):not(.main-nowPlayingView-coverArtVisualEnhancement):is(:has(video, .main-nowPlayingView-canvasVisualEnhancement img), .main-nowPlayingView-canvasVisualEnhancement:has(img), .main-nowPlayingView-canvasVisualEnhancement :has(img)):not(.main-image-image.cover-art-image)::after, html body.LyssnaLyrics_NPVDynamicBackground :is(.NowPlayingView, aside) :is([data-testid="track-visual-enhancement"] ~ *, [data-testid="track-visual-enhancement"] ~ * *):has(video, img)::before, html body.LyssnaLyrics_NPVDynamicBackground :is(.NowPlayingView, aside) :is([data-testid="track-visual-enhancement"] ~ *, [data-testid="track-visual-enhancement"] ~ * *):has(video, img)::after, html body.LyssnaLyrics_NPVDynamicBackground :is(.NowPlayingView, aside) [data-testid="track-visual-enhancement"] *:has(video)::before, html body.LyssnaLyrics_NPVDynamicBackground :is(.NowPlayingView, aside) [data-testid="track-visual-enhancement"] *:has(video)::after {
   display: none !important;
 }
 
 /* Was aside:has(.lyssna-dynamic-bg) > div — same specificity, and the aside
    carries this class exactly while it holds the background. */
-body:has(aside.lyssna-dynamic-bg-in-this) aside.lyssna-dynamic-bg-in-this > div,
-body:has(aside.lyssna-dynamic-bg-in-this) aside:has(.lyssna-dynamic-bg) .AAdBM1nhG73supMfnYX7,
-body:has(aside.lyssna-dynamic-bg-in-this) aside:has(.lyssna-dynamic-bg) .iHa_q9pq4un3VNRQgwTx {
+html body.LyssnaLyrics_NPVDynamicBackground aside.lyssna-dynamic-bg-in-this > div,
+html body.LyssnaLyrics_NPVDynamicBackground aside:has(.lyssna-dynamic-bg) .AAdBM1nhG73supMfnYX7,
+html body.LyssnaLyrics_NPVDynamicBackground aside:has(.lyssna-dynamic-bg) .iHa_q9pq4un3VNRQgwTx {
   z-index: 1;
   position: relative;
 }
@@ -318,16 +320,16 @@ body:has(#LyssnaLyricsPage.Fullscreen) aside.NowPlayingView .lyssna-dynamic-bg {
 }
 
 /* The close button is the header wrapper's first child; 1.3.x drops its class. */
-body:has(aside.lyssna-dynamic-bg-in-this) .NowPlayingView .main-nowPlayingView-headerCloseButton,
-body:has(aside.lyssna-dynamic-bg-in-this) .NowPlayingView :is(.main-nowPlayingView-headerWrapper, .SXRxI_I0h6US43_Nf59I) > button:first-child {
+html body.LyssnaLyrics_NPVDynamicBackground .NowPlayingView .main-nowPlayingView-headerCloseButton,
+html body.LyssnaLyrics_NPVDynamicBackground .NowPlayingView :is(.main-nowPlayingView-headerWrapper, .SXRxI_I0h6US43_Nf59I) > button:first-child {
   color: var(--spice-text);
   opacity: .8 !important;
 }
 
-body:has(aside.lyssna-dynamic-bg-in-this) .NowPlayingView .main-nowPlayingView-headerCloseButton:hover,
-body:has(aside.lyssna-dynamic-bg-in-this) .NowPlayingView .main-nowPlayingView-headerCloseButton:focus,
-body:has(aside.lyssna-dynamic-bg-in-this) .NowPlayingView :is(.main-nowPlayingView-headerWrapper, .SXRxI_I0h6US43_Nf59I) > button:first-child:hover,
-body:has(aside.lyssna-dynamic-bg-in-this) .NowPlayingView :is(.main-nowPlayingView-headerWrapper, .SXRxI_I0h6US43_Nf59I) > button:first-child:focus {
+html body.LyssnaLyrics_NPVDynamicBackground .NowPlayingView .main-nowPlayingView-headerCloseButton:hover,
+html body.LyssnaLyrics_NPVDynamicBackground .NowPlayingView .main-nowPlayingView-headerCloseButton:focus,
+html body.LyssnaLyrics_NPVDynamicBackground .NowPlayingView :is(.main-nowPlayingView-headerWrapper, .SXRxI_I0h6US43_Nf59I) > button:first-child:hover,
+html body.LyssnaLyrics_NPVDynamicBackground .NowPlayingView :is(.main-nowPlayingView-headerWrapper, .SXRxI_I0h6US43_Nf59I) > button:first-child:focus {
   opacity: 1 !important;
 }
 /* Background: None. The popup's document has no theme behind the page, so it gets
