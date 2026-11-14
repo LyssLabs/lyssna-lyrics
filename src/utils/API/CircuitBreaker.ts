@@ -54,7 +54,8 @@ const DEFAULT_STATE: BreakerState = {
   lastProbeAt: 0,
 };
 
-const store = GetInstantStore<BreakerState>("LyssnaLyrics_DeveloperApiBreaker_g1", 1, DEFAULT_STATE);
+// The repaired bridge must not inherit backoff from Rocket Loader failures.
+const store = GetInstantStore<BreakerState>("LyssnaLyrics_DeveloperApiBreaker_g2", 1, DEFAULT_STATE);
 const state = store.Items;
 
 /**

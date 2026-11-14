@@ -152,7 +152,7 @@ try {
   }
   const bridgeName = "lyssna-lyrics-bridge.html";
   const bridgeSource = readFileSync(resolve("website", bridgeName), "utf8");
-  for (const script of bridgeSource.matchAll(/<script>([\s\S]*?)<\/script>/g)) {
+  for (const script of bridgeSource.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)) {
     new Script(script[1], { filename: bridgeName });
   }
   copyFileReplacing(resolve("website", bridgeName), join(defaultDist, bridgeName));

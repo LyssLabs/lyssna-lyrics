@@ -24,6 +24,14 @@ Builds copy `website/lyssna-lyrics-bridge.html` alongside the bundle. Serve it a
 
 The parent and bridge verify both message origin and source window. The bridge accepts a Spotify track id and a public key, calls only the fixed `/v1/lyrics/{id}` endpoint, bounds concurrent requests, and aborts timed-out requests. No Spotify access tokens, account data, or cookies are forwarded. Requests are deduplicated per track and share persistent backoff. Other enabled providers remain available if the bridge or API is unavailable.
 
+### Cloudflare Rocket Loader
+
+The bridge's script must have `data-cfasync="false"` in the HTML source. Without this exemption, Rocket Loader rewrites the script to an inert custom type and relies on its own external loader to execute it. The bridge's restrictive CSP blocks that external loader, so the parent never receives the ready message and falls back to other lyric providers. Spotify's browser log confirmed this refusal while direct API requests for the same track returned community syllable lyrics. Cloudflare documents the [per-script exemption](https://developers.cloudflare.com/speed/optimization/content/rocket-loader/ignore-javascripts/).
+
+The plugin requests bridge revision `?v=2` to avoid reusing the previously transformed page. The lyrics-source cache signature also changes so fallbacks cached during this failure are fetched again. A fresh breaker generation prevents the repaired transport from inheriting the failed bridge's backoff. Do not remove the script exemption or relax the CSP to enable unrelated injected scripts. Builds compile inline scripts with attributes as well as plain script tags.
+
+After the exemption was deployed, a request through a temporary hidden bridge in the running Spotify client completed with HTTP 200 and returned API lyrics. The inspection frame was removed afterward; playback was not changed.
+
 Responses normalize the public source names into the existing renderer ids. Provider and returned creator attribution remain with the lyrics, including compact Gravity mode. Contributor profiles open externally; no private profile lookup or HTML injection remains. Motion artwork uses static covers until a supported source is available. Saved artwork and profile preferences are preserved for switching back to the official plugin.
 
 ## Branding and links

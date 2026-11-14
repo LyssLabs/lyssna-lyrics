@@ -31,7 +31,8 @@ export const LyricsStore = GetExpireStore<any>("SpicyLyrics_LyricsStore_g1", 6, 
 }, isDev as true);
 
 export const SessionTTMLStore = new Map<string, any>();
-const LYRICS_SOURCE_CACHE_VERSION = 4;
+// Retry cached fallbacks written while the website bridge could not start.
+const LYRICS_SOURCE_CACHE_VERSION = 5;
 const inFlightLyricsFetches = new Map<string, Promise<[object | string, number] | null>>();
 export type FetchLyricsResult = [object | string, number] | null;
 export type LyricsFetchFailure = { uri: string; source: string; detail?: string };

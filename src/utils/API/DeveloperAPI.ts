@@ -3,7 +3,7 @@ import { getRemoteConfig } from "../remoteConfig.ts";
 
 declare const __LYSSNA_LYRICS_CLIENT_KEY__: string;
 
-const BRIDGE_URL = "https://ipixelgalaxy.com/lyssna-lyrics-bridge.html";
+const BRIDGE_URL = "https://ipixelgalaxy.com/lyssna-lyrics-bridge.html?v=2";
 const BRIDGE_ORIGIN = new URL(BRIDGE_URL).origin;
 const CHANNEL = "lyssna-lyrics-api-v1";
 type BridgeResponse = { status: number; body: any; retryAfter?: string };
@@ -85,6 +85,9 @@ async function requestLyrics(trackId: string): Promise<{ status: number; lyrics:
     const response = await requestThroughBridge(trackId);
     if (IsTripStatus(response.status)) SettleFailure(lease, ParseRetryAfter(response.retryAfter ?? null));
     else SettleSuccess(lease);
+    if (response.status !== 200 && response.status !== 404) {
+      console.warn(`Lyssna Lyrics developer API returned HTTP ${response.status}`);
+    }
     return { status: response.status === 200 ? (response.body?.Status ?? 200) : response.status, lyrics: response.body?.Body ?? null };
   } catch (error) {
     SettleFailure(lease);
