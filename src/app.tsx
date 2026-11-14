@@ -286,7 +286,7 @@ async function main() {
   const versionStartup = recordLyssnaStartup(version);
   const updatedFromPreviousVersion = versionStartup.updated;
   if (versionStartup.updated && versionStartup.fromVersion) {
-    showUpdatedDialog(versionStartup.fromVersion, version, versionStartup.switched);
+    showUpdatedDialog(versionStartup.fromVersion, version, versionStartup.switched, versionStartup.patchNotesFromVersion);
   } else if (versionStartup.switched) {
     toast("Switched to Lyssna Lyrics", { description: `Running Lyssna Lyrics ${version}. Spicy Lyrics keeps its own version history.`, duration: 5000 });
   }

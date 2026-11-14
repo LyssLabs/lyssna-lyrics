@@ -1,4 +1,4 @@
-// Shared fields from upstream 6.5.0. Add a field here only when its values are compatible.
+// Shared fields from upstream. Add a field here only when its values are compatible.
 export const SHARED_SETTING_KEYS = new Set([
   "animationFpsCap",
   "animationFpsCapEnabled",
@@ -45,6 +45,7 @@ export const SHARED_SETTING_KEYS = new Set([
   "scrollLeadMs",
   "seekFadeCompensation",
   "showNoLyricsNotice",
+  "showQueueWhenNoLyrics",
   "showNpvDynamicBg",
   "showScrollToActive",
   "showVolumeSlider",
@@ -146,6 +147,7 @@ export const MANAGED_SETTING_KEYS = new Set([
   "selectedAnimatorPresetId",
   "showLyricsCacheActionButton",
   "showNoLyricsNotice",
+  "showQueueWhenNoLyrics",
   "showNpvDynamicBg",
   "showScrollToActive",
   "showScrollToActiveButton",

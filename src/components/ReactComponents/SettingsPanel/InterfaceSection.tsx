@@ -15,6 +15,7 @@ import {
   $removeSpotifyLyricsButton,
   $viewControlsPosition,
   $showNoLyricsNotice,
+  $showQueueWhenNoLyrics,
 } from "../../../utils/stores.ts";
 import { $isGlobalNav } from "../../../utils/uiState.ts";
 import { matches, Row, Select, SettingsSection, Toggle } from "./components.tsx";
@@ -43,6 +44,7 @@ export default function InterfaceSection({ query, sectionFilter, showHidden = fa
   const disableNpvLyrics = useStore($disableNpvLyrics);
   const removeSpotifyLyricsButton = useStore($removeSpotifyLyricsButton);
   const showNoLyricsNotice = useStore($showNoLyricsNotice);
+  const showQueueWhenNoLyrics = useStore($showQueueWhenNoLyrics);
   const isGlobalNav = useStore($isGlobalNav);
   const hiddenSettingIds = useStore($hiddenSettingIds);
   if (sectionFilter !== "All" && sectionFilter !== SECTION_NAME) return null;
@@ -53,13 +55,15 @@ export default function InterfaceSection({ query, sectionFilter, showHidden = fa
     matches(query, "Remove Spotify's Lyrics Button", "Hide Spotify's built-in lyrics button from the playback bar."),
   ].map((matched, index) => matched && (showHidden ? hiddenSettingIds.includes(ids[index]) : !allowHidingSettings || !hiddenSettingIds.includes(ids[index]) || Boolean(query.trim())));
   const notice = matches(query, "No Lyrics Notice", "Explain why a song has no lyrics. Errors always show their notice.") && (showHidden ? hiddenSettingIds.includes("interface-no-lyrics-notice") : !allowHidingSettings || !hiddenSettingIds.includes("interface-no-lyrics-notice") || Boolean(query.trim()));
+  const autoQueue = matches(query, "Show Queue When a Song Has No Lyrics", "Automatically open the queue in Fullscreen and Cinema View when lyrics are unavailable.") && (showHidden ? hiddenSettingIds.includes("interface-auto-queue") : !allowHidingSettings || !hiddenSettingIds.includes("interface-auto-queue") || Boolean(query.trim()));
   const cinema = matches(query, "Enable Cinema Lyrics Window", "Show or hide the Cinema Lyrics button in the playback bar. Requires Spotify DevTools.") && (showHidden ? hiddenSettingIds.includes("interface-cinema-window") : !allowHidingSettings || !hiddenSettingIds.includes("interface-cinema-window") || Boolean(query.trim()));
-  if (!rows.some(Boolean) && !notice && !cinema) return null;
+  if (!rows.some(Boolean) && !notice && !autoQueue && !cinema) return null;
   const normalizedAlwaysShow = alwaysShowInFullscreen === "All" ? "Both" : alwaysShowInFullscreen;
 
   return <SettingsSection title="Layout">
 
     {notice && <Row settingId="interface-no-lyrics-notice" label="No Lyrics Notice" description="Explain why a song has no lyrics. Errors always show their notice."><Toggle checked={showNoLyricsNotice} onChange={(v) => $showNoLyricsNotice.set(v)} /></Row>}
+    {autoQueue && <Row settingId="interface-auto-queue" label="Show Queue When a Song Has No Lyrics" description="In Fullscreen and Cinema View, open the queue in place of the lyrics. It closes again on the next song with lyrics."><Toggle checked={showQueueWhenNoLyrics} onChange={(v) => $showQueueWhenNoLyrics.set(v)} /></Row>}
     {rows[0] && <Row settingId="interface-lock-media-box" label="Lock Media Box Size in Compact Mode" description="Prevent the media box from resizing when Forced Compact Mode is active."><Toggle checked={lockedMediaBox} onChange={(v) => $lockedMediaBox.set(v)} /></Row>}
     {rows[1] && <Row settingId="interface-disable-popup" label="Disable Popup Lyrics Window" description="Show or hide the Popup Lyrics button in the playback bar."><Toggle checked={!popupLyricsAllowed} onChange={(v) => $popupLyricsAllowed.set(!v)} /></Row>}
     {cinema && <Row

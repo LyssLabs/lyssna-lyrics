@@ -96,19 +96,20 @@ function PatchNotes({ fromVersion, toVersion, style }: { fromVersion: string; to
 
 export const releaseNotesUrl = (_version: string) => PATCH_NOTES_PAGE_URL;
 
-export function showUpdatedDialog(fromVersion: string, toVersion: string, switchedFromSpicy = false) {
-  const downgraded = isDowngrade(fromVersion, toVersion);
+export function showUpdatedDialog(fromVersion: string, toVersion: string, switchedFromSpicy = false, patchNotesFromVersion = fromVersion) {
+  const testTransition = fromVersion === "0.0.0" || toVersion === "0.0.0";
+  const downgraded = isDowngrade(patchNotesFromVersion, toVersion);
   const content: React.ReactElement<{ style?: React.CSSProperties }>[] = [
     <p className="ll-notice-text">You were on <span className="ll-notice-version">{fromVersion}</span>. You are now on <span className="ll-notice-version">{toVersion}</span>.</p>,
   ];
   if (switchedFromSpicy) content.push(<p className="ll-notice-text">You switched from Spicy Lyrics. This update compares only your Lyssna Lyrics versions.</p>);
-  if (!downgraded) {
-    content.push(<PatchNotes fromVersion={fromVersion} toVersion={toVersion} />);
+  if (toVersion !== "0.0.0" && !downgraded && (!normalizeVersion(patchNotesFromVersion) || compareLyssnaVersions(toVersion, patchNotesFromVersion) > 0)) {
+    content.push(<PatchNotes fromVersion={patchNotesFromVersion} toVersion={toVersion} />);
   }
   content.push(<p className="ll-notice-text ll-notice-text--quiet">Our Discord invite has changed. Join the <NoticeLink href={DISCORD_URL}>new Lyssna Discord server</NoticeLink> for fork updates and support.</p>);
 
   showNotice({
-    title: downgraded ? `Changed to ${toVersion}` : `Updated to ${toVersion}`,
+    title: downgraded || testTransition ? `Changed to ${toVersion}` : `Updated to ${toVersion}`,
     content,
     wide: true,
     primary: { label: "See all patch notes", onClick: () => window.open(PATCH_NOTES_PAGE_URL, "_blank", "noopener,noreferrer") },

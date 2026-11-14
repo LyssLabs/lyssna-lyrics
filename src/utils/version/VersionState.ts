@@ -4,6 +4,7 @@ export const LYSSNA_VERSION_STATE_KEY = "LL:versionState";
 type VersionState = {
   lastSeenVersion: string;
   lastAnnouncedVersion: string;
+  lastRunVersion?: string;
   spicyVersionSnapshot: string | null;
 };
 
@@ -39,7 +40,8 @@ export function recordLyssnaStartup(version: string) {
     const value = readObject(LYSSNA_VERSION_STATE_KEY);
     if (value) {
       if (!isLyricsVersion(value.lastSeenVersion) || !isLyricsVersion(value.lastAnnouncedVersion) ||
-          (value.spicyVersionSnapshot !== null && !isLyricsVersion(value.spicyVersionSnapshot))) throw new Error("Invalid Lyssna version history");
+          (value.spicyVersionSnapshot !== null && !isLyricsVersion(value.spicyVersionSnapshot)) ||
+          (Object.hasOwn(value, "lastRunVersion") && !isLyricsVersion(value.lastRunVersion))) throw new Error("Invalid Lyssna version history");
       state = value as VersionState;
     }
   } catch (error) {
@@ -51,13 +53,20 @@ export function recordLyssnaStartup(version: string) {
   const previousApp = boot?.PreviousApp ?? readActiveLyricsApp(Spicetify.LocalStorage)?.app;
   const upstream = spicyVersion();
   const switched = previousApp === "spicy" || !!(state && upstream && state.spicyVersionSnapshot !== upstream);
-  const fromVersion = state?.lastSeenVersion ?? legacyLyssnaVersion();
-  const updated = !!(fromVersion && fromVersion !== version && state?.lastAnnouncedVersion !== version);
+  const legacyVersion = legacyLyssnaVersion();
+  const fromVersion = state?.lastRunVersion ?? state?.lastSeenVersion ?? legacyVersion;
+  // Older records have only the last runtime. Recover a stable baseline where one
+  // survives, but never invent one if an older test build already overwrote it.
+  const lastStableVersion = [state?.lastSeenVersion, state?.lastAnnouncedVersion, legacyVersion]
+    .find((value): value is string => typeof value === "string" && value !== "0.0.0") ?? null;
+  const updated = !!(fromVersion && fromVersion !== version);
   if (writable && isLyricsVersion(version)) {
     try {
       const json = JSON.stringify({
-        lastSeenVersion: version,
-        lastAnnouncedVersion: updated || !state ? version : state.lastAnnouncedVersion,
+        // Older Lyssna builds also read this field to choose their patch notes.
+        lastSeenVersion: version === "0.0.0" ? lastStableVersion ?? "0.0.0" : version,
+        lastRunVersion: version,
+        lastAnnouncedVersion: version,
         spicyVersionSnapshot: upstream,
       } satisfies VersionState);
       Spicetify.LocalStorage.set(LYSSNA_VERSION_STATE_KEY, json);
@@ -67,5 +76,5 @@ export function recordLyssnaStartup(version: string) {
     }
   }
   recordActiveLyricsApp(Spicetify.LocalStorage, "lyssna", version);
-  return { fromVersion, updated, switched };
+  return { fromVersion, patchNotesFromVersion: lastStableVersion ?? "", updated, switched };
 }

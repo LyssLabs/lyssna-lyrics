@@ -744,11 +744,11 @@ function stepRefreshedLetter(
   const y = (flame.Y[index] ?? -RefreshedLift.Em * (flame.Rest ?? 0)) * liftScale;
   const glow = flame.Glow[index] ?? 0;
   const moving = flame.Moving[index] ?? false;
-  setStyleIfChanged(
-    letter.HTMLElement,
-    "transform",
-    x === 0 && y === 0 ? "none" : `translate3d(${x.toFixed(4)}em, ${y.toFixed(4)}em, 0)`
-  );
+  // Rounded resting offsets must also release their compositor layer.
+  const tx = x.toFixed(4);
+  const ty = y.toFixed(4);
+  const still = (x === 0 && y === 0) || (!moving && Number(tx) === 0 && Number(ty) === 0);
+  setStyleIfChanged(letter.HTMLElement, "transform", still ? "none" : `translate3d(${tx}em, ${ty}em, 0)`);
   setStyleIfChanged(letter.HTMLElement, "scale", `${scale}`, moving ? 0.0005 : 0);
   setStyleIfChanged(
     letter.HTMLElement,
@@ -772,6 +772,18 @@ function promoteToGPU(el: HTMLElement): void {
 }
 
 const _gpuPromotedLines = new WeakSet<HTMLElement>();
+
+const PARK_OFFSET = 0.0005;
+
+// Clear imperceptible resting transforms so sung words can release their layers.
+// Keep the cached offset: only real movement should write another transform.
+function parkSettledLine(lineEl: HTMLElement): void {
+  for (const el of lineEl.querySelectorAll<HTMLElement>(".word, .letterGroup")) {
+    const offset = _styleCache.get(el)?.get("transform");
+    if (typeof offset !== "number" || Math.abs(offset) > PARK_OFFSET || !el.style.transform) continue;
+    queueStyle(el, "transform", "");
+  }
+}
 
 // Lines blur through text-shadow, never `filter`: hinting filter only bought
 // each line an extra offscreen render pass.
@@ -2586,6 +2598,7 @@ export function Animate(position: number): void {
         };
 
         if (settleSungLine()) {
+          if (line.Settling) parkSettledLine(line.HTMLElement);
           line.Settling = false;
           dropLineSweep(line.HTMLElement);
         }

@@ -27,6 +27,7 @@ export const SETTING_CATALOG = [
   ["lyrics-credits-follow-singer", "Credits Follow the Last Singer", "Align credits with the last duet line.", "Lyrics Display"],
   ["lyrics-experimental-word-sync", "Experimental Word Sync", "Estimate word sync for line or static lyrics.", "Lyrics Display"],
   ["interface-no-lyrics-notice", "No Lyrics Notice", "Explain why a song has no lyrics. Errors always show their notice.", "Interface"],
+  ["interface-auto-queue", "Show Queue When a Song Has No Lyrics", "Automatically open the queue in Fullscreen and Cinema View when lyrics are unavailable.", "Interface"],
   ["interface-lock-media-box", "Lock Media Box Size in Compact Mode", "Prevent the media box from resizing when Forced Compact Mode is active.", "Interface"],
   ["interface-disable-popup", "Disable Popup Lyrics Window", "Show or hide the Popup Lyrics button in the playback bar.", "Interface"],
   ["interface-cinema-window", "Enable Cinema Lyrics Window", "Show or hide the Cinema Lyrics button in the playback bar. Requires Spotify DevTools.", "Interface"],

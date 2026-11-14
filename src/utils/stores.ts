@@ -207,7 +207,7 @@ export const $staticBackgroundMode = (() => {
 })();
 // Blur radius (px) applied to image-based static backgrounds — not the "color" mode.
 if (_settings.backgroundBlur !== undefined) _settings.staticBackgroundBlur = _settings.backgroundBlur;
-export const $staticBackgroundBlur = persistAtom<number>("staticBackgroundBlur", _settings.backgroundBlur ?? 0);
+export const $staticBackgroundBlur = persistAtom<number>("staticBackgroundBlur", 0);
 export type BackgroundStyle = "dynamic" | "artist" | "cover" | "color" | "none" | "legacy";
 export const BACKGROUND_STYLES: readonly BackgroundStyle[] = ["dynamic", "artist", "cover", "color", "none", "legacy"];
 function backgroundStyleForMode(mode: string): BackgroundStyle {
@@ -245,7 +245,7 @@ export const $syllablePace = persistAtom<boolean>("syllablePace", false);
 export type RomanizationDisplay = "replace" | "underLine";
 export const $romanizationDisplay = persistAtom<RomanizationDisplay>("romanizationDisplay", "underLine");
 // Tinted box drawn behind a lyrics line while the pointer is over it.
-export const $lineHoverBackground = persistAtom<boolean>("lineHoverBackground", true);
+export const $lineHoverBackground = persistAtom<boolean>("lineHoverBackground", false);
 // Wide inset on the side a duet line leans away from, so the two voices read as
 // separate columns. Off gives duet lines the same slight padding as every line.
 export const $duetLinePadding = persistAtom<boolean>("duetLinePadding", true);
@@ -270,6 +270,9 @@ export const $hideNpvLyricsWhenUnavailable = persistAtom<boolean>(
 // only the song info instead of the notice. Errors still show theirs. The NPV card
 // has its own switch above.
 export const $showNoLyricsNotice = persistAtom<boolean>("showNoLyricsNotice", true);
+// In Fullscreen and Cinema View, a song with no lyrics opens the queue in the lyrics column,
+// and the next song with lyrics closes it again.
+export const $showQueueWhenNoLyrics = persistAtom<boolean>("showQueueWhenNoLyrics", false);
 // Hide Spotify's own lyrics button in the playback bar (ours is left alone).
 export const $removeSpotifyLyricsButton = persistAtom<boolean>("removeSpotifyLyricsButton", false);
 export const $lockedMediaBox = persistAtom<boolean>("lockedMediaBox", false);

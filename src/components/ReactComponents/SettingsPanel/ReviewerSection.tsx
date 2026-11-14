@@ -24,6 +24,7 @@ export function ReviewerPane({ onBack }: { onBack: () => void }) {
     <p role="status">Review profile: {active ? "active" : "inactive"}.</p>
     {others.length > 0 && <p className="ll-sp-banner">{others.join(" and ")} can still change lyrics. Reviewer mode does not change other extensions.</p>}
     <h3>What changes</h3>
+    <p>The profile follows Lyssna Lyrics defaults, with exact seeking, still backgrounds and the experiments listed below turned off for review.</p>
     <dl className="ll-reviewer-values">
       {REVIEWER_SETTINGS.map(({ key, shown }) => <div key={key}><dt>{LABELS[key] ?? key}</dt><dd>{shown}</dd></div>)}
       <div><dt>Per-song offsets</dt><dd>Ignored</dd></div>

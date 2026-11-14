@@ -211,7 +211,8 @@
   margin-top: 25cqh;
 }
 
-body:has(.Root:not(.global-nav)) #LyssnaLyricsPage .LyricsContainer .LyricsContent .LyssnaLyricsScrollContainer {
+/* Match the old navigation selector's specificity without a document-wide :has(). */
+body.LyssnaLyrics_LegacyNav.LyssnaLyrics_LegacyNav #LyssnaLyricsPage .LyricsContainer .LyricsContent .LyssnaLyricsScrollContainer {
   margin-top: 0cqh;
   padding-top: 25cqh;
 }
@@ -481,7 +482,7 @@ body:has(.Root:not(.global-nav)) #LyssnaLyricsPage .LyricsContainer .LyricsConte
   padding-top: 40cqh;
 }
 
-body:has(.Root:not(.global-nav)) #LyssnaLyricsPage.Fullscreen.MinimalLyricsMode
+body.LyssnaLyrics_LegacyNav.LyssnaLyrics_LegacyNav #LyssnaLyricsPage.Fullscreen.MinimalLyricsMode
   .LyricsContainer
   .LyricsContent
   .LyssnaLyricsScrollContainer {

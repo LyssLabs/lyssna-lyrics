@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { type ExperimentId, EXPERIMENTS } from "./experiments.ts";
 import { $currentLyricsData, $ttmlReviewerMode, PersistedSettings, type TtmlReviewerMode } from "./stores.ts";
 import Global from "../components/Global/Global.ts";
+import "./Lyrics/Animator/Tuning.ts";
 
 // The backup stays separate from preferences so a crash cannot discard the original values.
 const BACKUP_KEY = "LL:ttmlReviewer";
@@ -10,29 +11,41 @@ const LEGACY_BACKUP_KEY = "SL:ttmlReviewer";
 const BACKUP_FORMAT_KEY = "$format";
 const BACKUP_FORMAT = 2;
 
-/** What the mode sets. Each `key` is both the persisted key and its settings row's id. */
-export const REVIEWER_SETTINGS: readonly { key: string; value: unknown; shown: string }[] = [
+type ReviewerSetting = { key: string; value: unknown; shown: string };
+
+function defaultSetting(key: string, format: (value: unknown) => string = value => {
+  const text = String(value);
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}): ReviewerSetting {
+  const entry = PersistedSettings.get(key);
+  if (!entry) throw new Error(`Missing reviewer setting: ${key}`);
+  const value = entry.defaultValue;
+  return { key, value, shown: typeof value === "boolean" ? (value ? "On" : "Off") : format(value) };
+}
+
+/** App defaults, with explicit overrides for exact seeking and a still background. */
+export const REVIEWER_SETTINGS: readonly ReviewerSetting[] = [
   // Timing: anything that moves when a line appears, or where a click lands.
-  { key: "playbackOffset", value: 0, shown: "0 ms" },
+  defaultSetting("playbackOffset", value => `${value} ms`),
   { key: "seekFadeCompensation", value: false, shown: "Off" },
-  { key: "scrollLeadEnabled", value: false, shown: "Off" },
-  { key: "smoothScrolling", value: false, shown: "Off" },
-  { key: "animationFpsCapEnabled", value: false, shown: "Off" },
+  defaultSetting("scrollLeadEnabled"),
+  defaultSetting("smoothScrolling"),
+  defaultSetting("animationFpsCapEnabled"),
   // Lyrics: anything that hides lines or changes how they're split or animated.
-  { key: "rendererVisualStyle", value: "spring", shown: "Spring" },
-  { key: "minimalLyricsMode", value: false, shown: "Off" },
-  { key: "syllableMerge", value: "off", shown: "Off" },
-  { key: "lineHoverBackground", value: true, shown: "On" },
-  { key: "duetLinePadding", value: true, shown: "On" },
-  { key: "creditsFollowLastLine", value: false, shown: "Off" },
-  { key: "customFontEnabled", value: false, shown: "Off" },
-  { key: "spaceGravityMode", value: false, shown: "Off" },
-  { key: "memeFormat", value: "Off", shown: "Off" },
-  { key: "animatorPreset", value: "Default", shown: "Default" },
-  { key: "enableExperimentalWordSync", value: false, shown: "Off" },
+  defaultSetting("rendererVisualStyle"),
+  defaultSetting("minimalLyricsMode"),
+  defaultSetting("syllableMerge"),
+  defaultSetting("lineHoverBackground"),
+  defaultSetting("duetLinePadding"),
+  defaultSetting("creditsFollowLastLine"),
+  defaultSetting("customFontEnabled"),
+  defaultSetting("spaceGravityMode"),
+  defaultSetting("memeFormat"),
+  defaultSetting("animatorPreset"),
+  defaultSetting("enableExperimentalWordSync"),
   // Background: still, so nothing competes with the lyrics for attention or frames.
   { key: "staticBackgroundMode", value: "color", shown: "Cover Colors" },
-  { key: "staticBackgroundBlur", value: 0, shown: "0 px" },
+  defaultSetting("staticBackgroundBlur", value => `${value} px`),
   { key: "showNpvDynamicBg", value: false, shown: "Off" },
 ];
 
