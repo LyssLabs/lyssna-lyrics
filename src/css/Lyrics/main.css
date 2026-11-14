@@ -22,20 +22,27 @@
 
 @property --LL-LyricsContent_MaskBottomFadeStart {
   syntax: "<length-percentage>";
-  inherits: true;
+  inherits: false;
   initial-value: 64px;
 }
 
 @property --LL-LyricsContent_MaskBottomFadeEnd {
   syntax: "<length-percentage>";
-  inherits: true;
+  inherits: false;
   initial-value: 16px;
 }
 
 @property --LL-LyricsContent_MaskBottomPadding {
   syntax: "<length>";
-  inherits: true;
+  inherits: false;
   initial-value: 0px;
+}
+
+/* Animated gradients must not invalidate every lyric descendant through inheritance. */
+@property --lyssna-lyrics-mask {
+  syntax: "*";
+  inherits: false;
+  initial-value: none;
 }
 
 #LyssnaLyricsPage .LyricsContainer .LyricsContent {
@@ -63,7 +70,7 @@
   scrollbar-color: transparent transparent;
   z-index: 9;
 
-  --ImageMask: linear-gradient(
+  --lyssna-lyrics-mask: linear-gradient(
     180deg,
     transparent 0,
     transparent 16px,
@@ -87,12 +94,20 @@
   --LL-LyricsContent_MaskBottomPadding: var(--LL-NextUpRoom, 0px);
 }
 
-#LyssnaLyricsPage .LyricsContainer .LyricsContent .simplebar-content-wrapper {
-  -webkit-mask-image: var(--ImageMask);
-  mask-image: var(--ImageMask);
+/* Pass the computed mask only along the path to SimpleBar's mask consumers. */
+#LyssnaLyricsPage .LyricsContainer .LyricsContent > .simplebar-wrapper,
+#LyssnaLyricsPage .LyricsContainer .LyricsContent > .simplebar-wrapper > .simplebar-mask,
+#LyssnaLyricsPage .LyricsContainer .LyricsContent > .simplebar-wrapper > .simplebar-mask > .simplebar-offset,
+#LyssnaLyricsPage .LyricsContainer .LyricsContent > .simplebar-wrapper > .simplebar-mask > .simplebar-offset > .simplebar-content-wrapper {
+  --lyssna-lyrics-mask: inherit;
 }
 
-#LyssnaLyricsPage:not(.Fullscreen):has(.ViewControls .ViewControl:hover) .LyricsContainer .LyricsContent {
+#LyssnaLyricsPage .LyricsContainer .LyricsContent .simplebar-content-wrapper {
+  -webkit-mask-image: var(--lyssna-lyrics-mask);
+  mask-image: var(--lyssna-lyrics-mask);
+}
+
+#LyssnaLyricsPage:not(.Fullscreen):has(.ViewControls:hover) .LyricsContainer .LyricsContent {
   --LL-LyricsContent_MaskTopPadding: 32px;
 }
 
@@ -102,7 +117,7 @@
 .lyssna-pip-wrapper #LyssnaLyricsPage .LyricsContainer .LyricsContent {
   --LL-LyricsContent_MaskBottomFadeStart: min(64px, 25%);
   --LL-LyricsContent_MaskBottomFadeEnd: min(16px, 6%);
-  --ImageMask: linear-gradient(
+  --lyssna-lyrics-mask: linear-gradient(
     180deg,
     transparent 0,
     transparent min(16px, 6%),
@@ -122,8 +137,8 @@
 }
 
 .lyssna-pip-wrapper #LyssnaLyricsPage .LyricsContainer .LyricsContent[data-simplebar] > .simplebar-wrapper {
-  -webkit-mask-image: var(--ImageMask);
-  mask-image: var(--ImageMask);
+  -webkit-mask-image: var(--lyssna-lyrics-mask);
+  mask-image: var(--lyssna-lyrics-mask);
 }
 
 .lyssna-pip-wrapper #LyssnaLyricsPage .LyricsContainer .LyricsContent:has(.LyricsNotice),

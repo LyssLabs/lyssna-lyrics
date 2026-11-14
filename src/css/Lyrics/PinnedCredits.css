@@ -43,7 +43,7 @@
 /* The lyrics fade out above the pinned rows rather than at the bottom edge. */
 #LyssnaLyricsPage .LyricsContainer.HasPinnedCredits .LyricsContent {
   --PinnedCreditsLift: calc(var(--LL-PinnedCreditsHeight, 0px) + 24px);
-  --ImageMask: linear-gradient(
+  --lyssna-lyrics-mask: linear-gradient(
     180deg,
     transparent 0,
     transparent 16px,
@@ -55,7 +55,7 @@
 }
 
 .lyssna-pip-wrapper #LyssnaLyricsPage .LyricsContainer.HasPinnedCredits .LyricsContent {
-  --ImageMask: linear-gradient(
+  --lyssna-lyrics-mask: linear-gradient(
     180deg,
     transparent 0,
     transparent min(16px, 6%),

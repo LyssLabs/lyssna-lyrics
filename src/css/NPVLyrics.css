@@ -498,7 +498,7 @@ html.LyssnaLyrics_NPVMorph::view-transition-new(lyssna-npv-card) {
   --DefaultLyricsSize: calc(clamp(1.85rem, calc(1cqw * 6), 2.8rem) * var(--LL-LyricsScale, 1));
   /* Tighter fade than the default mask (solid only from 64px down), so the
      small top padding below still leaves the first line readable. */
-  --ImageMask: linear-gradient(
+  --lyssna-lyrics-mask: linear-gradient(
     180deg,
     transparent 0,
     transparent 8px,
