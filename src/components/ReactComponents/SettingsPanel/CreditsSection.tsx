@@ -10,7 +10,7 @@ export default function CreditsSection() {
     <Row label="Spicy Lyrics" description="The official Spicy Lyrics plugin by Spikerko and its contributors provides the base of this plugin. Thank you for the lyric renderer and the work that made this fork possible.">
       <a className="sl-sp-btn" href="https://github.com/Spikerko/spicy-lyrics" target="_blank" rel="noopener noreferrer">Original project</a>
     </Row>
-    <Row label="Lyssna · Arashii" description="Lyssna's creator provided the microphone icon, settings and toolbar designs, and permission to use them. Lyssna also supplies the public developer client key shared by both apps.">
+    <Row label="Lyssna · Arashii" description="Lyssna's creator provided the microphone icon, settings and toolbar designs, and permission to use them.">
       <a className="sl-sp-btn" href={WEBSITE_URL} target="_blank" rel="noopener noreferrer">Lyssna project</a>
     </Row>
   </section>;

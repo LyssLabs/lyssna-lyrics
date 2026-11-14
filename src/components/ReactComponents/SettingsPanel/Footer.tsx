@@ -39,7 +39,7 @@ export default function Footer({ onReportBug, reportBugActive = false }: { onRep
     return () => { cancelled = true; };
   }, []);
 
-  return <><section className="sl-standalone-promo" aria-label="Lyssna Standalone">
+  return <footer className="ll-settings-footer-block"><section className="sl-standalone-promo" aria-label="Lyssna Standalone">
     <p>Want a break from the lag? Download Lyssna Standalone today!</p>
     <a className="sl-sp-btn" href={STANDALONE_DOWNLOAD_URL} target="_blank" rel="noopener noreferrer" onClick={event => { event.preventDefault(); openExternal(STANDALONE_DOWNLOAD_URL); }}>Download Lyssna Standalone</a>
   </section><div className="sl-sp-footer">
@@ -54,5 +54,5 @@ export default function Footer({ onReportBug, reportBugActive = false }: { onRep
         <span className="sl-sp-footer-version">v{version}</span>
       </div></div>
     </div>
-  </div></>;
+  </div></footer>;
 }

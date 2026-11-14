@@ -44,6 +44,7 @@ export function Row({
     disabled = true;
     disabledReason = REVIEWER_LOCK_REASON;
   }
+  if (disabled) return null;
   const isHidden = settingId && hiddenSettingIds.includes(settingId);
   if (settingId && isHidden && allowHidingSettings && !showHidden && !showHiddenInSearch) return null;
   const toggleVisibility = () => {

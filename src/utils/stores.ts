@@ -236,7 +236,7 @@ export const $minimalLyricsMode = persistAtom<boolean>("minimalLyricsMode", fals
 // Which words sung in syllables are shown as one word: none, all, those whose
 // parts line up evenly, or those long enough to be drawn letter by letter.
 export type SyllableMerge = "off" | "full" | "steady" | "held";
-export const $syllableMerge = persistAtom<SyllableMerge>("syllableMerge", "steady");
+export const $syllableMerge = persistAtom<SyllableMerge>("syllableMerge", "off");
 // A joined word drawn letter by letter times its letters by the syllables it
 // was joined from, instead of spreading them evenly over the whole word.
 export const $syllablePace = persistAtom<boolean>("syllablePace", false);
@@ -316,6 +316,7 @@ export const $pinnedFooterMode = persistAtom<PinnedFooterMode>(
   _settings["experiment:pinLyricsFooter"] ? "Full" : "Off",
 );
 export const $customFontEnabled = persistAtom<boolean>("customFontEnabled", false);
+export const $liquidGlassDialogs = persistAtom<boolean>("liquidGlassDialogs", false);
 export const $customFont = persistAtom<string>("customFont", "");
 export const $alwaysShowInFullscreen = persistAtom<string>("alwaysShowInFullscreen", "None");
 export const $showVolumeSliderFullscreen = persistAtom<string>("showVolumeSliderFullscreen", "Off");

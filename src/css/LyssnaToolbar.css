@@ -1,3 +1,5 @@
+#SpicyLyricsPage { container-name: lyssna-lyrics-page; }
+
 #SpicyLyricsPage .ViewControls.LyssnaToolbar {
   --ViewControlSize: 28px;
   container-type: normal;
@@ -45,7 +47,88 @@
 #SpicyLyricsPage .ViewControls.LyssnaToolbar .ViewControl:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 #SpicyLyricsPage .ViewControls.LyssnaToolbar .ll-toolbar-divider { align-self: center; width: 1px; height: 18px; margin: 0 2px; background: #ffffff26; }
 #SpicyLyricsPage .ViewSwitch .ViewSwitchSeat_Romanize:empty { display: none; }
-#SpicyLyricsPage:not(.Fullscreen) .ViewControls.LyssnaToolbar { width: max-content; min-height: 0; left: 50%; right: auto; transform: none; translate: -50% 0; }
+#SpicyLyricsPage:not(.Fullscreen) .ViewControls.LyssnaToolbar {
+  width: max-content;
+  min-height: 0;
+  left: 16px;
+  right: auto;
+  top: 14px;
+  bottom: auto;
+  justify-content: flex-start;
+  transform: none;
+  translate: none;
+}
+#SpicyLyricsPage:not(.Fullscreen):where(.NowBarSide__Right, .NowBarStatus__Closed) .ViewControls.LyssnaToolbar {
+  left: auto;
+  right: 16px;
+}
+#SpicyLyricsPage.ViewControlsPosition_Bottom:not(.Fullscreen) .ViewControls.LyssnaToolbar {
+  left: auto;
+  right: 16px;
+  top: auto;
+  bottom: 14px;
+}
+#SpicyLyricsPage.ViewControlsPosition_Bottom:where(.NowBarSide__Right.NowBarStatus__Open):not(.Fullscreen) .ViewControls.LyssnaToolbar {
+  left: 16px;
+  right: auto;
+}
+
+/* Match Lyssna's compact rail without depending on Spotify's window width. */
+#SpicyLyricsPage:not(.Fullscreen):is(.CompactMode, .ForcedCompactMode) .ViewControls.LyssnaToolbar {
+  left: auto;
+  right: 12px;
+  top: 12px;
+  bottom: auto;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  max-height: calc(100% - 24px);
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+#SpicyLyricsPage.ViewControlsPosition_Bottom:not(.Fullscreen):is(.CompactMode, .ForcedCompactMode) .ViewControls.LyssnaToolbar {
+  top: auto;
+  bottom: 12px;
+}
+#SpicyLyricsPage:not(.Fullscreen):is(.CompactMode, .ForcedCompactMode) .ViewControls.LyssnaToolbar .ll-toolbar-divider {
+  width: 18px;
+  height: 1px;
+  flex-shrink: 0;
+  margin: 2px 0;
+}
+#SpicyLyricsPage:not(.Fullscreen):is(.CompactMode, .ForcedCompactMode) .ContentBox {
+  box-sizing: border-box;
+  padding-right: 64px;
+}
+
+@container lyssna-lyrics-page (width < 640px) {
+  #SpicyLyricsPage:not(.Fullscreen) .ViewControls.LyssnaToolbar {
+    left: auto;
+    right: 12px;
+    top: 12px;
+    bottom: auto;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    max-height: calc(100% - 24px);
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+  #SpicyLyricsPage.ViewControlsPosition_Bottom:not(.Fullscreen) .ViewControls.LyssnaToolbar {
+    left: auto;
+    right: 12px;
+    top: auto;
+    bottom: 12px;
+  }
+  #SpicyLyricsPage:not(.Fullscreen) .ViewControls.LyssnaToolbar .ll-toolbar-divider {
+    width: 18px;
+    height: 1px;
+    flex-shrink: 0;
+    margin: 2px 0;
+  }
+  #SpicyLyricsPage:not(.Fullscreen) .ContentBox {
+    box-sizing: border-box;
+    padding-right: 64px;
+  }
+}
 #SpicyLyricsPage:not(.Fullscreen) .ViewControls.LyssnaToolbar:focus-within { visibility: visible; pointer-events: auto; }
 #SpicyLyricsPage.SpicyRenderer .LyricsContainer .CommunityCredits img { object-fit: cover; flex-shrink: 0; }
 #SpicyLyricsPage .ViewControls.LyssnaToolbar .toolbar-icon :is(g, path, rect) { transform-box: fill-box; transform-origin: center; }

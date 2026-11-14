@@ -9,17 +9,12 @@ import {
   $hideNpvLyricsWhenUnavailable,
   $hiddenSettingIds,
   $lockedMediaBox,
-  $openProfilesInBrowser,
   $popupLyricsAllowed,
   $releaseYearPosition,
   $showVolumeSliderFullscreen,
   $removeSpotifyLyricsButton,
   $viewControlsPosition,
   $showNoLyricsNotice,
-  $motionArtwork,
-  $motionArtworkOnStage,
-  $motionArtworkPriority,
-  type MotionArtworkPriority,
 } from "../../../utils/stores.ts";
 import { $isGlobalNav } from "../../../utils/uiState.ts";
 import { matches, Row, Select, SettingsSection, Toggle } from "./components.tsx";
@@ -38,7 +33,6 @@ export default function InterfaceSection({ query, sectionFilter, showHidden = fa
   const allowHidingSettings = useStore($allowHidingSettings);
   const popupLyricsAllowed = useStore($popupLyricsAllowed);
   const externalCinemaLyricsAllowed = useStore($externalCinemaLyricsAllowed);
-  const openProfilesInBrowser = useStore($openProfilesInBrowser);
   const viewControlsPosition = useStore($viewControlsPosition);
   const alwaysShowInFullscreen = useStore($alwaysShowInFullscreen);
   const showVolumeSliderFullscreen = useStore($showVolumeSliderFullscreen);
@@ -51,28 +45,20 @@ export default function InterfaceSection({ query, sectionFilter, showHidden = fa
   const showNoLyricsNotice = useStore($showNoLyricsNotice);
   const isGlobalNav = useStore($isGlobalNav);
   const hiddenSettingIds = useStore($hiddenSettingIds);
-  const motionArtwork = useStore($motionArtwork);
-  const motionArtworkOnStage = useStore($motionArtworkOnStage);
-  const motionArtworkPriority = useStore($motionArtworkPriority);
   if (sectionFilter !== "All" && sectionFilter !== SECTION_NAME) return null;
 
-  const ids = ["interface-lock-media-box", "interface-disable-popup", "interface-view-controls", "interface-always-fullscreen", "interface-fullscreen-volume", "interface-release-year", "interface-animate-close", "interface-escape-key", "interface-disable-npv", "interface-hide-empty-npv", "interface-open-profiles-browser", "interface-remove-spotify-lyrics"];
+  const ids = ["interface-lock-media-box", "interface-disable-popup", "interface-view-controls", "interface-always-fullscreen", "interface-fullscreen-volume", "interface-release-year", "interface-animate-close", "interface-escape-key", "interface-disable-npv", "interface-hide-empty-npv", "interface-remove-spotify-lyrics"];
   const rows = [
-    matches(query, "Lock Media Box Size in Compact Mode", "Prevent the media box from resizing when Forced Compact Mode is active."), matches(query, "Disable Popup Lyrics Window", "Show or hide the Popup Lyrics button in the playback bar."), matches(query, "Lyrics Controls Position", "Where the lyrics view controls (play, scroll, etc.) appear."), matches(query, "Always Show In Fullscreen", "Keep fullscreen time or controls visible."), matches(query, "Fullscreen Volume Slider", "Show a volume slider in fullscreen."), matches(query, "Release Year Position", "Show release year near track metadata."), matches(query, "Animate closing fullscreen", "Slide the lyrics page away when closing fullscreen."), matches(query, "Escape Key Function", "Choose how Escape behaves in lyrics fullscreen."), matches(query, "Disable NPV Lyrics", "Never show the lyrics card in the Now Playing sidebar."), matches(query, "Hide NPV Lyrics When No Lyrics Are Available", "Remove the lyrics card from the Now Playing sidebar while the current song has no lyrics, instead of showing a notice. It comes back on the next song that has them."), matches(query, "Open Profiles in Browser", "Open contributor profiles in your browser instead of inside Spotify."),
+    matches(query, "Lock Media Box Size in Compact Mode", "Prevent the media box from resizing when Forced Compact Mode is active."), matches(query, "Disable Popup Lyrics Window", "Show or hide the Popup Lyrics button in the playback bar."), matches(query, "Lyrics Controls Position", "Where the lyrics view controls (play, scroll, etc.) appear."), matches(query, "Always Show In Fullscreen", "Keep fullscreen time or controls visible."), matches(query, "Fullscreen Volume Slider", "Show a volume slider in fullscreen."), matches(query, "Release Year Position", "Show release year near track metadata."), matches(query, "Animate closing fullscreen", "Slide the lyrics page away when closing fullscreen."), matches(query, "Escape Key Function", "Choose how Escape behaves in lyrics fullscreen."), matches(query, "Disable NPV Lyrics", "Never show the lyrics card in the Now Playing sidebar."), matches(query, "Hide NPV Lyrics When No Lyrics Are Available", "Remove the lyrics card from the Now Playing sidebar while the current song has no lyrics, instead of showing a notice. It comes back on the next song that has them."),
     matches(query, "Remove Spotify's Lyrics Button", "Hide Spotify's built-in lyrics button from the playback bar."),
   ].map((matched, index) => matched && (showHidden ? hiddenSettingIds.includes(ids[index]) : !allowHidingSettings || !hiddenSettingIds.includes(ids[index]) || Boolean(query.trim())));
   const notice = matches(query, "No Lyrics Notice", "Explain why a song has no lyrics. Errors always show their notice.") && (showHidden ? hiddenSettingIds.includes("interface-no-lyrics-notice") : !allowHidingSettings || !hiddenSettingIds.includes("interface-no-lyrics-notice") || Boolean(query.trim()));
   const cinema = matches(query, "Enable Cinema Lyrics Window", "Show or hide the Cinema Lyrics button in the playback bar. Requires Spotify DevTools.") && (showHidden ? hiddenSettingIds.includes("interface-cinema-window") : !allowHidingSettings || !hiddenSettingIds.includes("interface-cinema-window") || Boolean(query.trim()));
-  const motion = matches(query, "Motion Artwork", "Play the album's animated cover on the artwork or Canvas Stage.");
-  if (!rows.some(Boolean) && !notice && !cinema && !motion) return null;
+  if (!rows.some(Boolean) && !notice && !cinema) return null;
   const normalizedAlwaysShow = alwaysShowInFullscreen === "All" ? "Both" : alwaysShowInFullscreen;
 
   return <SettingsSection title="Layout">
-    {motion && <>
-      <Row settingId="motionArtwork" label="Motion Artwork" description="Unavailable in Lyssna Lyrics. Your preference is kept for compatibility." disabled disabledReason="The public developer API does not provide motion artwork."><Toggle checked={motionArtwork} onChange={(v) => $motionArtwork.set(v)} /></Row>
-      <Row settingId="motionArtworkPriority" label="Motion Artwork or Canvas" description="Which video plays when a song has both." disabled><Select value={motionArtworkPriority} options={["motion", "canvas"]} labels={["Motion", "Canvas"]} onChange={(v) => $motionArtworkPriority.set(v as MotionArtworkPriority)} /></Row>
-      <Row settingId="motionArtworkOnStage" label="Motion Artwork on Canvas Stage" description="Allow animated artwork to fill the Canvas Stage." disabled><Toggle checked={motionArtworkOnStage} onChange={(v) => $motionArtworkOnStage.set(v)} /></Row>
-    </>}
+
     {notice && <Row settingId="interface-no-lyrics-notice" label="No Lyrics Notice" description="Explain why a song has no lyrics. Errors always show their notice."><Toggle checked={showNoLyricsNotice} onChange={(v) => $showNoLyricsNotice.set(v)} /></Row>}
     {rows[0] && <Row settingId="interface-lock-media-box" label="Lock Media Box Size in Compact Mode" description="Prevent the media box from resizing when Forced Compact Mode is active."><Toggle checked={lockedMediaBox} onChange={(v) => $lockedMediaBox.set(v)} /></Row>}
     {rows[1] && <Row settingId="interface-disable-popup" label="Disable Popup Lyrics Window" description="Show or hide the Popup Lyrics button in the playback bar."><Toggle checked={!popupLyricsAllowed} onChange={(v) => $popupLyricsAllowed.set(!v)} /></Row>}
@@ -100,7 +86,6 @@ export default function InterfaceSection({ query, sectionFilter, showHidden = fa
     {rows[7] && <Row settingId="interface-escape-key" label="Escape Key Function" description="Choose how Escape behaves in lyrics fullscreen."><Select value={escapeKeyFunction} options={escapeOptions} onChange={(v) => $escapeKeyFunction.set(v)} /></Row>}
     {rows[8] && <Row settingId="interface-disable-npv" label="Disable NPV Lyrics" description="Never show the lyrics card in the Now Playing sidebar."><Toggle checked={disableNpvLyrics} onChange={(v) => $disableNpvLyrics.set(v)} /></Row>}
     {rows[9] && <Row settingId="interface-hide-empty-npv" label="Hide NPV Lyrics When No Lyrics Are Available" description="Remove the lyrics card when the current song has no lyrics." disabled={disableNpvLyrics} disabledReason="The NPV lyrics card is disabled"><Toggle checked={hideNpvLyricsWhenUnavailable} onChange={(v) => $hideNpvLyricsWhenUnavailable.set(v)} /></Row>}
-    {rows[10] && <Row settingId="interface-open-profiles-browser" label="Open Profiles in Browser" description="Contributor profiles open in your browser. Your preference is kept for compatibility." disabled disabledReason="Embedded profiles required the private plugin API."><Toggle checked={openProfilesInBrowser} onChange={(v) => $openProfilesInBrowser.set(v)} /></Row>}
-    {rows[11] && <Row settingId="interface-remove-spotify-lyrics" label="Remove Spotify's Lyrics Button" description="Hide Spotify's built-in lyrics button. The Lyssna Lyrics buttons stay visible."><Toggle checked={removeSpotifyLyricsButton} onChange={(v) => $removeSpotifyLyricsButton.set(v)} /></Row>}
+    {rows[10] && <Row settingId="interface-remove-spotify-lyrics" label="Remove Spotify's Lyrics Button" description="Hide Spotify's built-in lyrics button. The Lyssna Lyrics buttons stay visible."><Toggle checked={removeSpotifyLyricsButton} onChange={(v) => $removeSpotifyLyricsButton.set(v)} /></Row>}
   </SettingsSection>;
 }

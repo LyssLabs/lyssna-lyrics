@@ -1,0 +1,51 @@
+sl-generic-modal.SpicyLyricsModal {
+  --lyssna-dialog-surface: #191919;
+  --lyssna-dialog-blur: none;
+  --lyssna-dialog-edge: #ffffff15;
+  --lyssna-dialog-shadow: 0 25px 120px #0007;
+  --color-text-primary: #f1f1f1;
+  --color-text-secondary: #b3b3b3;
+  --color-text-tertiary: #a7a7a7;
+  --hairline: #ffffff1f;
+  --hairline-strong: #ffffff33;
+  --accent-tint-bg: #ffffff0d;
+  --accent-tint-bg-hover: #ffffff18;
+}
+
+sl-generic-modal.SpicyLyricsModal:not(.LyssnaLiquidGlass) {
+  --material-ultraThin-bg: #ffffff08;
+  --material-ultraThin-blur: none;
+  --material-regular-bg: #ffffff12;
+  --material-regular-blur: none;
+  --material-thick-bg: #2b2b2b;
+  --material-thick-blur: none;
+}
+
+sl-generic-modal.SpicyLyricsModal.LyssnaLiquidGlass {
+  --lyssna-dialog-surface: #1616168c;
+  --lyssna-dialog-blur: blur(40px) saturate(1.5);
+  --lyssna-dialog-edge: #ffffff26;
+  --lyssna-dialog-shadow: inset 0 1px #ffffff14, 0 24px 64px -12px #0007;
+}
+
+sl-generic-modal.SpicyLyricsModal .sl-modal-overlay .sl-modal::before {
+  border-radius: 20px;
+  border: 1px solid var(--lyssna-dialog-edge);
+  background-color: var(--lyssna-dialog-surface);
+  background-image: none;
+  -webkit-backdrop-filter: var(--lyssna-dialog-blur);
+  backdrop-filter: var(--lyssna-dialog-blur);
+  box-shadow: var(--lyssna-dialog-shadow);
+}
+
+sl-generic-modal.SpicyLyricsModal .sl-modal-overlay :is(.sl-modal-container, .sl-modal-container-large) {
+  border-radius: 20px;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  sl-generic-modal.SpicyLyricsModal,
+  sl-generic-modal.SpicyLyricsModal.LyssnaLiquidGlass {
+    --lyssna-dialog-surface: #191919;
+    --lyssna-dialog-blur: none;
+  }
+}

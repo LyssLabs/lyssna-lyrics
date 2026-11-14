@@ -613,10 +613,7 @@ Global.Event.listen("lyrics:apply", ({ Type }: { Type: string }) => {
   setTimeout(() => triggerRemeasureLV(), 1500);
 });
 
-// Player Below the Cover stacks the view controls in a column beside the cover
-// (PlayerBelowCover.css), where a tooltip above or below a button would sit on its
-// neighbour. There they open sideways, toward the lyrics. Decided on each show, since
-// the layout comes and goes with the experiment, compact mode and Canvas Stage.
+// Vertical toolbars open tooltips inward so they do not cover adjacent buttons.
 function ViewControlTooltipProps(): Record<string, unknown> {
   const base = (Spicetify.TippyProps ?? {}) as Record<string, unknown> & {
     placement?: string;
@@ -626,19 +623,12 @@ function ViewControlTooltipProps(): Record<string, unknown> {
     ...base,
     onShow(instance: any) {
       const page = PageContainer;
-      // Seated in the Lyrics / Queue switch (QueueView.ts), a toggle is in a row, not the column.
-      const column =
-        !!page &&
-        !instance.reference?.closest?.(".ViewSwitch") &&
-        page.classList.contains("Fullscreen") &&
-        page.classList.contains("Exp_PlayerBelowCover") &&
-        !page.classList.contains("CanvasImmersive") &&
-        !page.classList.contains("CompactMode") &&
-        !page.classList.contains("ForcedCompactMode");
-      const placement = column
-        ? page.classList.contains("NowBarSide__Right")
-          ? "left"
-          : "right"
+      const toolbar = instance.reference?.closest?.(".ViewControls") as HTMLElement | null;
+      const column = toolbar?.ownerDocument.defaultView?.getComputedStyle(toolbar).flexDirection === "column";
+      const placement = column && page && toolbar
+        ? toolbar.getBoundingClientRect().left < page.getBoundingClientRect().left + page.clientWidth / 2
+          ? "right"
+          : "left"
         : (base.placement ?? "top");
       if (instance.props?.placement !== placement) instance.setProps({ placement });
       return base.onShow?.(instance);
@@ -727,7 +717,7 @@ function AppendViewControls(ReAppend: boolean = false) {
   function SetupTippy(elem: HTMLElement) {
     // PiP cannot host Spotify Tippy instances, but Cinema can use its own document.
     const tippyProps = (target: HTMLElement) => ({
-      ...Spicetify.TippyProps,
+      ...ViewControlTooltipProps(),
       ...(target.ownerDocument === document
         ? {}
         : { appendTo: () => target.ownerDocument.body }),

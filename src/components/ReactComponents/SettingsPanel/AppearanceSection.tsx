@@ -11,6 +11,7 @@ import {
   $staticBackgroundMode,
   $hiddenSettingIds,
   $pinnedFooterMode,
+  $liquidGlassDialogs,
 } from "../../../utils/stores.ts";
 import { matches, Row, SettingsSection, Select, Slider, Toggle } from "./components.tsx";
 import { ExperimentSettings } from "./ExperimentsPanel.tsx";
@@ -38,6 +39,7 @@ export default function AppearanceSection({ query, sectionFilter, showHidden = f
   const hiddenSettingIds = useStore($hiddenSettingIds);
   const fpsCapEnabled = useStore($animationFpsCapEnabled);
   const fpsCap = useStore($animationFpsCap);
+  const liquidGlass = useStore($liquidGlassDialogs);
 
   if (sectionFilter !== "All" && sectionFilter !== SECTION_NAME) return null;
 
@@ -52,11 +54,13 @@ export default function AppearanceSection({ query, sectionFilter, showHidden = f
   const r8 = visible("appearance-sliderbar-styling") && matches(query, "New SliderBar Styling", "New glass-like style for the SliderBar. Disable to revert back to the original one.");
   const r9 = visible("appearance-fps-limit") && matches(query, "Limit Animation Frame Rate", FPS_CAP_DESCRIPTION);
   const r10 = visible("appearance-fps-cap") && fpsCapEnabled && matches(query, "Animation Frame Rate", FPS_SLIDER_DESCRIPTION);
+  const glass = visible("appearance-liquid-glass") && matches(query, "Liquid Glass", "Use translucent glass for Settings, Load TTML, Manage Sources, the TTML database, and other plugin dialogs.");
 
-  if (!r1 && !r2 && !r3 && !r4 && !r6 && !r7 && !r8 && !r9 && !r10) return null;
+  if (!r1 && !r2 && !r3 && !r4 && !r6 && !r7 && !r8 && !r9 && !r10 && !glass) return null;
 
   return (
     <SettingsSection title="Appearance">
+      {glass && <Row settingId="appearance-liquid-glass" label="Liquid Glass" description="Use translucent glass for Settings, Load TTML, Manage Sources, the TTML database, and other plugin dialogs."><Toggle checked={liquidGlass} onChange={value => $liquidGlassDialogs.set(value)} /></Row>}
 
       {r3 && (
         <Row settingId="appearance-background-type" label="Background Type" description="Choose the dynamic, legacy, static image, or color background.">

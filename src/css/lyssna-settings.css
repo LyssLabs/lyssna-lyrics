@@ -62,8 +62,9 @@ sl-generic-modal.SpicyLyricsModal .sl-modal-overlay .sl-modal.slmodal-settingsPa
   .sl-sp-btn { min-height: 32px; border-radius: 8px; box-shadow: none; background: #ffffff12; font-size: 13px !important; }
   .sl-sp-btn:hover { background: #ffffff20; box-shadow: none; }
   .sl-sp-row .sl-sp-row-tooltip { white-space: normal; max-width: min(420px, calc(100vw - 80px)); }
-  .sl-standalone-promo { margin-top: auto; padding: 14px 16px; border: 1px solid #ffffff17; border-radius: 12px; background: #ffffff04; box-shadow: none; }
-  .sl-sp-footer { border-radius: 0; padding: 16px 0 8px; border: 0; box-shadow: none; gap: 16px; }
+  .ll-settings-footer-block { display: flex; flex-direction: column; gap: 12px; flex: 0 0 auto; margin-top: auto; }
+  .sl-standalone-promo { margin: 0; padding: 14px 16px; border: 1px solid #ffffff17; border-radius: 12px; background: #ffffff04; box-shadow: none; }
+  .sl-sp-footer { margin: 0; border-radius: 0; padding: 8px 0 0; border: 0; box-shadow: none; gap: 16px; }
   .sl-sp-footer-links { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: flex-start; max-width: none; }
   .sl-sp-footer-link { height: 32px; padding: 0 8px; color: #ffffffa6; background: none; box-shadow: none; font-size: 12px !important; border-radius: 4px; }
   .sl-sp-footer-link:hover { color: #fff; background: #ffffff14; box-shadow: none; }
@@ -77,7 +78,7 @@ sl-generic-modal.SpicyLyricsModal .sl-modal-overlay .sl-modal.slmodal-settingsPa
   .sl-sp-toggle:has(input:focus-visible) { outline: 2px solid #fff; outline-offset: 3px; border-radius: 12px; }
 }
 
-sl-generic-modal.SpicyLyricsModal .sl-modal-overlay .sl-modal.slmodal-settingsPanel::before { border-radius: 20px; background: #191919; backdrop-filter: none; -webkit-backdrop-filter: none; border: 1px solid #ffffff15; box-shadow: 0 25px 120px #0007; }
+sl-generic-modal.SpicyLyricsModal .sl-modal-overlay .sl-modal.slmodal-settingsPanel::before { border-radius: 20px; background: var(--lyssna-dialog-surface); backdrop-filter: var(--lyssna-dialog-blur); -webkit-backdrop-filter: var(--lyssna-dialog-blur); border: 1px solid var(--lyssna-dialog-edge); box-shadow: var(--lyssna-dialog-shadow); }
 
 @media (max-width: 620px) {
   sl-generic-modal.SpicyLyricsModal .sl-modal-overlay .sl-modal.slmodal-settingsPanel {

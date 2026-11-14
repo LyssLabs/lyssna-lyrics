@@ -24,7 +24,8 @@ export default function ExperimentsPanel({ experimentIds, advancedOnly = false, 
 export function ExperimentSettings({ title = false, experimentIds, advancedOnly = false, showBuiltIn = true }: { title?: boolean; experimentIds?: readonly ExperimentId[]; advancedOnly?: boolean; showBuiltIn?: boolean }) {
   const experimentalWordSync = useStore($enableExperimentalWordSync);
   const externalCinemaLyricsAllowed = useStore($externalCinemaLyricsAllowed);
-  const experiments = advancedOnly ? getAdvancedExperiments() : getVisibleExperiments();
+  const reviewerOn = useStore($ttmlReviewer);
+  const experiments = reviewerOn ? [] : (advancedOnly ? getAdvancedExperiments() : getVisibleExperiments()).filter(exp => forcedExperimentState(exp.id) === undefined);
 
   return (
     <>

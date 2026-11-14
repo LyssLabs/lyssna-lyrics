@@ -97,6 +97,8 @@ import "./css/LyssnaToolbar.css";
 import "./css/lyssna-settings.css";
 import { showUpdatedDialog } from "./components/ReactComponents/UpdateDialog.tsx";
 import { recordLyssnaStartup } from "./utils/version/VersionState.ts";
+import { initDialogAppearance } from "./utils/dialogAppearance.ts";
+import "./css/dialog-appearance.css";
 import { IsPIP, OpenPopupLyrics, ClosePopupLyrics } from "./components/Utils/PopupLyrics.ts";
 import {
   IsExternalCinemaLyrics,
@@ -244,6 +246,7 @@ async function main() {
   }
 
   await Platform.OnSpotifyReady;
+  initDialogAppearance();
   registerSettingsMenu(Icons.LyricsPage);
 
   guardSpicetifyScrollingFix();

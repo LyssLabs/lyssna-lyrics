@@ -75,3 +75,13 @@ The shared loader records successful app loads in `LL:activeLyricsApp`, allowing
 
 The settings footer has no divider below the Standalone promotion. Floating return-to-line controls swap edges: the up arrow appears at the bottom and the down arrow at the top, with their original actions and accessible labels. Their dark surfaces match the toolbar pills. The Discord action says **Join our new Discord** and explains the changed invite. Its rainbow scrolls continuously using a transform; reduced-motion users see the static rainbow.
 
+## Dialog surfaces and responsive controls
+
+Plugin dialogs use the same solid dark surface by default, including Load TTML, Manage Sources, and the TTML database. Appearance's **Liquid Glass** option restores translucent surfaces across the shared modal, including when it moves to another document. This preference belongs to `LL:settings`; it is not synchronized to Spicy Lyrics. Reduced-transparency preferences keep the surface opaque.
+
+Permanently unavailable motion artwork and embedded-profile options are absent from settings and the hidden-settings catalog. Their stored values remain available for switching branches. Dependent or reviewer-locked settings appear only while editable; disabled upload and other action buttons still communicate temporary action states. Join Split Words defaults to **Off** for new Lyssna settings, while explicit existing choices and legacy boolean choices are preserved.
+
+The Standalone promotion and footer links share one bottom-anchored group, so sparse tabs cannot leave a gap between them. Lyssna's credit no longer describes the shared developer key.
+
+Outside fullscreen, the lyrics toolbar sits at the artwork-side corner and follows artwork moved to the right. Without artwork it uses the right corner. The existing Bottom option uses the opposite corner, as in Lyssna. Views narrower than 640 pixels, or manually compacted views, use a scrollable vertical strip on the right with room reserved beside the lyrics. The breakpoint follows the lyrics pane's size rather than the entire Spotify window. Vertical tooltips open inward. Fullscreen and Cinema retain their existing layouts.
+
