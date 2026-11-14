@@ -1,9 +1,5 @@
-/* Up Next in fullscreen and Cinema View (NextUp.ts). It sits at the bottom of the lyrics column,
-   starting where the lines start. With the Lyrics / Queue switch in the far corner it is on the
-   switch's centerline, its cover exactly as tall as the capsule, so the two read as one row along
-   the bottom edge. It is plain type and a cover with no plate, sized off the switch, like the
-   queue's first row peeking in under the lyrics. Display only, but it holds its own box while it
-   shows: the lines faded out under it would otherwise take a click meant for it. */
+/* Shared by the page, Cinema, and fullscreen, including Canvas. NextUp.ts places the card in the
+   artwork corner, beside pinned credits when they fit, or below them with extra lyric clearance. */
 
 #LyssnaLyricsPage .ContentBox > .NextUp {
   --NextUpArt: calc(var(--ViewSwitchSize) * 1.22);
@@ -11,12 +7,13 @@
   /* Over the lyrics (9) and the pinned credit rows (10), level with the switch. */
   z-index: 11;
   left: var(--LyricsLeftSidePadding);
-  /* Bottom placement lifts pinned credits above the card in NextUp.ts. */
+  /* NextUp.ts lifts pinned credits when the bottom row needs to stack. */
   bottom: var(--ViewSwitchInset);
   display: grid;
   /* A long title shrinks the text column instead of widening the row past its cap. */
   grid-template-columns: minmax(0, 1fr);
-  max-width: 19em;
+  width: 19em;
+  max-width: calc(100% - 32px);
   font-size: calc(var(--ViewSwitchSize) * 0.42);
   font-weight: var(--lyssna-w-regular);
   color: var(--lyssna-color-text-primary);
@@ -41,7 +38,7 @@
     visibility 0s;
 }
 
-#LyssnaLyricsPage .ContentBox > .NextUp[data-placement="topLeft"] {
+#LyssnaLyricsPage .ContentBox > .NextUp:is([data-placement="topLeft"], [data-footer-layout="beside"]) {
   right: auto !important;
   bottom: auto !important;
   translate: none !important;
@@ -62,7 +59,7 @@
 
 #LyssnaLyricsPage.NowBarSide__Right:not(.CompactMode, .ForcedCompactMode)
   .ContentBox.ViewSwitchAwake:not(.LyricsHidden)
-  > .NextUp {
+  > .NextUp:not([data-placement="topLeft"], [data-footer-layout="beside"]) {
   translate: max(
       0px,
       calc(

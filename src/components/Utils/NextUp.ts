@@ -7,10 +7,7 @@ import { $nextUpPlacement } from "../../utils/stores.ts";
 import { CreateTextScroller, type TextScroller } from "../../utils/TextScroller.ts";
 import { ClaimSwitchClearance } from "../../utils/ViewSwitchClearance.ts";
 
-/**
- * The next track appears above the artwork or below the lyrics for the last 30 seconds.
- * Bottom placement lifts pinned credits and the lyric fade; Spotify's open queue hides it.
- */
+/** The next track appears in the artwork corner or beside/below pinned credits for the last 30 seconds. */
 
 // Shown once this little of the song is left.
 const SHOW_WITHIN_MS = 30_000;
@@ -22,6 +19,7 @@ const EXIT_MS = 220;
 const SWAP_MS = 180;
 // Space between the lyrics' fade and the top of the element.
 const LYRICS_CLEARANCE_PX = 24;
+const PLACEMENT_GAP_PX = 24;
 const movedCredits = new Set<HTMLElement>();
 
 type NextTrack = { uri: string; title: string; artist: string; image: string | null };
@@ -34,7 +32,7 @@ let ticker: ReturnType<typeof setInterval> | null = null;
 let hiddenAt = 0;
 // The top edge the lyrics last made room for, so a move (pinned credits, a resize) lifts them again.
 let liftedTop: number | null = null;
-// A track forced in from the console (SpicyLyrics.testing.nextUp), shown regardless of time left.
+// A track forced in from the console, shown regardless of time left.
 let forced: NextTrack | null = null;
 
 function imageUrl(uri: string | undefined): string | null {
@@ -71,9 +69,9 @@ function host(): HTMLElement | null {
 }
 
 function spotifyQueueOpen(): boolean {
-  return !!document.querySelector(
-    '[data-testid="queue-panel"], [data-testid="queue-view"], button[data-testid="control-button-queue"][aria-pressed="true"], button[data-testid="control-button-queue"][data-active="true"]'
-  );
+  if (document.querySelector('button[data-testid="control-button-queue"]:is([aria-pressed="true"], [data-active="true"])')) return true;
+  return [...document.querySelectorAll<HTMLElement>('[data-testid="queue-panel"], [data-testid="queue-view"]')]
+    .some(panel => panel.getClientRects().length > 0 && getComputedStyle(panel).visibility !== "hidden");
 }
 
 function buildBody(next: NextTrack, shown: boolean): Body {
@@ -158,7 +156,7 @@ function clearCreditsOffset(): void {
 }
 
 function syncCreditsOffset(box: HTMLElement): void {
-  if (!root?.classList.contains("Shown") || root.offsetHeight === 0 || $nextUpPlacement.get() !== "bottom") {
+  if (!root?.classList.contains("Shown") || root.offsetHeight === 0 || $nextUpPlacement.get() !== "bottom" || root.dataset.footerLayout === "beside") {
     clearCreditsOffset();
     return;
   }
@@ -185,26 +183,84 @@ function syncCreditsOffset(box: HTMLElement): void {
   }
 }
 
+/** Block credit rows fill the footer; text and images tell us whether its right side is actually free. */
+function creditsRightEdge(rows: HTMLElement[]): number {
+  let right = -Infinity;
+  for (const row of rows) {
+    const walker = row.ownerDocument.createTreeWalker(row, NodeFilter.SHOW_TEXT);
+    const range = row.ownerDocument.createRange();
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      if (!node.textContent?.trim()) continue;
+      range.selectNodeContents(node);
+      for (const rect of range.getClientRects()) if (rect.width > 0) right = Math.max(right, rect.right);
+    }
+    for (const image of row.querySelectorAll("img, svg")) {
+      const rect = image.getBoundingClientRect();
+      if (rect.width > 0) right = Math.max(right, rect.right);
+    }
+  }
+  return right;
+}
+
 function syncPlacement(box: HTMLElement): void {
   if (!root) return;
   const placement = $nextUpPlacement.get();
   if (root.dataset.placement !== placement) root.dataset.placement = placement;
-  if (placement !== "topLeft") {
-    root.style.removeProperty("left");
-    root.style.removeProperty("top");
-    return;
-  }
   const parent = (root.offsetParent as HTMLElement | null)?.getBoundingClientRect() ?? box.getBoundingClientRect();
-  const cover = box.querySelector<HTMLElement>(".NowBar.Active .MediaBox");
-  const rect = cover?.getClientRects().length ? cover.getBoundingClientRect() : null;
+  const rows = placement === "bottom" ? pinnedRows(box) : [];
+  const positions = rows.map(row => {
+    const rect = row.getBoundingClientRect();
+    const lift = parseFloat(row.style.getPropertyValue("--LL-NextUpLift")) || 0;
+    return { row, rect, bottom: rect.bottom + lift };
+  });
+  const nowBar = box.querySelector<HTMLElement>(".NowBar.Active");
+  const artColumn = placement === "topLeft" && nowBar?.offsetWidth ? nowBar.getBoundingClientRect() : null;
+  const widthLimit = positions.length
+    ? Math.min(...positions.map(({ rect }) => rect.width))
+    : artColumn ? artColumn.width : parent.width - 32;
+  const limit = `${Math.max(0, Math.floor(Math.min(widthLimit, parent.width - 32)))}px`;
+  if (root.style.maxWidth !== limit) root.style.maxWidth = limit;
   const width = root.offsetWidth;
   const height = root.offsetHeight;
-  const toolbar = box.querySelector<HTMLElement>(".ViewControls.LyssnaToolbar")?.getBoundingClientRect();
-  const fallbackTop = toolbar ? toolbar.bottom + 12 : parent.top + 24;
-  const left = `${Math.round(Math.max(16, Math.min((rect?.left ?? parent.left + 24) - parent.left, parent.width - width - 16)))}px`;
-  const top = `${Math.round(Math.max(16, (rect ? rect.top - height - 16 : fallbackTop) - parent.top))}px`;
-  if (root.style.left !== left) root.style.left = left;
-  if (root.style.top !== top) root.style.top = top;
+  if (width === 0 || height === 0) return;
+  const clampLeft = (left: number) => Math.max(parent.left + 16, Math.min(left, parent.right - width - 16));
+  const setPosition = (left: number, top?: number) => {
+    const x = `${Math.round(clampLeft(left) - parent.left)}px`;
+    if (root!.style.left !== x) root!.style.left = x;
+    if (top === undefined) root!.style.removeProperty("top");
+    else {
+      const y = `${Math.round(Math.max(16, Math.min(top - parent.top, parent.height - height - 16)))}px`;
+      if (root!.style.top !== y) root!.style.top = y;
+    }
+  };
+
+  if (placement === "topLeft") {
+    delete root.dataset.footerLayout;
+    // Canvas moves its hidden MediaBox into the bottom dock. The artwork column stays in place.
+    const left = clampLeft(artColumn?.left ?? parent.left + PLACEMENT_GAP_PX);
+    const toolbar = box.querySelector<HTMLElement>(".ViewControls.LyssnaToolbar")?.getBoundingClientRect();
+    const overlapsToolbar = toolbar && left < toolbar.right + 12 && left + width > toolbar.left - 12;
+    const top = Math.max(parent.top + PLACEMENT_GAP_PX, overlapsToolbar ? toolbar.bottom + 12 : 0);
+    setPosition(left, top);
+    return;
+  }
+
+  if (positions.length) {
+    const right = Math.min(...positions.map(({ rect }) => rect.right));
+    const left = clampLeft(right - width);
+    if (creditsRightEdge(rows) + PLACEMENT_GAP_PX <= left) {
+      if (root.dataset.footerLayout !== "beside") root.dataset.footerLayout = "beside";
+      const bottom = Math.max(...positions.map(({ row, bottom }) => bottom - (parseFloat(getComputedStyle(row).paddingBottom) || 0)));
+      setPosition(left, bottom - height);
+      return;
+    }
+    if (root.dataset.footerLayout !== "below") root.dataset.footerLayout = "below";
+    setPosition(Math.max(...positions.map(({ rect }) => rect.left)));
+  } else {
+    delete root.dataset.footerLayout;
+    root.style.removeProperty("left");
+    root.style.removeProperty("top");
+  }
 }
 
 function clearanceTop(box: HTMLElement): number {
@@ -305,10 +361,10 @@ function tick() {
   const remaining = duration - SpotifyPlayer.GetPosition();
   const wanted =
     !!next &&
-    !spotifyQueueOpen() && !PageContainer?.classList.contains("QueueOpen") &&
     (!!forced ||
       // Repeat-one plays this song again, so nothing else is next.
-      (SpotifyPlayer.LoopType !== "track" && duration > 0 && remaining <= SHOW_WITHIN_MS));
+      (SpotifyPlayer.LoopType !== "track" && duration > 0 && remaining <= SHOW_WITHIN_MS)) &&
+    !PageContainer?.classList.contains("QueueOpen") && !spotifyQueueOpen();
   const isShown = root.classList.contains("Shown");
 
   if (!wanted) {

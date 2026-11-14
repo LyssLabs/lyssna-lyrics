@@ -115,7 +115,7 @@ export default function LyricsSection({ query, sectionFilter, showHidden = false
   const popupDock = popupAllowed && visible("lyrics-popup-dock") && matches(query, "Popup Player Dock", "Dock playback controls below popup lyrics.");
   const floating = visible("lyrics-space-gravity") && matches(query, "Space Gravity Mode", "Let lyric words float as they’re sung.");
   const words = visible("lyrics-word-filters") && matches(query, "Unique Word Filters", "Change the spelling or case of lyric words.");
-  const nextTrack = visible("nextUpPlacement") && matches(query, "Up Next", "Show the next track above artwork or below lyrics in the final 30 seconds.");
+  const nextTrack = visible("nextUpPlacement") && matches(query, "Up Next", "Show the next track in the artwork corner or beside pinned credits in the final 30 seconds.");
   const effects = renderer === "spring"
     ? visible("effects-animator-presets") && matches(query, "Animator Presets", "Choose Lyssna, Spicy, or Custom animation.")
     : visible("lyrics-background-vocals") && matches(query, "Background Vocal Pop-Out", "Reveal tagged backing vocals while their group plays.");
