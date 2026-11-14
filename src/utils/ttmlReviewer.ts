@@ -29,6 +29,7 @@ export const REVIEWER_SETTINGS: readonly ReviewerSetting[] = [
   defaultSetting("playbackOffset", value => `${value} ms`),
   { key: "seekFadeCompensation", value: false, shown: "Off" },
   defaultSetting("scrollLeadEnabled"),
+  defaultSetting("scrollLeadMs", value => `${value} ms`),
   defaultSetting("smoothScrolling"),
   defaultSetting("animationFpsCapEnabled"),
   // Lyrics: anything that hides lines or changes how they're split or animated.
@@ -136,6 +137,7 @@ export function isHeldByReviewer(id: string): boolean {
     "lyrics-playback-offset": "playbackOffset",
     "lyrics-seek-compensation": "seekFadeCompensation",
     "lyrics-early-scroll": "scrollLeadEnabled",
+    "lyrics-early-scroll-time": "scrollLeadMs",
     "lyrics-smooth-scrolling": "smoothScrolling",
     "lyrics-minimal-mode": "minimalLyricsMode",
     "lyrics-simple-mode": "rendererVisualStyle",

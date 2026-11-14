@@ -3,7 +3,7 @@ import { $ttmlReviewer, getOtherLyricsExtensions, REVIEWER_EXPERIMENTS_OFF, REVI
 import { getExperiment } from "../../../utils/experiments.ts";
 
 const LABELS: Record<string, string> = {
-  playbackOffset: "Playback offset", seekFadeCompensation: "Seek fade-in compensation", scrollLeadEnabled: "Early scroll", smoothScrolling: "Smooth scrolling",
+  playbackOffset: "Playback offset", seekFadeCompensation: "Seek fade-in compensation", scrollLeadEnabled: "Early scroll", scrollLeadMs: "Early scroll time", smoothScrolling: "Smooth scrolling",
   animationFpsCapEnabled: "Frame-rate limit", rendererVisualStyle: "Renderer style", minimalLyricsMode: "Minimal lyrics", syllableMerge: "Join split words",
   lineHoverBackground: "Line hover background", duetLinePadding: "Wide duet padding", creditsFollowLastLine: "Credits follow the last singer", customFontEnabled: "Custom lyrics font",
   spaceGravityMode: "Space Gravity", memeFormat: "Word filters", animatorPreset: "Animator preset", enableExperimentalWordSync: "Experimental word sync",

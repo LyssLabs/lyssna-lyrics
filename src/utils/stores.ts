@@ -367,10 +367,10 @@ export const $hiddenSettingIds = persistAtom<string[]>("hiddenSettingIds", initi
 // doesn't swallow the start of the line.
 export const $seekFadeCompensation = persistAtom<boolean>("seekFadeCompensation", true);
 // Start auto-scrolling to a line this many ms before it becomes active.
-export const $scrollLeadEnabled = persistAtom<boolean>("scrollLeadEnabled", false);
+export const $scrollLeadEnabled = persistAtom<boolean>("scrollLeadEnabled", true);
 export const $scrollLeadMs = persistAtom<number>("scrollLeadMs", 250);
 // Spring-driven auto-scroll instead of the browser's native smooth scroll.
-export const $smoothScrolling = persistAtom<boolean>("smoothScrolling", false);
+export const $smoothScrolling = persistAtom<boolean>("smoothScrolling", true);
 // A button back to the line being sung while a hand scroll has left it out of view.
 export const $showScrollToActive = persistAtom<boolean>("showScrollToActive", true);
 // Frame rate cap for everything that redraws every frame (lyrics animation,
