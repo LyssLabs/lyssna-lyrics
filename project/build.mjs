@@ -121,6 +121,7 @@ if (!version) {
 const projectName = readProjectName();
 const defaultDist = resolve("dist");
 const outputFile = `${projectName}@${version}.mjs`;
+const outputFiles = [...new Set([outputFile, `spicy-lyrics@${version}.mjs`])];
 const creatorBin = require.resolve("@spicemod/creator/bin");
 
 const result = spawnSync(process.execPath, [creatorBin, "build", "--no-copy"], {
@@ -138,8 +139,9 @@ if (result.status !== 0) {
 
 try {
   const builtFile = getBuiltJsFile(defaultDist, projectName);
-  const versionedOutput = join(defaultDist, outputFile);
-  copyFileReplacing(builtFile, versionedOutput);
+  for (const filename of outputFiles) {
+    copyFileReplacing(builtFile, join(defaultDist, filename));
+  }
   const bridgeName = "lyssna-lyrics-bridge.html";
   const bridgeSource = readFileSync(resolve("website", bridgeName), "utf8");
   for (const script of bridgeSource.matchAll(/<script>([\s\S]*?)<\/script>/g)) {
@@ -153,7 +155,9 @@ try {
   if (targetDir) {
     const dest = resolve(targetDir);
     mkdirSync(dest, { recursive: true });
-    copyFileReplacing(versionedOutput, join(dest, outputFile));
+    for (const filename of outputFiles) {
+      copyFileReplacing(join(defaultDist, filename), join(dest, filename));
+    }
     copyFileReplacing(resolve("website", bridgeName), join(dest, bridgeName));
     if (!parsedArgs.testBuild) {
       writeFileReplacing(join(dest, "version"), version);

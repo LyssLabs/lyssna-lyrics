@@ -4,6 +4,8 @@ The plugin keeps the shared `SL:settings` record and legacy `SpicyLyrics-` setti
 
 Build selection uses `LyssnaLyrics-` keys. The first read copies valid custom fork channels from the old record without modifying it. Official service hosts are excluded. Both the loader and in-plugin version checks default to `ipixelgalaxy.com`; versioned bundles are named `lyssna-lyrics@<version>.mjs`.
 
+Builds retain a compatible spicy-lyrics filename for older launchers.
+
 ## Public developer API
 
 `config/spicy-lyrics-client-key.txt` contains the publishable client key shipped by [Lyssna](https://github.com/Stormanzanii/Lyssna/blob/main/config/spicy-lyrics-client-key.txt). The build accepts only `sl_pk_` keys. Both applications share its application allowance; rotation requires rebuilding both clients.

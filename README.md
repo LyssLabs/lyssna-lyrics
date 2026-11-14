@@ -15,7 +15,7 @@ Synchronized lyrics for Spotify through Spicetify. Maintained by iPixelGalaxy, b
    spicetify apply
    ```
 
-Existing installations using this fork's old loader continue through its compatibility entrypoint. Do not enable both loaders at once.
+Existing installations using this fork's old loader continue through its compatibility entrypoint and the `spicy-lyrics@<version>.mjs` filename alias. Both filenames contain the same Lyssna Lyrics build. Do not enable both loaders at once.
 
 ## Settings and lyric sources
 
