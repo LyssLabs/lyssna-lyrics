@@ -1,5 +1,6 @@
 import { BUILT_IN_CHANNELS as CHANNEL_MAP, CHANNELS_CHANGED_EVENT, DEFAULT_CHANNEL, DEFAULT_BUILD_HOST, getChannelMap as getFullChannelMap, getCurrentChannel, isAllowedBuildHost, isReservedChannelName, readCustomChannels as getCustomChannels, saveCustomChannels, selectedChannel as selectChannel, setCurrentChannel } from "../shared/channels.mjs";
 import { readActiveLyricsApp, recordActiveLyricsApp } from "../shared/app-state.mjs";
+import { channelApp, channelBundleUrl, channelVersionUrl } from "../shared/build-paths.mjs";
 
 const BUILT_IN_CHANNELS = Object.keys(CHANNEL_MAP);
 const DEFAULT_API_HOST = DEFAULT_BUILD_HOST;
@@ -272,7 +273,7 @@ const showAddCustomChannel = () => {
     });
 
     const { wrap: fixedToggleWrap, input: fixedCb } = makeToggle();
-    scroll.appendChild(makeRow("Use a fixed version instead of fetching from /version", fixedToggleWrap));
+    scroll.appendChild(makeRow("Use a fixed version instead of fetching the latest version", fixedToggleWrap));
 
     const fixedInput = makeInput("e.g. 5.19.11");
     const fixedRow = makeRow("Fixed Version", fixedInput);
@@ -284,7 +285,7 @@ const showAddCustomChannel = () => {
 
     const note = document.createElement("p");
     note.style.cssText = "margin:4px 8px 10px;font-size:0.7rem;color:rgba(255,255,255,0.35);line-height:1.5;";
-    note.innerHTML = `Leave API Host and Storage Host empty to use the defaults. To pull an older version, set a channel name, enable fixed version, and enter the version number.<br><br>The API host must serve <strong>/version</strong> as plain text. The Storage host must serve the bundle at <strong>/lyssna-lyrics@{version}.mjs</strong> with CORS and <code>application/javascript</code>.`;
+    note.innerHTML = `Leave API Host and Storage Host empty to use the defaults. To pull an older version, set a channel name, enable fixed version, and enter the version number.<br><br>The API host must serve <strong>/lyssna-plugin/version</strong> as plain text. The Storage host must serve the bundle at <strong>/lyssna-plugin/builds/lyssna-lyrics@{version}.mjs</strong> with CORS and <code>application/javascript</code>.`;
     scroll.appendChild(note);
 
     const btnRow = makeBtnRow();
@@ -575,17 +576,17 @@ async function load() {
       channel.fixedVersion = version;
     }
     if (!version) {
-      const response = await fetch("https://" + channel.apiHost + "/version", { cache: "no-store", signal: AbortSignal.timeout(5000) });
+      const response = await fetch(channelVersionUrl(channel), { cache: "no-store", signal: AbortSignal.timeout(5000) });
       if (!response.ok) throw new Error("Version request failed: " + response.status);
       version = (await response.text()).trim();
     }
     if (!VERSION_PATTERN.test(version)) throw new Error("Invalid build version");
-    const app = channel.name === "Spicy Lyrics" || channel.storageHost === "public.storage.spicylyrics.org" ? "spicy" : "lyssna";
+    const app = channelApp(channel);
     const previousApp = readActiveLyricsApp(Spicetify.LocalStorage)?.app;
     if (app === "lyssna") window._lyssna_lyrics_metadata = { LoadedVersion: version, PreviousApp: previousApp ?? null };
     else window._spicy_lyrics_metadata = { LoadedVersion: version };
     window._lyssna_lyrics_channel = { name: channel.name, fixedVersion: channel.fixedVersion };
-    const url = "https://" + channel.storageHost + "/" + channel.bundleName + "@" + encodeURIComponent(version) + ".mjs?attempt=" + attempt++;
+    const url = channelBundleUrl(channel, version) + "?attempt=" + attempt++;
     try {
       await import(url);
     } catch (error) {

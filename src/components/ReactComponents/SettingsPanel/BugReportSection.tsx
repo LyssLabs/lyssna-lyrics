@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import Session from "../../Global/Session.ts";
 import { BuildBugReport, CopyText, DISCORD_BUGS_URL } from "../../../utils/BugReport.ts";
 import { openExternal } from "../../../brand.ts";
+import { TEST_BUILD_VERSION } from "../../../utils/version/Channels.ts";
 
 const PREVIEW_REFRESH_MS = 2000;
 type CopyState = "idle" | "done" | "failed";
@@ -45,7 +46,7 @@ export function BugReportPane({ onBack }: { onBack: () => void }) {
   const [copyState, copy] = useCopy(getReport);
   const [discordState, copyAndOpen] = useCopy(getReport, () => openExternal(DISCORD_BUGS_URL));
   const current = Session.SpicyLyrics.GetCurrentVersion()?.Text;
-  const outdated = current !== "100.10.0" && !!latestVersion && !!current && Session.SpicyLyrics.IsBehind(Session.SpicyLyrics.GetCurrentVersion(), Session.SpicyLyrics.ParseVersion(latestVersion));
+  const outdated = current !== TEST_BUILD_VERSION && !!latestVersion && !!current && Session.SpicyLyrics.IsBehind(Session.SpicyLyrics.GetCurrentVersion(), Session.SpicyLyrics.ParseVersion(latestVersion));
   const preview = report.split("\n").filter(line => line !== "```" && !line.startsWith("**")).slice(0, -1).join("\n");
 
   return <section className="sl-sp-bug" aria-label="Report a Lyssna Lyrics bug">

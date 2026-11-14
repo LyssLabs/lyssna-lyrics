@@ -7,6 +7,7 @@ import Fullscreen from "../components/Utils/Fullscreen.ts";
 import { onAnimationFrame } from "./AnimationFrameLoop.ts";
 import { IsOpen as IsBreakerOpen, RetryAfterMs } from "./API/CircuitBreaker.ts";
 import App from "./app.ts";
+import { TEST_BUILD_VERSION } from "./version/Channels.ts";
 import { getExperiments, isExperimentEnabled } from "./experiments.ts";
 import { GetRecentErrors, RedactForReport } from "./Logger.ts";
 import { ProviderMap } from "./Lyrics/Applyer/Credits/ApplyProvider.ts";
@@ -316,7 +317,7 @@ export type BugReportOptions = {
 function versionRow(latest: string | undefined): string | undefined {
   const current = Session.SpicyLyrics.GetCurrentVersion()?.Text;
   if (!current) return undefined;
-  const build = current === "100.10.0" ? "Canary build" : App.isDev() ? "dev build" : undefined;
+  const build = current === TEST_BUILD_VERSION ? "Canary build" : App.isDev() ? "dev build" : undefined;
   // In order, so a build newer than the public one (a test build) isn't told to update.
   const behind = !build && latest
     ? Session.SpicyLyrics.IsBehind(Session.SpicyLyrics.GetCurrentVersion(), Session.SpicyLyrics.ParseVersion(latest))

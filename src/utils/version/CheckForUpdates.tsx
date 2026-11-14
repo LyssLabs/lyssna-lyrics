@@ -92,6 +92,7 @@ function showUpdateModal(currentVersion: any, latestVersion: any, origin?: DOMRe
   showNotice({
     title: latest ? `Version ${latest} is out` : "An update is out",
     content,
+    wide: true,
     primary: { label: "Update and reload", onClick: startUpdate },
     extraActions: [{ label: "Join our new Discord", className: "sl-discord-shine", onClick: () => openExternal(DISCORD_URL) }],
     secondaryLabel: "Not now",

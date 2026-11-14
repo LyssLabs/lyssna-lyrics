@@ -3,6 +3,8 @@ import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, unlinkS
 import { join, resolve } from "node:path";
 import { createRequire } from "node:module";
 import { Script } from "node:vm";
+import { PLUGIN_DIRECTORY, BUNDLES_DIRECTORY, TEST_BUILD_VERSION } from "../builds/shared/build-paths.mjs";
+import { isLyricsVersion } from "../builds/shared/app-state.mjs";
 
 const require = createRequire(import.meta.url);
 
@@ -106,12 +108,11 @@ function writeFileReplacing(destination, contents) {
   replaceOnPermissionError(destination, () => writeFileSync(destination, contents));
 }
 
-const TEST_BUILD_VERSION = "100.10.0";
 const parsedArgs = parseArgs(process.argv.slice(2));
 const version = parsedArgs.testBuild ? TEST_BUILD_VERSION : parsedArgs.version;
 const { targetDir } = parsedArgs;
 
-if (!version) {
+if (!isLyricsVersion(version)) {
   console.error("Usage: bun run build --version <version> [outputDir]");
   console.error("   or: node project/build.mjs --version <version> [outputDir]");
   console.error("   or: node project/build.mjs -test [outputDir]");
@@ -155,25 +156,49 @@ try {
   for (const script of bridgeSource.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)) {
     new Script(script[1], { filename: bridgeName });
   }
-  copyFileReplacing(resolve("website", bridgeName), join(defaultDist, bridgeName));
   const launcherFiles = ["lyssna-lyrics.mjs", "spicy-lyrics.mjs", "spicy-lyrics-pixel.mjs"];
-  for (const filename of launcherFiles) copyFileReplacing(resolve("builds", filename), join(defaultDist, filename));
-  if (!parsedArgs.testBuild) {
-    writeFileReplacing(join(defaultDist, "version"), version);
+
+  function publishOutput(dest) {
+    const pluginDir = join(dest, PLUGIN_DIRECTORY);
+    const bundlesDir = join(pluginDir, BUNDLES_DIRECTORY);
+    mkdirSync(bundlesDir, { recursive: true });
+
+    // Copy existing releases before publishing the new manifest or entrypoint.
+    // Canonical filenames take precedence when both older aliases exist.
+    const existing = readdirSync(dest).filter(name => /^(?:lyssna|spicy)-lyrics@.+\.mjs$/.test(name)).sort();
+    for (const filename of existing) {
+      const releaseVersion = filename.match(/@(.+)\.mjs$/)?.[1];
+      if (!isLyricsVersion(releaseVersion)) continue;
+      for (const alias of [filename, `lyssna-lyrics@${releaseVersion}.mjs`]) {
+        const migrated = join(bundlesDir, alias);
+        if (!existsSync(migrated)) copyFileReplacing(join(dest, filename), migrated);
+      }
+    }
+    for (const filename of outputFiles) {
+      const source = join(defaultDist, filename);
+      copyFileReplacing(source, join(bundlesDir, filename));
+      if (resolve(dest) !== defaultDist) copyFileReplacing(source, join(dest, filename));
+    }
+    for (const directory of [pluginDir, dest]) {
+      copyFileReplacing(resolve("website", bridgeName), join(directory, bridgeName));
+      if (resolve(directory) !== defaultDist) copyFileReplacing(entrypointFile, join(directory, "entrypoint.mjs"));
+      for (const filename of launcherFiles) copyFileReplacing(resolve("builds", filename), join(directory, filename));
+    }
+    if (!parsedArgs.testBuild) {
+      writeFileReplacing(join(pluginDir, "version"), version);
+      writeFileReplacing(join(dest, "version"), version);
+    } else if (!existsSync(join(pluginDir, "version")) && existsSync(join(dest, "version"))) {
+      const stableVersion = readFileSync(join(dest, "version"), "utf8").trim();
+      if (isLyricsVersion(stableVersion) && existsSync(join(bundlesDir, `lyssna-lyrics@${stableVersion}.mjs`))) {
+        copyFileReplacing(join(dest, "version"), join(pluginDir, "version"));
+      }
+    }
   }
 
+  publishOutput(defaultDist);
   if (targetDir) {
     const dest = resolve(targetDir);
-    mkdirSync(dest, { recursive: true });
-    for (const filename of outputFiles) {
-      copyFileReplacing(join(defaultDist, filename), join(dest, filename));
-    }
-    copyFileReplacing(resolve("website", bridgeName), join(dest, bridgeName));
-    copyFileReplacing(entrypointFile, join(dest, "entrypoint.mjs"));
-    for (const filename of launcherFiles) copyFileReplacing(join(defaultDist, filename), join(dest, filename));
-    if (!parsedArgs.testBuild) {
-      writeFileReplacing(join(dest, "version"), version);
-    }
+    if (dest !== defaultDist) publishOutput(dest);
     console.log(`Copied ${parsedArgs.testBuild ? "test " : ""}build to ${dest}`);
   }
 } catch (error) {

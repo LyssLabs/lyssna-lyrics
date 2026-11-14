@@ -136,19 +136,21 @@ export function showNotice({ title, content, primary, extraActions, secondaryLab
                 <span>{action.label}</span>
               </button>
             ))}
-            <button type="button" className="sl-notice-button sl-notice-button--quiet" onClick={dismiss}>
-              {secondaryLabel}
-            </button>
-            <button
-              type="button"
-              className="sl-notice-button sl-notice-button--primary"
-              onClick={() => {
-                close();
-                primary.onClick();
-              }}
-            >
-              {primary.label}
-            </button>
+            <div className="sl-notice-actions-main">
+              <button type="button" className="sl-notice-button sl-notice-button--quiet" onClick={dismiss}>
+                {secondaryLabel}
+              </button>
+              <button
+                type="button"
+                className="sl-notice-button sl-notice-button--primary"
+                onClick={() => {
+                  close();
+                  primary.onClick();
+                }}
+              >
+                {primary.label}
+              </button>
+            </div>
           </div>
         </div>
       </div>

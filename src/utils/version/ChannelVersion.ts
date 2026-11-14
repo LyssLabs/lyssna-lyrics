@@ -1,4 +1,5 @@
 import { selectedChannel } from "./Channels.ts";
+import { channelVersionUrl } from "../../../builds/shared/build-paths.mjs";
 const VERSION_TIMEOUT_MS = 5000;
 // A branch selection takes effect on reload; check updates for the app running now.
 const loadedChannel = selectedChannel();
@@ -10,7 +11,7 @@ export async function fetchSelectedChannelVersion(): Promise<string | undefined>
   const controller = new AbortController();
   const timeout = window.setTimeout(() => controller.abort(), VERSION_TIMEOUT_MS);
   try {
-    const response = await fetch(`https://${channel.apiHost}/version`, {
+    const response = await fetch(channelVersionUrl(channel), {
       cache: "no-store",
       signal: controller.signal,
     });

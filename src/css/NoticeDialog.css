@@ -212,6 +212,16 @@
   margin-top: 8px;
 }
 
+.sl-notice-actions > .sl-discord-shine { margin-inline-end: auto; }
+
+.sl-notice-actions-main {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  max-width: 100%;
+}
+
 .sl-notice-button {
   appearance: none;
   display: inline-flex;

@@ -1,4 +1,5 @@
 import * as channels from "../../../builds/shared/channels.mjs";
+export { TEST_BUILD_VERSION } from "../../../builds/shared/build-paths.mjs";
 
 export type ChannelHosts = [string, string] | [string, string, string];
 export const CHANNEL_PREFIX = channels.CHANNEL_PREFIX;
