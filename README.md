@@ -1,847 +1,117 @@
-# Lyssna Lyrics
+<div align="center">
 
-![Lyssna logo](src/assets/lyssna-microphone.svg)
+<img src="assets/lyssna-lyrics-banner.svg" alt="Lyssna Lyrics. Keep the lyrics close. Synchronized lyrics for Spotify through Spicetify." width="100%" />
 
-Synchronized lyrics for Spotify through Spicetify. Maintained by iPixelGalaxy, based on the official [Spicy Lyrics plugin](https://github.com/Spikerko/spicy-lyrics) by Spikerko and its contributors. The Lyssna name and logo are used with permission from [Stormanzanii](https://github.com/Stormanzanii/Lyssna).
+<p>
+  <a href="https://discord.gg/qfYAsFQawp"><img src="https://img.shields.io/badge/Join_our_Discord-5865F2?style=for-the-badge&amp;logo=discord&amp;logoColor=white" alt="Join the Lyssna Discord" /></a>
+  <a href="#install"><img src="https://img.shields.io/badge/Install_Lyssna_Lyrics-1ed760?style=for-the-badge&amp;labelColor=151917&amp;color=1ed760" alt="Install Lyssna Lyrics" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/AGPL--3.0-303d34?style=for-the-badge" alt="AGPL version 3 license" /></a>
+</p>
 
-## Installation
+**[Discord & support](https://discord.gg/qfYAsFQawp) · [Download the launcher](https://raw.githubusercontent.com/iPixelGalaxy/lyssna-lyrics/dev/builds/lyssna-lyrics.mjs) · [Lyssna Standalone](https://clypdat.xyz/lyssna.exe)**
 
-1. Install [Spicetify](https://spicetify.app). Disable any existing Spicy Lyrics extension first; both plugins use the same lyric page and shared settings.
-2. Download [lyssna-lyrics.mjs](https://ipixelgalaxy.com/lyssna-plugin/lyssna-lyrics.mjs) into your Spicetify Extensions directory. Run `spicetify config-dir` to find it.
-3. Enable the extension:
+</div>
 
-   ```
+Lyssna Lyrics puts synchronized lyrics inside Spotify, with a microphone button to open them, a toolbar that follows your layout, and settings you can make your own.
+
+This is iPixelGalaxy's fork of [Spicy Lyrics](https://github.com/Spikerko/spicy-lyrics), bringing the look of [Lyssna](https://github.com/Stormanzanii/Lyssna) to Spicetify. If you knew this repo as Pixel Edition, you're in the right place.
+
+## In the lyrics view
+
+| | What you can do |
+| :-- | :-- |
+| **Follow the song** | Word and line timing, duet alignment, romanization, and a button to return to the active line. Timing depends on the lyrics available for each track. |
+| **Pick a view** | Keep lyrics on the page, go fullscreen or Cinema, open a popout, or use the Now Playing sidebar. |
+| **Make it yours** | Change the font and lyric size, choose Spring or Bloom, try Space Gravity, and adjust backgrounds and animation limits. Dialogs are solid by default, with optional Liquid Glass. |
+| **Work with TTML** | Load lyrics temporarily, for the session, or persistently. Browse your local TTML database and apply a reviewer profile while checking a file. |
+| **Choose your sources** | Reorder and enable lyric sources, choose the toolbar's cache action, and keep provider and contributor credits beside the lyrics. |
+
+Open the gear in the lyrics toolbar for **Appearance, Lyrics, Effects, Layout, Sources, Advanced, and Credits**. The toolbar moves into a vertical strip when the lyrics pane gets narrow.
+
+## Install
+
+Start with **Spotify's desktop app and a working [Spicetify installation](https://spicetify.app/docs/getting-started)**. The commands below install the extension and apply Spicetify; Spotify may restart.
+
+### Windows · PowerShell
+
+```powershell
+& ([scriptblock]::Create((irm 'https://raw.githubusercontent.com/iPixelGalaxy/lyssna-lyrics/dev/scripts/lyssna-lyrics.ps1'))) -Action install
+```
+
+### macOS / Linux · Terminal
+
+```sh
+sh -c 'lyssna_script=$(curl -fsSL https://raw.githubusercontent.com/iPixelGalaxy/lyssna-lyrics/dev/scripts/lyssna-lyrics.sh) && sh -c "$lyssna_script" -- install'
+```
+
+The installer downloads **[lyssna-lyrics.mjs](https://raw.githubusercontent.com/iPixelGalaxy/lyssna-lyrics/dev/builds/lyssna-lyrics.mjs)** from this GitHub repo and enables that filename. It disables the old `spicy-lyrics-pixel.mjs` and `spicy-lyrics.mjs` entries so two lyrics plugins do not load together. Your other extensions and saved settings stay in place.
+
+You can read the [PowerShell script](scripts/lyssna-lyrics.ps1) or [shell script](scripts/lyssna-lyrics.sh) here. Running the install command again replaces the launcher with the current copy.
+
+<details>
+<summary><strong>Install manually</strong></summary>
+
+1. Download [lyssna-lyrics.mjs](https://raw.githubusercontent.com/iPixelGalaxy/lyssna-lyrics/dev/builds/lyssna-lyrics.mjs) and save it with that exact filename.
+2. Run `spicetify config-dir` and place the file in its **Extensions** folder.
+3. Enable Lyssna and disable the older filenames:
+
+   ```sh
    spicetify config extensions lyssna-lyrics.mjs
+   spicetify config extensions spicy-lyrics-pixel.mjs-
+   spicetify config extensions spicy-lyrics.mjs-
    spicetify apply
    ```
 
-Existing installations using this fork's old loader continue through its compatibility entrypoint and the `spicy-lyrics@<version>.mjs` filename alias. Both filenames contain the same Lyssna Lyrics build. Do not enable both loaders at once.
-
-## Settings and lyric sources
-
-Lyssna-only settings live in `LL:settings`, and its interface bookkeeping lives in `LL:uiState`. Common settings stay in the official plugin's `SL:settings` and `SL:uiState` records, so changes carry across when you switch branches. Existing fork-only settings move automatically after a successful copy; other upstream fields are preserved.
-
-The channel picker always lists **Lyssna** first and selects it by default, using `ipixelgalaxy.com` for both version and storage hosts. A Lyssna host serves `/lyssna-plugin/version` and `/lyssna-plugin/builds/lyssna-lyrics@<version>.mjs`. **Spicy Lyrics** loads the official Stable build using its original paths. Beta is removed. Custom channels and their Add controls are always visible. The entrypoint and plugin share channel selection, including changes made through older launchers. Switching to the official branch is an explicit opt-in to that plugin and its own services.
-
-Community and Apple Music lyrics use the public developer API with Lyssna's publishable client key through a page hosted on this project's website. The key owner must allow `https://ipixelgalaxy.com`; see [integration setup](docs/lyssna-lyrics-migration.md). Both apps share its allowance. Provider, maker, and uploader credits appear with the lyrics. The private plugin API, sessions, embedded contributor profiles, remote configuration, and remote experiment controls are removed. Motion artwork falls back to static covers because its signing service belonged to the private integration; saved artwork preferences remain available for compatibility. Spotify Canvas still works.
-
-## Lyssna Standalone
-
-Want a break from the lag? Download Lyssna Standalone today!
-
-[Download for Windows](https://clypdat.xyz/lyssna-latest/lyssna-setup.exe) · [Join Discord](https://discord.gg/qfYAsFQawp)
-
-## What's New
-
-## v100.10.54
-
-- **Updated to be inline with 6.4.70**
-
-## v100.10.53
-
-- **Ok, actually fr, inline with 6.4.50 this time.**
-
-## v100.10.52
-
-- **Updated to be inline with 6.4.50**
-
-## v100.10.51
-
-- **Updated to be inline with 6.4.10**
-
-## v100.10.50
-
-- **Updated to be inline with 6.3.190**
-
-## v100.10.49
-
-- **Updated to be inline with 6.3.153**
-  Added lyrics-card support for Spotify's newer Now Playing layout. Fixed doubled playback-bar offsets and faint duplicate interlude dots while they bounce.
-
-### Pixel Edition changes
-
-- **Lyric font fallback**
-  Lyrics fall back to Spicy Lyrics' built-in font when more than half of their visible characters are unsupported by your custom font. Rechecks when the song, font, or romanization changes, while keeping your font preference saved.
-
-- **Space Gravity in popout windows**
-  Fixed starting and switching Space Gravity in popout windows while the main Spotify window is minimized.
-
-- **Popout cover artwork**
-  Fixed known artwork being replaced by generic covers. Popout artwork and backgrounds now refresh when cover metadata arrives late.
-
-- **Loading errors and appearance**
-  Fixed loading errors not appearing for invalid build hosts. Loading dialogs and retry notifications now follow New Settings and Update Design, including classic mode, even when the plugin cannot load.
-
-- **Spotify 1.3.4 button highlight**
-  Restored the active highlight on the Spicy Lyrics playbar icon in Spotify 1.3.4.
-
-- **Settings menu entry**
-  Spicy Lyrics Settings now uses the Spicy Lyrics logo and appears more consistently in Spotify's profile menu.
-
-- **Less sidebar stutter**
-  Reduced stutter during lyrics scrolling and in the Now Playing sidebar, including pinned credits and dynamic backgrounds.
-
-## v100.10.48
-
-- **Updated to be inline with 6.3.142**
-
-### Pixel Edition changes
-
-- **Settings and update design switch**
-  Added New Settings and Update Design in Appearance. One switch controls settings, update dialogs, and update notifications together, and is enabled by default. Disable it for classic neutral styling. Both settings styles keep the Spicy Lyrics header, logo, and larger title, with a white logo in classic mode.
-
-- **Lyric highlights after seeking**
-  Fixed stale word and letter highlights after seeking or changing lines, including Simple Lyrics Mode. Fixed a lyric-rendering failure when font readiness cannot be checked.
-
-- **Settings dialog layering**
-  Fixed settings appearing behind other interface elements.
-
-## v100.10.47
-
-- **Updated to be inline with 6.3.98**
-
-### Pixel Edition fixes
-
-- **Automatic update checks**
-  Checks the selected build channel's version file every five minutes. Choosing Update reloads Spotify to load the new version. Fixed-version channels stay pinned.
-
-- **Clearer update prompts**
-  The wider post-update prompt shows patch notes for Pixel Edition upgrades and a visible "New to Pixel Edition?" button. Available updates use the new notice design.
-
-- **Credits in popout windows**
-  Pinned community credits appear in Cinema and Picture-in-Picture while profile details load.
-
-- **Smoother lyrics and loading**
-  The expanded Now Playing lyrics card changes size more smoothly. Loading skeletons align with lyrics in sidebar, compact, fullscreen, and Picture-in-Picture views.
-
-- **Less interface stutter**
-  Lyrics, Spotify scrolling, and dynamic Now Playing backgrounds trigger less page restyling across Default, Pixel, and Custom animator presets.
-
-## v100.10.46
-
-- **Updated to be inline with 6.3.50**
-
-### Pixel Edition fixes
-
-- **Fixed doubled and ghosted lyrics**
-  Active syllable lyrics no longer draw a second copy of the text behind moving words.
-
-- **Lyrics finish loading in popout windows**
-  Cinema and Picture-in-Picture reveal lyrics and finish their loading transitions even when the main Spotify window is hidden or minimized.
-
-- **Settings stay within reach**
-  Tabs and search stay pinned while settings scroll. Changing tabs or searching returns the content to the top, and every settings tab has 36px of scrollable space below the footer.
-
-- **Restored the settings menu entry**
-  Open Spicy Lyrics Settings directly from Spotify's menu.
-
-### How the upstream update fits Pixel Edition
-
-- **Scrolling, animation, and Gravity**
-  Upstream scrolling and animation changes are integrated with Default, Pixel, and Custom animator presets. Seek fade-in compensation also applies when clicking lyrics in Gravity mode.
-
-- **Controls in the existing settings layout**
-  Scrolling and seek controls live in Lyrics, and the Spotify lyrics-button option lives in Interface. The new controls support settings search and hiding.
-
-- **Skeleton and spinner use the same loading flow**
-  Both presentations keep the fork's queued and offline messages, track-change handling, and popout fixes. Switching the loading style during a fetch keeps the current loading state.
-
-- **TTML and alternate lyric sources**
-  Romanization spacing and background-vocal fixes are applied to the fork's TTML support. Your source priority, local TTML, and experimental word splitting are retained; alternate providers can still supply lyrics when the primary source is queued.
-
-- **Fullscreen and backgrounds**
-  Upstream fullscreen fixes respect the fork's Escape settings and optional closing animation. Progressive artwork loading uses the existing background modes and artwork fallbacks.
-
-- **Recovery follows your build channel**
-  Startup recovery supports custom channel hosts. Pinned channels keep their selected version, and official outage notices apply only to official channels. Existing Pixel installations continue loading the fork.
-
-## v100.10.45
-
-### Performance
-
-- **Less lag with lyrics open**
-  Reduced the rendering work that lyrics add when adjusting Spotify's volume and interacting with the player.
-
-- **Smoother fullscreen volume dragging**
-  Fullscreen and Cinema View volume sliders respond more smoothly, keep controls steady during dragging, and apply the final selected volume when released.
-
-### Cinema and Picture-in-Picture
-
-- **Lyrics stay visible when Spotify is hidden**
-  Fixed lyrics disappearing from the Cinema Lyrics Window or Picture-in-Picture when the main Spotify window is hidden or minimized.
-
-### Cover art
-
-- **Better artwork fallback**
-  Tracks with missing image sizes or labels now use available track, album, or podcast artwork instead of unnecessarily showing a placeholder.
-
-## v100.10.44
-
-### Upstream
-
-- **Updated to upstream 6.3.20**
-  Includes the latest upstream lyric handling, cache, and display changes.
-
-### Cinema Lyrics Window
-
-- **More reliable popout opening and closing**
-  Closing the Cinema Lyrics Window while it is opening now cancels the pending setup. Switching to the main lyrics page or Picture-in-Picture transfers the view cleanly. A temporary rendering error no longer stops lyric updates.
-
-- **Cover art no longer animates over itself**
-  Opening Cinema no longer crossfades a track's cover art into the same image. Normal cover transitions still play when the track artwork changes.
-
-### Lyrics and animation
-
-- **Romanized-only lyrics remain visible**
-  Lyrics that contain only a romanized form are kept and displayed instead of being removed as empty lines.
-
-- **Gravity mode mounts after lyrics render**
-  Space Gravity now waits for the lyric view to mount before taking over its layout.
-
-### Animator presets
-
-- **Preset sharing and clipboard actions fixed**
-  Saved animator presets copy, import, and share without dropping their settings.
-
-### Settings
-
-- **Browser profile option**
-  Add a browser profile in advanced settings and open community profiles with it.
-
-## v100.10.43
-
-### Reliability
-
-- **Updated to upstream 6.3.15**
-  Lyrics fall back to timestamped player state when Spotify's local position source stalls, return after fresh local updates, and retain that source choice through playback pauses. Lyrics requests retry once with a fresh Spotify access token after a rejected token.
-
-- **API recovery tuning**
-  The request breaker starts its recovery ladder at 30 seconds.
-
-### Update popup
-
-- **Patch notes after an update**
-  The update popup now loads every patch-note entry between the installed and previous versions, with a scrollable reading area for larger updates.
-
-- **Pixel Edition walkthrough**
-  Updates from outside the 100.10 release series include a link to the Pixel Edition feature walkthrough.
-
-### Settings
-
-- **Settings sections reorganized**
-  Appearance, Effects, Sources, and Advanced settings now appear in clearer sections with search and keyboard navigation. The panel has a pinned footer, tighter sizing, and a wider source manager.
-
-- **Hide settings controls refined**
-  Hidden settings filter correctly, protected controls stay available, and visual experiments can be hidden from the main panel.
-
-### Lyric animation
-
-- **Animator presets**
-  Choose Default, Pixel, or Custom behavior. Custom presets can be edited, saved, loaded, shared, and imported. Default matches upstream animation behavior while Pixel keeps Spicy Lyrics behavior.
-
-- **Smoother lyric transitions**
-  Lyrics position before they reveal. Lines ending at the same time now finish their animation instead of leaving one line raised. The existing low-frame-rate flash protection remains in place.
-
-- **Comma spacing**
-  Lyric commas now keep correct spacing, including Unicode punctuation.
-
-### Lyrics view
-
-- **Refined view controls**
-  Fullscreen controls have updated glass styling, wrapping, hover behavior, opacity, positioning, and rounded edges.
-
-- **Credit reveals fixed**
-  Community credit details load asynchronously and fade in place. Pinned provider and writer credits remain visible correctly.
-
-- **Other fixes**
-  The local TTML database back button now returns correctly. Source credits distinguish automatic splitting from provider-supplied timing.
-
-## v100.10.42
-
-### Reliability
-
-- **Recover from damaged settings and cache data**
-  Invalid settings, interface state, and cache records no longer block startup or lyric fetching. Valid stored fields remain intact when missing or incompatible fields are repaired.
-
-- **Keep animation loops alive**
-  Interval-driven UI no longer creates duplicate loops after a restart. A callback failure no longer freezes later updates.
-
-- **Prevent stale lyrics after database changes**
-  Deleting local TTML while changing tracks no longer applies results to the wrong song. Old database errors also clear when the track list becomes empty.
-
-### Artwork
-
-- **Prevent stale cover art**
-  Rapid track changes no longer allow an older artwork request to replace the current cover. Repeated loads share pending requests, expired entries refresh correctly, and failed blob conversions fall back to the original image URL.
-
-### Playback controls
-
-- **Fix interrupted volume drags**
-  Fullscreen and Cinema volume controls now release correctly after pointer cancellation, touch cancellation, window blur, or teardown. Right-clicks and horizontal-only wheel input no longer change volume.
-
-- **Fix interrupted and duplicate seeks**
-  Timeline drags now release their control lock after cancellation or blur, stop when the track changes, and avoid sending the same seek twice. Invalid timing and zero-width timelines are ignored.
-
-## v100.10.41
-
-- **Pinned Lyrics Footer**
-  Appearance now has Off, No Writers, and Full modes. No Writers pins source and community credits while writers scroll at lyric end.
-
-- **Experimental splitting labels**
-  Lyrics sources now show compact `(+ extra splits)` and `(+ experimental splitting)` labels.
-
-- **Space Gravity active-line control**
-  Fixed the active-line arrow remaining visible after leaving Space Gravity mode.
-
-- **Playback progress fallback**
-  Playback progress now falls back to player state when local position updates stall.
-
-## v100.10.40
-
-- **In-app community profiles**
-  Contributor profiles now open directly inside Spotify instead of sending you to a browser. Fallback to browser if it fails to fetch the profile.
-
-- **Build Channel controls redesigned**
-  The Advanced settings section now places Build Channel at the top, with an inline branch dropdown and a Manage button.
-
-- **Branch manager**
-  Manage Branches now lists Stable, Beta, and all saved custom branches in one place. You can switch branches directly, see the active branch as Selected, add new branches, and remove custom branches.
-
-- **Protected built-in branches**
-  Stable and Beta remain available in the manager but cannot be removed.
-
-- **Stable-plugin support**
-  The entrypoint adds the same channel selector and branch manager to the upstream Stable plugin settings, without modifying the upstream plugin.
-
-- **Safer Musixmatch fallback**
-  Musixmatch results are rejected when they belong to the wrong track, preventing mismatched lyrics from appearing.
-
-- **Lyric timing restored**
-  Restored upstream lyric timing behavior.
-
-- **Custom font improvements**
-  Added a webfont source option and disabled synthetic font styling for more faithful custom-font rendering.
-
-## v100.10.39
-
-- **Updated to be inline with 6.3.12 to follow API changes**
-
-- Add settings hiding, with a manager, restore controls, live edits, and search access.
-
-- Remove the nonfunctional Timeline Outside Media Box option.
-
-- Fixed brief white flash on next active lyric line during low frame rates.
-
-- **Unique Word Filters**
-  Added `Gibberish`, `all lowercase`, `ALL UPPERCASE`, and `Off`.
-
-- **Settings layout**
-  Moved Space Gravity and Unique Word Filters to top of Lyrics Display. Dropdowns now size left for longer options.
-
-<details>
-<summary>v100.10.38</summary>
-
-### v100.10.38
-
-- Updated to be inline with 6.3.10
-
-- **Split gibberish words**
-  Space Gravity now separates gibberish lyrics into individual words.
+After Spotify reloads, open lyrics with the microphone button. [Spicetify's extension guide](https://spicetify.app/docs/customization/extensions) covers its manual installation process.
 
 </details>
 
-<details>
-<summary>v100.10.37</summary>
+## Uninstall
 
-### v100.10.37
+### Windows · PowerShell
 
-- **Space Gravity Mode**
-  Refined word physics, pacing, rotation, density, cover-art avoidance, control clearance, lyric seeking, credits, and overlapping-line highlighting.
+```powershell
+& ([scriptblock]::Create((irm 'https://raw.githubusercontent.com/iPixelGalaxy/lyssna-lyrics/dev/scripts/lyssna-lyrics.ps1'))) -Action uninstall
+```
 
-- **Better word handling**
-  Space Gravity now preserves generated-word, CJK, and TTML word boundaries. Fixed missing characters and romanization alignment.
+### macOS / Linux · Terminal
 
-- **DJ cover colours**
-  Now Playing and fullscreen lyrics use DJ cover-art colours without canvas rendering. Fixed DJ release-year display.
+```sh
+sh -c 'lyssna_script=$(curl -fsSL https://raw.githubusercontent.com/iPixelGalaxy/lyssna-lyrics/dev/scripts/lyssna-lyrics.sh) && sh -c "$lyssna_script" -- uninstall'
+```
 
-- **Cinema and popup fixes**
-  Cinema settings now close correctly. Stale popup buttons no longer remain after startup.
+This disables the Lyssna and old Pixel entries, reapplies Spicetify, and removes their launcher files. **Your saved lyric preferences are kept**, including settings shared with Spicy Lyrics.
 
-</details>
+## Switching from Pixel Edition or Spicy Lyrics
 
-<details>
-<summary>v100.10.36</summary>
+The new installer handles the old Pixel extension entry. Lyssna's settings keep compatible preferences shared with Spicy Lyrics, while its own options and update history stay separate.
 
-### v100.10.36
+In **Settings → Advanced → Build Channel**, **Lyssna** is the default. **Spicy Lyrics** loads the official plugin. You can also manage custom branches or pin a version. The entrypoint and the in-plugin picker use the same channel selection.
 
-- **Space Gravity Mode**
-  Improved word visibility, duet colours, instrumental endings, credits, cover avoidance, and switching mode without rebuilding lyrics.
-  Line and static lyrics now use temporary word sync when Gravity needs it.
+Community and Apple Music lyrics use the public Spicy Lyrics developer API. Other available sources include Musixmatch, Spotify, LRCLIB, and NetEase. Source availability varies by track; manage their order in **Settings → Sources**. The fork's private plugin API integration has been removed.
 
-- **Instrumental dots**
-  Restored smooth full dot animation and fade-out.
+## Want a break from the lag?
 
-- **Lyric seek lead-in removed**
-  Clicking lyrics now seeks at their exact timing point again.
+**[Download Lyssna Standalone for Windows](https://clypdat.xyz/lyssna.exe)**, or visit [Arashii's Lyssna project](https://github.com/Stormanzanii/Lyssna).
 
-- **Pinned credits**
-  Improved final-lyric clearance and fade behavior.
+If you're staying in Spotify, try **Limit Animation Frame Rate** in Appearance and turn off effects you don't use.
 
-- **Cinema**
-  Cinema pop-out now disabled by default.
+## Bugs, ideas, and updates
 
-- **Scrollbar**
-  Fixed hover visibility.
+**[Join the Lyssna Discord](https://discord.gg/qfYAsFQawp)** for fork updates and support.
 
-</details>
+For a bug report, open **Settings → Report a bug** and copy the diagnostics. Post them in **#extension-bugs**, along with what happened, how to reproduce it, and a screenshot when it helps. The report includes the versions, lyric source, and settings that help us investigate.
 
-<details>
-<summary>v100.10.35</summary>
+You can also [open a GitHub issue](https://github.com/iPixelGalaxy/lyssna-lyrics/issues). Please include the song and the affected view when reporting a lyrics problem.
 
-### v100.10.35
+## Credits
 
-- **Space Gravity Mode**
-  An Appearance option lets synced lyric words drift freely from their normal line positions. It supports instrumental dots, background vocals, duet colouring, cover-art avoidance, and persistent credits.
+- **[Spicy Lyrics](https://github.com/Spikerko/spicy-lyrics)** by Spikerko and its contributors, for the plugin and lyric renderer this fork is built on.
+- **[Lyssna](https://github.com/Stormanzanii/Lyssna) · Arashii**, for the name, microphone icon, settings and toolbar designs, used with permission.
+- **[iPixelGalaxy](https://github.com/iPixelGalaxy)**, for maintaining this fork.
 
-- **Experimental Apple Music word sync**
-  Apple Music lyrics can split combined words and hyphenated phrases into timed words. Bracketed backing vocals are recognised as background vocals, and credits note when word splitting helped.
+## License and history
 
-- **Pinned lyric credits**
-  Experiments can keep credits and source information visible while scrolling, with enough room to reach final lyrics.
+See [LICENSE](LICENSE) for the GNU Affero General Public License, version 3, and [the icon license](src/assets/LUCIDE_LICENSE.txt) for the microphone artwork.
 
-- **Lyric click lead-in**
-  Clicking a lyric now seeks 400ms before its timing point for a smoother handoff.
-
-- **Added Extra Glow On Active Line**
-  Added Extra Glow if hovering over active line
-
-</details>
-
-<details>
-<summary>v100.10.34</summary>
-
-### v100.10.34
-
-- **Stable playback timeline**
-  Fullscreen playback progress stays on Spotify's live clock when Playback Offset changes.
-
-- **Local TTML spaces**
-  Locally uploaded TTML keeps word boundaries from spaces inside timed spans, including word-synced lyrics.
-
-- **Experimental SliderBar wording**
-  The experimental progress-bar setting now uses the upstream SliderBar name and description.
-
-</details>
-
-<details>
-<summary>v100.10.33</summary>
-
-### v100.10.33
-
-- **Updated for 6.3.0**
-  Synced the fork with upstream 6.3.0 changes while retaining the fork's fullscreen volume placement options.
-
-- **Fullscreen volume controls**
-  Volume sliders now use the upstream volume icon inside a glass-style bar. Left, right, and below placements brighten on mouse activity, expand while hovered or dragged, and use matching thickness.
-
-- **Rounded playback progress**
-  The played portion of the fullscreen timeline now has rounded ends instead of a flat progress edge.
-
-- **Experimental settings**
-  Cinema Lyrics Window and Experimental Word Sync moved to Experiments. The Cinema setting now enables its playback-bar button directly and includes the DevTools help link. Popup Lyrics settings now describe their playback-bar button behavior.
-
-</details>
-
-<details>
-<summary>v100.10.31</summary>
-
-### v100.10.31
-
-- **Configurable lyrics-view cache button**
-  Advanced settings can now show a cache button in lyrics controls. Choose whether it clears current-song caches, current state, or stored cache.
-
-- **Tighter settings dropdowns**
-  Settings dropdowns now resize to the selected option instead of reserving space for their longest option.
-
-- **Faster multi-source lyric loading**
-  Enabled lyric sources now start together while configured priority and Apple Music quality rules still choose the result.
-
-- **Scroll to active lyric control**
-  When the active lyric leaves the viewport, a directional button can bring it back into view. Enabled by default and configurable in settings.
-
-- **Lyric-shaped loading preview**
-  Lyrics now show a shimmer preview shaped from the first available lyric source while the final result is selected.
-
-- **Stable lyric updates**
-  Reloading lyrics or changing romanization keeps the current reading position instead of briefly jumping to the top. Lines ending at the same time no longer leave one line raised.
-
-- **Local TTML romanization parsing**
-  Locally uploaded TTML now reads nested romanization data.
-
-- **Smoother lyric loading handoff**
-  Loading previews now clear cleanly before the finished lyric view appears.
-
-</details>
-
-<details>
-<summary>v100.10.30</summary>
-
-### v100.10.30
-
-- **NPV lyrics reopen stability**
-  Collapsing and reopening the Now Playing View lyrics card now keeps the loaded lyrics ready instead of rebuilding the renderer.
-
-- **Local TTML romanizations**
-  Romanizations included in locally uploaded TTML files are available in the lyrics renderer.
-
----
-
-</details>
-
-<details>
-<summary>v100.10.29</summary>
-
-### v100.10.29
-
-- Updated to be in line with Spicy Lyrics 6.2.3.
-
----
-
-</details>
-
-<details>
-<summary>v100.10.28</summary>
-
-### v100.10.28
-
-- Updated to be in line with Spicy Lyrics 6.1.1.
-
----
-
-</details>
-
-<details>
-<summary>v100.10.27</summary>
-
-### v100.10.27
-
-- **External Cinema Lyrics window**
-  Added a new playbar button that opens Spicy Lyrics in a separate cinema-mode window. You can move it to another display or fullscreen it while keeping the main Spotify window interactable.
-
----
-
-</details>
-
-<details>
-<summary>v100.10.26</summary>
-
-### v100.10.26
-
-- The new starting point, all older changes merged into one easy to read list at the bottom.
-
----
-
-</details>
-
-<details>
-<summary>Major Features</summary>
-
-## Features
-
-- **Persistent / temporary / session TTML load modes reworked to require less clicks**  
-  The Load TTML modal now supports the following options for one click loads:
-  - **Persistent Load**: saves to the local TTML database.
-  - **Temporary Load**: applies to the current song until refresh.
-  - **Session Load**: applies to the current track until Spotify restarts.
-  - **Load TTML modal is more direct**
-  The upload flow now clearly exposes Guide, Reset TTML, TTML Database, and the three upload modes.
-
-- **Iframe profile modal**  
-  Community maker/uploader profiles can open in an in-app iframe modal instead of always opening externally.
-
-- **Experimental word sync**  
-  Added an **Experimental Word Sync** setting that can convert line-synced or static lyrics into generated word-by-word sync using timing distribution and Spotify audio analysis where available.
-
-- **Custom font setting**  
-  Added **Use Custom Font** and **Font Name** controls. Empty font names now fall back cleanly to the bundled/Spotify-style font path instead of leaving the renderer in a broken custom-font state.
-
-- **Configurable lyrics source priority**  
-  Added a full **Manage Sources** flow for choosing the lyric provider order and disabling individual sources. The default order is now **Spicy Lyrics → Musixmatch → Apple Music → Spotify → LRCLIB → Netease**, with LRCLIB and Netease disabled by default.
-
-- **Additional lyrics providers**  
-  Added external source support for **Musixmatch**, **Apple Music**, **Spotify**, **LRCLIB**, and **Netease**, alongside the Spicy Lyrics API. Provider results are normalized into the existing lyrics formats and tagged with source metadata.
-
-- **Source-specific settings**  
-  Added expandable source settings inside Manage Sources:
-  - **Musixmatch Token** field with a **Refresh** button.
-  - **Ignore Musixmatch Word Sync** toggle.
-  - **Prioritize Apple Music Quality** toggle.
-
-- **Gibberish lyrics mode**  
-  Added **Gibberish Lyrics Mode**, including a large word transformation dictionary and support for applying transformed text through static, line, and syllable lyrics.
-</details>
-
-<details>
-<summary>Customization / Small Features</summary>
-
-## Customization / Small Features
-
-- **Lyrics hover pill toggle**  
-  Added a setting to show a pill-style background when hovering lyrics.
-
-- **Fullscreen close animation toggle**  
-  Added an option to animate closing fullscreen instead of always closing instantly.
-
-- **Release year display**  
-  Added a **Release Year Position** setting to show album release year near NowBar metadata.
-
-- **Always-show fullscreen controls/time**  
-  Added **Always Show In Fullscreen** options so time, controls, or both can stay visible in fullscreen/cinema layouts.
-
-- **Cover art animation toggle**  
-  Added a setting to enable or disable NowBar cover art transitions.
-
-- **Fullscreen volume slider**  
-  Added a fullscreen/cinema volume slider with placement options: **Off**, **Left**, **Right**, and **Below**.
-
-- **Background mode selector**  
-  Added a unified **Background Type** setting with **Default**, **Legacy**, **Auto**, **Artist Header**, **Cover Art**, and **Color** modes.
-
-- **Escape key behavior setting**  
-  Added configurable Escape behavior: **Default**, **Exit Fullscreen**, or **Exit Fully**.
-
-- **Lyrics source credit display**  
-  Lyrics now display clearer provider/source information, including Spicy Lyrics, Spotify, Apple Music, Musixmatch, LRCLIB, Netease, and Local DB labels.
-
-- **Right-align lyrics toggle**  
-  Added a setting that flips/opposes lyric alignment for duet-style layouts.
-
-- **Musixmatch token refresh**  
-  Added automatic/manual Musixmatch token refresh support. If no user token is stored, Spicy Lyrics can refresh and persist a usable token.
-
-- **Apple Music quality preference**  
-  Added quality scoring so Apple Music can be preferred when it has equal or better timing quality. Apple Music only wins equal-quality ties when the lyrics contain real line-ending pauses.
-
-- **v2.0 entrypoint**  
-  Added `builds/v2.0/entrypoint.mjs`, which can fetch versions from a selected channel, load the matching remote bundle, expose channel settings, and support fixed-version custom channels.
-
-</details>
-
-<details>
-<summary>Bug Fixes</summary>
-
-## Bug Fixes
-
-- **Fixed settings-owned modals lingering across navigation**  
-  Settings, Build Channel, Manage Sources, and settings-owned TTML Database modals close when navigating away from relevant Spicy Lyrics routes.
-
-- **Romanization compatibility improvements**  
-  Added normalization for legacy romanization fields so older `RomanizedText` / `IncludesRomanization` payloads still populate the newer transliteration fields.
-
-- **Fixed default dynamic background staying grey on local tracks**  
-  Default mode now handles `spotify:localfileimage:` URLs explicitly by loading the image without Kawarp's forced cross-origin path and passing the loaded image element into Kawarp.
-
-- **Fixed local art timing race**  
-  The NowBar now emits a cover-art-ready event after resolving the real display image. Dynamic backgrounds reapply for local tracks when that event fires, so the background does not get stuck on an early placeholder/empty state.
-
-- **Fixed metadata marquee measurement**
-  NowBar song/artist marquee behavior now uses resize observation and actual scroll widths to avoid unnecessary marquee or clipped metadata.
-
-- **Fixed popup/PiP button visibility sync**  
-  The popup lyrics setting now registers/deregisters the Spicy popup button and toggles Spotify's PiP button consistently.
-
-- **Fixed musical/interlude line seek behavior**  
-  Instrumental/dot-line style lyrics are handled more carefully so they do not behave like normal seekable vocal lines.
-
-</details>
-
-<details>
-<summary>Quality of Life</summary>
-
-## Quality of Life
-
-- **Fixed auto-scroll jumping upward for background vocals**  
-  If a background vocal above the current foreground line remains active, the renderer no longer scrolls upward automatically and creates a jarring jump.
-
-- **Fixed renderer word activation feeling delayed**  
-  Word activation now leads playback timing slightly and uses retuned spring values for a more responsive but still smooth feel.
-
-- **Local FLAC detection**  
-  Added local FLAC detection based on metadata/file signatures so local FLAC behavior can be handled differently where Spotify's local playback behavior is unreliable.
-
-- **TTML profile / community credit improvements**  
-  Lyrics can show richer community metadata, maker/uploader profile links, source labels, and experimental word-sync notices.
-
-- **Client-side TTML parsing**  
-  Added a client-side TTML parser so uploaded TTML files can be parsed in Spotify without needing to send them through the server first.
-
-- **Settings panel redesign and regrouping**  
-  Settings are now grouped into **Appearance**, **Lyrics Display**, **Interface**, and **Advanced**, with search and section filtering.
-
-- **TTML database access from settings**  
-  Added **Browse TTML Database** to the Advanced settings section, including modal navigation from settings into the database and back again.
-
-- **Back navigation for settings-owned modals**  
-  Manage Sources and Browse TTML Database can return to the settings modal while preserving the previous scroll position, which matters because these entries live near the bottom of the settings panel.
-
-- **Settings search covers new source/provider names**  
-  Search can find Manage Sources and individual provider labels/descriptions.
-
-- **Advanced settings are less cluttered**  
-  Cache actions, Manage Sources, Browse TTML Database, Build Channel, and Developer Mode are grouped together.
-
-- **Background and cache sections were folded into better groups**  
-  The old separate Background and Cache sections were removed in favor of the consolidated Appearance and Advanced sections.
-
-- **TTML database navigation feels modal-native**  
-  Switching between Load TTML, TTML Database, and Settings uses modal transitions instead of closing/reopening the entire overlay.
-
-- **Experimental word sync warns users**  
-  Generated word sync displays a notice explaining that line/static lyrics were automatically converted.
-
-- **Release year lookup is cached**  
-  Album release years are cached in the NowBar so repeated metadata renders do not keep hitting the lookup path.
-
-- **Fullscreen media controls respect compact/PiP constraints**  
-  Timeline, playback controls, and volume slider placement now avoid layouts where those controls do not fit.
-
-</details>
-
-<details>
-<summary>More random notes of nerds</summary>
-
-## Random Notes for Devs (idk what I'm doing but this is stuff that happen)
-
-- **New release build wrapper**  
-  `package.json` now routes `build` and `build:release` through `node project/build.mjs`, while `build:creator` keeps the raw Spicetify Creator build.
-
-- **Versioned build output script**  
-  Added `project/build.mjs`, which accepts `--version`, injects `SPICY_LYRICS_BUILD_VERSION`, copies the versioned bundle, and writes a `version` file.
-
-- **Spicetify Creator version injection**  
-  `spice.config.ts` now reads `process.env.SPICY_LYRICS_BUILD_VERSION` before falling back to `ProjectVersion`.
-
-- **Entrypoint moved to v2.0**  
-  `builds/spicy-lyrics.mjs` now imports `builds/v2.0/entrypoint.mjs`.
-
-- **Added extension metadata file**  
-  Added `src/settings.json` with extension name, id, and description metadata.
-
-- **Centralized persisted settings atoms**  
-  Added/expanded nanostore-backed settings in `src/utils/stores.ts`, including migration for old key names like `skip-spicy-font` and `show_npv_dynamic_bg`.
-
-- **Added storage compatibility wrapper**  
-  Added `src/utils/storage.ts` to bridge older `SpicyLyrics-*` storage calls into the new nanostore-backed settings where needed.
-
-- **Defaults are now bound live to stores**  
-  `app.tsx` binds settings stores into `Defaults`, allowing many settings to apply immediately without reload.
-
-- **Legacy static background compatibility writes**  
-  Fork background settings are mirrored into old `SpicyLyrics-staticBackground` keys so switching back to official/stable builds behaves predictably.
-
-- **Removed old update checker module**  
-  `src/utils/version/CheckForUpdates.tsx` was removed. Version notification now happens through the startup version comparison/update dialog flow.
-
-- **Modal component gained transition support**  
-  `PopupModal` now supports content transitions, modal ids, header-left content, custom close handlers, and restoring scroll positions.
-
-- **Modal ids enable targeted styling/navigation behavior**  
-  Settings, Build Channel, Lyrics Sources Manager, and settings-owned TTML Database modals now get dedicated modal classes.
-
-- **Build Channel opener utility**  
-  Added `openBuildChannelPanel.tsx` to mount the Build Channel panel in the shared modal system.
-
-- **Lyrics Sources opener utility**  
-  Added `openLyricsSourcesManager.tsx` to mount Manage Sources with a settings-aware back button.
-
-- **TTML Database opener utility expanded**  
-  `openLyricsDBPanel.tsx` now handles settings-aware open/back behavior and scroll restoration.
-
-- **Lyrics source preference helpers**  
-  Added `LyricsSourcePreferences.ts` for provider definitions, source order normalization, disabled-source normalization, and label resolution.
-
-- **Lyrics source cache versioning**  
-  Added a source cache version/signature to avoid reusing provider caches across incompatible source-setting changes.
-
-- **In-flight lyrics fetch deduplication**  
-  `fetchLyrics` now tracks active fetch promises by song key to prevent duplicate fetches from racing each other.
-
-- **Song-key helper for local tracks**  
-  Added `getSongKey()` so local tracks can use the full local URI as their stable id instead of incorrectly using `uri.split(":")[2]`.
-
-- **Session TTML store**  
-  Added `SessionTTMLStore` for session-only TTML loads.
-
-- **Shared lyrics presentation helper**  
-  `fetchLyrics` now uses a common presentation path for cached, session, local database, and freshly fetched lyrics.
-
-- **Client TTML parser implementation**  
-  Added `src/utils/Lyrics/ParseTTML.ts`, with timestamp parsing, iTunes metadata parsing, translations/transliterations, songwriter metadata, background vocals, and syllable extraction.
-
-- **TTML manager parser updates**  
-  Existing manager TTML parser now routes through the newer parsing behavior.
-
-- **Experimental word sync implementation**  
-  Added `src/utils/Lyrics/ExperimentalWordSync.ts` with timing distribution, bracket/background-vocal parsing, static lyric timing generation, and audio-analysis support.
-
-- **Gibberish transform implementation**  
-  Added `src/utils/Lyrics/GibberishTransform.ts`, including dictionary and phonetic fallback logic.
-
-- **Lyrics apply path now guards against stale URI application**  
-  `ShouldApplyLyricsForUri` and `ApplyLyricsIfCurrent` protect against async responses applying to the wrong current track.
-
-- **Lyrics apply path can mutate alignment**  
-  Right-align mode flips `OppositeAligned` values before rendering.
-
-- **Syllable rendering now supports generated/gibberish fields**  
-  Syllable apply logic understands `GibberishText`, `experimentalWordSync`, source fields, and optional word joining/reduction helpers.
-
-- **Static and line renderers support extra metadata**  
-  Static/line apply paths were updated for source info, gibberish text, experimental sync notices, and user-uploaded metadata.
-
-- **Lyrics virtualizer adjustments**  
-  Virtualizer behavior was adjusted to work with the updated renderer/apply flows.
-
-- **Audio analysis cache pruning**  
-  Dynamic background/audio analysis code now prunes cache entries for inactive tracks and avoids stale async speed updates.
-
-- **Dynamic background loader wrapper**  
-  Added a `loadKawarpCover` helper that selects the correct Kawarp loading path for normal web images, `blob:`/`data:image`, and `spotify:localfileimage:` images.
-
-- **Kawarp map cleanup improvements**  
-  Dynamic background disposal/removal now removes stale Kawarp instances when switching modes or reapplying backgrounds.
-
-- **Blob URL cache normalization**  
-  `BlobURLMaker` caches by normalized URL and avoids trying to fetch non-image Spotify URI schemes.
-
-- **Fullscreen volume slider utility**  
-  Added `src/components/Utils/VolumeSlider.ts` for reusable slider setup/cleanup.
-
-- **Fullscreen exported refresh hooks**  
-  Fullscreen now exports refresh helpers so settings changes can immediately update controls/volume layout.
-
-- **NowBar component lifecycle cleanup**  
-  NowBar now tracks active playback controls, timeline, heart state, release-year cache, and marquee observers more explicitly.
-
-- **NowBar cover-art event**  
-  NowBar emits `nowbar:cover-art` after resolving cover art so other systems can react after artwork is ready.
-
-- **Session/navigation behavior expanded**  
-  Session/PageView/app navigation logic was updated to support Escape behavior, settings-owned modal close behavior, and correct Spicy Lyrics route state.
-
-- **Data migration touched for new settings shape**  
-  Migration code was updated to account for the new settings/store layout.
-
-- **Edited settings package integration**  
-  The edited `spcr-settings` section component was adjusted for the redesigned settings entry.
-
-- **CSS updates for the redesigned UI**  
-  `ContentBox.css`, `settings-panel.css`, dynamic background CSS, lyrics CSS, and default CSS were expanded for the new modals, settings cards, source stacks, fullscreen controls, volume slider, cover transitions, and background modes.
-
-- **Removed obsolete settings sections**  
-  Deleted `BackgroundSection.tsx` and `CacheSection.tsx` after moving those controls into consolidated sections.
-
-- **Lockfile/package updates**  
-  `bun.lock` and `package.json` changed to reflect the updated build scripts/dependency state.
-
-</details>
+[Patch notes](.change-notes/PATCH_NOTES.md) · [Feature notes](.change-notes/FEATURE_CHANGES.md) · **[Archived README and release history](README.archive.md)**
