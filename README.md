@@ -135,6 +135,9 @@ You can also [open a GitHub issue](https://github.com/iPixelGalaxy/lyssna-lyrics
 - **Easier installation**
   Added Windows, macOS and Linux install and uninstall scripts, a downloadable Lyssna launcher, and a rewritten README with the original archived.
 
+- **Smoother lyric controls**
+  Reduced stutter when moving across lyric controls and showing tooltips. Lyric fades stay steady between buttons.
+
 ## Credits
 
 - **[Spicy Lyrics](https://github.com/Spikerko/spicy-lyrics)** by Spikerko and its contributors, for the plugin and lyric renderer this fork is built on.

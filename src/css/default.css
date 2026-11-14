@@ -211,7 +211,7 @@ body.player-floating:has(.glassify-bg) #LyssnaLyricsPage:not(.Fullscreen) .ViewC
   scale: 0.94;
 }
 
-#LyssnaLyricsPage:where(:not(.Exp_GroupedViewControls)) .ViewControls:has(.ViewControl:hover) > .ViewControl:not(:hover) {
+#LyssnaLyricsPage:where(:not(.Exp_GroupedViewControls)) .ViewControls:hover > .ViewControl:not(:hover) {
   opacity: 0.78;
 }
 

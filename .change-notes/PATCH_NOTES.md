@@ -24,6 +24,9 @@
 - **Easier installation**
   Added Windows, macOS and Linux install and uninstall scripts, a downloadable Lyssna launcher, and a rewritten README with the original archived.
 
+- **Smoother lyric controls**
+  Reduced stutter when moving across lyric controls and showing tooltips. Lyric fades stay steady between buttons.
+
 ## v100.10.54
 
 - **Updated to be inline with 6.4.70**
