@@ -12,17 +12,17 @@ import CreditsSection from "./CreditsSection.tsx";
 import { BugReportPane } from "./BugReportSection.tsx";
 import { ReviewerPane } from "./ReviewerSection.tsx";
 import { SearchBar, ShowHiddenSettingsInSearchContext } from "./components.tsx";
-import { AdvancedIcon, AppearanceIcon, ExperimentsIcon, InterfaceIcon, LyricsIcon, SourcesIcon } from "./icons.tsx";
+import { LyssnaSettingsIcons as SettingsIcons } from "./LyssnaSettingsIcons.tsx";
 import DiscordCreditsSettings from "./DiscordCreditsSettings.tsx";
 import { PopupModal } from "../../Modal.ts";
 
 const TABS = [
-  ["Appearance", "Appearance", AppearanceIcon],
-  ["Lyrics", "Lyrics Display", LyricsIcon],
-  ["Effects", "Effects", ExperimentsIcon],
-  ["Layout", "Interface", InterfaceIcon],
-  ["Sources", "Sources", SourcesIcon],
-  ["Advanced", "Advanced", AdvancedIcon],
+  ["Appearance", "Appearance", SettingsIcons.Appearance],
+  ["Lyrics", "Lyrics Display", SettingsIcons.Lyrics],
+  ["Effects", "Effects", SettingsIcons.Effects],
+  ["Layout", "Interface", SettingsIcons.Layout],
+  ["Sources", "Sources", SettingsIcons.Sources],
+  ["Advanced", "Advanced", SettingsIcons.Advanced],
 ] as const;
 const UTILITY_TABS = [["Report a bug", "Got a Bug?"], ["TTML Reviewer", "TTML Reviewer"], ["Credits", "Credits"]] as const;
 
@@ -80,7 +80,7 @@ export default function SettingsPanel({ onOpenHiddenSettings, onManageAnimator, 
     <div className="slm sl-sp-panel sl-sp-panel--settings">
       <div className="sl-sp-settings-header">
         <div className="ll-settings-heading">
-          <h2><span aria-hidden="true">{AdvancedIcon}</span>Lyssna Lyrics settings</h2>
+          <h2><span aria-hidden="true">{SettingsIcons.General}</span>Lyssna Lyrics settings</h2>
           <SearchBar value={query} onChange={(value) => {
             setQuery(value);
             if (scrollRef.current) scrollRef.current.scrollTop = 0;
@@ -103,10 +103,7 @@ export default function SettingsPanel({ onOpenHiddenSettings, onManageAnimator, 
           onKeyDown={(event) => onTabKeyDown(event, index)}
         ><span className="sl-sp-tab-icon" aria-hidden="true">{icon}</span>{label}</button>)}
         </div>
-        <div className="ll-settings-utilities" aria-label="Settings tools">
-          {UTILITY_TABS.map(([label, tab]) => <button key={tab} type="button" aria-pressed={sectionFilter === tab && !searching} onClick={() => selectTab(tab)}>{label}</button>)}
-          {allowHidingSettings && <button type="button" aria-pressed={!hideHidingIcon} onClick={() => $hideHidingIcon.set(!hideHidingIcon)}>Hide settings</button>}
-        </div>
+
       </div>
 
       <div className="sl-sp-settings-scroll" ref={scrollRef}>
@@ -128,6 +125,10 @@ export default function SettingsPanel({ onOpenHiddenSettings, onManageAnimator, 
             </ShowHiddenSettingsInSearchContext.Provider>
           </div>
           <Footer />
+          <div className="ll-settings-utilities" aria-label="Settings tools">
+            {UTILITY_TABS.map(([label, tab]) => <button key={tab} type="button" aria-pressed={sectionFilter === tab && !searching} onClick={() => selectTab(tab)}>{label}</button>)}
+            {allowHidingSettings && <button type="button" aria-pressed={!hideHidingIcon} onClick={() => $hideHidingIcon.set(!hideHidingIcon)}>Hide settings</button>}
+          </div>
         </div>
       </div>
     </div>

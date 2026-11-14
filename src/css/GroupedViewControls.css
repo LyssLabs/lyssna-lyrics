@@ -249,20 +249,12 @@
   margin: calc(-1 * var(--VCPad)) auto 0;
 }
 
-/* ── Scroll to Active, floating (ScrollToActive.css): where there is no Lyrics / Queue switch to
-   seat it in, it is a one-button capsule in the bottom corner the switch takes in Cinema View,
-   at the switch's size and inset, on the lyrics' side. The popup keeps its own placement
-   (PopupDock.css). Its placement beats the edge rules of the old button, which sit at higher
-   specificity, hence the !important. */
-#SpicyLyricsPage.Exp_GroupedViewControls .ContentBox {
-  anchor-name: --SL-ContentBox;
-}
-
+/* The frosted skin leaves placement to Lyrics/ScrollToActive.css. */
 #SpicyLyricsPage.Exp_GroupedViewControls:not(.spicy-pip-wrapper *) .ScrollToActive {
-  --STA_Size: var(--ViewSwitchSize);
+  --STA_Size: var(--ScrollToActiveSize);
   --STA_Pad: calc(var(--STA_Size) * 0.11);
-  width: calc(var(--STA_Size) + 2 * var(--STA_Pad));
-  height: calc(var(--STA_Size) + 2 * var(--STA_Pad));
+  width: var(--STA_Size);
+  height: var(--STA_Size);
   color: rgba(255, 255, 255, 0.92);
   background: rgba(255, 255, 255, 0.08);
   -webkit-backdrop-filter: blur(24px) contrast(0.6) brightness(0.8) saturate(1.8);
@@ -276,34 +268,6 @@
   transition:
     opacity 120ms var(--ease-out),
     scale 150ms var(--ease-out);
-}
-
-/* In page view, the size of the strip's buttons (5cqh, above), so the two read as one set. */
-#SpicyLyricsPage.Exp_GroupedViewControls:not(.Fullscreen, .CardMode, .spicy-pip-wrapper *) .ScrollToActive {
-  --STA_Size: 5cqh;
-}
-
-@supports (anchor-name: --a) {
-  #SpicyLyricsPage.Exp_GroupedViewControls:not(.spicy-pip-wrapper *) .ScrollToActive {
-    position-anchor: --SL-ContentBox;
-    top: auto !important;
-    right: calc(anchor(right) + var(--ViewSwitchInset)) !important;
-    bottom: calc(anchor(bottom) + var(--ViewSwitchInset)) !important;
-    left: auto !important;
-  }
-
-  /* In Cinema View the NowBar on the right puts the lyrics on the left, and the button with them. */
-  #SpicyLyricsPage.Exp_GroupedViewControls.Fullscreen.NowBarSide__Right:not(.CompactMode, .ForcedCompactMode, .spicy-pip-wrapper *) .ScrollToActive {
-    right: auto !important;
-    left: calc(anchor(left) + var(--ViewSwitchInset)) !important;
-  }
-
-  /* Above the pinned credit rows. */
-  #SpicyLyricsPage.Exp_GroupedViewControls:not(.spicy-pip-wrapper *) .LyricsContainer.HasPinnedCredits > .ScrollToActive {
-    bottom: calc(
-      anchor(bottom) + var(--SL-PinnedCreditsHeight, 0px) + 24px + var(--ViewSwitchInset)
-    ) !important;
-  }
 }
 
 #SpicyLyricsPage.Exp_GroupedViewControls:not(.spicy-pip-wrapper *) .ScrollToActive.Visible {

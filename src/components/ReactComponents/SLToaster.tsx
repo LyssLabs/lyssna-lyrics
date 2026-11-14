@@ -3,14 +3,12 @@ import { type CSSProperties, useEffect, useState } from "react";
 import { Toaster } from "sonner";
 import { $isGlobalNav } from "../../utils/uiState";
 import Logger from "../../utils/Logger";
-import { $experiment } from "../../utils/experiments.ts";
 
 const toasterLogger = new Logger("Toaster");
 
 export default function SLToaster() {
   const [nowPlayingBarHeight, setNowPlayingBarHeight] = useState(0);
   const isGlobalNav = useStore($isGlobalNav);
-  const newDesign = useStore($experiment("newSettingsDesign"));
 
   useEffect(() => {
     // Spotify 1.3.x drops the mapped class; the wrapper is still the bar's parent.
@@ -40,7 +38,6 @@ export default function SLToaster() {
 
   return (
     <Toaster
-      className={newDesign ? undefined : "sl-update-prompts--classic"}
       position="bottom-center"
       offset={{ bottom: `var(--sltoaster-bottom-padding, ${String(nowPlayingBarHeight + 16 + (isGlobalNav ? 0 : 8))}px)` }}
       theme="dark"

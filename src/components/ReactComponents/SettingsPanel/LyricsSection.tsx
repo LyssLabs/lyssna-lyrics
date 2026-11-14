@@ -24,7 +24,7 @@ import {
   $rightAlignLyrics,
   $showScrollToActiveButton,
 } from "../../../utils/stores.ts";
-import { matches, Row, SectionTitle, Slider, Toggle, Select } from "./components.tsx";
+import { matches, Row, SettingsSection, Slider, Toggle, Select } from "./components.tsx";
 import { ExperimentSettings } from "./ExperimentsPanel.tsx";
 import { $offsetScope, $songOffsets, getSongOffset, setSongOffset } from "../../../utils/songOffsets.ts";
 import { useCurrentUri } from "../LyricsManager/hooks/useCurrentUri.ts";
@@ -83,7 +83,7 @@ export default function LyricsSection({ query, sectionFilter, showHidden = false
   if (![r3, r4, r5, r8, r9, r10, seek, early, lead, smooth, skeleton, credits, joinSplit, wordSync, size, romanization, pace, unsynced].some(Boolean)) return null;
 
   return <>
-    <SectionTitle>Lyrics Display</SectionTitle>
+    <SettingsSection title="Lyrics display">
     {size && <Row label="Lyrics Size" description="Make lyrics bigger or smaller in every view." stacked><Slider value={lyricsSize} min={60} max={200} step={5} defaultValue={100} unit="%" onChange={(v) => $lyricsSize.set(v)} /></Row>}
     {romanization && <Row label="Romanization" description="Where romanization appears when enabled."><Select value={romanizationDisplay} options={["replace", "underLine"]} labels={["Replace the line", "Under each line"]} onChange={(v) => $romanizationDisplay.set(v as RomanizationDisplay)} /></Row>}
     {r3 && <Row settingId="lyrics-minimal-mode" label="Minimal Lyrics Mode" description="Hides sung lyrics lines in Fullscreen and Cinema Mode"><Toggle checked={minimalLyricsMode} onChange={(v) => $minimalLyricsMode.set(v)} /></Row>}
@@ -91,10 +91,13 @@ export default function LyricsSection({ query, sectionFilter, showHidden = false
     {r5 && <Row settingId="lyrics-scroll-active" label="Show Scroll to Active Button" description="Show an arrow when the active lyric is outside the viewport."><Toggle checked={showScrollToActiveButton} onChange={(v) => $showScrollToActiveButton.set(v)} /></Row>}
     {r8 && <Row settingId="lyrics-playback-offset" label="Playback Offset" description="Shift lyrics timing earlier or later, in milliseconds." stacked><Select value={offsetScope} options={["all", "song"]} labels={["All songs", "This song"]} onChange={(v) => $offsetScope.set(v as "all" | "song")} /><Slider value={offset} min={-5000} max={5000} step={10} defaultValue={0} unit="ms" disabled={offsetScope === "song" && !uri} onChange={(v) => { if (offsetScope === "song") { if (uri) setSongOffset(uri, v); } else $playbackOffset.set(v); }} /></Row>}
     {seek && <Row settingId="lyrics-seek-compensation" label="Seek Fade-in Compensation" description="Clicking a lyric seeks 300ms before it, so Spotify's fade-in does not cut off the start."><Toggle checked={seekFadeCompensation} onChange={(v) => $seekFadeCompensation.set(v)} /></Row>}
-    {(early || lead || smooth) && <SectionTitle>Scrolling</SectionTitle>}
+    </SettingsSection>
+    <SettingsSection title="Scrolling">
     {early && <Row settingId="lyrics-early-scroll" label="Early Scroll" description="Start scrolling to the next line before it becomes active."><Toggle checked={scrollLeadEnabled} onChange={(v) => $scrollLeadEnabled.set(v)} /></Row>}
     {lead && <Row settingId="lyrics-early-scroll-time" label="Early Scroll Time" description="How early to move to the next line." disabled={!scrollLeadEnabled} disabledReason="Enable Early Scroll to modify this setting" stacked><Slider value={scrollLeadMs} min={0} max={800} step={10} defaultValue={250} unit="ms" onChange={(v) => $scrollLeadMs.set(Math.max(0, Math.min(800, Math.round(v / 10) * 10)))} disabled={!scrollLeadEnabled} /></Row>}
     {smooth && <Row settingId="lyrics-smooth-scrolling" label="Smooth Scrolling" description="Use spring motion for scrolling and interlude transitions."><Toggle checked={smoothScrolling} onChange={(v) => $smoothScrolling.set(v)} /></Row>}
+    </SettingsSection>
+    <SettingsSection title="Lyrics behavior">
     {skeleton && <ExperimentSettings experimentIds={["lyricsSkeleton"]} showBuiltIn={false} />}
     {r9 && <Row settingId="lyrics-line-hover" label="Line Hover Background" description="Shows a highlight box behind a lyrics line when you hover over it"><Toggle checked={lineHoverBackground} onChange={(v) => $lineHoverBackground.set(v)} /></Row>}
     {r10 && <Row settingId="lyrics-wide-duet-padding" label="Wide duet line padding" description="Separate duet voices into wider columns. Disable for compact padding."><Toggle checked={duetLinePadding} onChange={(v) => $duetLinePadding.set(v)} /></Row>}
@@ -103,5 +106,6 @@ export default function LyricsSection({ query, sectionFilter, showHidden = false
     {unsynced && <Row label="Unsynced Auto-scroll" description="Scroll unsynced lyrics through the song using loudness or vocals."><Select value={staticAutoScroll} options={["off", "basic", "advanced"]} labels={["Off", "Loudness", "Vocals"]} onChange={(v) => $staticAutoScroll.set(v as StaticAutoScroll)} /></Row>}
     {wordSync && <Row settingId="lyrics-experimental-word-sync" label="Experimental Word Sync" description="Estimate word sync for line or static lyrics."><Toggle checked={experimentalWordSync} onChange={(value) => $enableExperimentalWordSync.set(value)} /></Row>}
     {credits && <Row settingId="lyrics-credits-follow-singer" label="Credits Follow the Last Singer" description="Align credits with the last duet line."><Toggle checked={creditsFollowLastLine} onChange={(v) => $creditsFollowLastLine.set(v)} /></Row>}
+    </SettingsSection>
   </>;
 }

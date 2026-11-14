@@ -40,9 +40,20 @@ The icon is the exact Lucide `Mic2` / `MicVocal` used by Lyssna's Lyrics toolbar
 
 ## Contributor identity and plugin settings
 
-Community credits show the provider's avatar when available, with a Discord Lookup avatar as a fallback. The default-on **Lyrics → Discord usernames in credits** preference uses the returned `user.username`; it never treats `global_name` as the username. The ID `622852916092469278` keeps the credited name Arashii. Failed requests preserve the supplied name, or show the string ID when no name exists. Disabling username lookup preserves avatars and the Arashii exception.
+Community credits show the provider's avatar when available, with a Discord Lookup avatar as a fallback. The default-on **Lyrics → Discord usernames in credits** preference uses the returned `user.username`. When the existing display name matches that username ignoring case, its capitalization is preserved: `ipixelgalaxy` may appear as `iPixelGalaxy`. A different display name does not replace the username. The ID `622852916092469278` keeps the credited name Arashii. Failed requests preserve the supplied name, or show the string ID when no name exists. Disabling username lookup preserves avatars and the Arashii exception.
 
 The public lookup endpoint is configurable under **Advanced → Discord lookup endpoint**. It defaults to `https://discord-lookup.lookupbotdc.workers.dev/search/`, takes no credentials, requires an exact string ID match in the response, and has a five-second timeout. Successful identities are cached for five minutes, failures for thirty seconds, and simultaneous requests for one ID share a promise. HTTP 429 pauses that endpoint, respecting a bounded `Retry-After` when available. There are no automatic retries. These preferences live only in `LL:settings`.
 
-The settings shell follows Lyssna's neutral glass design with a header search field, keyboard-accessible category tabs, an animated selection marker, and green toggles. Existing plugin settings, search, hidden-setting management, and subpanels remain available. Spotify's own settings stay in Spotify. The lyric toolbar uses Lyssna's glyphs, hover motion and state indicators with existing plugin actions, plus direct word-sync and fullscreen controls. Motion respects reduced-motion preferences. The playback-bar microphone uses a 16px box matching Spotify's neighboring icons.
+The settings shell follows Lyssna's solid neutral window with a header search field, keyboard-accessible category tabs, an animated selection marker, and green toggles. Existing plugin settings, search, hidden-setting management, and subpanels remain available. Spotify's own settings stay in Spotify. The lyric toolbar uses Lyssna's glyphs, hover motion and state indicators with existing plugin actions, plus direct word-sync and fullscreen controls. Motion respects reduced-motion preferences. The playback-bar microphone uses a 16px box matching Spotify's neighboring icons.
+
+| Before | After | Why |
+| --- | --- | --- |
+| Open rows and light labels | Bordered groups, 58px minimum rows, bold 13.5px labels | Match Lyssna's settings hierarchy and row spacing. |
+| Text-only tabs and a terminal header icon | Lyssna's Lucide category and settings icons | Match the supplied application reference. |
+| Variable modal height and text-sized selects | A maximum 840×720px window and 220×32px selects | Match the source dimensions while retaining small-window reflow. |
+| A separate update and notification theme switch | Neutral dialogs and notifications | Remove the purple theme and its controls; old fork-only keys are retired. |
+
+The scroll-to-current-line button uses the original lyrics-column anchor. The grouped-control skin no longer anchors it to the outer ContentBox, which is outside its positioning container and caused a centered fallback. A live geometry inspection confirmed the corrected anchor moves the button from the middle of the view to the lyrics' right edge without changing playback.
+
+The upstream Spring-spacing experiment had enabled a `0.6em` gap by default, compared with the original `1cqw` gap. In the inspected Spotify window that meant about 33px rather than 14px. Tight spacing is the default again; explicit opt-ins to increased spacing remain intact. Bloom spacing is unchanged.
 

@@ -72,13 +72,6 @@ export type Experiment = {
 
 export const EXPERIMENTS = [
   {
-    id: "newSettingsDesign",
-    category: "player",
-    label: "Update and Notification Design",
-    description: "Use the lavender design for update dialogs and notifications. Disable for classic neutral styling.",
-    default: true,
-  },
-  {
     id: "newProgressBarStyling",
     category: "player",
     label: "New SliderBar Styling",
@@ -153,7 +146,7 @@ export const EXPERIMENTS = [
     label: "Increased Line Spacing (Spring style only)",
     description:
       "With the Spring renderer style, lyrics lines sit further apart, spaced by the text size like Bloom (a little tighter) instead of by a sliver of the window width. Disable to bring back Spring's tighter spacing.",
-    default: true,
+    default: false,
   },
   {
     id: "refinedCredits",
@@ -229,9 +222,9 @@ export const EXPERIMENTS = [
   {
     id: "groupedViewControls",
     category: "player",
-    label: "Floating Scroll Button",
+    label: "Frosted Scroll Button",
     description:
-      "Show the scroll-to-current-line button as a frosted circle in the bottom corner. Disable to use its original position at the lyrics' edge. The Lyssna toolbar remains available in either mode.",
+      "Give the scroll-to-current-line button a frosted surface. The button stays at the lyrics' edge and points toward the current line.",
     default: true,
     pageClass: "Exp_GroupedViewControls",
   },
@@ -262,7 +255,6 @@ export function getVisibleExperiments(): ResolvedExperiment[] {
 
 // These controls already appear in their main settings sections.
 const INLINE_EXPERIMENTS: ReadonlySet<ExperimentId> = new Set([
-  "newSettingsDesign",
   "newProgressBarStyling",
   "lyricsSkeleton",
 ]);
@@ -299,10 +291,6 @@ export function $experiment(id: ExperimentId): ReadableAtom<boolean> {
   if (!store) throw new Error(`Unknown experiment "${id}"`);
   return store;
 }
-
-$experiment("newSettingsDesign").listen(() => {
-  window.dispatchEvent(new Event("spicy-lyrics:settings-design-changed"));
-});
 
 export function isExperimentEnabled(id: ExperimentId): boolean {
   return stores.get(id)?.get() ?? false;

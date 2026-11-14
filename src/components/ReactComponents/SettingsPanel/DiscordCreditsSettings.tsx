@@ -2,7 +2,7 @@ import { useEffect, useId, useState } from "react";
 import { useStore } from "@nanostores/react";
 import { $discordCreditUsernames, $discordLookupEndpoint } from "../../../utils/stores.ts";
 import { DEFAULT_DISCORD_LOOKUP_ENDPOINT, discordLookupUrl } from "../../../utils/discordLookup.ts";
-import { matches, Row, SectionTitle, Toggle } from "./components.tsx";
+import { matches, Row, SettingsSection, Toggle } from "./components.tsx";
 
 export default function DiscordCreditsSettings({ query, sectionFilter, showHidden = false }: { query: string; sectionFilter: string; showHidden?: boolean }) {
   const enabled = useStore($discordCreditUsernames);
@@ -25,7 +25,7 @@ export default function DiscordCreditsSettings({ query, sectionFilter, showHidde
     $discordLookupEndpoint.set(value);
   };
   return <>
-    {namesHit && <><SectionTitle>Contributor credits</SectionTitle><Row label="Discord usernames in credits" description="Use Discord usernames instead of display names. Arashii keeps his credited name. Uses a public, unofficial lookup service; no token required."><Toggle checked={enabled} onChange={value => $discordCreditUsernames.set(value)} /></Row></>}
-    {endpointHit && <Row label="Discord lookup endpoint" description="HTTPS base URL, before the Discord ID. Leave blank to restore the default service." stacked><div className="ll-discord-endpoint"><input aria-label="Discord lookup endpoint" type="url" value={draft} spellCheck={false} aria-invalid={!!error} aria-describedby={error ? errorId : undefined} onChange={event => setDraft(event.currentTarget.value)} onBlur={save} onKeyDown={event => { if (event.key === "Enter") { event.preventDefault(); save(); } }} />{error && <span id={errorId} role="alert">{error}</span>}</div></Row>}
+    {namesHit && <SettingsSection title="Contributor credits"><Row label="Discord usernames in credits" description="Use Discord usernames instead of display names. Matching display names keep their capitalization. Arashii keeps his credited name. Uses a public, unofficial lookup service; no token required."><Toggle checked={enabled} onChange={value => $discordCreditUsernames.set(value)} /></Row></SettingsSection>}
+    {endpointHit && <SettingsSection title="Contributor lookup"><Row label="Discord lookup endpoint" description="HTTPS base URL, before the Discord ID. Leave blank to restore the default service." stacked><div className="ll-discord-endpoint"><input aria-label="Discord lookup endpoint" type="url" value={draft} spellCheck={false} aria-invalid={!!error} aria-describedby={error ? errorId : undefined} onChange={event => setDraft(event.currentTarget.value)} onBlur={save} onKeyDown={event => { if (event.key === "Enter") { event.preventDefault(); save(); } }} />{error && <span id={errorId} role="alert">{error}</span>}</div></Row></SettingsSection>}
   </>;
 }

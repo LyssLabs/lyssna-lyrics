@@ -22,7 +22,7 @@ import {
   type MotionArtworkPriority,
 } from "../../../utils/stores.ts";
 import { $isGlobalNav } from "../../../utils/uiState.ts";
-import { matches, Row, Select, SectionTitle, Toggle } from "./components.tsx";
+import { matches, Row, Select, SettingsSection, Toggle } from "./components.tsx";
 
 const SECTION_NAME = "Interface";
 const vcPositionOptions = ["Top", "Bottom"];
@@ -67,8 +67,7 @@ export default function InterfaceSection({ query, sectionFilter, showHidden = fa
   if (!rows.some(Boolean) && !notice && !cinema && !motion) return null;
   const normalizedAlwaysShow = alwaysShowInFullscreen === "All" ? "Both" : alwaysShowInFullscreen;
 
-  return <>
-    <SectionTitle>Interface</SectionTitle>
+  return <SettingsSection title="Layout">
     {motion && <>
       <Row settingId="motionArtwork" label="Motion Artwork" description="Unavailable in Lyssna Lyrics. Your preference is kept for compatibility." disabled disabledReason="The public developer API does not provide motion artwork."><Toggle checked={motionArtwork} onChange={(v) => $motionArtwork.set(v)} /></Row>
       <Row settingId="motionArtworkPriority" label="Motion Artwork or Canvas" description="Which video plays when a song has both." disabled><Select value={motionArtworkPriority} options={["motion", "canvas"]} labels={["Motion", "Canvas"]} onChange={(v) => $motionArtworkPriority.set(v as MotionArtworkPriority)} /></Row>
@@ -103,5 +102,5 @@ export default function InterfaceSection({ query, sectionFilter, showHidden = fa
     {rows[9] && <Row settingId="interface-hide-empty-npv" label="Hide NPV Lyrics When No Lyrics Are Available" description="Remove the lyrics card when the current song has no lyrics." disabled={disableNpvLyrics} disabledReason="The NPV lyrics card is disabled"><Toggle checked={hideNpvLyricsWhenUnavailable} onChange={(v) => $hideNpvLyricsWhenUnavailable.set(v)} /></Row>}
     {rows[10] && <Row settingId="interface-open-profiles-browser" label="Open Profiles in Browser" description="Contributor profiles open in your browser. Your preference is kept for compatibility." disabled disabledReason="Embedded profiles required the private plugin API."><Toggle checked={openProfilesInBrowser} onChange={(v) => $openProfilesInBrowser.set(v)} /></Row>}
     {rows[11] && <Row settingId="interface-remove-spotify-lyrics" label="Remove Spotify's Lyrics Button" description="Hide Spotify's built-in lyrics button. The Lyssna Lyrics buttons stay visible."><Toggle checked={removeSpotifyLyricsButton} onChange={(v) => $removeSpotifyLyricsButton.set(v)} /></Row>}
-  </>;
+  </SettingsSection>;
 }

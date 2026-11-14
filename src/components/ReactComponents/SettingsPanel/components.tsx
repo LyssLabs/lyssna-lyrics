@@ -234,6 +234,13 @@ export function SectionTitle({ children }: { children: React.ReactNode }) {
   return <p className="sl-sp-section-title">{children}</p>;
 }
 
+export function SettingsSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return <section className="ll-settings-section" aria-label={title}>
+    <h3 className="sl-sp-section-title">{title}</h3>
+    <div className="ll-settings-group">{children}</div>
+  </section>;
+}
+
 export function SearchBar({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   return (
     <div className="sl-sp-search-wrap">

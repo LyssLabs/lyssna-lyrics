@@ -1,7 +1,6 @@
 import React from "react";
 import { flushSync } from "react-dom";
 import ReactDOM from "react-dom/client";
-import { $experiment } from "../../utils/experiments.ts";
 
 import { LYSSNA_MICROPHONE_PATHS } from "../../brand.ts";
 const BrandMark = () => (
@@ -50,8 +49,6 @@ export function showNotice({ title, content, primary, extraActions, secondaryLab
   const root = ReactDOM.createRoot(host);
   const previousFocus = document.activeElement;
   let closed = false;
-  const designStore = $experiment("newSettingsDesign");
-  let unsubscribeDesign: (() => void) | undefined;
   let morphAnimation: Animation | undefined;
   // Only a press that starts and ends on the backdrop dismisses, so a text selection dragged outside doesn't.
   let pressedBackdrop = false;
@@ -59,7 +56,7 @@ export function showNotice({ title, content, primary, extraActions, secondaryLab
   const close = (immediate = false) => {
     if (closed) return;
     closed = true;
-    unsubscribeDesign?.();
+    morphAnimation?.cancel();
     if (closeActive === close) closeActive = null;
     document.removeEventListener("keydown", onKeyDown, true);
     document.removeEventListener("focusin", onFocusIn);
@@ -121,9 +118,6 @@ export function showNotice({ title, content, primary, extraActions, secondaryLab
         }}
       >
         <div className={wide ? "sl-notice sl-notice--wide" : "sl-notice"} role="dialog" aria-modal="true" aria-labelledby="sl-notice-title" tabIndex={-1}>
-          <div className="sl-notice-mark">
-            <BrandMark />
-          </div>
           <div className="sl-notice-heading" style={stagger(0)}>
             <p className="sl-notice-brand">
               <BrandMark />
@@ -164,13 +158,6 @@ export function showNotice({ title, content, primary, extraActions, secondaryLab
   const overlay = host.firstElementChild as HTMLElement;
   const dialog = overlay.firstElementChild as HTMLElement;
   const primaryButton = overlay.querySelector<HTMLElement>(".sl-notice-button--primary")!;
-  const syncDesign = () => {
-    const enabled = designStore.get();
-    overlay.classList.toggle("sl-notice-overlay--classic", !enabled);
-    if (!enabled) morphAnimation?.cancel();
-  };
-  syncDesign();
-  unsubscribeDesign = designStore.listen(syncDesign);
   document.body.append(host);
   document.addEventListener("keydown", onKeyDown, true);
   document.addEventListener("focusin", onFocusIn);
@@ -184,7 +171,7 @@ export function showNotice({ title, content, primary, extraActions, secondaryLab
   overlay.getBoundingClientRect();
   overlay.classList.add("is-open");
 
-  if (origin && designStore.get() && !reducedMotion.matches) {
+  if (origin && !reducedMotion.matches) {
     const from = centerOf(dialog.getBoundingClientRect(), dialog.offsetWidth);
     const to = centerOf(origin);
     morphAnimation = dialog.animate(

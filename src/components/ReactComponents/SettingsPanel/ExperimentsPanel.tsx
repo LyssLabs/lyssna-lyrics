@@ -6,7 +6,6 @@ import { EXPERIMENT_CATEGORIES } from "../../../utils/experiments.ts";
 import { $ttmlReviewer, REVIEWER_LOCK_REASON } from "../../../utils/ttmlReviewer.ts";
 
 const experimentSettingIds: Partial<Record<ExperimentId, string>> = {
-  newSettingsDesign: "appearance-settings-design",
   newProgressBarStyling: "appearance-sliderbar-styling",
   lyricsSkeleton: "lyrics-loading-skeleton",
 };

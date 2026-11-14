@@ -68,7 +68,10 @@ export function ApplyIsByCommunity(data: any, lyricsContainer: HTMLElement): voi
     if (id && (($discordCreditUsernames.get() && !override) || !avatar)) {
       void lookupDiscordUser(id, $discordLookupEndpoint.get()).then(identity => {
         if (!identity) return;
-        if ($discordCreditUsernames.get()) username.textContent = override ?? identity.username;
+        if ($discordCreditUsernames.get()) {
+          const matchedName = existing?.trim();
+          username.textContent = override ?? (matchedName?.toLowerCase() === identity.username.toLowerCase() ? matchedName : identity.username);
+        }
         if (!avatar) showAvatar(identity.avatarUrl);
       });
     }

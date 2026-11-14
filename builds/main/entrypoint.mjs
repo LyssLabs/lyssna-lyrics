@@ -4,34 +4,6 @@ const BUILT_IN_CHANNELS = Object.keys(CHANNEL_MAP);
 const DEFAULT_API_HOST = DEFAULT_BUILD_HOST;
 const DEFAULT_STORAGE_HOST = DEFAULT_BUILD_HOST;
 
-const usesNewSettingsDesign = () => {
-  try {
-    const raw = window.Spicetify?.LocalStorage?.get?.("SL:settings") ?? window.localStorage.getItem("SL:settings");
-    const own = window.Spicetify?.LocalStorage?.get?.("LL:settings") ?? window.localStorage.getItem("LL:settings");
-    const settings = { ...JSON.parse(raw ?? "{}"), ...JSON.parse(own ?? "{}") };
-    return settings?.["experiment:newSettingsDesign"] !== false &&
-      settings?.["experiment:newUpdatePromptDesign"] !== false;
-  } catch {
-    return true;
-  }
-};
-
-const applySettingsDesign = (element, enabled = usesNewSettingsDesign()) => {
-  element.classList.toggle("sle-classic", !enabled);
-};
-
-const syncSettingsDesign = () => {
-  const enabled = usesNewSettingsDesign();
-  for (const element of document.querySelectorAll(".sle-overlay, .sle-pill")) {
-    applySettingsDesign(element, enabled);
-  }
-};
-
-window.addEventListener("spicy-lyrics:settings-design-changed", syncSettingsDesign);
-window.addEventListener("storage", (event) => {
-  if (event.key === "SL:settings" || event.key === "LL:settings" || event.key === null) syncSettingsDesign();
-});
-
 const moveCustomChannel = (name, direction) => {
   const channels = getCustomChannels();
   const names = Object.keys(channels);
