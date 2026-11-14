@@ -454,6 +454,7 @@ function handleUserScroll(ScrollSimplebar: any | null) {
 // Initialization function for scroll events and observers
 export function InitializeScrollEvents(ScrollSimplebar: any) {
   if (!$lyricsContainerExists.get()) return;
+  CleanupScrollEvents();
   // --- NEW: Store instance and define handlers ---
   currentSimpleBarInstance = ScrollSimplebar;
   wheelHandler = () => handleUserScroll(currentSimpleBarInstance);
@@ -467,11 +468,6 @@ export function InitializeScrollEvents(ScrollSimplebar: any) {
   // Add scroll event listener
   const scrollElement = ScrollSimplebar?.getScrollElement();
   if (scrollElement && wheelHandler && touchMoveHandler && scrollHandler) {
-    // Check handlers exist
-    // Remove potential old listeners first (optional, but safer if called multiple times)
-    scrollElement.removeEventListener("wheel", wheelHandler);
-    scrollElement.removeEventListener("touchmove", touchMoveHandler);
-    scrollElement.removeEventListener("scroll", scrollHandler);
     // Add new listeners
     scrollElement.addEventListener("wheel", wheelHandler);
     scrollElement.addEventListener("touchmove", touchMoveHandler);

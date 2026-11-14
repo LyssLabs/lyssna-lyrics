@@ -1584,6 +1584,13 @@ export function Animate(position: number): void {
         line.AnimatedState = lineState;
       }
 
+      // Held rows remain mounted through a scroll. Once their springs sleep,
+      // only a seek or a new state needs to visit their words again.
+      if (lineState === "Sung" && !line.Settling) {
+        if (!playbackJumped) continue;
+        line.Settling = true;
+      }
+
       if (lineState === "Active") {
         if (Blurring_LastLine !== index) {
           applyBlur(arr, index, BlurMultiplier * $animatorValues.get().blurStrength);
@@ -2578,27 +2585,11 @@ export function Animate(position: number): void {
           return settled;
         };
 
-        {
-          const NextLine = arr[index + 1];
-          const nextLineStatus = NextLine
-            ? getElementState(ProcessedPosition, NextLine.StartTime, NextLine.EndTime)
-            : null;
-          // A line keeps settling until its springs rest, even when the line
-          // after it has already ended: with overlapping lines that one can end
-          // first, and the late line would otherwise freeze mid-animation.
-          if (
-            line.Settling ||
-            !NextLine ||
-            nextLineStatus === "NotSung" ||
-            nextLineStatus === "Active"
-          ) {
-            if (settleSungLine()) {
-              line.Settling = false;
-              dropLineSweep(line.HTMLElement);
-            }
-          }
-          setClass(line.HTMLElement, "Settling", line.Settling === true);
+        if (settleSungLine()) {
+          line.Settling = false;
+          dropLineSweep(line.HTMLElement);
         }
+        setClass(line.HTMLElement, "Settling", line.Settling === true);
       }
     }
   } else if (CurrentLyricsType === "Line") {

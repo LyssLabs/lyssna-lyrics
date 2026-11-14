@@ -246,6 +246,7 @@ class LyricsVirtualizer {
   private _pinnedFooterObserver: ResizeObserver | null = null;
   private _pinnedFooterElement: HTMLElement | null = null;
   private _pinnedFooterHeight: number | null = null;
+  private _pinnedFooterLayoutKey: string | null = null;
 
   // Permanent spacer appended after the virtual container so the last item can
   // always be scrolled to center without temporarily inflating container height.
@@ -866,7 +867,10 @@ class LyricsVirtualizer {
     const scrollEl = this._scrollEl;
     if (!scrollEl?.isConnected) return;
     const atBottom = scrollEl.scrollTop + scrollEl.clientHeight >= scrollEl.scrollHeight - 1;
-    scrollEl.closest<HTMLElement>(".LyricsContent")?.classList.toggle("LyricsScrollAtBottom", atBottom);
+    const content = scrollEl.closest<HTMLElement>(".LyricsContent");
+    if (content && content.classList.contains("LyricsScrollAtBottom") !== atBottom) {
+      content.classList.toggle("LyricsScrollAtBottom", atBottom);
+    }
   };
 
   private _updatePinnedFooterLayout(): void {
@@ -882,6 +886,7 @@ class LyricsVirtualizer {
       (!page?.classList.contains("PinnedFooterMode_NoWriters") && !page?.classList.contains("PinnedFooterMode_Full")) ||
       page.classList.contains("CardMode")
     ) {
+      this._pinnedFooterLayoutKey = null;
       setPinnedFooterProperty(scrollContainer, "--SL-PinnedFooterBottomMargin", "");
       setPinnedFooterProperty(lyricsContent, "--SL-PinnedFooterTrackBottom", "");
       setPinnedFooterProperty(lyricsContent, "--SL-PinnedFooterFadeHeight", "");
@@ -902,6 +907,18 @@ class LyricsVirtualizer {
       ? this._pinnedFooterHeight
       : footerLayer.offsetHeight;
     if (observedFooter) this._pinnedFooterHeight = footerHeight;
+    const lastMeasurement = this._virtualizer?.measurementsCache[
+      this._allElements.length - 1
+    ] as { end: number } | undefined;
+    const noWriters = page.classList.contains("PinnedFooterMode_NoWriters");
+    const layoutKey = [
+      footerHeight, footerLayer.childElementCount, noWriters,
+      this._containerWidth, this._containerHeight,
+      lastMeasurement?.end, this._virtualizer?.getTotalSize(),
+    ].join(":");
+    // Scrolling moves both rectangles equally; it does not change this layout.
+    if (this._pinnedFooterLayoutKey === layoutKey) return;
+    this._pinnedFooterLayoutKey = layoutKey;
     const trackBottom = footerHeight + PINNED_FOOTER_BOTTOM_OFFSET;
     // A one-line source stays compact; each additional wrapped footer line
     // widens the fade so lyrics do not abruptly meet the pinned block.
@@ -909,20 +926,17 @@ class LyricsVirtualizer {
     const singleLine = footerLayer.childElementCount === 1;
     let bottomMargin: number | null = null;
 
-    if (page.classList.contains("PinnedFooterMode_NoWriters")) {
+    if (noWriters) {
       // The writer footer already contributes to scroll height. The pinned
       // screen offset is outside the scroll content, so reserve its height
       // only; that preserves the normal writer-to-source gap.
       bottomMargin = footerHeight + 4;
     } else {
       const scrollEl = this._scrollEl;
-      const lastMeasurement = this._virtualizer?.measurementsCache[
-        this._allElements.length - 1
-      ] as { end: number } | undefined;
       if (scrollEl && lastMeasurement) {
         const scrollRect = scrollEl.getBoundingClientRect();
         const containerOffset =
-          virtualContainer.getBoundingClientRect().top - scrollRect.top + scrollEl.scrollTop;
+          virtualContainer.getBoundingClientRect().top - scrollRect.top + scrollEl.scrollTop + this._smoothFraction;
         const terminalBottomAtMaxScroll =
           scrollRect.top + containerOffset + lastMeasurement.end -
           Math.max(0, scrollEl.scrollHeight - scrollEl.clientHeight);
@@ -945,6 +959,7 @@ class LyricsVirtualizer {
   private _remeasureVisible(): void {
     const v = this._virtualizer;
     if (!v) return;
+    this._pinnedFooterLayoutKey = null;
     virtualizerLogger.debug("Remeasure pass started", {
       mountedCount: this._mountedIndices.size,
       containerWidth: this._containerWidth,
@@ -1184,6 +1199,7 @@ class LyricsVirtualizer {
       this._trailingObserver = this._maid.Give(
         new MutationObserver(() => {
           this._trailingCache = null;
+          this._pinnedFooterLayoutKey = null;
         })
       );
       this._trailingObserver.observe(listParent, { childList: true });
@@ -1269,6 +1285,7 @@ class LyricsVirtualizer {
             this._pinnedFooterHeight = Math.round(entry.borderBoxSize[0]?.blockSize ?? footerLayer.offsetHeight);
           }
         }
+        this._pinnedFooterLayoutKey = null;
         this._updatePinnedFooterLayout();
         this._syncBottomMask();
       }));
@@ -1600,7 +1617,8 @@ class LyricsVirtualizer {
     if (!this._virtualContainer) return;
 
     const totalSize = v.getTotalSize();
-    this._virtualContainer.style.height = `${totalSize}px`;
+    const height = `${totalSize}px`;
+    if (this._virtualContainer.style.height !== height) this._virtualContainer.style.height = height;
     const sizeDelta = totalSize - this._lastTotalSize;
     if (
       this._lastTotalSize > 0 &&
@@ -1702,7 +1720,8 @@ class LyricsVirtualizer {
         wrapper.style.transition = wantGlide ? LAYOUT_GLIDE_TRANSITION : "";
         wrapper.dataset.glide = wantGlide ? "1" : "";
       }
-      wrapper.style.transform = `translateY(${Math.round(item.start)}px)`;
+      const transform = `translateY(${Math.round(item.start)}px)`;
+      if (wrapper.style.transform !== transform) wrapper.style.transform = transform;
 
       if (!this._mountedIndices.has(item.index)) {
         this._virtualContainer.appendChild(wrapper);
@@ -2748,6 +2767,7 @@ class LyricsVirtualizer {
     this._pinnedFooterObserver = null;
     this._pinnedFooterElement = null;
     this._pinnedFooterHeight = null;
+    this._pinnedFooterLayoutKey = null;
     this._spacer = null;
 
     try {
