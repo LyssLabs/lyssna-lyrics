@@ -10,7 +10,7 @@
 
 **Rewrite planned.**
 
-**[Discord & support](https://discord.gg/qfYAsFQawp) · [Download the launcher](https://ipixelgalaxy.com/lyssna-plugin/download.html) · [Lyssna Standalone](https://clypdat.xyz/lyssna.exe)**
+**[Discord & support](https://discord.gg/qfYAsFQawp) · [Download the launcher](https://ipixelgalaxy.com/lyssna-plugin/download.html) · [Releases](https://github.com/iPixelGalaxy/lyssna-lyrics/releases) · [Lyssna Standalone](https://clypdat.xyz/lyssna.exe)**
 
 </div>
 
@@ -109,48 +109,7 @@ For a bug report, open **Settings → Report a bug** and copy the diagnostics. P
 
 You can also [open a GitHub issue](https://github.com/iPixelGalaxy/lyssna-lyrics/issues). Please include the song and the affected view when reporting a lyrics problem.
 
-## v0.1.1
-
-- **Upstream 6.5.10**
-  Added “Show Queue When a Song Has No Lyrics” under Layout. When enabled, Fullscreen and Cinema View open the queue for songs without lyrics and return to lyrics when they become available. This option defaults to Off.
-
-- **Scrolling defaults**
-  Smooth Scrolling and Early Scroll now default to On, including in TTML Reviewer mode. Early Scroll starts 250 ms before the next line by default. Existing saved choices stay unchanged outside Reviewer mode.
-
-- **Line hover and TTML Reviewer**
-  Line Hover Background now defaults to Off, including in Reviewer mode. Reviewer uses the plugin’s current defaults for its standard settings, while keeping exact seeking and still backgrounds for review.
-
-- **Rendering fixes**
-  Reduced rendering overhead after lyric animations settle and in Spotify’s older navigation layout. Fixed tiny leftover scroll offsets after lyric rows finish moving.
-
-## v0.1.0
-
-- **Lyssna Lyrics**
-  Pixel Edition becomes Lyssna Lyrics, with Lyssna’s microphone icon, settings design and responsive lyrics toolbar. Original Spicy Lyrics and Arashii are credited in a dedicated Credits tab.
-
-- **Run alongside Spicy Lyrics**
-  Both extensions can stay installed and enabled, with separate pages, controls, branch choices, update history and local TTML collections. Existing local TTML files are copied into Lyssna. Compatible preferences stay shared by default; Advanced now includes “Don’t sync settings to Spicy Lyrics counterparts” for an independent setup.
-
-- **A fresh version series**
-  Lyssna starts at 0.1.0. Update prompts and patch notes recognize historical 100.10.x Pixel Edition releases as earlier versions.
-
-- **Lyrics and contributor credits**
-  Community and Apple Music lyrics use the public developer API. Contributor avatars return, and username lookup keeps matching display-name capitalization.
-
-- **Settings and dialog cleanup**
-  Added search, Credits, source management navigation and optional Liquid Glass. Removed the old purple update theme. Fixed duplicate closing panels, excess scrolling and footer spacing.
-
-- **Lyric controls and TTML review**
-  Restored return-to-active-line controls, corrected their direction, adjusted lyric spacing and matched Spotify’s button sizes. Load TTML now offers Off, Apply on Temp and Always Apply reviewer modes, with an explanation button. Join Split Words defaults to Off.
-
-- **Updates and community links**
-  Update prompts have room for all actions and highlight the new Discord invite. Settings link to the new Lyssna Standalone download.
-
-- **Easier installation**
-  Added Windows, macOS and Linux install and uninstall scripts, a downloadable Lyssna launcher, and a rewritten README with the original archived.
-
-- **Smoother lyric controls**
-  Reduced stutter when moving across lyric controls and showing tooltips. Lyric fades stay steady between buttons.
+Release notes and full versioned plugin downloads are available on **[GitHub Releases](https://github.com/iPixelGalaxy/lyssna-lyrics/releases)**. The launcher remains available for following your selected update branch.
 
 ## Credits
 
@@ -162,4 +121,4 @@ You can also [open a GitHub issue](https://github.com/iPixelGalaxy/lyssna-lyrics
 
 See [LICENSE](LICENSE) for the GNU Affero General Public License, version 3, and [the icon license](src/assets/LUCIDE_LICENSE.txt) for the microphone artwork.
 
-[Patch notes](.change-notes/PATCH_NOTES.md) · [Feature notes](.change-notes/FEATURE_CHANGES.md) · **[Archived README and release history](README.archive.md)**
+[GitHub Releases](https://github.com/iPixelGalaxy/lyssna-lyrics/releases) · [Feature notes](.change-notes/FEATURE_CHANGES.md) · **[Archived README and release history](README.archive.md)**
