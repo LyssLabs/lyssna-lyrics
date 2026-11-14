@@ -1657,7 +1657,7 @@ export function SyncViewSwitch() {
 export function SeatRomanizationToggle() {
   const seat = viewSwitch?.querySelector<HTMLElement>(".ViewSwitchSeat_Romanize");
   const toggle = PageContainer?.querySelector<HTMLElement>(".ViewControls #RomanizationToggle");
-  if (seat && toggle) seat.replaceChildren(toggle);
+  if (seat && toggle && !toggle.closest(".LyssnaToolbar")) seat.replaceChildren(toggle);
 }
 
 function RemoveSwitch(announce = true) {

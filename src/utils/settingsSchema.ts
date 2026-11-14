@@ -60,6 +60,8 @@ export const SHARED_SETTING_KEYS = new Set([
 ]);
 
 export const MANAGED_SETTING_KEYS = new Set([
+  "discordCreditUsernames",
+  "discordLookupEndpoint",
   "allowHidingSettings",
   "alwaysShowInFullscreen",
   "animateFullscreenClose",

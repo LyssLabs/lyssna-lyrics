@@ -1,4 +1,6 @@
 import { PinFooterDetailWithoutWriters } from "./CreateLyricsFooter.ts";
+import { CREDIT_NAME_OVERRIDES, DISCORD_ID, lookupDiscordUser, safeAvatarUrl } from "../../../discordLookup.ts";
+import { $discordCreditUsernames, $discordLookupEndpoint } from "../../../stores.ts";
 
 export function ApplyIsByCommunity(data: any, lyricsContainer: HTMLElement): void {
   if (!lyricsContainer || (data.source !== "spl" && data.source !== "spicy_lyrics")) return;
@@ -19,13 +21,17 @@ export function ApplyIsByCommunity(data: any, lyricsContainer: HTMLElement): voi
 
   for (const [role, label] of [["Maker", "Made by"], ["Uploader", "Uploaded by"]] as const) {
     const person = attribution[role];
-    const name = person?.username ?? person?.displayName;
-    if (typeof name !== "string" || !name.trim()) continue;
+    if (!person || typeof person !== "object") continue;
+    const id = typeof person.id === "string" && DISCORD_ID.test(person.id) ? person.id : undefined;
+    const existing = [person.displayName, person.display_name, person.global_name, person.globalName, person.username].find(value => typeof value === "string" && value.trim());
+    const override = id ? CREDIT_NAME_OVERRIDES[id] : undefined;
+    const name = override ?? existing?.trim() ?? id;
+    if (!name) continue;
     const section = doc.createElement("span");
     section.className = role;
     const link = doc.createElement("a");
     link.className = "song-info-profile-section";
-    const url = person.url ?? (person.id ? `https://spicylyrics.org/uid/${encodeURIComponent(person.id)}` : null);
+    const url = person.url ?? (id ? `https://spicylyrics.org/uid/${encodeURIComponent(id)}` : null);
     if (typeof url === "string" && /^https:\/\//i.test(url)) {
       link.href = url;
       link.target = "_blank";
@@ -44,6 +50,28 @@ export function ApplyIsByCommunity(data: any, lyricsContainer: HTMLElement): voi
     username.textContent = name;
     nameLabel.append("@", username);
     link.append(roleLabel, " ", nameLabel);
+    let avatar: HTMLImageElement | undefined;
+    const showAvatar = (source?: string) => {
+      if (!source) return;
+      if (!avatar) {
+        avatar = doc.createElement("img");
+        avatar.alt = "";
+        avatar.width = avatar.height = 18;
+        avatar.decoding = "async";
+        avatar.referrerPolicy = "no-referrer";
+        avatar.onerror = () => { avatar?.remove(); avatar = undefined; };
+        link.insertBefore(avatar, nameLabel);
+      }
+      avatar.src = source;
+    };
+    showAvatar(safeAvatarUrl(person.avatar_url, id) ?? safeAvatarUrl(person.avatar, id));
+    if (id && (($discordCreditUsernames.get() && !override) || !avatar)) {
+      void lookupDiscordUser(id, $discordLookupEndpoint.get()).then(identity => {
+        if (!identity) return;
+        if ($discordCreditUsernames.get()) username.textContent = override ?? identity.username;
+        if (!avatar) showAvatar(identity.avatarUrl);
+      });
+    }
     section.append(link);
     credits.append(section);
   }

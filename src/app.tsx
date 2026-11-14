@@ -92,6 +92,8 @@ import "./css/PopupDock.css";
 import "./css/PortraitFullscreen.css";
 import "./css/PlayerBelowCover.css";
 import "./css/GroupedViewControls.css";
+import "./css/LyssnaToolbar.css";
+import "./css/lyssna-settings.css";
 import { showUpdatedDialog } from "./components/ReactComponents/UpdateDialog.tsx";
 import { IsPIP, OpenPopupLyrics, ClosePopupLyrics } from "./components/Utils/PopupLyrics.ts";
 import {

@@ -761,6 +761,8 @@ body:not(.SpicyLyrics_StaticBackground)
 }
 
 #SpicyLyricsPageSvg {
+  width: 16px !important;
+  height: 16px !important;
   fill: none;
   stroke: currentColor;
 }

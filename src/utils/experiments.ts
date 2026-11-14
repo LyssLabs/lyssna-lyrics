@@ -74,8 +74,8 @@ export const EXPERIMENTS = [
   {
     id: "newSettingsDesign",
     category: "player",
-    label: "New Settings and Update Design",
-    description: "Use the lavender design for settings, update dialogs, and notifications. Disable for classic neutral styling.",
+    label: "Update and Notification Design",
+    description: "Use the lavender design for update dialogs and notifications. Disable for classic neutral styling.",
     default: true,
   },
   {
@@ -229,9 +229,9 @@ export const EXPERIMENTS = [
   {
     id: "groupedViewControls",
     category: "player",
-    label: "Grouped View Controls",
+    label: "Floating Scroll Button",
     description:
-      "The view buttons share one frosted capsule instead of each having its own. Buttons that switch something on, like romanization, compact mode or the NowBar, fill in white with their icon cut out while it is on. The button back to the current line becomes a matching frosted circle in the bottom corner. Disable to bring back the separate frosted buttons that change their icon instead, and the round button at the lyrics' edge.",
+      "Show the scroll-to-current-line button as a frosted circle in the bottom corner. Disable to use its original position at the lyrics' edge. The Lyssna toolbar remains available in either mode.",
     default: true,
     pageClass: "Exp_GroupedViewControls",
   },

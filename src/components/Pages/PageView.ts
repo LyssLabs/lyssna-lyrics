@@ -3,7 +3,7 @@ import fetchLyrics, { HoldsTemporaryUpload, ShowQueueLoader } from "../../utils/
 import { ClearLyricsLoader } from "../../utils/Lyrics/LyricsLoader.ts";
 import { LyricsQueueRetry } from "../../utils/Lyrics/LyricsQueueRetry.ts";
 import { SkeletonMarkup } from "../../utils/Lyrics/LyricsSkeleton.ts";
-import { $forceCompactMode, $romanization } from "../../utils/uiState.ts";
+import { $forceCompactMode, $romanization, $nowBarSide } from "../../utils/uiState.ts";
 import { DestroyAllLyricsContainers } from "../../utils/Lyrics/Applyer/CreateLyricsContainer.ts";
 import ApplyLyrics, {
   ApplyLyricsIfCurrent,
@@ -35,6 +35,8 @@ import { toCssFontFamily } from "../../utils/cssFontFamily.ts";
 import ApplyDynamicBackground, { KawarpMap, PAGE_BACKGROUND_KEY } from "../DynamicBG/dynamicBackground.ts";
 import {
   $creditsFollowLastLine,
+  $discordCreditUsernames,
+  $discordLookupEndpoint,
   $currentLyricsData,
   $customFont,
   $customFontEnabled,
@@ -64,7 +66,8 @@ import {
 import Global from "../Global/Global.ts";
 import Session from "../Global/Session.ts";
 import { SpotifyPlayer } from "../Global/SpotifyPlayer.ts";
-import { Icons, KnockoutDisc } from "../Styling/Icons.ts";
+import { Icons } from "../Styling/Icons.ts";
+import { LyssnaToolbarIcons as ToolbarIcons } from "../Styling/LyssnaToolbarIcons.ts";
 import {
   DisableCompactMode,
   EnableCompactMode,
@@ -84,7 +87,7 @@ import {
   OpenNowBar,
 } from "../Utils/NowBar.ts";
 import TransferElement from "../Utils/TransferElement.ts";
-import { SeatRomanizationToggle, SyncViewSwitch } from "../Utils/QueueView.ts";
+import { SyncViewSwitch } from "../Utils/QueueView.ts";
 import { IsPIP, _IsPIP_after, ClosePopupLyrics } from "../Utils/PopupLyrics.ts";
 import { IsExternalCinemaLyrics, CloseExternalCinemaLyrics } from "../Utils/ExternalCinemaLyrics.ts";
 import { NPVCardOwnsPage, DeRenderNPVCard } from "../Utils/NPVLyrics.ts";
@@ -128,6 +131,7 @@ export const Tooltips: {
   Close: TippyInstance | null;
   CompactModeToggle: TippyInstance | null;
   RomanizationToggle: TippyInstance | null;
+  WordSyncToggle: TippyInstance | null;
   NowBarToggle: TippyInstance | null;
   FullscreenToggle: TippyInstance | null;
   CinemaView: TippyInstance | null;
@@ -139,6 +143,7 @@ export const Tooltips: {
   Close: null,
   CompactModeToggle: null,
   RomanizationToggle: null,
+  WordSyncToggle: null,
   NowBarToggle: null,
   FullscreenToggle: null,
   CinemaView: null,
@@ -640,66 +645,11 @@ function ViewControlTooltipProps(): Record<string, unknown> {
   };
 }
 
-// A toggle whose click swaps its own glyph gets that glyph eased in (SL_IconSwapIn, default.css).
-// The controls are rebuilt whole, and one click can rebuild them more than once, so the swap is
-// armed by the click and carried across rebuilds: the first starts the animation, a later one
-// picks it up where it had got to instead of starting it over.
-// A grouped toggle keeps its glyph, so its disc fills in or clears instead (SL_ToggleSwap).
-const ICON_SWAP_MS = 200;
-const TOGGLE_SWAP_MS = 320;
-const ICON_SWAP_ARM_MS = 3000;
-let IconSwap: { id: string; armedAt: number; startedAt: number | null } | null = null;
-
-function ArmIconSwap(id: string) {
-  IconSwap = { id, armedAt: performance.now(), startedAt: null };
-}
-
-// A grouped toggle answers the click itself: its disc starts filling or clearing at once, and the
-// rebuild that follows picks the motion up where it has got to (ApplyIconSwap).
 function PressToggle(button: Element) {
-  if (!button.classList.contains("ViewToggle")) return;
-  const now = performance.now();
-  // A button rebuilt after an earlier flip still carries that replay; this flip is a transition.
-  // The style has to settle without the replay first, or the flip lands in the same style change
-  // and the disc snaps instead of transitioning.
-  if (button.classList.contains("SL_ToggleSwap")) {
-    button.classList.remove("SL_ToggleSwap");
-    (button as HTMLElement).style.removeProperty("--ToggleSwapDelay");
-    void getComputedStyle(button.querySelector(".SL_KnockoutDisc") ?? button).opacity;
+  if (button.hasAttribute("aria-pressed")) {
+    button.setAttribute("aria-pressed", String(button.getAttribute("aria-pressed") !== "true"));
   }
-  button.setAttribute("aria-pressed", String(button.getAttribute("aria-pressed") !== "true"));
-  IconSwap = { id: button.id, armedAt: now, startedAt: now };
 }
-
-function ApplyIconSwap(controls: HTMLElement) {
-  if (!IconSwap) return;
-  const now = performance.now();
-  const button = controls.querySelector<HTMLElement>(`#${IconSwap.id}`);
-  const isToggle = button?.classList.contains("ViewToggle") ?? false;
-  const elapsed = IconSwap.startedAt === null ? 0 : now - IconSwap.startedAt;
-  if (
-    elapsed >= (isToggle ? TOGGLE_SWAP_MS : ICON_SWAP_MS) ||
-    now - IconSwap.armedAt > ICON_SWAP_ARM_MS
-  ) {
-    IconSwap = null;
-    return;
-  }
-  if (isToggle && button) {
-    IconSwap.startedAt ??= now;
-    button.classList.add("SL_ToggleSwap");
-    if (elapsed > 0) button.style.setProperty("--ToggleSwapDelay", `-${Math.round(elapsed)}ms`);
-    return;
-  }
-  const svg = button?.querySelector<SVGElement>("svg");
-  if (!svg) return;
-  IconSwap.startedAt ??= now;
-  svg.classList.add("SL_IconSwapIn");
-  if (elapsed > 0) svg.style.animationDelay = `-${Math.round(elapsed)}ms`;
-}
-
-// Which markup the controls were last built with, so a remote override that flips the grouped
-// layout without touching the stored value still gets them rebuilt.
-let RenderedGroupedControls: boolean | null = null;
 
 function AppendViewControls(ReAppend: boolean = false) {
   if (IsCardMode) return;
@@ -724,83 +674,25 @@ function AppendViewControls(ReAppend: boolean = false) {
   if (ReAppend) elem.innerHTML = "";
   const isNoLyrics =
     $currentLyricsData.get() === `NO_LYRICS:${SpotifyPlayer.GetUri()}`;
-  const isTTMLMakerMode = $ttmlMakerMode.get();
   const cacheAction = normalizeLyricsCacheAction($lyricsCacheAction.get());
   const showCacheActionButton = $showLyricsCacheActionButton.get() && !IsPIP;
-  const grouped = isExperimentEnabled("groupedViewControls");
-  RenderedGroupedControls = grouped;
-  // Grouped, a toggle keeps one glyph and shows its state as a filled disc; otherwise the glyph
-  // itself changes with the state.
-  const toggle = (id: string, pressed: boolean, groupedIcon: string, legacyIcon: string) =>
-    grouped
-      ? `<button id="${id}" class="ViewControl ViewToggle" aria-pressed="${pressed}">${groupedIcon}${KnockoutDisc(groupedIcon, `SL_Knockout_${id}`)}</button>`
-      : `<button id="${id}" class="ViewControl">${legacyIcon}</button>`;
+  elem.classList.add("LyssnaToolbar");
+  const button = (id: string, glyph: string, label: string, iconName = "", pressed?: boolean, disabled = false) =>
+    `<button type="button" id="${id}" class="ViewControl${pressed === undefined ? "" : " ViewToggle"}" aria-label="${label}" ${pressed === undefined ? "" : `aria-pressed="${pressed}"`} ${iconName ? `data-icon="${iconName}"` : ""} ${disabled ? 'disabled aria-busy="true"' : ""}>${glyph}</button>`;
   elem.innerHTML = `
-        ${
-          Fullscreen.IsOpen || Fullscreen.CinemaViewOpen
-            ? ""
-            : IsPIP ? "" : `<button id="CinemaView" class="ViewControl">${Icons.CinemaView}</button>`
-        }
-        ${
-          Fullscreen.IsOpen || Fullscreen.CinemaViewOpen || NowBarObj.Open
-            ? IsPIP ? "" : toggle(
-                "CompactModeToggle",
-                IsCompactMode(),
-                Icons.EnableCompactModeIcon,
-                IsCompactMode() ? Icons.DisableCompactModeIcon : Icons.EnableCompactModeIcon
-              )
-            : ""
-        }
-        ${toggle(
-          "RomanizationToggle",
-          isRomanized,
-          Icons.EnableRomanization,
-          isRomanized ? Icons.DisableRomanization : Icons.EnableRomanization
-        )}
-        ${
-          !Fullscreen.IsOpen &&
-          !Fullscreen.CinemaViewOpen
-            ? IsPIP ? "" : toggle(
-                "NowBarToggle",
-                PageContainer.classList.contains("NowBarStatus__Open"),
-                Icons.NowBar,
-                Icons.NowBar
-              )
-            : ""
-        }
-        ${
-          NowBarObj.Open
-            ? IsPIP ? "" : `<button id="NowBarSideToggle" class="ViewControl">${Icons.NowBarSideSwap}</button>`
-            : ""
-        }
-        ${
-          Fullscreen.IsOpen
-            ? (IsPIP ? "" : toggle(
-                "FullscreenToggle",
-                !Fullscreen.CinemaViewOpen,
-                Icons.Fullscreen,
-                Fullscreen.CinemaViewOpen
-                  ? Icons.Fullscreen
-                  : Icons.CloseFullscreen
-              ))
-            : ""
-        }
-        ${
-          isTTMLMakerMode && !IsPIP
-            ? `<button id="LyricsManager" class="ViewControl">${Icons.LoadTTML}</button>`
-            : ""
-        }
-        ${
-          showCacheActionButton
-            ? `<button id="CacheAction" class="ViewControl" ${
-                cacheActionRunning ? "disabled aria-busy=\"true\"" : ""
-              }>${Icons.ClearCache}</button>`
-            : ""
-        }
-        ${IsPIP ? "" : `<button id="SettingsToggle" class="ViewControl">${Icons.Settings}</button>`}
-        <button id="Close" class="ViewControl">${Icons.Close}</button>
-    `;
-  ApplyIconSwap(elem);
+    ${button("RomanizationToggle", ToolbarIcons.translate, "Romanization", "romanized", isRomanized)}
+    ${button("WordSyncToggle", ToolbarIcons.wordSync, "Experimental word sync", "experimental_word_sync", $enableExperimentalWordSync.get())}
+    ${!IsPIP && (Fullscreen.IsOpen || NowBarObj.Open) ? button("CompactModeToggle", ToolbarIcons.compact, "Compact lyrics", "lyrics_compact", IsCompactMode()) : ""}
+    ${!IsPIP && !Fullscreen.IsOpen ? button("NowBarToggle", ToolbarIcons.artwork, NowBarObj.Open ? "Hide artwork" : "Show artwork", "lyrics_hide_artwork", !NowBarObj.Open) : ""}
+    ${!IsPIP && NowBarObj.Open ? button("NowBarSideToggle", ToolbarIcons.swap, "Swap artwork side", "lyrics_artwork_right", $nowBarSide.get() === "right") : ""}
+    ${!IsPIP ? '<span class="ll-toolbar-divider" aria-hidden="true"></span>' : ""}
+    ${!IsPIP ? button("LyricsManager", ToolbarIcons.upload, "Load TTML", "upload") : ""}
+    ${showCacheActionButton ? button("CacheAction", ToolbarIcons.retry, getLyricsCacheActionLabel(cacheAction), "retry", undefined, cacheActionRunning) : ""}
+    ${!IsPIP && !Fullscreen.IsOpen ? button("CinemaView", Icons.CinemaView, "Cinema View") : ""}
+    ${!IsPIP ? button("FullscreenToggle", ToolbarIcons.fullscreen, "Fullscreen", "fullscreen", Fullscreen.IsOpen && !Fullscreen.CinemaViewOpen) : ""}
+    ${!IsPIP ? button("SettingsToggle", Icons.Settings, "Lyssna Lyrics settings", "settings") : ""}
+    ${button("Close", Icons.Close, "Close lyrics")}
+  `;
 
   let targetElem: HTMLElement | null = elem;
   if (Fullscreen.IsOpen) {
@@ -830,8 +722,6 @@ function AppendViewControls(ReAppend: boolean = false) {
   if (targetElem) {
     SetupTippy(targetElem);
   }
-  // Wired up, the romanization toggle moves into the Lyrics / Queue switch where there is one.
-  SeatRomanizationToggle();
 
   function SetupTippy(elem: HTMLElement) {
     // PiP cannot host Spotify Tippy instances, but Cinema can use its own document.
@@ -883,8 +773,7 @@ function AppendViewControls(ReAppend: boolean = false) {
           });
         }
         compactModeToggle.addEventListener("click", () => {
-          if (grouped) PressToggle(compactModeToggle);
-          else ArmIconSwap("CompactModeToggle");
+          PressToggle(compactModeToggle);
           // Use PageContainer instead of document.querySelector
           const SpicyLyricsPage = PageContainer;
           if (Fullscreen.IsOpen || Fullscreen.CinemaViewOpen) {
@@ -931,8 +820,7 @@ function AppendViewControls(ReAppend: boolean = false) {
         romanizationToggle.addEventListener("click", async () => {
           const songUri = SpotifyPlayer.GetUri();
           if (!songUri) return;
-          if (grouped) PressToggle(romanizationToggle);
-          else ArmIconSwap("RomanizationToggle");
+          PressToggle(romanizationToggle);
           if ($romanizationDisplay.get() === "underLine") {
             romanizedRowsToggled(() => setRomanizedStatus(!isRomanized));
             AppendViewControls();
@@ -959,6 +847,16 @@ function AppendViewControls(ReAppend: boolean = false) {
       }
     }
 
+    const wordSyncToggle = elem.querySelector("#WordSyncToggle");
+    if (wordSyncToggle) {
+      if (!IsPIP) Tooltips.WordSyncToggle = createTooltip(wordSyncToggle, {
+        ...ViewControlTooltipProps(), content: "Experimental word sync",
+      });
+      wordSyncToggle.addEventListener("click", () => {
+        $enableExperimentalWordSync.set(!$enableExperimentalWordSync.get());
+      });
+    }
+
     if (!Fullscreen.IsOpen && !Fullscreen.CinemaViewOpen) {
       const nowBarButton = elem.querySelector("#NowBarToggle");
       if (nowBarButton) {
@@ -966,11 +864,11 @@ function AppendViewControls(ReAppend: boolean = false) {
           if (!IsPIP) {
             Tooltips.NowBarToggle = createTooltip(nowBarButton, {
               ...ViewControlTooltipProps(),
-              content: `NowBar`,
+              content: NowBarObj.Open ? "Hide artwork" : "Show artwork",
             });
           }
           nowBarButton.addEventListener("click", () => {
-            if (grouped) PressToggle(nowBarButton);
+            PressToggle(nowBarButton);
             ToggleNowBar();
           });
         } catch (err) {
@@ -987,12 +885,15 @@ function AppendViewControls(ReAppend: boolean = false) {
           Tooltips.FullscreenToggle = createTooltip(fullscreenBtn, {
             ...ViewControlTooltipProps(),
             content: `${
-              Fullscreen.CinemaViewOpen ? "Fullscreen" : "Cinema View"
+              Fullscreen.IsOpen ? (Fullscreen.CinemaViewOpen ? "Fullscreen" : "Cinema View") : "Fullscreen"
             }`,
           });
         }
         fullscreenBtn.addEventListener("click", async () => {
-          if (grouped) PressToggle(fullscreenBtn);
+          if (!Fullscreen.IsOpen) {
+            Fullscreen.Open(false);
+            return;
+          }
           // If we're in cinema view, go to full fullscreen
           if (Fullscreen.CinemaViewOpen) {
             Fullscreen.CinemaViewOpen = false;
@@ -1094,7 +995,7 @@ function AppendViewControls(ReAppend: boolean = false) {
     }
 
     const lyricsManagerButton = elem.querySelector<HTMLElement>("#LyricsManager");
-    if (lyricsManagerButton && isTTMLMakerMode) {
+    if (lyricsManagerButton) {
       try {
         if (!IsPIP) {
           Tooltips.LyricsManager = createTooltip(lyricsManagerButton, {
@@ -1171,7 +1072,12 @@ $minimalLyricsMode.listen((v) => {
 
 $enableExperimentalWordSync.listen(() => {
   rebuildLyrics();
+  AppendViewControls(true);
 });
+
+$nowBarSide.listen(() => AppendViewControls(true));
+$discordCreditUsernames.listen(() => ReapplyCurrentLyrics());
+$discordLookupEndpoint.listen(() => ReapplyCurrentLyrics());
 
 
 $memeFormat.listen((v) => {
@@ -1251,7 +1157,6 @@ onExperimentChange((experiment) => {
   if (!PageContainer) return;
   ApplyExperimentClasses(PageContainer);
   if (experiment.rebuildsLyrics) ReapplyCurrentLyrics();
-  if (experiment.id === "groupedViewControls") AppendViewControls(true);
   // Romaji is made when the lyrics are fetched, so rebuild them.
   if (experiment.id === "romajiAsWritten") {
     rebuildLyrics();
@@ -1264,12 +1169,7 @@ $pinnedFooterMode.listen(() => {
   applyPinnedFooterMode(PageContainer);
   ReapplyCurrentLyrics();
   ApplyExperimentClasses(PageContainer);
-  if (
-    RenderedGroupedControls !== null &&
-    RenderedGroupedControls !== isExperimentEnabled("groupedViewControls")
-  ) {
-    AppendViewControls(true);
-  }
+
 });
 
 $viewControlsPosition.listen((v) => {

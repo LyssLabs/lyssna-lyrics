@@ -1,6 +1,7 @@
 import { partitionedStorage } from "./settingsStorage.ts";
 import { SHARED_SETTING_KEYS, MANAGED_SETTING_KEYS } from "./settingsSchema.ts";
 import { DEFAULT_CHANNEL, getCurrentChannel } from "./version/Channels.ts";
+import { DEFAULT_DISCORD_LOOKUP_ENDPOINT } from "./discordLookup.ts";
 import { atom, computed, type WritableAtom } from "nanostores";
 import { ProjectVersion } from "../../project/config.ts";
 import { SETTING_IDS } from "../components/ReactComponents/SettingsPanel/hiddenSettings.ts";
@@ -289,6 +290,8 @@ export const $popupLyricsAllowed = (() => {
 })();
 export const $externalCinemaLyricsAllowed = persistAtom<boolean>("externalCinemaLyricsAllowed", false);
 export const $openProfilesInBrowser = persistAtom<boolean>("openProfilesInBrowser", false);
+export const $discordCreditUsernames = persistAtom<boolean>("discordCreditUsernames", true);
+export const $discordLookupEndpoint = persistAtom<string>("discordLookupEndpoint", DEFAULT_DISCORD_LOOKUP_ENDPOINT);
 export const $viewControlsPosition = persistAtom<string>("viewControlsPosition", "Top");
 export const $ttmlMakerMode = persistAtom<boolean>("ttmlMakerMode", true);
 export const $developerMode = persistAtom<boolean>("developerMode", false);

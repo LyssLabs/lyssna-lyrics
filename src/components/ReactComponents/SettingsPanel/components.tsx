@@ -6,6 +6,7 @@ import { $ttmlReviewer, isHeldByReviewer, REVIEWER_LOCK_REASON } from "../../../
 
 export const HiddenSettingsContext = React.createContext(false);
 export const ShowHiddenSettingsInSearchContext = React.createContext(false);
+const SettingLabelContext = React.createContext<string | undefined>(undefined);
 
 export function matches(query: string, label: string, description?: string): boolean {
   if (!query.trim()) return true;
@@ -69,7 +70,7 @@ export function Row({
       </div>
       <div className="sl-sp-control">
         <fieldset disabled={disabled} style={{ display: "contents", padding: 0, margin: 0, border: 0 }}>
-          {children}
+          <SettingLabelContext.Provider value={label}>{children}</SettingLabelContext.Provider>
         </fieldset>
       </div>
       {disabled && disabledReason && <div className="sl-sp-row-tooltip">{disabledReason}</div>}
@@ -84,10 +85,12 @@ export function Toggle({
   checked: boolean;
   onChange: (v: boolean) => void;
 }) {
+  const label = useContext(SettingLabelContext);
   return (
     <label className="sl-sp-toggle">
       <input
         type="checkbox"
+        aria-label={label}
         checked={checked}
         onChange={(e) => onChange(e.currentTarget.checked)}
       />
@@ -256,6 +259,7 @@ export function SearchBar({ value, onChange }: { value: string; onChange: (v: st
       <input
         className="sl-sp-search"
         type="text"
+        aria-label="Search settings"
         placeholder="Search settings…"
         value={value}
         onChange={(e) => onChange(e.currentTarget.value)}
