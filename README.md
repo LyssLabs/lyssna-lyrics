@@ -109,6 +109,32 @@ For a bug report, open **Settings → Report a bug** and copy the diagnostics. P
 
 You can also [open a GitHub issue](https://github.com/iPixelGalaxy/lyssna-lyrics/issues). Please include the song and the affected view when reporting a lyrics problem.
 
+## v0.1.0
+
+- **Lyssna Lyrics**
+  Pixel Edition becomes Lyssna Lyrics, with Lyssna’s microphone icon, settings design and responsive lyrics toolbar. Original Spicy Lyrics and Arashii are credited in a dedicated Credits tab.
+
+- **Run alongside Spicy Lyrics**
+  Both extensions can stay installed and enabled, with separate pages, controls, branch choices, update history and local TTML collections. Existing local TTML files are copied into Lyssna. Compatible preferences stay shared by default; Advanced now includes “Don’t sync settings to Spicy Lyrics counterparts” for an independent setup.
+
+- **A fresh version series**
+  Lyssna starts at 0.1.0. Update prompts and patch notes recognize historical 100.10.x Pixel Edition releases as earlier versions.
+
+- **Lyrics and contributor credits**
+  Community and Apple Music lyrics use the public developer API. Contributor avatars return, and username lookup keeps matching display-name capitalization.
+
+- **Settings and dialog cleanup**
+  Added search, Credits, source management navigation and optional Liquid Glass. Removed the old purple update theme. Fixed duplicate closing panels, excess scrolling and footer spacing.
+
+- **Lyric controls and TTML review**
+  Restored return-to-active-line controls, corrected their direction, adjusted lyric spacing and matched Spotify’s button sizes. Load TTML now offers Off, Apply on Temp and Always Apply reviewer modes, with an explanation button. Join Split Words defaults to Off.
+
+- **Updates and community links**
+  Update prompts have room for all actions and highlight the new Discord invite. Settings link to the new Lyssna Standalone download.
+
+- **Easier installation**
+  Added Windows, macOS and Linux install and uninstall scripts, a downloadable Lyssna launcher, and a rewritten README with the original archived.
+
 ## Credits
 
 - **[Spicy Lyrics](https://github.com/Spikerko/spicy-lyrics)** by Spikerko and its contributors, for the plugin and lyric renderer this fork is built on.
