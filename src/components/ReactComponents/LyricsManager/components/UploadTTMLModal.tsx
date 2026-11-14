@@ -1,11 +1,13 @@
 import React, { useRef, useState } from "react";
+import { useStore } from "@nanostores/react";
 import { toast } from "sonner";
 import { SpotifyPlayer } from "../../../../components/Global/SpotifyPlayer";
 import fetchLyrics, { getSongKey, SessionTTMLStore } from "../../../../utils/Lyrics/fetchLyrics";
 import ApplyLyrics, { ApplyLyricsIfCurrent } from "../../../../utils/Lyrics/Global/Applyer";
 import { ParseTTML } from "../../../../utils/Lyrics/manager/parseTTML";
 import { ProcessLyrics } from "../../../../utils/Lyrics/ProcessLyrics";
-import { $currentLyricsData } from "../../../../utils/stores";
+import { $currentLyricsData, $ttmlReviewerMode, type TtmlReviewerMode } from "../../../../utils/stores";
+import { REVIEWER_MODES, setTtmlReviewerMode, SyncTtmlReviewerForLyrics, SyncTtmlReviewerWithCurrentLyrics } from "../../../../utils/ttmlReviewer.ts";
 import { $lastFetchedUri } from "../../../../utils/uiState";
 import { LocalLyricsManager } from "../../../../utils/Lyrics/manager";
 import { DatabaseIcon, GuideIcon, ResetIcon, UploadIcon } from "./Icons";
@@ -15,9 +17,11 @@ type UploadMode = "persistent" | "session" | "temporary";
 type UploadTTMLModalProps = {
   onOpenDB: () => void;
   onDone: (mode: UploadMode) => void;
+  onShowReviewerDetails: () => void;
 };
 
-export default function UploadTTMLModal({ onOpenDB, onDone }: UploadTTMLModalProps) {
+export default function UploadTTMLModal({ onOpenDB, onDone, onShowReviewerDetails }: UploadTTMLModalProps) {
+  const reviewerMode = useStore($ttmlReviewerMode);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const pendingModeRef = useRef<UploadMode>("persistent");
@@ -126,6 +130,7 @@ export default function UploadTTMLModal({ onOpenDB, onDone }: UploadTTMLModalPro
             uploadedTTML: ttml,
             userUploaded: true,
           };
+          SyncTtmlReviewerForLyrics(dataToSave, uri);
           await ProcessLyrics(dataToSave);
           if (mode === "session" && songKey) {
             SessionTTMLStore.set(songKey, dataToSave);
@@ -146,6 +151,8 @@ export default function UploadTTMLModal({ onOpenDB, onDone }: UploadTTMLModalPro
         toast.error("Upload failed.", { duration: 5000 });
         console.error("TTML upload error:", err);
         setUploading(false);
+      } finally {
+        SyncTtmlReviewerWithCurrentLyrics();
       }
     };
     reader.readAsText(file);
@@ -194,6 +201,17 @@ export default function UploadTTMLModal({ onOpenDB, onDone }: UploadTTMLModalPro
         className="sl-ldb-file-input"
         onChange={handleFileChange}
       />
+
+      <div className="sl-ldb-reviewer">
+        <div className="sl-ldb-reviewer-copy">
+          <label htmlFor="sl-ldb-reviewer-mode">TTML Reviewer</label>
+          <p>Apply a consistent review profile, then restore your settings when it stops.</p>
+          <button type="button" className="sl-ldb-database-link" onClick={onShowReviewerDetails} disabled={uploading}>What does it change?</button>
+        </div>
+        <select id="sl-ldb-reviewer-mode" value={reviewerMode} disabled={uploading} onChange={event => setTtmlReviewerMode(event.currentTarget.value as TtmlReviewerMode)}>
+          {REVIEWER_MODES.map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
+        </select>
+      </div>
 
       <div className="sl-ldb-upload-mode-section">
         <button

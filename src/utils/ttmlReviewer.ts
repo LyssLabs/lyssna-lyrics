@@ -1,18 +1,12 @@
 import { atom } from "nanostores";
 import { toast } from "sonner";
 import { type ExperimentId, EXPERIMENTS } from "./experiments.ts";
-import { PersistedSettings } from "./stores.ts";
+import { $currentLyricsData, $ttmlReviewerMode, PersistedSettings, type TtmlReviewerMode } from "./stores.ts";
+import Global from "../components/Global/Global.ts";
 
-/**
- * TTML Reviewer mode: saves the user's settings and strips the lyrics back to
- * basics, so a sync is judged on the file and not on someone's setup. Turning it
- * off puts every value back as it was.
- *
- * The backup lives under a key of its own, and having one is what "on" means. An
- * older copy of the extension rewrites the whole settings blob from the snapshot it
- * loaded, which would drop anything kept inside it.
- */
-const BACKUP_KEY = "SL:ttmlReviewer";
+// The backup stays separate from preferences so a crash cannot discard the original values.
+const BACKUP_KEY = "LL:ttmlReviewer";
+const LEGACY_BACKUP_KEY = "SL:ttmlReviewer";
 const BACKUP_FORMAT_KEY = "$format";
 const BACKUP_FORMAT = 2;
 
@@ -65,14 +59,15 @@ const profile = new Map<string, unknown>([
 ]);
 
 function readBackup(): Record<string, unknown> | null {
-  const raw = Spicetify.LocalStorage.get(BACKUP_KEY);
-  if (!raw) return null;
-  try {
-    const parsed = JSON.parse(raw);
-    return parsed && typeof parsed === "object" ? parsed : null;
-  } catch {
-    return null;
+  for (const key of [BACKUP_KEY, LEGACY_BACKUP_KEY]) {
+    try {
+      const raw = Spicetify.LocalStorage.get(key);
+      if (!raw) continue;
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) return parsed;
+    } catch { /* Keep unreadable records intact. */ }
   }
+  return null;
 }
 
 function writeBackup(value: string): boolean {
@@ -115,6 +110,7 @@ function resumeProfile() {
 }
 
 export const $ttmlReviewer = atom<boolean>(readBackup() !== null);
+if ($ttmlReviewer.get() && !PersistedSettings.get("ttmlReviewerMode")?.isStored()) $ttmlReviewerMode.set("always");
 
 /** Whether the mode holds this settings row (by id) still. */
 export function isHeldByReviewer(id: string): boolean {
@@ -141,36 +137,81 @@ export function isHeldByReviewer(id: string): boolean {
   return profile.has(keys[id] ?? id);
 }
 
-export function setTtmlReviewer(on: boolean) {
+let changingProfile = false;
+export const IsChangingReviewerProfile = () => changingProfile;
+export const REVIEWER_MODES: { value: TtmlReviewerMode; label: string }[] = [
+  { value: "off", label: "Off" },
+  { value: "temporary", label: "Apply on Temp" },
+  { value: "always", label: "Always Apply" },
+];
+
+function setReviewerActive(on: boolean): boolean {
+  if (changingProfile || $ttmlReviewer.get() === on) return false;
   const backup = readBackup();
-  if (on) {
-    // Already on: a new backup would save the stripped values over the real ones.
-    if (backup) return;
-    // Anything never set has to stay that way, or the user is pinned to today's default
-    // (for experiments, cut off from remote ones).
-    const saved: Record<string, unknown> = { [BACKUP_FORMAT_KEY]: BACKUP_FORMAT };
-    for (const key of profile.keys()) saved[key] = backupValue(key);
-    // Saved before anything changes, so a crash partway can't lose the real values.
-    // Read back too: with no backup to restore from, stripping would lose them for good.
-    if (!writeBackup(JSON.stringify(saved))) {
-      toast.error("Couldn't save your settings, so TTML Reviewer stayed off.", { duration: 5000 });
-      return;
-    }
-    applyProfile();
-  } else if (backup) {
-    // Everything in the backup, not just today's profile: an update can have taken a key
-    // off the list, and it still has to come back.
-    for (const key of Object.keys(backup)) {
-      if (key === BACKUP_FORMAT_KEY) continue;
-      const entry = PersistedSettings.get(key);
-      if (backup[key] === null) entry?.unset();
-      else entry?.set(backup[key]);
-    }
-    // Removed last: a crash partway leaves the mode on, with the backup still there.
-    Spicetify.LocalStorage.remove(BACKUP_KEY);
+  if (!on && !backup) {
+    toast.error("Couldn't read the original settings. TTML Reviewer's backup was left untouched.", { duration: 5000 });
+    return false;
   }
-  $ttmlReviewer.set(on);
+  changingProfile = true;
+  try {
+    if (on) {
+      if (!backup) {
+        const saved: Record<string, unknown> = { [BACKUP_FORMAT_KEY]: BACKUP_FORMAT };
+        for (const key of profile.keys()) saved[key] = backupValue(key);
+        if (!writeBackup(JSON.stringify(saved))) {
+          toast.error("Couldn't save your settings, so TTML Reviewer stayed off.", { duration: 5000 });
+          return false;
+        }
+      }
+      applyProfile();
+    } else if (backup) {
+      for (const key of Object.keys(backup)) {
+        if (key === BACKUP_FORMAT_KEY) continue;
+        const entry = PersistedSettings.get(key);
+        if (backup[key] === null) entry?.unset();
+        else entry?.set(backup[key]);
+      }
+      // Remove the backup only after every original preference has been restored.
+      Spicetify.LocalStorage.remove(BACKUP_KEY);
+      Spicetify.LocalStorage.remove(LEGACY_BACKUP_KEY);
+    }
+    $ttmlReviewer.set(on);
+    return true;
+  } catch (error) {
+    if (readBackup()) $ttmlReviewer.set(true);
+    console.error("Lyssna Lyrics couldn't change the TTML reviewer profile:", error);
+    toast.error("Couldn't change TTML Reviewer. Your settings backup was kept.", { duration: 5000 });
+    return false;
+  } finally {
+    changingProfile = false;
+  }
 }
+
+export function SyncTtmlReviewerForLyrics(lyrics: unknown, uri: string | undefined): boolean {
+  const currentUri = Spicetify.Player.data?.item?.uri ?? (Spicetify.Player.data as any)?.track?.uri;
+  if (uri && uri !== currentUri) return false;
+  const data = lyrics as { uri?: unknown; temporaryUpload?: unknown; userUploaded?: unknown; uploadedTTML?: unknown } | null;
+  const temporary = !!uri && data?.temporaryUpload === true && data.userUploaded === true && typeof data.uploadedTTML === "string" && data.uri === uri;
+  return setReviewerActive($ttmlReviewerMode.get() === "always" || ($ttmlReviewerMode.get() === "temporary" && temporary));
+}
+
+export function SyncTtmlReviewerWithCurrentLyrics(): boolean {
+  let lyrics: unknown = null;
+  try { lyrics = JSON.parse($currentLyricsData.get()); } catch { /* Notice states have no upload. */ }
+  const uri = Spicetify.Player.data?.item?.uri ?? (Spicetify.Player.data as any)?.track?.uri;
+  return SyncTtmlReviewerForLyrics(lyrics, uri);
+}
+
+export function setTtmlReviewerMode(mode: TtmlReviewerMode): void {
+  if (REVIEWER_MODES.some(option => option.value === mode)) $ttmlReviewerMode.set(mode);
+}
+
+$ttmlReviewerMode.listen(() => {
+  if (SyncTtmlReviewerWithCurrentLyrics()) Global.Event.evoke("ttml-reviewer:changed", null);
+});
+$currentLyricsData.listen(() => {
+  if (!changingProfile) SyncTtmlReviewerWithCurrentLyrics();
+});
 
 /**
  * Other extensions restyling or rewriting the lyrics right now. They aren't ours to
@@ -192,4 +233,19 @@ export function getOtherLyricsExtensions(): string[] {
   return active;
 }
 
-if ($ttmlReviewer.get()) queueMicrotask(resumeProfile);
+queueMicrotask(() => {
+  const backup = readBackup();
+  if (backup) {
+    if (!PersistedSettings.get("ttmlReviewerMode")?.isStored()) $ttmlReviewerMode.set("always");
+    const legacy = Spicetify.LocalStorage.get(LEGACY_BACKUP_KEY);
+    if (legacy && !Spicetify.LocalStorage.get(BACKUP_KEY) && writeBackup(legacy)) {
+      Spicetify.LocalStorage.remove(LEGACY_BACKUP_KEY);
+    }
+    if ($ttmlReviewerMode.get() === "always") {
+      changingProfile = true;
+      try { resumeProfile(); } finally { changingProfile = false; }
+    }
+  }
+  SyncTtmlReviewerWithCurrentLyrics();
+  Spicetify.Player.addEventListener("songchange", () => SyncTtmlReviewerWithCurrentLyrics());
+});

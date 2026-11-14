@@ -27,6 +27,7 @@ import { UpdateStaticLyricsRomanization } from "../Applyer/Static.ts";
 import { UpdateLineLyricsRomanization } from "../Applyer/Synced/Line.ts";
 import { UpdateSyllableLyricsRomanization } from "../Applyer/Synced/Syllable.ts";
 import { needsDefaultLyricsFont } from "../LyricsFontFallback.ts";
+import { SyncTtmlReviewerForLyrics } from "../../ttmlReviewer.ts";
 
 /**
  * Union type for all lyrics data types
@@ -197,6 +198,7 @@ export default async function ApplyLyrics(lyricsContent: [object | string, numbe
   const uri = SpotifyPlayer.GetUri();
   setBlurringLastLine(null);
   const [descriptor, _status] = lyricsContent;
+  SyncTtmlReviewerForLyrics(typeof descriptor === "object" ? descriptor : null, uri);
   if (descriptor === "lyrics-queued") {
     ShowQueueLoader();
     SetShownNotice(null);

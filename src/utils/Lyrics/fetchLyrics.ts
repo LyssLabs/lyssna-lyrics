@@ -15,6 +15,7 @@ import {
 } from "./LyricsSourcePreferences.ts";
 
 import { isCurrentTrack } from "./Sources/Track.ts";
+import { SyncTtmlReviewerWithCurrentLyrics } from "../ttmlReviewer.ts";
 import { LyricsQueueRetry } from "./LyricsQueueRetry.ts";
 import { HideLoaderContainer, ShowLoaderContainer } from "./LyricsLoader.ts";
 import { getRemoteConfig } from "../remoteConfig.ts";
@@ -190,6 +191,7 @@ async function fetchLyricsInternal(
   options: FetchLyricsOptions
 ): Promise<[object | string, number] | null> {
   lyricsLogger.debug("Fetch requested", uri);
+  if (isCurrentTrack(uri)) SyncTtmlReviewerWithCurrentLyrics();
   cancelPendingBackoff?.();
   if (lastFailure?.uri === uri) lastFailure = null;
   const LyricsContent =
@@ -259,10 +261,10 @@ async function fetchLyricsInternal(
       } else {
         let lyricsData = JSON.parse(savedLyricsData);
         if (lyricsData.temporaryUpload === true && lyricsData.uri === uri &&
-          typeof lyricsData.uploadedTTML === "string" && !JapaneseRomajiIsCurrent(lyricsData)) {
+          typeof lyricsData.uploadedTTML === "string") {
           const reparsed = await ParseTTML(lyricsData.uploadedTTML);
           if (reparsed?.Result) {
-            const refreshed = { ...reparsed.Result, uri, temporaryUpload: true, userUploaded: true, uploadedTTML: lyricsData.uploadedTTML };
+            const refreshed = { ...reparsed.Result, id: lyricsData.id, uri, temporaryUpload: true, userUploaded: true, uploadedTTML: lyricsData.uploadedTTML };
             await ProcessLyrics(refreshed);
             if (!isCurrentTrack(uri)) return null;
             if ($currentLyricsData.get() !== savedLyricsData) return fetchLyricsInternal(uri, options);

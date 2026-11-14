@@ -18,7 +18,8 @@ import {
   $showNpvDynamicBg,
   PersistedSettings,
 } from "./stores.ts";
-import { $ttmlReviewer } from "./ttmlReviewer.ts";
+import { $ttmlReviewer, REVIEWER_MODES } from "./ttmlReviewer.ts";
+import { $ttmlReviewerMode } from "./stores.ts";
 import { $npvLyricsExpanded, $npvLyricsOpen, $romanization } from "./uiState.ts";
 
 /**
@@ -40,6 +41,8 @@ const LABEL_WIDTH = 15;
 // Bookkeeping in the settings blob, not choices anyone made, and remembered UI state the
 // View and Sidebar lines already describe.
 const NOT_SETTINGS = new Set([
+  "discordLookupEndpoint",
+  "ttmlReviewerMode",
   "fromVersion",
   "previousVersion",
   "lastFetchedUri",
@@ -173,7 +176,9 @@ function describeLyrics(uri: string | undefined): string | undefined {
     const parts = [type, provider ? `from ${provider}` : source ? `from ${source}` : undefined];
     if (source === "spl") parts.push("community");
     if (typeof data.source_via === "string") parts.push(`via ${data.source_via}`);
-    const answeredFrom = GetLyricsAnsweredFrom(uri);
+    if (data.temporaryUpload === true) parts.push("temporary TTML");
+    else if (data.userUploaded === true) parts.push("uploaded TTML");
+    const answeredFrom = data.userUploaded === true ? null : GetLyricsAnsweredFrom(uri);
     if (answeredFrom) {
       parts.push(answeredFrom === "already loaded" ? "already loaded" : `loaded from ${answeredFrom === "API" ? "server" : answeredFrom}`);
     }
@@ -196,7 +201,7 @@ function changedSettings(): string {
   const changed: string[] = [];
   for (const [key, { get, defaultValue }] of PersistedSettings) {
     // Experiments have their own line.
-    if (NOT_SETTINGS.has(key) || key.startsWith("experiment:")) continue;
+    if (NOT_SETTINGS.has(key) || key.startsWith("experiment:") || /token|secret|password|credential|api.?key|client.?key/i.test(key)) continue;
     const value = get();
     if (JSON.stringify(value) === JSON.stringify(defaultValue)) continue;
     changed.push(`${key} ${formatValue(value)}`);
@@ -311,9 +316,9 @@ export type BugReportOptions = {
 function versionRow(latest: string | undefined): string | undefined {
   const current = Session.SpicyLyrics.GetCurrentVersion()?.Text;
   if (!current) return undefined;
-  const build = App.isDev() ? "dev build" : undefined;
+  const build = current === "100.10.0" ? "Canary build" : App.isDev() ? "dev build" : undefined;
   // In order, so a build newer than the public one (a test build) isn't told to update.
-  const behind = latest
+  const behind = !build && latest
     ? Session.SpicyLyrics.IsBehind(Session.SpicyLyrics.GetCurrentVersion(), Session.SpicyLyrics.ParseVersion(latest))
       ? `update available: ${latest}`
       : "latest"
@@ -346,7 +351,7 @@ export function BuildBugReport(options: BugReportOptions = {}): string {
     ["Playing on", name ? describePlayback() : undefined],
     ["Lyrics", describeLyrics(uri)],
     // Says why the settings below are stripped back: they aren't this person's usual setup.
-    ["TTML Reviewer", $ttmlReviewer.get() ? "on" : undefined],
+    ["TTML Reviewer", `${REVIEWER_MODES.find(mode => mode.value === $ttmlReviewerMode.get())?.label ?? "Off"}${$ttmlReviewer.get() ? " (active)" : ""}`],
     ["Settings", changedSettings()],
     ["Experiments", ChangedExperiments()],
     ["Extensions", describeExtensions()],

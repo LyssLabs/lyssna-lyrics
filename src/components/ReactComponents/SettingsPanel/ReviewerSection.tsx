@@ -1,111 +1,34 @@
 import { useStore } from "@nanostores/react";
-import { Fragment } from "react";
-import { getExperiment, getVisibleExperiments } from "../../../utils/experiments.ts";
-import {
-  $ttmlReviewer,
-  getOtherLyricsExtensions,
-  REVIEWER_EXPERIMENTS_OFF,
-  REVIEWER_SETTINGS,
-  setTtmlReviewer,
-} from "../../../utils/ttmlReviewer.ts";
-import { Row, Toggle } from "./components.tsx";
-import { ReviewerIcon } from "./icons.tsx";
-import type { SectionDef } from "./model.ts";
+import { $ttmlReviewer, getOtherLyricsExtensions, REVIEWER_EXPERIMENTS_OFF, REVIEWER_SETTINGS } from "../../../utils/ttmlReviewer.ts";
+import { getExperiment } from "../../../utils/experiments.ts";
 
-const MODE_LABEL = "TTML Reviewer Mode";
-const MODE_DESCRIPTION =
-  "Saves your settings and strips Lyssna Lyrics back to basics. Turn it off to get them back exactly as they were.";
-
-function ModeToggle({ label }: { label: string }) {
-  return <Toggle checked={useStore($ttmlReviewer)} onChange={setTtmlReviewer} />;
-}
-
-/** Settings → TTML Reviewer: the switch, then everything it does. */
-export function ReviewerPane({ labelOf }: { labelOf: (id: string) => string | undefined }) {
-  const on = useStore($ttmlReviewer);
-  const others = on ? getOtherLyricsExtensions() : [];
-  const held = new Set<string>(REVIEWER_EXPERIMENTS_OFF);
-  const defaulted = getVisibleExperiments().filter((experiment) => !held.has(experiment.id));
-
-  return (
-    <div className="sl-sp-reviewer">
-      <p className="sl-sp-intro">
-        Review a sync as it really is, without your setup getting in the way. Everyone in this mode gets the same
-        timing and lyric effects.
-      </p>
-
-      <div className="sl-sp-card">
-        <Row label={MODE_LABEL} description={MODE_DESCRIPTION}>
-          <ModeToggle label={MODE_LABEL} />
-        </Row>
-      </div>
-
-      {others.length > 0 && (
-        <div className="sl-sp-banner" role="status">
-          <span>
-            {others.join(" and ")} still {others.length > 1 ? "change" : "changes"} your lyrics. Turn{" "}
-            {others.length > 1 ? "them" : "it"} off to review.
-          </span>
-        </div>
-      )}
-
-      <div className="sl-sp-group">
-        <h3 className="sl-sp-group-title">What it sets</h3>
-        <div className="sl-sp-reviewer-list">
-          {REVIEWER_SETTINGS.map(({ key, shown }) => (
-            <Fragment key={key}>
-              <div className="sl-sp-reviewer-item">
-                <span>{labelOf(key) ?? key}</span>
-                <span className="sl-sp-reviewer-value">{shown}</span>
-              </div>
-              {/* Kept apart from the settings, so the mode skips them rather than resetting them. */}
-              {key === "playbackOffset" && (
-                <div className="sl-sp-reviewer-item">
-                  <span>Per-song Offsets</span>
-                  <span className="sl-sp-reviewer-value">Ignored</span>
-                </div>
-              )}
-            </Fragment>
-          ))}
-          {/* A remote forceState still wins over the mode, and a hidden experiment isn't named here
-              any more than in the Experiments tab. */}
-          {REVIEWER_EXPERIMENTS_OFF.map((id) => getExperiment(id))
-            .filter((experiment) => !experiment.hidden)
-            .map((experiment) => (
-              <div key={experiment.id} className="sl-sp-reviewer-item">
-                <span>{experiment.label}</span>
-                <span className="sl-sp-reviewer-value">{experiment.forceState === true ? "Forced on" : "Off"}</span>
-              </div>
-            ))}
-          {defaulted.length > 0 && (
-            <div className="sl-sp-reviewer-item">
-              <span>Other experiments</span>
-              <span className="sl-sp-reviewer-value">Default</span>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export const reviewerSection: SectionDef = {
-  id: "reviewer",
-  title: "TTML Reviewer",
-  icon: ReviewerIcon,
-  secondary: true,
-  // The tab renders ReviewerPane (see index.tsx); this row is what search finds.
-  groups: () => [
-    {
-      settings: [
-        {
-          id: "ttmlReviewerMode",
-          label: MODE_LABEL,
-          description: MODE_DESCRIPTION,
-          keywords: "review sync ttml basics reset default clean plain maker",
-          Control: ModeToggle,
-        },
-      ],
-    },
-  ],
+const LABELS: Record<string, string> = {
+  playbackOffset: "Playback offset", seekFadeCompensation: "Seek fade-in compensation", scrollLeadEnabled: "Early scroll", smoothScrolling: "Smooth scrolling",
+  animationFpsCapEnabled: "Frame-rate limit", rendererVisualStyle: "Renderer style", minimalLyricsMode: "Minimal lyrics", syllableMerge: "Join split words",
+  lineHoverBackground: "Line hover background", duetLinePadding: "Wide duet padding", creditsFollowLastLine: "Credits follow the last singer", customFontEnabled: "Custom lyrics font",
+  spaceGravityMode: "Space Gravity", memeFormat: "Word filters", animatorPreset: "Animator preset", enableExperimentalWordSync: "Experimental word sync",
+  staticBackgroundMode: "Background", staticBackgroundBlur: "Background blur", showNpvDynamicBg: "Animated Now Playing background",
 };
+
+export function ReviewerPane({ onBack }: { onBack: () => void }) {
+  const active = useStore($ttmlReviewer);
+  const others = getOtherLyricsExtensions();
+  return <div className="slm sl-reviewer-details">
+    <button type="button" className="sl-sp-btn" onClick={onBack}>Back to Load TTML</button>
+    <p>Reviewer mode saves your preferences before applying the profile below. When it stops, your original preferences return.</p>
+    <dl className="sl-reviewer-modes">
+      <dt>Off</dt><dd>Use your usual settings.</dd>
+      <dt>Apply on Temp</dt><dd>Apply only while a file from Temporary Load is displayed. Resetting it, loading regular lyrics, or changing tracks restores your settings. Session and persistent loads use your usual settings.</dd>
+      <dt>Always Apply</dt><dd>Apply to all lyrics until you choose another mode.</dd>
+    </dl>
+    <p role="status">Review profile: {active ? "active" : "inactive"}.</p>
+    {others.length > 0 && <p className="sl-sp-banner">{others.join(" and ")} can still change lyrics. Reviewer mode does not change other extensions.</p>}
+    <h3>What changes</h3>
+    <dl className="sl-reviewer-values">
+      {REVIEWER_SETTINGS.map(({ key, shown }) => <div key={key}><dt>{LABELS[key] ?? key}</dt><dd>{shown}</dd></div>)}
+      <div><dt>Per-song offsets</dt><dd>Ignored</dd></div>
+      {REVIEWER_EXPERIMENTS_OFF.map(id => getExperiment(id)).filter(experiment => !experiment.hidden).map(experiment => <div key={experiment.id}><dt>{experiment.label}</dt><dd>{experiment.forceState === true ? "Forced on" : "Off"}</dd></div>)}
+      <div><dt>Other experiments</dt><dd>Default</dd></div>
+    </dl>
+  </div>;
+}

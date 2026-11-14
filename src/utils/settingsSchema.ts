@@ -162,5 +162,6 @@ export const MANAGED_SETTING_KEYS = new Set([
   "syllableMerge",
   "syllablePace",
   "ttmlMakerMode",
+  "ttmlReviewerMode",
   "viewControlsPosition"
 ]);

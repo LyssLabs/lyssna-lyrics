@@ -73,9 +73,6 @@ sl-generic-modal.SpicyLyricsModal .sl-modal-overlay .sl-modal.slmodal-settingsPa
   .ll-settings-utilities { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 4px; padding: 0; }
   .ll-settings-utilities button { padding: 6px 8px; border: 0; border-radius: 4px; color: #ffffff99; background: transparent; font-size: 11px !important; cursor: pointer; }
   .ll-settings-utilities button:hover, .ll-settings-utilities button[aria-pressed="true"] { color: #f1f1f1; background: #ffffff0d; }
-  .ll-discord-endpoint { width: 100%; display: grid; gap: 6px; }
-  .ll-discord-endpoint input { width: 100%; padding: 8px 10px; color: #f1f1f1; border: 1px solid #ffffff30; background: #0003; border-radius: 8px; font-size: 13px !important; }
-  .ll-discord-endpoint [role="alert"] { color: #ffb4ab; font-size: 12px !important; }
   :is(button, input, select):focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
   .sl-sp-toggle:has(input:focus-visible) { outline: 2px solid #fff; outline-offset: 3px; border-radius: 12px; }
 }
@@ -96,4 +93,22 @@ sl-generic-modal.SpicyLyricsModal .sl-modal-overlay .sl-modal.slmodal-settingsPa
 }
 @media (prefers-reduced-motion: reduce) {
   .slmodal-settingsPanel .ll-settings-tab-marker { transition: none; }
+}
+
+sl-generic-modal.SpicyLyricsModal .sl-modal-overlay .sl-modal.slmodal-settingsPanel {
+  .sl-sp-bug { display: flex; flex-direction: column; gap: 14px; padding-top: 16px; }
+  .sl-sp-bug h3 { margin: 0; font-size: 18px !important; font-weight: 700; color: #f1f1f1; }
+  .sl-sp-bug p { margin: 0; font-size: 13px !important; font-weight: 400; line-height: 1.5; color: #ffffffa6; }
+  .sl-sp-bug-back { align-self: flex-start; }
+  .sl-sp-bug-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  .sl-sp-bug-actions .sl-sp-btn { min-width: 145px; min-height: 36px; padding: 8px 14px; }
+  .sl-sp-bug .sl-sp-bug-primary { background: #f1f1f1; color: #191919; }
+  .sl-sp-bug .sl-sp-bug-primary:hover { background: #fff; color: #191919; }
+  .sl-sp-bug .sl-sp-bug-fineprint { font-size: 12px !important; }
+  .sl-sp-bug-details { min-width: 0; padding: 12px 14px; border: 1px solid #ffffff17; border-radius: 12px; background: #ffffff04; }
+  .sl-sp-bug-details summary { cursor: pointer; color: #f1f1f1; font-size: 13px !important; font-weight: 600; line-height: 24px; }
+  .sl-sp-bug-details summary:focus-visible { outline: 2px solid #fff; outline-offset: 3px; border-radius: 4px; }
+  .sl-sp-bug-preview { margin-top: 12px; max-height: 320px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; font-weight: 400; font-size: 12px !important; line-height: 1.6; color: #ffffffb3; box-shadow: none; background: #0002; }
+  .sl-sp-footer-link[aria-pressed="true"] { color: #fff; background: #ffffff14; }
+  .ll-settings-utilities:empty { display: none; }
 }

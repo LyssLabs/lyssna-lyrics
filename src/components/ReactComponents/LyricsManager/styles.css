@@ -407,3 +407,22 @@ sl-generic-modal.SpicyLyricsModal .sl-modal-overlay .sl-ldb-upload-root {
     }
   }
 }
+sl-generic-modal.SpicyLyricsModal {
+  .sl-ldb-reviewer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin: 8px 0 20px; padding: 14px 16px; border: 1px solid #ffffff1f; border-radius: 12px; background: #ffffff08; }
+  .sl-ldb-reviewer-copy { flex: 1 1 260px; min-width: 0; }
+  .sl-ldb-reviewer label { color: #f1f1f1; font-size: 14px !important; font-weight: 600; }
+  .sl-ldb-reviewer p { margin: 4px 0 8px; color: #b3b3b3; font-size: 12px !important; font-weight: 400; line-height: 1.5; }
+  .sl-ldb-reviewer select { width: 160px; height: 34px; max-width: 100%; padding: 0 10px; border: 1px solid #ffffff26; border-radius: 8px; background: #2b2b2b; color: #f1f1f1; font-size: 13px !important; cursor: pointer; }
+  .sl-ldb-reviewer select:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+  .sl-reviewer-details { display: flex; flex-direction: column; gap: 14px; color: #b3b3b3; font-size: 13px !important; line-height: 1.5; }
+  .sl-reviewer-details > .sl-sp-btn { align-self: flex-start; }
+  .sl-reviewer-details p, .sl-reviewer-details h3, .sl-reviewer-details dl, .sl-reviewer-details dd { margin: 0; }
+  .sl-reviewer-details p { font-size: 13px !important; font-weight: 400; }
+  .sl-reviewer-details h3 { color: #f1f1f1; font-size: 14px !important; font-weight: 600; }
+  .sl-reviewer-modes { display: grid; grid-template-columns: 130px 1fr; gap: 12px 16px; padding: 14px; border-radius: 12px; border: 1px solid #ffffff1f; }
+  .sl-reviewer-modes dt { color: #f1f1f1; font-weight: 600; }
+  .sl-reviewer-values { padding: 8px 14px; border-radius: 12px; border: 1px solid #ffffff1f; background: #ffffff08; }
+  .sl-reviewer-values > div { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 7px 0; }
+  .sl-reviewer-values > div + div { border-top: 1px solid #ffffff0d; }
+  .sl-reviewer-values dd { color: #f1f1f1; flex-shrink: 0; }
+}

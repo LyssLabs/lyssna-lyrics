@@ -10,7 +10,7 @@ import SourcesSection from "./SourcesSection.tsx";
 import Footer from "./Footer.tsx";
 import CreditsSection from "./CreditsSection.tsx";
 import { BugReportPane } from "./BugReportSection.tsx";
-import { ReviewerPane } from "./ReviewerSection.tsx";
+import { AboutIcon } from "./icons.tsx";
 import { SearchBar, ShowHiddenSettingsInSearchContext } from "./components.tsx";
 import { LyssnaSettingsIcons as SettingsIcons } from "./LyssnaSettingsIcons.tsx";
 import DiscordCreditsSettings from "./DiscordCreditsSettings.tsx";
@@ -23,13 +23,15 @@ const TABS = [
   ["Layout", "Interface", SettingsIcons.Layout],
   ["Sources", "Sources", SettingsIcons.Sources],
   ["Advanced", "Advanced", SettingsIcons.Advanced],
+  ["Credits", "Credits", AboutIcon],
 ] as const;
-const UTILITY_TABS = [["Report a bug", "Got a Bug?"], ["TTML Reviewer", "TTML Reviewer"], ["Credits", "Credits"]] as const;
 
 export type SettingsPanelState = { query: string; sectionFilter: string; scrollTop: number };
 export default function SettingsPanel({ onOpenHiddenSettings, onManageAnimator, initialState, onStateChange }: { onOpenHiddenSettings?: () => void; onManageAnimator?: (state: SettingsPanelState) => void; initialState?: SettingsPanelState; onStateChange?: (state: SettingsPanelState) => void }) {
   const [query, setQuery] = useState(initialState?.query ?? "");
-  const [sectionFilter, setSectionFilter] = useState<string>(initialState?.sectionFilter ?? "Appearance");
+  const initialTab = initialState?.sectionFilter === "TTML Reviewer" ? "Sources" : initialState?.sectionFilter ?? "Appearance";
+  const [sectionFilter, setSectionFilter] = useState<string>(TABS.some(([, tab]) => tab === initialTab) || initialTab === "Got a Bug?" ? initialTab : "Appearance");
+  const previousTab = useRef(sectionFilter === "Got a Bug?" ? "Appearance" : sectionFilter);
   const allowHidingSettings = useStore($allowHidingSettings);
   const hideHidingIcon = useStore($hideHidingIcon);
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
@@ -62,6 +64,7 @@ export default function SettingsPanel({ onOpenHiddenSettings, onManageAnimator, 
   }, [onStateChange, query, sectionFilter]);
 
   const selectTab = (tab: string) => {
+    if (sectionFilter !== "Got a Bug?") previousTab.current = sectionFilter;
     setSectionFilter(tab);
     setQuery("");
     if (scrollRef.current) scrollRef.current.scrollTop = 0;
@@ -118,15 +121,13 @@ export default function SettingsPanel({ onOpenHiddenSettings, onManageAnimator, 
                 <InterfaceSection query={query} sectionFilter={searching ? "All" : sectionFilter} />
                 <SourcesSection query={query} sectionFilter={searching ? "All" : sectionFilter} />
                 <DeveloperSection query={query} sectionFilter={searching ? "All" : sectionFilter} onOpenHiddenSettings={onOpenHiddenSettings ?? (() => {})} />
-                {(sectionFilter === "Got a Bug?" || (searching && /bug|report|lag|slow|performance/i.test(query))) && <BugReportPane />}
+                {(sectionFilter === "Got a Bug?" || (searching && /bug|report|lag|slow|performance/i.test(query))) && <BugReportPane onBack={() => selectTab(previousTab.current)} />}
                 {(sectionFilter === "Credits" || (searching && /credit|lyssna|spicy|standalone/i.test(query))) && <CreditsSection />}
-                {(sectionFilter === "TTML Reviewer" || (searching && /ttml|reviewer/i.test(query))) && <ReviewerPane labelOf={(id) => id.replace(/([a-z])([A-Z])/g, "$1 $2")} />}
               </div>
             </ShowHiddenSettingsInSearchContext.Provider>
           </div>
-          <Footer />
+          <Footer onReportBug={() => selectTab("Got a Bug?")} reportBugActive={sectionFilter === "Got a Bug?"} />
           <div className="ll-settings-utilities" aria-label="Settings tools">
-            {UTILITY_TABS.map(([label, tab]) => <button key={tab} type="button" aria-pressed={sectionFilter === tab && !searching} onClick={() => selectTab(tab)}>{label}</button>)}
             {allowHidingSettings && <button type="button" aria-pressed={!hideHidingIcon} onClick={() => $hideHidingIcon.set(!hideHidingIcon)}>Hide settings</button>}
           </div>
         </div>

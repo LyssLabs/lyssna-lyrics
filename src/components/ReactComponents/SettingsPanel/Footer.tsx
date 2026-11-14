@@ -21,7 +21,7 @@ function ExternalArrow() {
   return <svg className="sl-sp-footer-arrow" width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true"><path d="M2.5 7.5L7.5 2.5M7.5 2.5H3.5M7.5 2.5V6.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>;
 }
 
-export default function Footer() {
+export default function Footer({ onReportBug, reportBugActive = false }: { onReportBug?: () => void; reportBugActive?: boolean }) {
   const version = useStore($spicyLyricsVersion);
   const [status, setStatus] = useState<UpdateStatus>("checking");
 
@@ -44,7 +44,8 @@ export default function Footer() {
     <a className="sl-sp-btn" href={STANDALONE_DOWNLOAD_URL} target="_blank" rel="noopener noreferrer" onClick={event => { event.preventDefault(); openExternal(STANDALONE_DOWNLOAD_URL); }}>Download Lyssna Standalone</a>
   </section><div className="sl-sp-footer">
     <div className="sl-sp-footer-links">
-      {LINKS.map(({ label, url, brand }) => <button key={label} type="button" className={`sl-sp-footer-link${brand ? " sl-sp-footer-link--brand" : ""}`} style={brand ? ({ "--brand": brand } as React.CSSProperties) : undefined} onClick={() => window.open(url, "_blank", "noopener,noreferrer")}><span>{label}</span><ExternalArrow /></button>)}
+      {LINKS.map(({ label, url, brand }) => <button key={label} type="button" className={`sl-sp-footer-link${brand ? " sl-sp-footer-link--brand" : ""}`} style={brand ? ({ "--brand": brand } as React.CSSProperties) : undefined} onClick={() => openExternal(url)}><span>{label}</span><ExternalArrow /></button>)}
+      {onReportBug && <button type="button" className="sl-sp-footer-link" aria-pressed={reportBugActive} onClick={onReportBug}>Report a bug</button>}
     </div>
     <div className="sl-sp-footer-meta">
       <span className="sl-sp-footer-build">Build: <span className="sl-sp-footer-build-value">Lyssna Lyrics</span></span>

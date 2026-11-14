@@ -292,6 +292,8 @@ export const $discordCreditUsernames = persistAtom<boolean>("discordCreditUserna
 export const $discordLookupEndpoint = persistAtom<string>("discordLookupEndpoint", DEFAULT_DISCORD_LOOKUP_ENDPOINT);
 export const $viewControlsPosition = persistAtom<string>("viewControlsPosition", "Top");
 export const $ttmlMakerMode = persistAtom<boolean>("ttmlMakerMode", true);
+export type TtmlReviewerMode = "off" | "temporary" | "always";
+export const $ttmlReviewerMode = persistAtom<TtmlReviewerMode>("ttmlReviewerMode", "off");
 export const $developerMode = persistAtom<boolean>("developerMode", false);
 export const $rememberSettingsMenuLocation = persistAtom<boolean>(
   "rememberSettingsMenuLocation",

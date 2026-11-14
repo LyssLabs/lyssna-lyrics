@@ -1,4 +1,5 @@
 import { createTooltip } from "../../utils/tooltip.ts";
+import { IsChangingReviewerProfile } from "../../utils/ttmlReviewer.ts";
 import fetchLyrics, { HoldsTemporaryUpload, ShowQueueLoader } from "../../utils/Lyrics/fetchLyrics.ts";
 import { ClearLyricsLoader } from "../../utils/Lyrics/LyricsLoader.ts";
 import { LyricsQueueRetry } from "../../utils/Lyrics/LyricsQueueRetry.ts";
@@ -1037,8 +1038,10 @@ function RefreshRightAlignedLyrics() {
   triggerRemeasureLV();
 }
 
+Global.Event.listen("ttml-reviewer:changed", () => rebuildLyrics());
+
 function rebuildLyrics() {
-  if (!PageContainer) return;
+  if (!PageContainer || IsChangingReviewerProfile()) return;
   const uri = SpotifyPlayer.GetUri();
   if (!HoldsTemporaryUpload(uri)) $currentLyricsData.set("");
   if (uri) fetchLyrics(uri).then(ApplyLyrics);
@@ -1083,6 +1086,7 @@ $discordLookupEndpoint.listen(() => ReapplyCurrentLyrics());
 $memeFormat.listen((v) => {
   if (!PageContainer) return;
   PageContainer.classList.toggle("GibberishLyricsMode", v === "Gibberish");
+  if (IsChangingReviewerProfile()) return;
   const uri = SpotifyPlayer.GetUri();
   $currentLyricsData.set("");
   if (uri) fetchLyrics(uri).then(ApplyLyrics);
@@ -1101,6 +1105,7 @@ $lineHoverBackground.listen((v) => {
 $spaceGravityMode.listen((v) => {
   if (!PageContainer) return;
   PageContainer.classList.toggle("BloomRenderer", !v && $rendererVisualStyle.get() === "bloom");
+  if (IsChangingReviewerProfile()) return;
   if (ShouldReapplyRenderedLyricsForSpaceGravity(v)) {
     ReapplyCurrentLyrics();
     return;
@@ -1139,6 +1144,7 @@ $customFont.listen((v) => {
 // Experiments own their CSS hook here; NowBar.ts handles the rebuild for the ones
 // that need one. Adding an experiment requires no change to this file.
 function ReapplyCurrentLyrics(): void {
+  if (IsChangingReviewerProfile()) return;
   const rawLyrics = $currentLyricsData.get();
   if (rawLyrics && !rawLyrics.startsWith("NO_LYRICS:")) {
     try {
