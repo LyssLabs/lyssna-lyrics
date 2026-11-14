@@ -1,4 +1,4 @@
-import { LYSSNA_LOGO } from "../../brand.ts";
+import { LYSSNA_MICROPHONE_PATHS } from "../../brand.ts";
 /*
  * View-control icons share one grid: 24×24, 2-unit round stroke, ink centred on 12,12.
  * Layout icons draw the page as it actually lays out (frame, cover square, lyric lines),
@@ -40,7 +40,7 @@ export function KnockoutDisc(icon: string, maskId: string) {
 }
 
 export const Icons = {
-  LyricsPage: `<svg class="Svg-sc-ytk21e-0 Svg-img-16-icon" id="SpicyLyricsPageSvg" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 256 256"><image href="${LYSSNA_LOGO}" width="256" height="256"/></svg>`,
+  LyricsPage: `<svg class="Svg-sc-ytk21e-0 Svg-img-16-icon" id="SpicyLyricsPageSvg" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${LYSSNA_MICROPHONE_PATHS.map(d => `<path fill="none" d="${d}"/>`).join("")}<circle cx="16" cy="7" r="5" fill="none"/></svg>`,
   Close: Line(`<path d="m5.5 5.5 13 13"/><path d="m18.5 5.5-13 13"/>`),
   // The page in miniature: cover on the NowBar's side, lyric lines on the other.
   NowBar: Line(

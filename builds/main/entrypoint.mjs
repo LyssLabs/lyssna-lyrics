@@ -1,22 +1,14 @@
-// Built-in channel → [apiHost, storageHost, fixedVersion?] map
-const CHANNEL_MAP = {
-  Stable: ["ipixelgalaxy.com", "ipixelgalaxy.com"],
-  Beta:   ["ipixelgalaxy.com", "ipixelgalaxy.com"],
-};
+import { BUILT_IN_CHANNELS as CHANNEL_MAP, CHANNELS_CHANGED_EVENT, DEFAULT_CHANNEL, DEFAULT_BUILD_HOST, getChannelMap as getFullChannelMap, getCurrentChannel, isAllowedBuildHost, isReservedChannelName, readCustomChannels as getCustomChannels, saveCustomChannels, selectedChannel as selectChannel, setCurrentChannel } from "../shared/channels.mjs";
 
 const BUILT_IN_CHANNELS = Object.keys(CHANNEL_MAP);
-const DEFAULT_API_HOST = CHANNEL_MAP.Stable[0];
-const DEFAULT_STORAGE_HOST = CHANNEL_MAP.Stable[1];
-
-const LS_PREFIX = "LyssnaLyrics-";
-const CHANNELS_CHANGED_EVENT = "spicy-lyrics:channels-changed";
-const lsGet = (key) => Spicetify.LocalStorage.get(`${LS_PREFIX}${key}`);
-const lsSet = (key, value) => Spicetify.LocalStorage.set(`${LS_PREFIX}${key}`, value);
+const DEFAULT_API_HOST = DEFAULT_BUILD_HOST;
+const DEFAULT_STORAGE_HOST = DEFAULT_BUILD_HOST;
 
 const usesNewSettingsDesign = () => {
   try {
     const raw = window.Spicetify?.LocalStorage?.get?.("SL:settings") ?? window.localStorage.getItem("SL:settings");
-    const settings = JSON.parse(raw ?? "{}");
+    const own = window.Spicetify?.LocalStorage?.get?.("LL:settings") ?? window.localStorage.getItem("LL:settings");
+    const settings = { ...JSON.parse(raw ?? "{}"), ...JSON.parse(own ?? "{}") };
     return settings?.["experiment:newSettingsDesign"] !== false &&
       settings?.["experiment:newUpdatePromptDesign"] !== false;
   } catch {
@@ -37,56 +29,8 @@ const syncSettingsDesign = () => {
 
 window.addEventListener("spicy-lyrics:settings-design-changed", syncSettingsDesign);
 window.addEventListener("storage", (event) => {
-  if (event.key === "SL:settings" || event.key === null) syncSettingsDesign();
+  if (event.key === "SL:settings" || event.key === "LL:settings" || event.key === null) syncSettingsDesign();
 });
-
-// ─── Channel Storage Helpers ───
-
-const isAllowedBuildHost = (host) => {
-  try {
-    const url = new URL(`https://${host}`);
-    return !/(^|\.)(spicylyrics\.org|spikerko\.org)$/i.test(url.hostname) && !url.username && !url.password && !url.search && !url.hash;
-  } catch { return false; }
-};
-
-const getCustomChannels = () => {
-  try {
-    const own = lsGet("customChannels");
-    const raw = own ?? Spicetify.LocalStorage.get("SpicyLyrics-customChannels");
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      const clean = {};
-      for (const [name, hosts] of Object.entries(parsed)) {
-        if (name !== "Stable" && name !== "Beta" && Array.isArray(hosts) && (hosts.length === 2 || hosts.length === 3) && hosts.every(h => typeof h === "string") && isAllowedBuildHost(hosts[0]) && isAllowedBuildHost(hosts[1])) {
-          clean[name] = hosts;
-        }
-      }
-      if (own === null || own === undefined) {
-        lsSet("customChannels", JSON.stringify(clean));
-        const previous = Spicetify.LocalStorage.get("SpicyLyrics-buildChannel");
-        if (previous && Object.hasOwn(clean, previous)) lsSet("buildChannel", previous);
-      }
-      return clean;
-    }
-  } catch (e) {
-    console.warn("[Lyssna Lyrics] [Entry] Failed to parse custom channels:", e);
-  }
-  return {};
-};
-
-const saveCustomChannels = (channels) => {
-  lsSet("customChannels", JSON.stringify(channels));
-  window.dispatchEvent(new Event(CHANNELS_CHANGED_EVENT));
-};
-
-const getFullChannelMap = () => ({ ...CHANNEL_MAP, ...getCustomChannels() });
-
-const getCurrentChannel = () => { getCustomChannels(); return lsGet("buildChannel") ?? "Stable"; };
-
-const setCurrentChannel = (name) => {
-  lsSet("buildChannel", name);
-  window.dispatchEvent(new Event(CHANNELS_CHANGED_EVENT));
-};
 
 const moveCustomChannel = (name, direction) => {
   const channels = getCustomChannels();
@@ -385,10 +329,10 @@ const showAddCustomChannel = () => {
       const apiHost = apiHostRaw || DEFAULT_API_HOST;
       const storageHost = storageHostRaw || DEFAULT_STORAGE_HOST;
 
-      if (!isAllowedBuildHost(apiHost) || !isAllowedBuildHost(storageHost)) { Spicetify.showNotification("Choose a Lyssna build host. Official plugin services are unsupported.", true); return; }
+      if (!isAllowedBuildHost(apiHost) || !isAllowedBuildHost(storageHost)) { Spicetify.showNotification("Enter a valid host without a scheme, query, or credentials.", true); return; }
       if (!name) { Spicetify.showNotification("Channel name is required", true); return; }
       if (fixedCb.checked && !fixedVersion) { Spicetify.showNotification("Fixed version is required when enabled", true); return; }
-      if (BUILT_IN_CHANNELS.includes(name)) { Spicetify.showNotification("Cannot override built-in channels", true); return; }
+      if (isReservedChannelName(name)) { Spicetify.showNotification("That channel name is reserved. Choose another name.", true); return; }
 
       const channels = getCustomChannels();
       channels[name] = fixedVersion ? [apiHost, storageHost, fixedVersion] : [apiHost, storageHost];
@@ -529,7 +473,7 @@ const renderChannelSettings = () => {
   if (!advancedPane && !developerTitle) return;
 
   const channels = getFullChannelMap();
-  const current = channels[getCurrentChannel()] ? getCurrentChannel() : "Stable";
+  const current = channels[getCurrentChannel()] ? getCurrentChannel() : DEFAULT_CHANNEL;
   const row = document.createElement("div");
   row.id = CHANNEL_SETTING_ROW_ID;
   row.className = advancedPane ? "sl-sp-row sl-sp-row--stacked" : "sl-sp-row sl-list-row";
@@ -611,12 +555,7 @@ const registerChannelSettings = () => {
 
 const VERSION_PATTERN = /^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/;
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-const selectChannel = () => {
-  const channels = getFullChannelMap();
-  const name = getCurrentChannel();
-  const hosts = channels[name] ?? channels.Stable;
-  return { apiHost: hosts[0], storageHost: hosts[1], fixedVersion: hosts[2] };
-};
+
 
 let loading = false;
 let initializationFailed = false;
@@ -658,6 +597,10 @@ async function load() {
   try {
     const channel = selectChannel();
     let version = channel.fixedVersion;
+    if (!version && channel.name === DEFAULT_CHANNEL && typeof __LYSSNA_ENTRY_TEST_VERSION__ === "string") {
+      version = __LYSSNA_ENTRY_TEST_VERSION__;
+      channel.fixedVersion = version;
+    }
     if (!version) {
       const response = await fetch("https://" + channel.apiHost + "/version", { cache: "no-store", signal: AbortSignal.timeout(5000) });
       if (!response.ok) throw new Error("Version request failed: " + response.status);
@@ -665,7 +608,8 @@ async function load() {
     }
     if (!VERSION_PATTERN.test(version)) throw new Error("Invalid build version");
     window._spicy_lyrics_metadata = { LoadedVersion: version };
-    const url = "https://" + channel.storageHost + "/lyssna-lyrics@" + encodeURIComponent(version) + ".mjs?attempt=" + attempt++;
+    window._lyssna_lyrics_channel = { name: channel.name, fixedVersion: channel.fixedVersion };
+    const url = "https://" + channel.storageHost + "/" + channel.bundleName + "@" + encodeURIComponent(version) + ".mjs?attempt=" + attempt++;
     try {
       await import(url);
     } catch (error) {

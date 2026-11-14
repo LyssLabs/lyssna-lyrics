@@ -1,25 +1,5 @@
-import { CHANNEL_PREFIX, DEFAULT_BUILD_HOST, readCustomChannels } from "./Channels.ts";
-const DEFAULT_API_HOST = DEFAULT_BUILD_HOST;
+import { selectedChannel } from "./Channels.ts";
 const VERSION_TIMEOUT_MS = 5000;
-
-function selectedChannel(): { apiHost: string; fixedVersion: string | null } {
-  const custom = readCustomChannels();
-  const name = Spicetify.LocalStorage.get(`${CHANNEL_PREFIX}buildChannel`) ?? "Stable";
-  if (name === "Stable" || name === "Beta") return { apiHost: DEFAULT_API_HOST, fixedVersion: null };
-
-  try {
-    const hosts = custom[name];
-    if (Array.isArray(hosts) && typeof hosts[0] === "string") {
-      return {
-        apiHost: hosts[0],
-        fixedVersion: typeof hosts[2] === "string" && hosts[2].trim() ? hosts[2].trim() : null,
-      };
-    }
-  } catch {
-    // Match the entrypoint's Stable fallback when stored channels are invalid.
-  }
-  return { apiHost: DEFAULT_API_HOST, fixedVersion: null };
-}
 
 export async function fetchSelectedChannelVersion(): Promise<string | undefined> {
   const channel = selectedChannel();

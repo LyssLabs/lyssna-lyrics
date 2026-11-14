@@ -3,12 +3,6 @@ import BuildChannelPanel from "../components/ReactComponents/BuildChannelPanel.t
 import { createReactModalContent } from "./reactModalContent.tsx";
 
 export function OpenBuildChannelPanel() {
-  const entrypointChannels = (window as any)._spicy_lyrics_channels;
-  if (entrypointChannels?.showSwitcher) {
-    entrypointChannels.showSwitcher();
-    return;
-  }
-
   const options = {
     title: "Build Channel",
     ...createReactModalContent(<BuildChannelPanel />),
@@ -22,12 +16,7 @@ export function OpenBuildChannelPanel() {
   }
 }
 
-/** Opens the entrypoint branch manager when it is available. */
+/** Keep Lyssna's channel controls available with older installed launchers too. */
 export function OpenBuildChannelManager() {
-  const entrypointChannels = (window as any)._spicy_lyrics_channels;
-  if (entrypointChannels?.showManage) {
-    entrypointChannels.showManage();
-    return;
-  }
   OpenBuildChannelPanel();
 }

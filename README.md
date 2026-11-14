@@ -1,13 +1,13 @@
 # Lyssna Lyrics
 
-![Lyssna logo](src/assets/lyssna.png)
+![Lyssna logo](src/assets/lyssna-microphone.svg)
 
 Synchronized lyrics for Spotify through Spicetify. Maintained by iPixelGalaxy, based on the official [Spicy Lyrics plugin](https://github.com/Spikerko/spicy-lyrics) by Spikerko and its contributors. The Lyssna name and logo are used with permission from [Stormanzanii](https://github.com/Stormanzanii/Lyssna).
 
 ## Installation
 
 1. Install [Spicetify](https://spicetify.app). Disable any existing Spicy Lyrics extension first; both plugins use the same lyric page and shared settings.
-2. Download [lyssna-lyrics.mjs](https://raw.githubusercontent.com/iPixelGalaxy/spicy-lyrics/dev/builds/lyssna-lyrics.mjs) into your Spicetify Extensions directory. Run `spicetify config-dir` to find it.
+2. Download [lyssna-lyrics.mjs](https://ipixelgalaxy.com/lyssna-lyrics.mjs) into your Spicetify Extensions directory. Run `spicetify config-dir` to find it.
 3. Enable the extension:
 
    ```
@@ -19,7 +19,9 @@ Existing installations using this fork's old loader continue through its compati
 
 ## Settings and lyric sources
 
-Shared settings keep the existing `SL:settings` format and legacy `SpicyLyrics-` keys, so switching between Lyssna Lyrics and the official plugin preserves common choices. Build channels are stored separately, with existing custom fork channels copied over. Official build hosts are excluded. The default Lyssna build host remains `ipixelgalaxy.com`.
+Lyssna-only settings live in `LL:settings`, and its interface bookkeeping lives in `LL:uiState`. Common settings stay in the official plugin's `SL:settings` and `SL:uiState` records, so changes carry across when you switch branches. Existing fork-only settings move automatically after a successful copy; other upstream fields are preserved.
+
+The channel picker always lists **Lyssna** first and selects it by default, using `ipixelgalaxy.com` for both version and storage hosts. **Spicy Lyrics** loads the official Stable build. Beta is removed. Custom channels and their Add controls are always visible. Switching to the official branch is an explicit opt-in to that plugin and its own services.
 
 Community and Apple Music lyrics use the public developer API with Lyssna's publishable client key through a page hosted on this project's website. The key owner must allow `https://ipixelgalaxy.com`; see [integration setup](docs/lyssna-lyrics-migration.md). Both apps share its allowance. Provider, maker, and uploader credits appear with the lyrics. The private plugin API, sessions, embedded contributor profiles, remote configuration, and remote experiment controls are removed. Motion artwork falls back to static covers because its signing service belonged to the private integration; saved artwork preferences remain available for compatibility. Spotify Canvas still works.
 

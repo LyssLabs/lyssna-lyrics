@@ -1,4 +1,4 @@
-import { CHANNEL_PREFIX, DEFAULT_BUILD_HOST, readCustomChannels, isAllowedBuildHost } from "../../utils/version/Channels.ts";
+import { BUILT_IN_CHANNELS, DEFAULT_CHANNEL, DEFAULT_BUILD_HOST, readCustomChannels, saveCustomChannels, getCurrentChannel, setCurrentChannel, isAllowedBuildHost, isReservedChannelName } from "../../utils/version/Channels.ts";
 import { useStore } from "@nanostores/react";
 import React, { useEffect, useMemo, useState } from "react";
 import { $buildChannel } from "../../utils/stores.ts";
@@ -6,44 +6,21 @@ import { $buildChannel } from "../../utils/stores.ts";
 type ChannelHosts = [string, string] | [string, string, string];
 type ChannelMap = Record<string, ChannelHosts>;
 
-const CUSTOM_CHANNELS_KEY = "customChannels";
 const CHANNELS_CHANGED_EVENT = "spicy-lyrics:channels-changed";
 const DEFAULT_API_HOST = DEFAULT_BUILD_HOST;
 const DEFAULT_STORAGE_HOST = DEFAULT_BUILD_HOST;
-
-const BUILT_IN_CHANNELS: ChannelMap = {
-  Stable: [DEFAULT_API_HOST, DEFAULT_STORAGE_HOST],
-  Beta: [DEFAULT_API_HOST, DEFAULT_STORAGE_HOST],
-};
-
-
-function legacyGet(key: string): string | null {
-  return Spicetify.LocalStorage.get(`${CHANNEL_PREFIX}${key}`);
-}
-
-function legacySet(key: string, value: string): void {
-  Spicetify.LocalStorage.set(`${CHANNEL_PREFIX}${key}`, value);
-}
 
 function notify(message: string, isError = false): void {
   Spicetify.showNotification?.(message, isError);
 }
 
-
-function saveCustomChannels(channels: ChannelMap): void {
-  legacySet(CUSTOM_CHANNELS_KEY, JSON.stringify(channels));
-  window.dispatchEvent(new Event(CHANNELS_CHANGED_EVENT));
-}
-
-function getInitialChannel(fallback: string): string {
-  readCustomChannels();
-  return legacyGet("buildChannel") ?? fallback;
+function getInitialChannel(_fallback: string): string {
+  return getCurrentChannel();
 }
 
 function persistBuildChannel(channel: string): void {
   $buildChannel.set(channel);
-  legacySet("buildChannel", channel);
-  window.dispatchEvent(new Event(CHANNELS_CHANGED_EVENT));
+  setCurrentChannel(channel);
 }
 
 function hostSummary(hosts: ChannelHosts): string {
@@ -64,13 +41,13 @@ export function BuildChannelSettingControl({ onManage }: { onManage: () => void 
   useEffect(() => {
     const refresh = () => {
       setChannelMap({ ...BUILT_IN_CHANNELS, ...readCustomChannels() });
-      $buildChannel.set(getInitialChannel("Stable"));
+      $buildChannel.set(getInitialChannel(DEFAULT_CHANNEL));
     };
     window.addEventListener(CHANNELS_CHANGED_EVENT, refresh);
     return () => window.removeEventListener(CHANNELS_CHANGED_EVENT, refresh);
   }, []);
   const persistedChannel = getInitialChannel(buildChannel);
-  const selectedChannel = channelMap[persistedChannel] ? persistedChannel : "Stable";
+  const selectedChannel = channelMap[persistedChannel] ? persistedChannel : DEFAULT_CHANNEL;
 
   return (
     <div className="sl-sp-btn-group">
@@ -101,7 +78,6 @@ export default function BuildChannelPanel() {
   const buildChannel = useStore($buildChannel);
   const [customChannels, setCustomChannels] = useState<ChannelMap>(() => readCustomChannels());
   const [selectedChannel, setSelectedChannel] = useState(() => getInitialChannel(buildChannel));
-  const [managingChannels, setManagingChannels] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [name, setName] = useState("");
   const [apiHost, setApiHost] = useState("");
@@ -119,7 +95,7 @@ export default function BuildChannelPanel() {
   );
 
   const persistedChannel = getInitialChannel(buildChannel);
-  const activeChannel = channelMap[persistedChannel] ? persistedChannel : "Stable";
+  const activeChannel = channelMap[persistedChannel] ? persistedChannel : DEFAULT_CHANNEL;
   const selectedHosts = channelMap[selectedChannel];
   const branchNames = Object.keys(channelMap);
   const customNames = Object.keys(customChannels);
@@ -140,15 +116,15 @@ export default function BuildChannelPanel() {
     const cleanFixedVersion = fixedVersion.trim();
 
     if (!isAllowedBuildHost(cleanApiHost) || !isAllowedBuildHost(cleanStorageHost)) {
-      notify("Choose a Lyssna build host. Official plugin services are unsupported.", true);
+      notify("Enter a valid host without a scheme, query, or credentials.", true);
       return;
     }
     if (!cleanName) {
       notify("Channel name is required", true);
       return;
     }
-    if (isBuiltInChannel(cleanName)) {
-      notify("Cannot override built-in channels", true);
+    if (isReservedChannelName(cleanName)) {
+      notify("That channel name is reserved. Choose another name.", true);
       return;
     }
     if (fixedVersionEnabled && !cleanFixedVersion) {
@@ -177,9 +153,9 @@ export default function BuildChannelPanel() {
     saveCustomChannels(nextChannels);
     setCustomChannels(nextChannels);
 
-    if (selectedChannel === channelName) {
-      setSelectedChannel("Stable");
-      persistBuildChannel("Stable");
+    if (selectedChannel === channelName || activeChannel === channelName) {
+      setSelectedChannel(DEFAULT_CHANNEL);
+      persistBuildChannel(DEFAULT_CHANNEL);
     }
 
     notify(`Branch "${channelName}" removed`);
@@ -220,9 +196,6 @@ export default function BuildChannelPanel() {
         <label>
           <span>Channel</span>
           <span className="sl-build-channel-channel-control">
-            <button className="sl-build-channel-secondary" onClick={() => setManagingChannels((open) => !open)} type="button">
-              Manage
-            </button>
             <span className="sl-build-channel-select-wrap">
               <select
                 className="sl-build-channel-select"
@@ -243,8 +216,7 @@ export default function BuildChannelPanel() {
         )}
       </div>
 
-      {managingChannels && (
-        <div className="sl-build-channel-custom">
+      <div className="sl-build-channel-custom">
           <div className="sl-build-channel-custom-header">
             <span className="sl-build-channel-section-title">Branches</span>
           </div>
@@ -370,8 +342,7 @@ export default function BuildChannelPanel() {
               Add Branch
             </button>
           )}
-        </div>
-      )}
+      </div>
 
       <div className="sl-build-channel-actions">
         <span className="sl-build-channel-current">

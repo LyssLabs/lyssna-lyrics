@@ -1,4 +1,4 @@
-import { ClientKey, LyssnaLogo } from "./project/assets.mjs";
+import { ClientKey, LyssnaLogo, LyssnaMicrophonePaths } from "./project/assets.mjs";
 import { defineConfig } from "@spicemod/creator";
 import { ProjectName, ProjectVersion } from "./project/config";
 
@@ -16,6 +16,7 @@ export default defineConfig({
     define: {
       __LYSSNA_LYRICS_CLIENT_KEY__: JSON.stringify(ClientKey),
       __LYSSNA_LOGO__: JSON.stringify(LyssnaLogo),
+      __LYSSNA_MICROPHONE_PATHS__: JSON.stringify(LyssnaMicrophonePaths),
     },
   },
 });

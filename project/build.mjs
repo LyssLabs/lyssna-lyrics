@@ -137,6 +137,14 @@ if (result.status !== 0) {
   process.exit(result.status ?? 1);
 }
 
+const entrypointFile = join(defaultDist, "entrypoint.mjs");
+const entrypointBuild = spawnSync("bun", [
+  "build", "builds/main/entrypoint.mjs", "--target", "browser", "--format", "esm",
+  "--outfile", entrypointFile,
+  "--define", `__LYSSNA_ENTRY_TEST_VERSION__=${parsedArgs.testBuild ? JSON.stringify(version) : "null"}`,
+], { stdio: "inherit", windowsHide: true });
+if (entrypointBuild.status !== 0) process.exit(entrypointBuild.status ?? 1);
+
 try {
   const builtFile = getBuiltJsFile(defaultDist, projectName);
   for (const filename of outputFiles) {
@@ -148,6 +156,8 @@ try {
     new Script(script[1], { filename: bridgeName });
   }
   copyFileReplacing(resolve("website", bridgeName), join(defaultDist, bridgeName));
+  const launcherFiles = ["lyssna-lyrics.mjs", "spicy-lyrics.mjs", "spicy-lyrics-pixel.mjs"];
+  for (const filename of launcherFiles) copyFileReplacing(resolve("builds", filename), join(defaultDist, filename));
   if (!parsedArgs.testBuild) {
     writeFileReplacing(join(defaultDist, "version"), version);
   }
@@ -159,6 +169,8 @@ try {
       copyFileReplacing(join(defaultDist, filename), join(dest, filename));
     }
     copyFileReplacing(resolve("website", bridgeName), join(dest, bridgeName));
+    copyFileReplacing(entrypointFile, join(dest, "entrypoint.mjs"));
+    for (const filename of launcherFiles) copyFileReplacing(join(defaultDist, filename), join(dest, filename));
     if (!parsedArgs.testBuild) {
       writeFileReplacing(join(dest, "version"), version);
     }

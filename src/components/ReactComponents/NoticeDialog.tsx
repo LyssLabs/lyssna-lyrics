@@ -3,9 +3,12 @@ import { flushSync } from "react-dom";
 import ReactDOM from "react-dom/client";
 import { $experiment } from "../../utils/experiments.ts";
 
-import { LYSSNA_LOGO } from "../../brand.ts";
+import { LYSSNA_MICROPHONE_PATHS } from "../../brand.ts";
 const BrandMark = () => (
-  <svg viewBox="0 0 256 256" aria-hidden="true"><image href={LYSSNA_LOGO} width="256" height="256" /></svg>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    {LYSSNA_MICROPHONE_PATHS.map(d => <path key={d} fill="none" d={d} />)}
+    <circle cx="16" cy="7" r="5" fill="none" />
+  </svg>
 );
 
 export const NoticeLink = ({ href, children }: { href: string; children: React.ReactNode }) => (

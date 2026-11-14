@@ -1,28 +1,17 @@
+import { partitionedStorage } from "./settingsStorage.ts";
+import { SHARED_SETTING_KEYS, MANAGED_SETTING_KEYS } from "./settingsSchema.ts";
+import { DEFAULT_CHANNEL, getCurrentChannel } from "./version/Channels.ts";
 import { atom, computed, type WritableAtom } from "nanostores";
 import { ProjectVersion } from "../../project/config.ts";
 import { SETTING_IDS } from "../components/ReactComponents/SettingsPanel/hiddenSettings.ts";
 
 export const SETTINGS_KEY = "SL:settings";
 
-function readSettingsBlob(): Record<string, any> {
-  try {
-    const raw = Spicetify.LocalStorage.get(SETTINGS_KEY);
-    if (raw === null || raw === undefined) return {};
-    const parsed: unknown = JSON.parse(raw);
-    return parsed !== null && typeof parsed === "object" && !Array.isArray(parsed)
-      ? parsed as Record<string, any>
-      : {};
-  } catch {
-    return {};
-  }
-}
-
-function saveSettingsBlob(obj: Record<string, any>) {
-  try {
-    Spicetify.LocalStorage.set(SETTINGS_KEY, JSON.stringify(obj));
-  } catch (error) {
-    console.warn("Lyssna Lyrics: could not save settings", error);
-  }
+export const LYSSNA_SETTINGS_KEY = "LL:settings";
+const settingsStorage = partitionedStorage(SETTINGS_KEY, LYSSNA_SETTINGS_KEY, SHARED_SETTING_KEYS, MANAGED_SETTING_KEYS);
+export const saveSettingsBlob = settingsStorage.save;
+export function importSettingsBlob(values: Record<string, any>): void {
+  saveSettingsBlob({ ...settingsStorage.load(), ...values });
 }
 
 function migrateSettingsKeys(blob: Record<string, any>): Record<string, any> {
@@ -54,6 +43,10 @@ function migrateSettingsKeys(blob: Record<string, any>): Record<string, any> {
     changed = true;
   }
   if (migrateRendererStyle(blob)) changed = true;
+  if (typeof blob.releaseYearPosition === "string" && ["off", "left", "right"].includes(blob.releaseYearPosition.toLowerCase()) && blob.releaseYearPosition !== blob.releaseYearPosition.toLowerCase()) {
+    blob.releaseYearPosition = blob.releaseYearPosition.toLowerCase();
+    changed = true;
+  }
   if (changed) saveSettingsBlob(blob);
   return blob;
 }
@@ -89,7 +82,7 @@ export const RENDERER_VISUAL_STYLE_LABELS: Record<RendererVisualStyle, string> =
   bloom: "Bloom",
 };
 
-const _settings: Record<string, any> = migrateSettingsKeys(readSettingsBlob());
+const _settings: Record<string, any> = migrateSettingsKeys(settingsStorage.load());
 
 /**
  * Every persisted atom and its default, so the bug report can list what someone
@@ -111,6 +104,9 @@ export const PersistedSettings = new Map<
 >();
 
 function registerPersisted<T>(key: string, store: WritableAtom<T>, defaultValue: T) {
+  const wasManaged = MANAGED_SETTING_KEYS.has(key);
+  MANAGED_SETTING_KEYS.add(key);
+  if (!wasManaged && _settings[key] !== undefined) saveSettingsBlob(_settings);
   PersistedSettings.set(key, {
     get: () => store.get(),
     set: (value) => store.set(value),
@@ -212,6 +208,7 @@ export const $staticBackgroundMode = (() => {
   return store;
 })();
 // Blur radius (px) applied to image-based static backgrounds — not the "color" mode.
+if (_settings.backgroundBlur !== undefined) _settings.staticBackgroundBlur = _settings.backgroundBlur;
 export const $staticBackgroundBlur = persistAtom<number>("staticBackgroundBlur", _settings.backgroundBlur ?? 0);
 export type BackgroundStyle = "dynamic" | "artist" | "cover" | "color" | "none" | "legacy";
 export const BACKGROUND_STYLES: readonly BackgroundStyle[] = ["dynamic", "artist", "cover", "color", "none", "legacy"];
@@ -309,7 +306,8 @@ export const $lyricsCacheAction = persistAtom<string>(
 );
 export const $rightAlignLyrics = persistAtom<boolean>("rightAlignLyrics", false);
 export const $escapeKeyFunction = persistAtom<string>("escapeKeyFunction", "Default");
-export const $buildChannel = persistAtom<string>("buildChannel", "Stable");
+_settings.buildChannel = getCurrentChannel();
+export const $buildChannel = persistAtom<string>("buildChannel", DEFAULT_CHANNEL);
 export type PinnedFooterMode = "Off" | "No Writers" | "Full";
 export const $pinnedFooterMode = persistAtom<PinnedFooterMode>(
   "pinnedFooterMode",
@@ -319,7 +317,10 @@ export const $customFontEnabled = persistAtom<boolean>("customFontEnabled", fals
 export const $customFont = persistAtom<string>("customFont", "");
 export const $alwaysShowInFullscreen = persistAtom<string>("alwaysShowInFullscreen", "None");
 export const $showVolumeSliderFullscreen = persistAtom<string>("showVolumeSliderFullscreen", "Off");
-export const $releaseYearPosition = persistAtom<string>("releaseYearPosition", "Off");
+const releaseYearSetting = persistAtom<string>("releaseYearPosition", "off");
+export const $releaseYearPosition = atom<string>(String(releaseYearSetting.get()).replace(/^./, first => first.toUpperCase()));
+$releaseYearPosition.listen(value => releaseYearSetting.set(value.toLowerCase()));
+releaseYearSetting.listen(value => $releaseYearPosition.set(String(value).replace(/^./, first => first.toUpperCase())));
 export const $coverArtAnimation = persistAtom<boolean>("coverArtAnimation", true);
 // Scatter word-synced lyrics into a floating physics field instead of line layout.
 export const $spaceGravityMode = persistAtom<boolean>("spaceGravityMode", false);

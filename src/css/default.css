@@ -761,12 +761,8 @@ body:not(.SpicyLyrics_StaticBackground)
 }
 
 #SpicyLyricsPageSvg {
-  fill: currentColor;
-  transform: translateY(2px);
-}
-
-.Root:not(.global-nav) #SpicyLyricsPageSvg {
-  transform: translateY(0);
+  fill: none;
+  stroke: currentColor;
 }
 
 #SpicyLyrics_PopupLyricsButton svg {

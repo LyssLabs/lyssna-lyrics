@@ -1,26 +1,15 @@
+import { partitionedStorage } from "./settingsStorage.ts";
 import { atom } from "nanostores";
 
 export const UI_STATE_KEY = "SL:uiState";
 
-function readUiStateBlob(): Record<string, any> {
-  try {
-    const raw = Spicetify.LocalStorage.get(UI_STATE_KEY);
-    if (raw === null || raw === undefined) return {};
-    const parsed: unknown = JSON.parse(raw);
-    return parsed !== null && typeof parsed === "object" && !Array.isArray(parsed)
-      ? parsed as Record<string, any>
-      : {};
-  } catch {
-    return {};
-  }
-}
-
-function saveUiStateBlob(obj: Record<string, any>) {
-  try {
-    Spicetify.LocalStorage.set(UI_STATE_KEY, JSON.stringify(obj));
-  } catch (error) {
-    console.warn("Lyssna Lyrics: could not save interface state", error);
-  }
+export const LYSSNA_UI_STATE_KEY = "LL:uiState";
+const SHARED_UI_KEYS = new Set(["isNowBarOpen", "nowBarSide", "forceCompactMode", "romanization", "npvLyricsOpen", "npvLyricsExpanded"]);
+const MANAGED_UI_KEYS = new Set([...SHARED_UI_KEYS, "fromVersion", "previousVersion", "lastFetchedUri", "settingsMenuLocation", "IsNowBarOpen", "NowBarSide", "ForceCompactMode", "previous-version"]);
+const uiStorage = partitionedStorage(UI_STATE_KEY, LYSSNA_UI_STATE_KEY, SHARED_UI_KEYS, MANAGED_UI_KEYS);
+export const saveUiStateBlob = uiStorage.save;
+export function importUiStateBlob(values: Record<string, any>): void {
+  saveUiStateBlob({ ...uiStorage.load(), ...values });
 }
 
 function migrateUiStateKeys(blob: Record<string, any>): Record<string, any> {
@@ -42,9 +31,10 @@ function migrateUiStateKeys(blob: Record<string, any>): Record<string, any> {
   return blob;
 }
 
-const _uiState: Record<string, any> = migrateUiStateKeys(readUiStateBlob());
+const _uiState: Record<string, any> = migrateUiStateKeys(uiStorage.load());
 
 function persistAtom<T>(key: string, defaultValue: T) {
+  MANAGED_UI_KEYS.add(key);
   const store = atom<T>(_uiState[key] !== undefined ? _uiState[key] : defaultValue);
   store.listen((v) => {
     _uiState[key] = v;

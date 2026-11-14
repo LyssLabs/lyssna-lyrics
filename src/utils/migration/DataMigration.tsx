@@ -2,8 +2,8 @@ import React from "react";
 import { flushSync } from "react-dom";
 import ReactDOM from "react-dom/client";
 import { PopupModal } from "../../components/Modal.ts";
-import { SETTINGS_KEY } from "../stores.ts";
-import { UI_STATE_KEY } from "../uiState.ts";
+import { SETTINGS_KEY, importSettingsBlob } from "../stores.ts";
+import { UI_STATE_KEY, importUiStateBlob } from "../uiState.ts";
 
 const OLD_PREFIX = "SpicyLyrics-";
 
@@ -131,8 +131,8 @@ function migrateData() {
     if (val !== undefined) uiState[OLD_UI_STATE_KEY_RENAMES[key] ?? key] = val;
   }
 
-  Spicetify.LocalStorage.set(SETTINGS_KEY, JSON.stringify(settings));
-  Spicetify.LocalStorage.set(UI_STATE_KEY, JSON.stringify(uiState));
+  importSettingsBlob(settings);
+  importUiStateBlob(uiState);
 }
 
 /**
@@ -146,7 +146,7 @@ export function needsMigration(): boolean {
   if (!hasAnyOldKey()) {
     // Fresh install — write empty blobs to mark as initialized
     Spicetify.LocalStorage.set(SETTINGS_KEY, JSON.stringify({}));
-    Spicetify.LocalStorage.set(UI_STATE_KEY, JSON.stringify({}));
+    if (Spicetify.LocalStorage.get(UI_STATE_KEY) == null) Spicetify.LocalStorage.set(UI_STATE_KEY, JSON.stringify({}));
     return false;
   }
 
