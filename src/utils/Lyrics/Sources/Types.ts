@@ -31,6 +31,6 @@ export type ExternalLyricsResult = {
   status: number;
 };
 
-export type SpicyLyricsCreditSource = {
+export type LyssnaLyricsCreditSource = {
   SongWriters?: string[];
 };

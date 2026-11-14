@@ -1,7 +1,7 @@
 import { channelApp } from "./build-paths.mjs";
 
 export const CHANNEL_PREFIX = "LyssnaLyrics-";
-export const CHANNELS_CHANGED_EVENT = "spicy-lyrics:channels-changed";
+export const CHANNELS_CHANGED_EVENT = "lyssna-lyrics:channels-changed";
 export const DEFAULT_CHANNEL = "Lyssna";
 export const DEFAULT_BUILD_HOST = "ipixelgalaxy.com";
 /** @type {Record<string, [string, string] | [string, string, string]>} */
@@ -50,17 +50,11 @@ export function readCustomChannels() {
   const legacy = parseChannels(legacyRaw);
   if (!own) return legacy ?? Object.create(null);
   try {
-    if (legacyRaw != null && legacy && legacyRaw !== get("legacyCustomChannelsSnapshot")) {
-      const previousLegacy = parseChannels(get("legacyCustomChannelsSnapshot")) ?? Object.create(null);
-      const merged = { ...legacy };
-      for (const [name, hosts] of Object.entries(own)) {
-        if (!Object.hasOwn(legacy, name) && !Object.hasOwn(previousLegacy, name)) merged[name] = hosts;
-      }
-      preserveChannels(merged);
-      set("legacyCustomChannelsSnapshot", legacyRaw);
-      return merged;
+    if (raw == null) {
+      const imported = legacy ?? own;
+      preserveChannels(imported);
+      return imported;
     }
-    if (raw == null) preserveChannels(own);
   } catch (error) {
     console.warn("Lyssna Lyrics preserved build channels after a synchronization error:", error);
   }
@@ -76,27 +70,15 @@ export function getCurrentChannel() {
   let selected = get("buildChannel");
   const legacy = storage().get("SpicyLyrics-buildChannel");
   const legacySelection = legacy === "Stable" || legacy === "Beta" ? "Spicy Lyrics" : legacy;
-  // An older entrypoint can change its selection after Lyssna's own record exists.
-  if ((selected == null || legacy !== get("legacyBuildChannelSnapshot")) && typeof legacySelection === "string" && Object.hasOwn(map, legacySelection)) selected = legacySelection;
+  // Import an older launcher once; an independently enabled Spicy loader owns its keys.
+  if (selected == null && typeof legacySelection === "string" && Object.hasOwn(map, legacySelection)) selected = legacySelection;
   if (typeof selected !== "string" || selected === "Stable" || selected === "Beta" || !Object.hasOwn(map, selected)) selected = DEFAULT_CHANNEL;
   if (get("buildChannel") !== selected) set("buildChannel", selected);
-  if (legacy != null && get("legacyBuildChannelSnapshot") !== legacy) set("legacyBuildChannelSnapshot", legacy);
   return selected;
-}
-
-function mirrorLegacyChannels(channels) {
-  const mirror = { ...channels, Lyssna: [...BUILT_IN_CHANNELS.Lyssna] };
-  const json = JSON.stringify(mirror);
-  storage().set("SpicyLyrics-customChannels", json);
-  if (storage().get("SpicyLyrics-customChannels") !== json) throw new Error("Could not synchronize legacy build channels");
-  set("legacyCustomChannelsSnapshot", json);
-  // Older installed launchers expose custom branches only after this flag.
-  storage().set("SpicyLyrics-customChannelsEnabled", "true");
 }
 
 export function saveCustomChannels(channels) {
   preserveChannels(channels);
-  mirrorLegacyChannels(channels);
   globalThis.dispatchEvent(new Event(CHANNELS_CHANGED_EVENT));
 }
 
@@ -104,9 +86,6 @@ export function setCurrentChannel(name) {
   const map = getChannelMap();
   const selected = Object.hasOwn(map, name) ? name : DEFAULT_CHANNEL;
   set("buildChannel", selected);
-  mirrorLegacyChannels(readCustomChannels());
-  storage().set("SpicyLyrics-buildChannel", selected === "Spicy Lyrics" ? "Stable" : selected);
-  set("legacyBuildChannelSnapshot", selected === "Spicy Lyrics" ? "Stable" : selected);
   globalThis.dispatchEvent(new Event(CHANNELS_CHANGED_EVENT));
 }
 

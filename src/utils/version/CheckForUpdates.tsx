@@ -24,7 +24,7 @@ function showUpdateDismissWarning(currentVersion: any) {
   if (WarningInFlight) return;
   WarningInFlight = true;
   toast.warning(currentVersion?.Text ? `Staying on ${currentVersion.Text}` : "Staying on this version", {
-    className: "sl-update-toast",
+    className: "ll-update-toast",
     description: "Some lyrics sources and features need the latest version. Updating reloads Spotify.",
     duration: 9000,
     // Its timer pauses while hovered or while Spotify is in the background, so without
@@ -44,7 +44,7 @@ function presentUpdateAvailable(currentVersion: any, latestVersion: any) {
   let viewClicked = false;
 
   toast(latestVersion?.Text ? `Lyssna Lyrics ${latestVersion.Text} is out` : "A Lyssna Lyrics update is out", {
-    className: "sl-update-toast",
+    className: "ll-update-toast",
     description: currentVersion?.Text ? `You're on ${currentVersion.Text}.` : undefined,
     duration: Infinity,
     closeButton: true,
@@ -71,19 +71,19 @@ function showUpdateModal(currentVersion: any, latestVersion: any, origin?: DOMRe
   const current = currentVersion?.Text;
   const latest = latestVersion?.Text;
   const content = [
-    <p className="sl-notice-text">
+    <p className="ll-notice-text">
       {current && (
         <>
-          You're on <span className="sl-notice-version">{current}</span>.{" "}
+          You're on <span className="ll-notice-version">{current}</span>.{" "}
         </>
       )}
       Updating reloads Spotify, which takes a few seconds.
     </p>,
   ];
-  content.push(<p className="sl-notice-text sl-notice-text--quiet">Our invite has changed. Join the new Lyssna Discord server for fork updates and support.</p>);
+  content.push(<p className="ll-notice-text ll-notice-text--quiet">Our invite has changed. Join the new Lyssna Discord server for fork updates and support.</p>);
   if (latest) {
     content.push(
-      <p className="sl-notice-text sl-notice-text--quiet">
+      <p className="ll-notice-text ll-notice-text--quiet">
         See what changed in the <NoticeLink href={releaseNotesUrl(latest)}>patch notes</NoticeLink>.
       </p>
     );
@@ -94,7 +94,7 @@ function showUpdateModal(currentVersion: any, latestVersion: any, origin?: DOMRe
     content,
     wide: true,
     primary: { label: "Update and reload", onClick: startUpdate },
-    extraActions: [{ label: "Join our new Discord", className: "sl-discord-shine", onClick: () => openExternal(DISCORD_URL) }],
+    extraActions: [{ label: "Join our new Discord", className: "ll-discord-shine", onClick: () => openExternal(DISCORD_URL) }],
     secondaryLabel: "Not now",
     onDismiss: () => showUpdateDismissWarning(currentVersion),
     origin,
@@ -125,7 +125,7 @@ function fakeLatestVersion(updateTo: string) {
   };
 }
 
-export function triggerSpicyLyricsFakeUpdate(options: { updateTo: string }) {
+export function triggerLyssnaLyricsFakeUpdate(options: { updateTo: string }) {
   const currentVersion = Session.SpicyLyrics.GetCurrentVersion();
   const latestVersion = fakeLatestVersion(options.updateTo);
   presentUpdateAvailable(currentVersion, latestVersion);

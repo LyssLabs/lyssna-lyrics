@@ -15,8 +15,8 @@ const experimentSettingIds: Partial<Record<ExperimentId, string>> = {
  * new experiment shows up here the moment it's added to `utils/experiments.ts`.
  */
 export default function ExperimentsPanel({ experimentIds, advancedOnly = false, showBuiltIn = true }: { experimentIds?: readonly ExperimentId[]; advancedOnly?: boolean; showBuiltIn?: boolean }) {
-  return <div style={{ padding: "8px 0" }} className="slm w-40">
-    <p className="sl-sp-experiments-note">These features are still being shaped. Toggle one off if you prefer how things worked before.</p>
+  return <div style={{ padding: "8px 0" }} className="llm w-40">
+    <p className="ll-sp-experiments-note">These features are still being shaped. Toggle one off if you prefer how things worked before.</p>
     <ExperimentSettings experimentIds={experimentIds} advancedOnly={advancedOnly} showBuiltIn={showBuiltIn} />
   </div>;
 }
@@ -42,8 +42,8 @@ export function ExperimentSettings({ title = false, experimentIds, advancedOnly 
         description="Show or hide the Cinema Lyrics button in the playback bar."
         labelAccessory={
           <a
-            className="sl-sp-help-link"
-            href="https://github.com/iPixelGalaxy/spicy-lyrics/blob/dev/ENABLE_DEVTOOLS.md"
+            className="ll-sp-help-link"
+            href="https://github.com/iPixelGalaxy/lyssna-lyrics/blob/dev/ENABLE_DEVTOOLS.md"
             target="_blank"
             rel="noreferrer"
             onClick={(event) => event.stopPropagation()}

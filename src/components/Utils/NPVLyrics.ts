@@ -122,7 +122,7 @@ function desiredState(): CardState {
     IsExternalCinemaOpening ||
     Fullscreen.IsOpen ||
     Fullscreen.CinemaViewOpen ||
-    Spicetify.Platform.History.location.pathname === "/SpicyLyrics";
+    Spicetify.Platform.History.location.pathname === "/LyssnaLyrics";
   if (pageBusyElsewhere) return "DORMANT";
   if (hiddenForMissingLyrics()) return "DORMANT";
   return $npvLyricsOpen.get() ? "ACTIVE" : "SHELL";
@@ -140,7 +140,7 @@ async function teardownCard(): Promise<void> {
   cardEl = null;
   // A queued toggle belongs to this card; don't let it land on a replacement.
   pendingMutate = null;
-  document.body.classList.remove("SpicyLyrics_NPVCardExpanded");
+  document.body.classList.remove("LyssnaLyrics_NPVCardExpanded");
   cardBodyEl = null;
   lastToggleOpen = null;
   lastExpanded = null;
@@ -152,7 +152,7 @@ async function teardownCard(): Promise<void> {
 // evaluate debounce.
 function clearExpandedIfDetached(): void {
   if (cardEl && !cardEl.isConnected) {
-    document.body.classList.remove("SpicyLyrics_NPVCardExpanded");
+    document.body.classList.remove("LyssnaLyrics_NPVCardExpanded");
   }
 }
 
@@ -308,9 +308,9 @@ function animateStateChange(mutate: () => void): Animation | null {
 }
 
 const MORPH_CLASSES = [
-  "SpicyLyrics_NPVMorph",
-  "SpicyLyrics_NPVMorphIn",
-  "SpicyLyrics_NPVMorphOut",
+  "LyssnaLyrics_NPVMorph",
+  "LyssnaLyrics_NPVMorphIn",
+  "LyssnaLyrics_NPVMorphOut",
 ];
 let activeMorph: ViewTransition | null = null;
 // The update callback of a morph that hasn't run yet. startViewTransition
@@ -361,10 +361,10 @@ function morphExpandedState(mutate: () => void): void {
   const root = document.documentElement;
   root.classList.remove(...MORPH_CLASSES);
   root.classList.add(
-    "SpicyLyrics_NPVMorph",
+    "LyssnaLyrics_NPVMorph",
     card.classList.contains("Expanded")
-      ? "SpicyLyrics_NPVMorphOut"
-      : "SpicyLyrics_NPVMorphIn"
+      ? "LyssnaLyrics_NPVMorphOut"
+      : "LyssnaLyrics_NPVMorphIn"
   );
   // Runs once: from the callback, or from a later click's flush — the skipped
   // transition still invokes its callback afterwards, which is then a no-op.
@@ -400,7 +400,7 @@ function refreshCardUI(): void {
   cardEl.classList.toggle("Expanded", expanded);
   // NPVLyrics.css hides the card's wrapper siblings off this, for when the card
   // is nested inside .main-nowPlayingView-content.
-  document.body.classList.toggle("SpicyLyrics_NPVCardExpanded", expanded);
+  document.body.classList.toggle("LyssnaLyrics_NPVCardExpanded", expanded);
   // Only retitle the buttons when the state actually changed — these DOM
   // writes land inside the observed sidebar subtree and would otherwise
   // re-trigger the observer on every evaluate. The icons themselves follow
@@ -450,14 +450,14 @@ function markStretchHosts(npv: HTMLElement): void {
     for (let host = cardEl.parentElement; host && host !== npv; host = host.parentElement) next.push(host);
   }
   if (next.length === stretchHosts.length && next.every((host, i) => host === stretchHosts[i])) return;
-  for (const host of stretchHosts) if (!next.includes(host)) host.classList.remove("SpicyLyrics_NPVStretch");
-  for (const host of next) host.classList.add("SpicyLyrics_NPVStretch");
+  for (const host of stretchHosts) if (!next.includes(host)) host.classList.remove("LyssnaLyrics_NPVStretch");
+  for (const host of next) host.classList.add("LyssnaLyrics_NPVStretch");
   stretchHosts = next;
 }
 
 function renderCardShell(npv: HTMLElement): boolean {
   const el = document.createElement("div");
-  el.id = "SpicyLyricsNPVCard";
+  el.id = "LyssnaLyricsNPVCard";
   el.innerHTML = `
         <div class="CardHeader">
             <span class="CardTitle">Lyrics</span>
@@ -475,7 +475,7 @@ function renderCardShell(npv: HTMLElement): boolean {
   cardMaid.Give(cardEl);
   markStretchHosts(npv);
   cardMaid.Give(() => {
-    for (const host of stretchHosts) host.classList.remove("SpicyLyrics_NPVStretch");
+    for (const host of stretchHosts) host.classList.remove("LyssnaLyrics_NPVStretch");
     stretchHosts = [];
   });
   cardBodyEl = cardEl.querySelector<HTMLElement>(".CardBody");
@@ -484,7 +484,7 @@ function renderCardShell(npv: HTMLElement): boolean {
   if (expand) {
     expand.addEventListener("click", () => {
       // The card guard inside PageView.Open hands the pipeline over.
-      Session.Navigate({ pathname: "/SpicyLyrics" });
+      Session.Navigate({ pathname: "/LyssnaLyrics" });
     });
     setTooltip(expand, "Open Lyssna Lyrics", "expand-tip");
   }
@@ -766,7 +766,7 @@ export function initNPVLyrics(): void {
   // while the card itself isn't rendered.
   watcherMaid.Give(
     $disableNpvLyrics.subscribe((disabled) => {
-      document.body.classList.toggle("SpicyLyrics_NPVCardEnabled", !disabled);
+      document.body.classList.toggle("LyssnaLyrics_NPVCardEnabled", !disabled);
     })
   );
 

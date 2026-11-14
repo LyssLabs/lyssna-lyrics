@@ -159,13 +159,13 @@ export default function UploadTTMLModal({ onOpenDB, onDone, onShowReviewerDetail
   }
 
   return (
-    <div className="sl-ldb-upload-root">
-      <div className="sl-ldb-upload-header">
-        <p className="sl-ldb-upload-subtitle">For: {songName}</p>
-        <div className="sl-ldb-upload-actions">
+    <div className="ll-ldb-upload-root">
+      <div className="ll-ldb-upload-header">
+        <p className="ll-ldb-upload-subtitle">For: {songName}</p>
+        <div className="ll-ldb-upload-actions">
           <button
             type="button"
-            className="sl-ldb-database-link"
+            className="ll-ldb-database-link"
             onClick={handleOpenGuide}
             disabled={uploading}
           >
@@ -174,7 +174,7 @@ export default function UploadTTMLModal({ onOpenDB, onDone, onShowReviewerDetail
           </button>
           <button
             type="button"
-            className="sl-ldb-database-link"
+            className="ll-ldb-database-link"
             onClick={handleResetTTML}
             disabled={uploading}
           >
@@ -183,7 +183,7 @@ export default function UploadTTMLModal({ onOpenDB, onDone, onShowReviewerDetail
           </button>
           <button
             type="button"
-            className="sl-ldb-database-link"
+            className="ll-ldb-database-link"
             onClick={onOpenDB}
             disabled={uploading}
           >
@@ -197,59 +197,59 @@ export default function UploadTTMLModal({ onOpenDB, onDone, onShowReviewerDetail
         ref={fileInputRef}
         type="file"
         accept=".ttml"
-        id="sl-ldb-file-input"
-        className="sl-ldb-file-input"
+        id="ll-ldb-file-input"
+        className="ll-ldb-file-input"
         onChange={handleFileChange}
       />
 
-      <div className="sl-ldb-reviewer">
-        <div className="sl-ldb-reviewer-copy">
-          <label htmlFor="sl-ldb-reviewer-mode">TTML Reviewer</label>
+      <div className="ll-ldb-reviewer">
+        <div className="ll-ldb-reviewer-copy">
+          <label htmlFor="ll-ldb-reviewer-mode">TTML Reviewer</label>
           <p>Apply a consistent review profile, then restore your settings when it stops.</p>
         </div>
-        <div className="sl-ldb-reviewer-actions">
-          <button type="button" className="sl-ldb-database-link" onClick={onShowReviewerDetails} disabled={uploading}>What does it change?</button>
-          <select id="sl-ldb-reviewer-mode" value={reviewerMode} disabled={uploading} onChange={event => setTtmlReviewerMode(event.currentTarget.value as TtmlReviewerMode)}>
+        <div className="ll-ldb-reviewer-actions">
+          <button type="button" className="ll-ldb-database-link" onClick={onShowReviewerDetails} disabled={uploading}>What does it change?</button>
+          <select id="ll-ldb-reviewer-mode" value={reviewerMode} disabled={uploading} onChange={event => setTtmlReviewerMode(event.currentTarget.value as TtmlReviewerMode)}>
             {REVIEWER_MODES.map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
           </select>
         </div>
       </div>
 
-      <div className="sl-ldb-upload-mode-section">
+      <div className="ll-ldb-upload-mode-section">
         <button
           type="button"
-          className="sl-ldb-upload-mode-card"
+          className="ll-ldb-upload-mode-card"
           onClick={() => openFilePicker("persistent")}
           disabled={uploading}
         >
-          <span className="sl-ldb-upload-mode-icon"><UploadIcon size={16} /></span>
-          <span className="sl-ldb-upload-mode-copy">
-            <span className="sl-ldb-upload-mode-title">Persistent Load</span>
-            <span className="sl-ldb-upload-mode-desc">Stored in local DB, survives restarts</span>
+          <span className="ll-ldb-upload-mode-icon"><UploadIcon size={16} /></span>
+          <span className="ll-ldb-upload-mode-copy">
+            <span className="ll-ldb-upload-mode-title">Persistent Load</span>
+            <span className="ll-ldb-upload-mode-desc">Stored in local DB, survives restarts</span>
           </span>
         </button>
         <button
           type="button"
-          className="sl-ldb-upload-mode-card"
+          className="ll-ldb-upload-mode-card"
           onClick={() => openFilePicker("temporary")}
           disabled={uploading}
         >
-          <span className="sl-ldb-upload-mode-icon"><UploadIcon size={16} /></span>
-          <span className="sl-ldb-upload-mode-copy">
-            <span className="sl-ldb-upload-mode-title">Temporary Load</span>
-            <span className="sl-ldb-upload-mode-desc">Applied only to current song until refresh</span>
+          <span className="ll-ldb-upload-mode-icon"><UploadIcon size={16} /></span>
+          <span className="ll-ldb-upload-mode-copy">
+            <span className="ll-ldb-upload-mode-title">Temporary Load</span>
+            <span className="ll-ldb-upload-mode-desc">Applied only to current song until refresh</span>
           </span>
         </button>
         <button
           type="button"
-          className="sl-ldb-upload-mode-card"
+          className="ll-ldb-upload-mode-card"
           onClick={() => openFilePicker("session")}
           disabled={uploading}
         >
-          <span className="sl-ldb-upload-mode-icon"><UploadIcon size={16} /></span>
-          <span className="sl-ldb-upload-mode-copy">
-            <span className="sl-ldb-upload-mode-title">Session Load</span>
-            <span className="sl-ldb-upload-mode-desc">Used for this track until Spotify restarts</span>
+          <span className="ll-ldb-upload-mode-icon"><UploadIcon size={16} /></span>
+          <span className="ll-ldb-upload-mode-copy">
+            <span className="ll-ldb-upload-mode-title">Session Load</span>
+            <span className="ll-ldb-upload-mode-desc">Used for this track until Spotify restarts</span>
           </span>
         </button>
       </div>

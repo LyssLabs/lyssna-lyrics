@@ -47,13 +47,13 @@ export function TrackRow({ uri, track, loading, isCurrentlyPlaying, onPlay, onDo
 
   if (track == null && loading) {
     return (
-      <div className="sl-ldb-row sl-ldb-row--skeleton">
-        <div className="sl-ldb-row__cover sl-ldb-skeleton" />
-        <div className="sl-ldb-row__info">
-          <div className="sl-ldb-skeleton sl-ldb-skeleton--title" />
-          <div className="sl-ldb-skeleton sl-ldb-skeleton--artist" />
+      <div className="ll-ldb-row ll-ldb-row--skeleton">
+        <div className="ll-ldb-row__cover ll-ldb-skeleton" />
+        <div className="ll-ldb-row__info">
+          <div className="ll-ldb-skeleton ll-ldb-skeleton--title" />
+          <div className="ll-ldb-skeleton ll-ldb-skeleton--artist" />
         </div>
-        <div className="sl-ldb-row__actions" />
+        <div className="ll-ldb-row__actions" />
       </div>
     );
   }
@@ -63,9 +63,9 @@ export function TrackRow({ uri, track, loading, isCurrentlyPlaying, onPlay, onDo
   const coverUrl = track ? pickCoverUrl(track) : LYSSNA_LOGO;
 
   return (
-    <div className={`sl-ldb-row${isCurrentlyPlaying ? " sl-ldb-row--playing" : ""}`}>
+    <div className={`ll-ldb-row${isCurrentlyPlaying ? " ll-ldb-row--playing" : ""}`}>
       <img
-        className="sl-ldb-row__cover"
+        className="ll-ldb-row__cover"
         src={coverUrl}
         alt=""
         width={40}
@@ -75,21 +75,21 @@ export function TrackRow({ uri, track, loading, isCurrentlyPlaying, onPlay, onDo
           (e.currentTarget as HTMLImageElement).src = LYSSNA_LOGO;
         }}
       />
-      <div className="sl-ldb-row__info">
-        <div className="sl-ldb-row__title-row">
+      <div className="ll-ldb-row__info">
+        <div className="ll-ldb-row__title-row">
           {isCurrentlyPlaying && (
             <span
-              className="sl-ldb-row__playing-dot"
+              className="ll-ldb-row__playing-dot"
               role="img"
               aria-label="Currently playing"
               title="Currently playing"
             />
           )}
-          <span className="sl-ldb-row__title" title={title}>{title}</span>
+          <span className="ll-ldb-row__title" title={title}>{title}</span>
         </div>
-        {artists && <span className="sl-ldb-row__artists" title={artists}>{artists}</span>}
+        {artists && <span className="ll-ldb-row__artists" title={artists}>{artists}</span>}
       </div>
-      <div className="sl-ldb-row__actions">
+      <div className="ll-ldb-row__actions">
         <IconButton icon={<PlayIcon size={14} />} onClick={onPlay} title="Play" variant="default" />
         <IconButton icon={<DownloadIcon size={14} />} onClick={onDownload} title="Download TTML" variant="default" />
         <IconButton

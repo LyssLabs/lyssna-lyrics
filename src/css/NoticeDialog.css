@@ -1,6 +1,6 @@
 /* Neutral surfaces for update and status dialogs. */
-.sl-notice-overlay {
-  --sl-ease: cubic-bezier(0.23, 1, 0.32, 1);
+.ll-notice-overlay {
+  --ll-ease: cubic-bezier(0.23, 1, 0.32, 1);
   position: fixed;
   inset: 0;
   z-index: 1000;
@@ -15,39 +15,39 @@
   font-family: var(--encore-body-font-stack, var(--fallback-fonts, sans-serif));
   -webkit-font-smoothing: antialiased;
   transition:
-    background-color 0.22s var(--sl-ease),
-    -webkit-backdrop-filter 0.22s var(--sl-ease),
-    backdrop-filter 0.22s var(--sl-ease);
+    background-color 0.22s var(--ll-ease),
+    -webkit-backdrop-filter 0.22s var(--ll-ease),
+    backdrop-filter 0.22s var(--ll-ease);
 }
 
-.sl-notice-overlay.is-open {
+.ll-notice-overlay.is-open {
   background-color: rgba(0, 0, 0, 0.55);
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
 }
 
-.sl-notice-overlay.is-closing,
-.sl-notice-overlay.is-closing .sl-notice {
+.ll-notice-overlay.is-closing,
+.ll-notice-overlay.is-closing .ll-notice {
   transition-duration: 0.16s;
   transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
 }
 
-.sl-notice-overlay.is-closing {
+.ll-notice-overlay.is-closing {
   pointer-events: none;
 }
 
-.sl-notice,
-[data-sonner-toaster] {
-  --sl-field: #1b1b1d;
-  --sl-field-deep: #181818;
-  --sl-tint: #303030;
-  --sl-ink: #f1f1f1;
-  --sl-ink-muted: #b3b3b3;
-  --sl-cta: #f1f1f1;
-  --sl-cta-ink: #181818;
+.ll-notice,
+.lyssna-lyrics-toaster[data-sonner-toaster] {
+  --ll-field: #1b1b1d;
+  --ll-field-deep: #181818;
+  --ll-tint: #303030;
+  --ll-ink: #f1f1f1;
+  --ll-ink-muted: #b3b3b3;
+  --ll-cta: #f1f1f1;
+  --ll-cta-ink: #181818;
 }
 
-.sl-notice {
+.ll-notice {
   position: relative;
   isolation: isolate;
   display: flex;
@@ -59,152 +59,152 @@
   overflow-x: hidden;
   overflow-y: auto;
   padding: 28px;
-  border: 1px solid color-mix(in oklab, var(--sl-ink) 16%, transparent);
+  border: 1px solid color-mix(in oklab, var(--ll-ink) 16%, transparent);
   border-radius: 16px;
   outline: none;
-  background-color: var(--sl-field);
+  background-color: var(--ll-field);
   background-image: none;
   box-shadow:
-    inset 0 1px 0 color-mix(in oklab, var(--sl-ink) 22%, transparent),
+    inset 0 1px 0 color-mix(in oklab, var(--ll-ink) 22%, transparent),
     0 20px 48px -20px rgba(0, 0, 0, 0.55);
-  color: var(--sl-ink);
+  color: var(--ll-ink);
   opacity: 0;
   transform: scale(0.96);
   transition:
-    opacity 0.22s var(--sl-ease),
-    transform 0.22s var(--sl-ease);
+    opacity 0.22s var(--ll-ease),
+    transform 0.22s var(--ll-ease);
 }
 
-.sl-notice--wide {
+.ll-notice--wide {
   width: min(38rem, 100%);
 }
 
-.sl-notice-overlay.is-open .sl-notice {
+.ll-notice-overlay.is-open .ll-notice {
   opacity: 1;
   transform: scale(1);
 }
 
-.sl-notice > * {
+.ll-notice > * {
   transition:
-    opacity 0.36s var(--sl-ease),
-    transform 0.46s var(--sl-ease);
-  transition-delay: calc(60ms + var(--sl-i, 0) * 35ms);
+    opacity 0.36s var(--ll-ease),
+    transform 0.46s var(--ll-ease);
+  transition-delay: calc(60ms + var(--ll-i, 0) * 35ms);
 }
 
-.sl-notice-overlay:not(.is-open):not(.is-closing) .sl-notice > * {
+.ll-notice-overlay:not(.is-open):not(.is-closing) .ll-notice > * {
   opacity: 0;
   transform: translateY(8px);
 }
 
-.sl-notice-heading {
+.ll-notice-heading {
   display: flex;
   flex-direction: column;
   gap: 10px;
   margin-bottom: 2px;
 }
 
-.sl-notice .sl-notice-brand {
+.ll-notice .ll-notice-brand {
   display: flex;
   align-items: center;
   gap: 8px;
   margin: 0;
   font-size: 0.82rem;
   font-weight: 600;
-  color: var(--sl-ink-muted);
+  color: var(--ll-ink-muted);
 }
 
-.sl-notice-brand > svg {
+.ll-notice-brand > svg {
   width: 16px;
   height: 16px;
   flex-shrink: 0;
 }
 
-.sl-notice .sl-notice-title {
+.ll-notice .ll-notice-title {
   margin: 0;
   font-size: 1.75rem;
   font-weight: 700;
   line-height: 1.1;
   letter-spacing: -0.025em;
-  color: var(--sl-ink);
+  color: var(--ll-ink);
   overflow-wrap: anywhere;
 }
 
-.sl-notice .sl-notice-text {
+.ll-notice .ll-notice-text {
   margin: 0;
   font-size: 0.9rem;
   line-height: 1.5;
-  color: var(--sl-ink-muted);
+  color: var(--ll-ink-muted);
 }
 
-.sl-notice .sl-notice-text--quiet {
+.ll-notice .ll-notice-text--quiet {
   font-size: 0.82rem;
 }
 
-.sl-notice-version {
+.ll-notice-version {
   font-weight: 600;
   font-variant-numeric: tabular-nums;
-  color: var(--sl-ink);
+  color: var(--ll-ink);
 }
 
-.sl-notice a.sl-notice-link {
-  color: var(--sl-ink);
+.ll-notice a.ll-notice-link {
+  color: var(--ll-ink);
   font-weight: 600;
   text-decoration: underline;
-  text-decoration-color: color-mix(in oklab, var(--sl-ink) 45%, transparent);
+  text-decoration-color: color-mix(in oklab, var(--ll-ink) 45%, transparent);
   text-underline-offset: 2px;
   border-radius: 2px;
 }
 
-.sl-notice a.sl-notice-link:hover {
-  color: var(--sl-ink);
+.ll-notice a.ll-notice-link:hover {
+  color: var(--ll-ink);
   text-decoration-color: currentColor;
 }
 
-.sl-notice-patch-notes {
+.ll-notice-patch-notes {
   max-height: min(48vh, 480px);
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-gutter: stable;
   padding: 14px 16px;
-  border: 1px solid color-mix(in oklab, var(--sl-ink) 16%, transparent);
+  border: 1px solid color-mix(in oklab, var(--ll-ink) 16%, transparent);
   border-radius: 10px;
-  color: var(--sl-ink);
+  color: var(--ll-ink);
 }
 
-.sl-notice-patch-notes h3 {
+.ll-notice-patch-notes h3 {
   margin: 0 0 10px;
   font-size: 0.88rem;
 }
 
-.sl-notice-patch-notes p,
-.sl-notice-patch-notes ul {
+.ll-notice-patch-notes p,
+.ll-notice-patch-notes ul {
   margin: 0;
   font-size: 0.82rem;
   line-height: 1.5;
 }
 
-.sl-notice-patch-notes ul {
+.ll-notice-patch-notes ul {
   display: flex;
   flex-direction: column;
   gap: 8px;
   padding-left: 1.25rem;
 }
 
-.sl-notice-patch-notes li { overflow-wrap: anywhere; }
+.ll-notice-patch-notes li { overflow-wrap: anywhere; }
 
-.sl-notice-retry {
+.ll-notice-retry {
   border: 0;
   padding: 0;
   background: transparent;
-  color: var(--sl-ink);
+  color: var(--ll-ink);
   font: inherit;
   font-weight: 600;
   text-decoration: underline;
   cursor: pointer;
 }
 
-.sl-notice-actions {
+.ll-notice-actions {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
@@ -212,9 +212,9 @@
   margin-top: 8px;
 }
 
-.sl-notice-actions > .sl-discord-shine { margin-inline-end: auto; }
+.ll-notice-actions > .ll-discord-shine { margin-inline-end: auto; }
 
-.sl-notice-actions-main {
+.ll-notice-actions-main {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
@@ -222,7 +222,7 @@
   max-width: 100%;
 }
 
-.sl-notice-button {
+.ll-notice-button {
   appearance: none;
   display: inline-flex;
   align-items: center;
@@ -245,65 +245,65 @@
     transform 0.12s ease;
 }
 
-.sl-notice-button:active {
+.ll-notice-button:active {
   transform: scale(0.97);
 }
 
-.sl-notice-button--primary {
-  background-color: var(--sl-cta);
-  color: var(--sl-cta-ink);
+.ll-notice-button--primary {
+  background-color: var(--ll-cta);
+  color: var(--ll-cta-ink);
 }
 
-.sl-notice-button--primary:hover {
+.ll-notice-button--primary:hover {
   background-color: #fff;
 }
 
-.sl-notice-button--secondary {
-  background-color: var(--sl-tint);
-  color: var(--sl-ink);
-  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--sl-ink) 24%, transparent);
+.ll-notice-button--secondary {
+  background-color: var(--ll-tint);
+  color: var(--ll-ink);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--ll-ink) 24%, transparent);
 }
 
-.sl-notice-button--secondary:hover {
-  background-color: color-mix(in oklab, var(--sl-tint) 70%, var(--sl-field-deep));
+.ll-notice-button--secondary:hover {
+  background-color: color-mix(in oklab, var(--ll-tint) 70%, var(--ll-field-deep));
 }
 
-.sl-notice-button--quiet {
+.ll-notice-button--quiet {
   padding: 0 16px;
   background-color: transparent;
-  color: var(--sl-ink-muted);
+  color: var(--ll-ink-muted);
 }
 
-.sl-notice-button--quiet:hover {
-  background-color: color-mix(in oklab, var(--sl-ink) 12%, transparent);
-  color: var(--sl-ink);
+.ll-notice-button--quiet:hover {
+  background-color: color-mix(in oklab, var(--ll-ink) 12%, transparent);
+  color: var(--ll-ink);
 }
 
-.sl-notice-button:focus-visible,
-.sl-notice a.sl-notice-link:focus-visible,
-.sl-notice-retry:focus-visible {
-  outline: 2px solid color-mix(in oklab, var(--sl-ink) 70%, transparent);
+.ll-notice-button:focus-visible,
+.ll-notice a.ll-notice-link:focus-visible,
+.ll-notice-retry:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--ll-ink) 70%, transparent);
   outline-offset: 3px;
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  .sl-notice-overlay.is-open { backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .ll-notice-overlay.is-open { backdrop-filter: none; -webkit-backdrop-filter: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .sl-notice-overlay,
-  .sl-notice,
-  .sl-notice > * {
+  .ll-notice-overlay,
+  .ll-notice,
+  .ll-notice > * {
     transition-duration: 0.01ms !important;
     transition-delay: 0s !important;
   }
 
-  .sl-notice,
-  .sl-notice > * {
+  .ll-notice,
+  .ll-notice > * {
     transform: none !important;
   }
 }
-.sl-notice .sl-discord-shine {
+.ll-notice .ll-discord-shine {
   position: relative;
   isolation: isolate;
   overflow: hidden;
@@ -312,17 +312,17 @@
   border: 1px solid #ffffff3d;
 }
 
-.sl-discord-shine > span {
+.ll-discord-shine > span {
   position: relative;
   z-index: 1;
 }
 
-.sl-notice .sl-discord-shine:focus-visible {
+.ll-notice .ll-discord-shine:focus-visible {
   outline: 2px solid #fff;
   outline-offset: 3px;
 }
 
-.sl-discord-shine::before {
+.ll-discord-shine::before {
   content: "";
   position: absolute;
   inset: 0 auto 0 0;
@@ -333,7 +333,7 @@
   transform: translateX(0);
 }
 
-.sl-notice-overlay.is-open .sl-discord-shine::before {
+.ll-notice-overlay.is-open .ll-discord-shine::before {
   animation: lyssna-discord-shine 4s linear infinite;
 }
 
@@ -342,6 +342,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .sl-notice-overlay.is-open .sl-discord-shine::before { animation: none; }
-  .sl-notice .sl-discord-shine { border-color: #ffffff66; }
+  .ll-notice-overlay.is-open .ll-discord-shine::before { animation: none; }
+  .ll-notice .ll-discord-shine { border-color: #ffffff66; }
 }

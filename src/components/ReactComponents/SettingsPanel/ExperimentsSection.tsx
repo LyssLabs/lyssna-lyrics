@@ -36,7 +36,7 @@ export default function ExperimentsSection({ query, sectionFilter, onOpen }: Pro
       <SectionTitle>Experiments</SectionTitle>
 
       <Row label={LABEL} description={DESCRIPTION}>
-        <button className="sl-sp-btn" onClick={onOpen} disabled={count === 0}>
+        <button className="ll-sp-btn" onClick={onOpen} disabled={count === 0}>
           {count > 0 ? `Open (${count})` : "None available"}
         </button>
       </Row>

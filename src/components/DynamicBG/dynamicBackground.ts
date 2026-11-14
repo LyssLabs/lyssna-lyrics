@@ -207,14 +207,14 @@ function blurPassesFor(kawarp: Kawarp, key: HTMLElement | string, reactive: bool
 
 // ─── Layers ──────────────────────────────────────────────────────────────────
 //
-// Every background is a `.spicy-dynamic-bg` layer appended to its host. A new layer
+// Every background is a `.lyssna-dynamic-bg` layer appended to its host. A new layer
 // goes on top with `.transition_In`; the ones under it get `.transition_Out` and are
 // removed once the CSS transition has finished, so rapid skips never stack up layers.
 
-/** Only the kinds created here, so a theme's own `.spicy-dynamic-bg` element is never swept away. */
-const OWN_LAYERS = ":scope > :is(canvas, .StaticBackground, .ColorBackground, .LegacyBackground).spicy-dynamic-bg";
+/** Only the kinds created here, so a theme's own `.lyssna-dynamic-bg` element is never swept away. */
+const OWN_LAYERS = ":scope > :is(canvas, .StaticBackground, .ColorBackground, .LegacyBackground).lyssna-dynamic-bg";
 
-/** The longest layer transition in spicy-dynamic-bg.css, for each look. */
+/** The longest layer transition in lyssna-dynamic-bg.css, for each look. */
 const layerSettleMs = () => (isRefined() ? 1500 : 1000);
 
 /** Kawarp instances by their canvas, so a retired canvas disposes its own. */
@@ -224,7 +224,7 @@ const kawarpCanvases = new WeakMap<Kawarp, HTMLCanvasElement>();
 
 /** The host's current layer of one kind, ignoring layers on their way out. */
 function liveLayer(host: HTMLElement, kind: string): HTMLElement | null {
-  return host.querySelector<HTMLElement>(`:scope > ${kind}.spicy-dynamic-bg:not(.transition_Out)`);
+  return host.querySelector<HTMLElement>(`:scope > ${kind}.lyssna-dynamic-bg:not(.transition_Out)`);
 }
 
 /** Send every layer but `keep` out. Returns whether there was anything to replace. */
@@ -516,10 +516,10 @@ function queueKawarpLoad(
 export default async function ApplyDynamicBackground(host: HTMLElement, key: string) {
   if (!host) return;
   // The NPV lyrics card must stay transparent: the NPV's own background shows through.
-  if (host.closest("#SpicyLyricsPage.CardMode")) return;
+  if (host.closest("#LyssnaLyricsPage.CardMode")) return;
   const style = styleForKey(key);
   dynamicBgLogger.debug("Applying background", { key, style });
-  if (key === PAGE_BACKGROUND_KEY) host.closest("#SpicyLyricsPage")?.classList.toggle("NoBackground", style === "none");
+  if (key === PAGE_BACKGROUND_KEY) host.closest("#LyssnaLyricsPage")?.classList.toggle("NoBackground", style === "none");
   if (style === "none") {
     retireLayers(host, null);
     return;
@@ -537,7 +537,7 @@ export default async function ApplyDynamicBackground(host: HTMLElement, key: str
 function applyLegacyBackground(host: HTMLElement, track: TrackSnapshot) {
   if (liveLayer(host, ".LegacyBackground")?.getAttribute("data-cover-id") === track.coverUri) return;
   const layer = host.ownerDocument.createElement("div");
-  layer.classList.add("spicy-dynamic-bg", "LegacyBackground");
+  layer.classList.add("lyssna-dynamic-bg", "LegacyBackground");
   layer.setAttribute("data-cover-id", track.coverUri);
   for (const name of ["Back", "BackCenter", "Front"]) {
     const part = host.ownerDocument.createElement("div");
@@ -600,7 +600,7 @@ async function applyKawarpBackground(host: HTMLElement, key: string, track: Trac
 
   const cssFade = fadesInWithCss(key);
   const canvas = host.ownerDocument.createElement("canvas");
-  canvas.classList.add("spicy-dynamic-bg", "is-pending");
+  canvas.classList.add("lyssna-dynamic-bg", "is-pending");
   canvas.setAttribute("data-cover-id", track.coverUri);
 
   // An instance whose canvas is gone would otherwise be overwritten here and
@@ -683,7 +683,7 @@ async function applyImageBackground(host: HTMLElement, track: TrackSnapshot, sty
   if (track.isStale() || isCurrent()) return;
 
   const layer = host.ownerDocument.createElement("div");
-  layer.classList.add("spicy-dynamic-bg", "StaticBackground");
+  layer.classList.add("lyssna-dynamic-bg", "StaticBackground");
   layer.style.setProperty("--BackgroundImage", `url("${src}")`);
   layer.setAttribute("data-cover-id", imageUri);
   host.appendChild(layer);
@@ -691,7 +691,7 @@ async function applyImageBackground(host: HTMLElement, track: TrackSnapshot, sty
 }
 
 /**
- * `r, g, b, a` triplets for the Cover Colors layer, read by spicy-dynamic-bg.css.
+ * `r, g, b, a` triplets for the Cover Colors layer, read by lyssna-dynamic-bg.css.
  * The original look paints `min` under a `high` wash from Spotify's best-fit set;
  * the refined one always uses the dark set's two deepest tones, so white lyrics stay legible.
  */
@@ -788,7 +788,7 @@ async function applyColorBackground(host: HTMLElement, track: TrackSnapshot) {
     return;
   }
   const layer = host.ownerDocument.createElement("div");
-  layer.classList.add("spicy-dynamic-bg", "ColorBackground");
+  layer.classList.add("lyssna-dynamic-bg", "ColorBackground");
   setPalette(layer, palette);
   host.appendChild(layer);
   revealLayer(host, layer);
@@ -823,7 +823,7 @@ function reapplyPageBackground() {
   } else {
     // A canvas still loading belongs to the style being left: its apply is stale now and
     // won't reveal it, and switching back would otherwise find it and skip building one.
-    for (const pending of contentBox.querySelectorAll(":scope > canvas.spicy-dynamic-bg.is-pending")) {
+    for (const pending of contentBox.querySelectorAll(":scope > canvas.lyssna-dynamic-bg.is-pending")) {
       const kawarp = canvasKawarps.get(pending);
       if (kawarp && KawarpMap.get(PAGE_BACKGROUND_KEY) === kawarp) KawarpMap.delete(PAGE_BACKGROUND_KEY);
       kawarp?.dispose();

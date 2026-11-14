@@ -86,8 +86,8 @@ export default function LyricsSourcesManager() {
   };
 
   return (
-    <div className="sl-sp-source-manager">
-      <div className="sl-sp-source-list">
+    <div className="ll-sp-source-manager">
+      <div className="ll-sp-source-list">
         {order.map((id, index) => {
           const definition = LYRICS_SOURCE_PROVIDER_DEFINITIONS[id];
           const enabled = !disabledIds.has(id);
@@ -97,20 +97,20 @@ export default function LyricsSourcesManager() {
           return (
             <React.Fragment key={id}>
               <div
-                className={`sl-sp-source-stack${optionCount > 0 ? " sl-sp-source-stack--has-options" : ""}${
-                  optionsExpanded ? " sl-sp-source-stack--open" : ""
+                className={`ll-sp-source-stack${optionCount > 0 ? " ll-sp-source-stack--has-options" : ""}${
+                  optionsExpanded ? " ll-sp-source-stack--open" : ""
                 }`}
               >
                 {optionCount > 1 && !optionsExpanded && (
-                  <div className="sl-sp-source-stack-layer sl-sp-source-stack-layer--2" />
+                  <div className="ll-sp-source-stack-layer ll-sp-source-stack-layer--2" />
                 )}
                 {optionCount > 0 && !optionsExpanded && (
-                  <div className="sl-sp-source-stack-layer sl-sp-source-stack-layer--1" />
+                  <div className="ll-sp-source-stack-layer ll-sp-source-stack-layer--1" />
                 )}
                 <div
-                  className={`sl-sp-source-card${enabled ? "" : " sl-sp-source-card--disabled"}${
-                    optionCount > 0 ? " sl-sp-source-card--has-options" : ""
-                  }${optionsExpanded ? " sl-sp-source-card--options-open" : ""}`}
+                  className={`ll-sp-source-card${enabled ? "" : " ll-sp-source-card--disabled"}${
+                    optionCount > 0 ? " ll-sp-source-card--has-options" : ""
+                  }${optionsExpanded ? " ll-sp-source-card--options-open" : ""}`}
                   onClick={optionCount > 0 ? () => toggleOptions(id) : undefined}
                   role={optionCount > 0 ? "button" : undefined}
                   tabIndex={optionCount > 0 ? 0 : undefined}
@@ -123,15 +123,15 @@ export default function LyricsSourcesManager() {
                     }
                     : undefined}
                 >
-                  <div className="sl-sp-source-rank">{index + 1}</div>
-                  <div className="sl-sp-source-copy">
-                    <span className="sl-sp-source-label">{definition.label}</span>
-                    <span className="sl-sp-source-description">{definition.description}</span>
+                  <div className="ll-sp-source-rank">{index + 1}</div>
+                  <div className="ll-sp-source-copy">
+                    <span className="ll-sp-source-label">{definition.label}</span>
+                    <span className="ll-sp-source-description">{definition.description}</span>
                   </div>
-                  <div className="sl-sp-source-actions">
-                    <div className="sl-sp-source-priority">
+                  <div className="ll-sp-source-actions">
+                    <div className="ll-sp-source-priority">
                       <button
-                        className="sl-sp-icon-btn"
+                        className="ll-sp-icon-btn"
                         onClick={(e) => {
                           e.stopPropagation();
                           moveSource(id, -1);
@@ -143,7 +143,7 @@ export default function LyricsSourcesManager() {
                         ↑
                       </button>
                       <button
-                        className="sl-sp-icon-btn"
+                        className="ll-sp-icon-btn"
                         onClick={(e) => {
                           e.stopPropagation();
                           moveSource(id, 1);
@@ -163,32 +163,32 @@ export default function LyricsSourcesManager() {
               </div>
 
               {id === "musixmatch" && optionsExpanded && (
-                <div className="sl-sp-source-settings-group sl-sp-source-settings-group--inline sl-sp-source-settings-group--opening">
-                  <div className="sl-sp-source-settings-inner">
-                    <div className="sl-sp-source-token-row">
-                      <div className="sl-sp-source-copy">
-                        <span className="sl-sp-source-label">Musixmatch Token</span>
-                        <span className="sl-sp-source-description">Optional user token. Leave empty to use automatic refresh.</span>
+                <div className="ll-sp-source-settings-group ll-sp-source-settings-group--inline ll-sp-source-settings-group--opening">
+                  <div className="ll-sp-source-settings-inner">
+                    <div className="ll-sp-source-token-row">
+                      <div className="ll-sp-source-copy">
+                        <span className="ll-sp-source-label">Musixmatch Token</span>
+                        <span className="ll-sp-source-description">Optional user token. Leave empty to use automatic refresh.</span>
                       </div>
-                      <div className="sl-sp-source-token-control">
+                      <div className="ll-sp-source-token-control">
                         <input
-                          className="sl-sp-text-input sl-sp-source-token-input"
+                          className="ll-sp-text-input ll-sp-source-token-input"
                           type="password"
                           value={musixmatchToken}
                           onChange={(e) => $musixmatchToken.set(e.currentTarget.value.trim())}
                           placeholder="Token"
                           spellCheck={false}
                         />
-                        <button className="sl-sp-btn" onClick={() => void refreshToken()}>
+                        <button className="ll-sp-btn" onClick={() => void refreshToken()}>
                           Refresh
                         </button>
                       </div>
                     </div>
 
-                    <div className="sl-sp-source-option-row">
-                      <div className="sl-sp-source-copy">
-                        <span className="sl-sp-source-label">Ignore Musixmatch Word Sync</span>
-                        <span className="sl-sp-source-description">Prefer Musixmatch line timing over word timing.</span>
+                    <div className="ll-sp-source-option-row">
+                      <div className="ll-sp-source-copy">
+                        <span className="ll-sp-source-label">Ignore Musixmatch Word Sync</span>
+                        <span className="ll-sp-source-description">Prefer Musixmatch line timing over word timing.</span>
                       </div>
                       <Toggle checked={ignoreMusixmatchWordSync} onChange={(v) => $ignoreMusixmatchWordSync.set(v)} />
                     </div>
@@ -197,12 +197,12 @@ export default function LyricsSourcesManager() {
               )}
 
               {id === "apple" && optionsExpanded && (
-                <div className="sl-sp-source-settings-group sl-sp-source-settings-group--inline sl-sp-source-settings-group--opening">
-                  <div className="sl-sp-source-settings-inner">
-                    <div className="sl-sp-source-option-row">
-                      <div className="sl-sp-source-copy">
-                        <span className="sl-sp-source-label">Prioritize Apple Music Quality</span>
-                        <span className="sl-sp-source-description">Use Apple Music when its timing quality is at least as good.</span>
+                <div className="ll-sp-source-settings-group ll-sp-source-settings-group--inline ll-sp-source-settings-group--opening">
+                  <div className="ll-sp-source-settings-inner">
+                    <div className="ll-sp-source-option-row">
+                      <div className="ll-sp-source-copy">
+                        <span className="ll-sp-source-label">Prioritize Apple Music Quality</span>
+                        <span className="ll-sp-source-description">Use Apple Music when its timing quality is at least as good.</span>
                       </div>
                       <Toggle checked={prioritizeAppleMusicQuality} onChange={(v) => $prioritizeAppleMusicQuality.set(v)} />
                     </div>
@@ -214,14 +214,14 @@ export default function LyricsSourcesManager() {
         })}
       </div>
 
-      <div className="sl-sp-source-footer">
-        <div className="sl-sp-source-manager-copy">
-          <span className="sl-sp-source-manager-title">Source Priority</span>
-          <span className="sl-sp-source-manager-description">
+      <div className="ll-sp-source-footer">
+        <div className="ll-sp-source-manager-copy">
+          <span className="ll-sp-source-manager-title">Source Priority</span>
+          <span className="ll-sp-source-manager-description">
             Higher sources are tried first. Disabled sources are skipped.
           </span>
         </div>
-        <button className="sl-sp-btn" onClick={resetSources}>
+        <button className="ll-sp-btn" onClick={resetSources}>
           Reset
         </button>
       </div>

@@ -53,28 +53,28 @@ export function Row({
   };
   return (
     <div
-      className={`sl-sp-row sl-list-row${disabled ? " sl-sp-row--disabled" : ""}${stacked ? " sl-sp-row--stacked" : ""}`}
+      className={`ll-sp-row ll-list-row${disabled ? " ll-sp-row--disabled" : ""}${stacked ? " ll-sp-row--stacked" : ""}`}
     >
-      <div className="sl-sp-label-area">
+      <div className="ll-sp-label-area">
         {settingId && settingId !== "advanced-hide-settings" && ((showHidden && isHidden) || (allowHidingSettings && !hideHidingIcon)) && (
-          <button className="sl-sp-btn sl-sp-visibility-btn" onClick={toggleVisibility} aria-label={`${isHidden ? "Restore" : "Hide"} ${label}`} title={`${isHidden ? "Restore" : "Hide"} setting`}>
+          <button className="ll-sp-btn ll-sp-visibility-btn" onClick={toggleVisibility} aria-label={`${isHidden ? "Restore" : "Hide"} ${label}`} title={`${isHidden ? "Restore" : "Hide"} setting`}>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M1.5 8s2.3-4 6.5-4 6.5 4 6.5 4-2.3 4-6.5 4-6.5-4-6.5-4Z" stroke="currentColor" strokeWidth="1.4"/><circle cx="8" cy="8" r="1.8" stroke="currentColor" strokeWidth="1.4"/>{!isHidden && <path d="M2 2l12 12" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>}</svg>
           </button>
         )}
-        <div className="sl-sp-label-wrap">
-          <span className="sl-sp-label-line">
-            <span className="sl-sp-label">{label}</span>
+        <div className="ll-sp-label-wrap">
+          <span className="ll-sp-label-line">
+            <span className="ll-sp-label">{label}</span>
             {labelAccessory}
           </span>
-          {description && <span className="sl-sp-description">{description}</span>}
+          {description && <span className="ll-sp-description">{description}</span>}
         </div>
       </div>
-      <div className="sl-sp-control">
+      <div className="ll-sp-control">
         <fieldset disabled={disabled} style={{ display: "contents", padding: 0, margin: 0, border: 0 }}>
           <SettingLabelContext.Provider value={label}>{children}</SettingLabelContext.Provider>
         </fieldset>
       </div>
-      {disabled && disabledReason && <div className="sl-sp-row-tooltip">{disabledReason}</div>}
+      {disabled && disabledReason && <div className="ll-sp-row-tooltip">{disabledReason}</div>}
     </div>
   );
 }
@@ -88,14 +88,14 @@ export function Toggle({
 }) {
   const label = useContext(SettingLabelContext);
   return (
-    <label className="sl-sp-toggle">
+    <label className="ll-sp-toggle">
       <input
         type="checkbox"
         aria-label={label}
         checked={checked}
         onChange={(e) => onChange(e.currentTarget.checked)}
       />
-      <span className="sl-sp-toggle-track" />
+      <span className="ll-sp-toggle-track" />
     </label>
   );
 }
@@ -114,14 +114,14 @@ export function Select({
   disabled?: boolean;
 }) {
   return (
-    <span className="sl-sp-select-wrap">
-      <span className="sl-sp-select-sizer" aria-hidden="true">
+    <span className="ll-sp-select-wrap">
+      <span className="ll-sp-select-sizer" aria-hidden="true">
         {options.map((opt, i) => (
           <span key={opt}>{labels?.[i] ?? opt}</span>
         ))}
       </span>
       <select
-        className="sl-sp-select"
+        className="ll-sp-select"
         value={value}
         onChange={(e) => onChange(e.currentTarget.value)}
         disabled={disabled}
@@ -199,14 +199,14 @@ export function Slider({
   const commit = () => { const next = Number(draft); if (Number.isFinite(next)) onChange(Math.round(next * 10_000) / 10_000); else setDraft(formatValue(value)); setEditing(false); };
 
   return (
-    <div className={`sl-sp-slider${disabled ? " sl-sp-slider--disabled" : ""}`}>
-      <div className="sl-sp-slider-track-wrap">
-        <span className="sl-sp-slider-track" />
-        <span className="sl-sp-slider-fill" style={fillStyle} />
-        {isBipolar && <span className="sl-sp-slider-center" style={{ left: posFor(zeroFrac) }} />}
+    <div className={`ll-sp-slider${disabled ? " ll-sp-slider--disabled" : ""}`}>
+      <div className="ll-sp-slider-track-wrap">
+        <span className="ll-sp-slider-track" />
+        <span className="ll-sp-slider-fill" style={fillStyle} />
+        {isBipolar && <span className="ll-sp-slider-center" style={{ left: posFor(zeroFrac) }} />}
         <input
           type="range"
-          className="sl-sp-slider-input"
+          className="ll-sp-slider-input"
           min={min}
           max={max}
           step={step}
@@ -215,12 +215,12 @@ export function Slider({
           disabled={disabled}
         />
       </div>
-      <div className="sl-sp-slider-meta">
-        {editing ? <input className="sl-sp-slider-value-input" autoFocus value={draft} onChange={(event) => setDraft(event.currentTarget.value)} onBlur={commit} onKeyDown={(event) => { if (event.key === "Enter") commit(); if (event.key === "Escape") { setDraft(formatValue(value)); setEditing(false); } }} /> : <button type="button" className="sl-sp-slider-value" disabled={!editable} onClick={() => { setDraft(formatValue(value)); setEditing(true); }}>{valueLabel}</button>}
+      <div className="ll-sp-slider-meta">
+        {editing ? <input className="ll-sp-slider-value-input" autoFocus value={draft} onChange={(event) => setDraft(event.currentTarget.value)} onBlur={commit} onKeyDown={(event) => { if (event.key === "Enter") commit(); if (event.key === "Escape") { setDraft(formatValue(value)); setEditing(false); } }} /> : <button type="button" className="ll-sp-slider-value" disabled={!editable} onClick={() => { setDraft(formatValue(value)); setEditing(true); }}>{valueLabel}</button>}
         {changed && (
           <button
             type="button"
-            className="sl-sp-slider-reset"
+            className="ll-sp-slider-reset"
             onClick={() => onChange(defaultValue!)}
           >
             Reset
@@ -232,21 +232,21 @@ export function Slider({
 }
 
 export function SectionTitle({ children }: { children: React.ReactNode }) {
-  return <p className="sl-sp-section-title">{children}</p>;
+  return <p className="ll-sp-section-title">{children}</p>;
 }
 
 export function SettingsSection({ title, children }: { title: string; children: React.ReactNode }) {
   return <section className="ll-settings-section" aria-label={title}>
-    <h3 className="sl-sp-section-title">{title}</h3>
+    <h3 className="ll-sp-section-title">{title}</h3>
     <div className="ll-settings-group">{children}</div>
   </section>;
 }
 
 export function SearchBar({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   return (
-    <div className="sl-sp-search-wrap">
+    <div className="ll-sp-search-wrap">
       <svg
-        className="sl-sp-search-icon"
+        className="ll-sp-search-icon"
         width="14"
         height="14"
         viewBox="0 0 14 14"
@@ -265,7 +265,7 @@ export function SearchBar({ value, onChange }: { value: string; onChange: (v: st
         />
       </svg>
       <input
-        className="sl-sp-search"
+        className="ll-sp-search"
         type="text"
         aria-label="Search settings"
         placeholder="Search settings…"
@@ -275,7 +275,7 @@ export function SearchBar({ value, onChange }: { value: string; onChange: (v: st
       />
       {value && (
         <button
-          className="sl-sp-search-clear"
+          className="ll-sp-search-clear"
           onClick={() => onChange("")}
           aria-label="Clear search"
         >
@@ -313,9 +313,9 @@ export function SearchBar({ value, onChange }: { value: string; onChange: (v: st
 
 export function Tooltip({ text, children }: { text: string; children: React.ReactNode }) {
   return (
-    <div className="sl-sp-tooltip-wrap">
+    <div className="ll-sp-tooltip-wrap">
       {children}
-      <div className="sl-sp-tooltip-bubble">{text}</div>
+      <div className="ll-sp-tooltip-bubble">{text}</div>
     </div>
   );
 }
@@ -373,21 +373,21 @@ export function FilterDropdown({
   const portalTarget =
     open && btnRef.current
       ? (btnRef.current.ownerDocument.querySelector(
-          "sl-generic-modal.SpicyLyricsModal .sl-modal-overlay"
+          "lyssna-lyrics-modal.LyssnaLyricsModal .ll-modal-overlay"
         ) as HTMLElement | null)
       : null;
 
   return (
-    <div className={`sl-sp-filter-wrap${open ? " sl-sp-filter-wrap--open" : ""}`} ref={wrapRef}>
+    <div className={`ll-sp-filter-wrap${open ? " ll-sp-filter-wrap--open" : ""}`} ref={wrapRef}>
       <button
         ref={btnRef}
-        className={`sl-sp-filter-btn${open ? " open" : ""}${value !== "All" ? " active" : ""}`}
+        className={`ll-sp-filter-btn${open ? " open" : ""}${value !== "All" ? " active" : ""}`}
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="listbox"
         aria-expanded={open}
       >
         <svg
-          className="sl-sp-filter-icon"
+          className="ll-sp-filter-icon"
           width="13"
           height="12"
           viewBox="0 0 13 12"
@@ -401,9 +401,9 @@ export function FilterDropdown({
             strokeLinecap="round"
           />
         </svg>
-        <span className="sl-sp-filter-label">{value === "All" ? "Filter" : value}</span>
+        <span className="ll-sp-filter-label">{value === "All" ? "Filter" : value}</span>
         <svg
-          className={`sl-sp-filter-chevron${open ? " rotated" : ""}`}
+          className={`ll-sp-filter-chevron${open ? " rotated" : ""}`}
           width="10"
           height="10"
           viewBox="0 0 10 10"
@@ -426,7 +426,7 @@ export function FilterDropdown({
         createPortal(
           <div
             ref={menuRef}
-            className="sl-sp-filter-menu"
+            className="ll-sp-filter-menu"
             role="listbox"
             style={{ position: "fixed", top: coords.top, right: coords.right }}
             onClick={(e) => e.stopPropagation()}
@@ -438,13 +438,13 @@ export function FilterDropdown({
                   key={s}
                   role="option"
                   aria-selected={isActive}
-                  className={`sl-sp-filter-item${isActive ? " sl-sp-filter-item--active" : ""}`}
+                  className={`ll-sp-filter-item${isActive ? " ll-sp-filter-item--active" : ""}`}
                   onClick={() => {
                     onChange(s);
                     setOpen(false);
                   }}
                 >
-                  <span className="sl-sp-filter-item-check">
+                  <span className="ll-sp-filter-item-check">
                     {isActive && (
                       <svg
                         width="10"

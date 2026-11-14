@@ -80,7 +80,7 @@ async function copyLyricsWindowStyles(targetWindow: Window, wrapperClass: string
     targetWindow.document.head.appendChild(externalLink);
   });
 
-  const style = document.querySelector("#slstyles");
+  const style = document.querySelector("#lyssna-lyrics-styles");
   let content: string | null = null;
   if (style?.tagName.toLowerCase() === "link") {
     const href = style.getAttribute("href");
@@ -95,18 +95,18 @@ async function copyLyricsWindowStyles(targetWindow: Window, wrapperClass: string
     targetStyle.textContent = content;
     targetWindow.document.head.appendChild(targetStyle);
   }
-  const additionalStyle = document.getElementById("spicyLyrics-additionalStyling");
+  const additionalStyle = document.getElementById("lyssnaLyrics-additionalStyling");
   if (additionalStyle) {
     const targetStyle = targetWindow.document.createElement("style");
-    targetStyle.id = "spicyLyrics-additionalStyling";
+    targetStyle.id = "lyssnaLyrics-additionalStyling";
     targetStyle.textContent = additionalStyle.textContent;
     targetWindow.document.head.appendChild(targetStyle);
   }
   const layoutStyle = targetWindow.document.createElement("style");
   layoutStyle.textContent = `html,body,.${wrapperClass}{width:100%;height:100%;margin:0;overflow:hidden;background:#000}`;
   targetWindow.document.head.appendChild(layoutStyle);
-  const customFont = document.documentElement.style.getPropertyValue("--spicy-custom-font");
-  if (customFont) targetWindow.document.documentElement.style.setProperty("--spicy-custom-font", customFont);
+  const customFont = document.documentElement.style.getPropertyValue("--lyssna-custom-font");
+  if (customFont) targetWindow.document.documentElement.style.setProperty("--lyssna-custom-font", customFont);
 }
 
 async function closeSession(session: CinemaSession, closeWindow: boolean): Promise<void> {
@@ -154,10 +154,10 @@ async function openExternalCinemaLyrics(): Promise<void> {
   if (PageView.IsOpened && !IsExternalCinemaLyrics) {
     if (Fullscreen.IsOpen && !(await Fullscreen.Close())) return;
     await PageView.Destroy();
-    Session.GoBackFrom("/SpicyLyrics");
+    Session.GoBackFrom("/LyssnaLyrics");
   }
   if (PageView.IsOpened) return;
-  const targetWindow = window.open("", "SpicyLyricsCinema", "popup=yes,width=1280,height=720");
+  const targetWindow = window.open("", "LyssnaLyricsCinema", "popup=yes,width=1280,height=720");
   if (!targetWindow) return;
   const session: CinemaSession = {
     window: targetWindow, cancelled: false, playbackPump: null, lastUri: null, lastCover: null,
@@ -170,11 +170,11 @@ async function openExternalCinemaLyrics(): Promise<void> {
   window.addEventListener("pagehide", hostPageHideHandler);
   window.addEventListener("beforeunload", hostPageHideHandler);
   targetWindow.document.open();
-  targetWindow.document.write(`<!doctype html><html><head></head><body><div class="spicy-external-cinema-wrapper"></div></body></html>`);
+  targetWindow.document.write(`<!doctype html><html><head></head><body><div class="lyssna-external-cinema-wrapper"></div></body></html>`);
   targetWindow.document.close();
-  await copyLyricsWindowStyles(targetWindow, "spicy-external-cinema-wrapper");
+  await copyLyricsWindowStyles(targetWindow, "lyssna-external-cinema-wrapper");
   if (!isCurrent(session)) return;
-  const wrapper = targetWindow.document.body.querySelector<HTMLElement>(".spicy-external-cinema-wrapper");
+  const wrapper = targetWindow.document.body.querySelector<HTMLElement>(".lyssna-external-cinema-wrapper");
   if (!wrapper) throw new Error("Cinema window wrapper was not created");
   await PageView.Open(wrapper);
   if (!isCurrent(session)) return;

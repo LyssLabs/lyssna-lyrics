@@ -26,7 +26,7 @@ export { LYRICS_QUEUE_MESSAGE, ShowQueueLoader } from "./LyricsLoader.ts";
 const lyricsLogger = new Logger("Lyrics Pipeline");
 const lyricsCacheLogger = new Logger("Lyrics Cache");
 
-export const LyricsStore = GetExpireStore<any>("SpicyLyrics_LyricsStore_g1", 6, {
+export const LyricsStore = GetExpireStore<any>("LyssnaLyrics_LyricsStore_g1", 6, {
   Unit: "Days",
   get Duration() { return getRemoteConfig().cache.lyricsTtlDays; },
 }, isDev as true);

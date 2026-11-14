@@ -1,5 +1,5 @@
 function isDev() {
-  return __SLdev__m;
+  return __LYSSNA_LYRICS_DEV__;
 }
 
 const App = {

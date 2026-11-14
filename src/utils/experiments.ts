@@ -16,15 +16,15 @@ import { persistAtom } from "./stores.ts";
  *     label: "My Experiment",
  *     description: "What it changes, and what turning it off restores.",
  *     default: true,
- *     pageClass: "Exp_MyExperiment",   // optional — toggled on #SpicyLyricsPage
+ *     pageClass: "Exp_MyExperiment",   // optional — toggled on #LyssnaLyricsPage
  *     rebuildsNowBar: true,            // optional — see below
  *     forceState: true,                // optional — see below
  *     hidden: true,                    // optional — see below
  *   }
  *
  * `pageClass` is the preferred way to implement one: write the new look under
- * `#SpicyLyricsPage.Exp_Foo` and keep the old one under
- * `#SpicyLyricsPage:not(.Exp_Foo)`, and the toggle costs nothing at runtime.
+ * `#LyssnaLyricsPage.Exp_Foo` and keep the old one under
+ * `#LyssnaLyricsPage:not(.Exp_Foo)`, and the toggle costs nothing at runtime.
  *
  * `rebuildsNowBar` is only for experiments whose *markup* differs between states
  * (CSS alone can't get you there). It makes NowBar tear down and rebuild the
@@ -58,7 +58,7 @@ export type Experiment = {
   label: string;
   description: string;
   default: boolean;
-  /** Class toggled on `#SpicyLyricsPage` while the experiment is enabled. */
+  /** Class toggled on `#LyssnaLyricsPage` while the experiment is enabled. */
   pageClass?: string;
   /** Rebuild the fullscreen NowBar overlay when this flag changes. */
   rebuildsNowBar?: boolean;

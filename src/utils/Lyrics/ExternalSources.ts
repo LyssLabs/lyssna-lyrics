@@ -2,7 +2,7 @@ import Defaults from "../../components/Global/Defaults.ts";
 import type { LyricsSourceProviderId } from "./LyricsSourcePreferences.ts";
 import type { ExternalLyricsResult } from "./Sources/Types.ts";
 import { getTrackLyricsInfo } from "./Sources/Track.ts";
-import { fetchSpicyLyricsRaw, fetchSpicyLyrics, fetchAppleMusicLyrics } from "./Sources/Spicy.ts";
+import { fetchLyssnaLyricsRaw, fetchSpicyLyrics, fetchAppleMusicLyrics } from "./Sources/Spicy.ts";
 import { fetchMusixmatchLyrics } from "./Sources/Musixmatch.ts";
 import { fetchSpotifyLyrics } from "./Sources/Spotify.ts";
 import { fetchLRCLIBLyrics } from "./Sources/Lrclib.ts";
@@ -104,7 +104,7 @@ export async function fetchLyricsFromProviders(
   let spicyRawPromise: Promise<ExternalLyricsResult | null> | null = null;
   const getSpicyRaw = () => {
     if (!order.includes("spicy") && !order.includes("apple")) return Promise.resolve(null);
-    spicyRawPromise ??= fetchSpicyLyricsRaw(trackInfo.id);
+    spicyRawPromise ??= fetchLyssnaLyricsRaw(trackInfo.id);
     return spicyRawPromise;
   };
 

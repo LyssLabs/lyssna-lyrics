@@ -49,19 +49,19 @@ export function BugReportPane({ onBack }: { onBack: () => void }) {
   const outdated = current !== TEST_BUILD_VERSION && !!latestVersion && !!current && Session.SpicyLyrics.IsBehind(Session.SpicyLyrics.GetCurrentVersion(), Session.SpicyLyrics.ParseVersion(latestVersion));
   const preview = report.split("\n").filter(line => line !== "```" && !line.startsWith("**")).slice(0, -1).join("\n");
 
-  return <section className="sl-sp-bug" aria-label="Report a Lyssna Lyrics bug">
-    <button type="button" className="sl-sp-btn sl-sp-bug-back" onClick={onBack}>Back to settings</button>
+  return <section className="ll-sp-bug" aria-label="Report a Lyssna Lyrics bug">
+    <button type="button" className="ll-sp-btn ll-sp-bug-back" onClick={onBack}>Back to settings</button>
     <h3>Report a Lyssna Lyrics bug</h3>
     <p>Copy your diagnostics and share them in the Lyssna Discord. Include what went wrong, how to reproduce it, and a screenshot or clip when useful.</p>
-    {outdated && <div className="sl-sp-banner" role="status"><span>Lyssna Lyrics {latestVersion} is available. Check whether updating resolves the issue.</span><button type="button" className="sl-sp-btn" onClick={() => Session.Navigate({ pathname: "/SpicyLyrics/Update" })}>Update</button></div>}
-    <div className="sl-sp-bug-actions">
-      <button type="button" className="sl-sp-btn sl-sp-bug-primary" onClick={event => copyAndOpen(event.currentTarget)}><span aria-live="polite">{copyLabel(discordState, "Copy & open Discord")}</span></button>
-      <button type="button" className="sl-sp-btn" onClick={event => copy(event.currentTarget)}><span aria-live="polite">{copyLabel(copyState, "Copy diagnostics")}</span></button>
+    {outdated && <div className="ll-sp-banner" role="status"><span>Lyssna Lyrics {latestVersion} is available. Check whether updating resolves the issue.</span><button type="button" className="ll-sp-btn" onClick={() => Session.Navigate({ pathname: "/LyssnaLyrics/Update" })}>Update</button></div>}
+    <div className="ll-sp-bug-actions">
+      <button type="button" className="ll-sp-btn ll-sp-bug-primary" onClick={event => copyAndOpen(event.currentTarget)}><span aria-live="polite">{copyLabel(discordState, "Copy & open Discord")}</span></button>
+      <button type="button" className="ll-sp-btn" onClick={event => copy(event.currentTarget)}><span aria-live="polite">{copyLabel(copyState, "Copy diagnostics")}</span></button>
     </div>
-    <p className="sl-sp-bug-fineprint">Includes plugin settings, track and lyric-source details, versions, and rendering performance. Account details and credentials are excluded.</p>
-    <details className="sl-sp-bug-details" onToggle={event => setShowPreview(event.currentTarget.open)}>
+    <p className="ll-sp-bug-fineprint">Includes plugin settings, track and lyric-source details, versions, and rendering performance. Account details and credentials are excluded.</p>
+    <details className="ll-sp-bug-details" onToggle={event => setShowPreview(event.currentTarget.open)}>
       <summary>Review diagnostics</summary>
-      <pre className="sl-sp-bug-preview">{preview}</pre>
+      <pre className="ll-sp-bug-preview">{preview}</pre>
     </details>
   </section>;
 }

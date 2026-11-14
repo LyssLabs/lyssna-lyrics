@@ -377,7 +377,7 @@ function updateObstacleBounds(): boolean {
   updateCoverElement();
   updateUiElements();
   const stageRect = stage.getBoundingClientRect();
-  const canvasHidesCover = stage.closest("#SpicyLyricsPage")
+  const canvasHidesCover = stage.closest("#LyssnaLyricsPage")
     ?.matches(".CanvasImmersive:not(.CompactMode, .ForcedCompactMode)") ?? false;
   const nextFooterBounds = getRelativeBounds(footer?.getBoundingClientRect(), stageRect);
   const width = stage.clientWidth;
@@ -1280,7 +1280,7 @@ export function mountSpaceGravity(nextStage: HTMLElement, nextLines: GravityLine
   const layoutRoot = nextViewport.closest(".ContentBox")?.parentElement;
   if (layoutRoot) {
     layoutObserver = new MutationObserver((records) => {
-      if (records.some((record) => (record.target as HTMLElement).id === "SpicyLyricsPage" || (record.target as HTMLElement).classList.contains("NowBar"))) {
+      if (records.some((record) => (record.target as HTMLElement).id === "LyssnaLyricsPage" || (record.target as HTMLElement).classList.contains("NowBar"))) {
         updateBounds();
         trackCoverTransition();
       }

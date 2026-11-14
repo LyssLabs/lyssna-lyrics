@@ -19,7 +19,7 @@ const CreateLyricsContainer = (
   preserveViewport: boolean = false
 ): LyricsContainerReturnObject => {
   const Container = document.createElement("div");
-  Container.classList.add("SpicyLyricsScrollContainer");
+  Container.classList.add("LyssnaLyricsScrollContainer");
 
   lastMapIndex += 1;
   const currentIndex = lastMapIndex;

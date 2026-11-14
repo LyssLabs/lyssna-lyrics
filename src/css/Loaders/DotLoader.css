@@ -1,12 +1,12 @@
-#DotLoader {
+#LyssnaDotLoader {
   width: 15px;
   aspect-ratio: 1;
   border-radius: 50%;
-  --dot-on: var(--color-text-primary);
-  --dot-off: var(--color-text-quaternary);
-  animation: l5 1s infinite linear alternate;
+  --dot-on: var(--lyssna-color-text-primary);
+  --dot-off: var(--lyssna-color-text-quaternary);
+  animation: lyssna-l5 1s infinite linear alternate;
 }
-@keyframes l5 {
+@keyframes lyssna-l5 {
   0% {
     box-shadow:
       20px 0 var(--dot-on),

@@ -4,10 +4,10 @@
    against the lyrics, and the hover-grown cover pushes the lyrics down by exactly its own growth.
 
    Fullscreen moves the page onto <body>, so `body >` leaves the popup (which lives in
-   .spicy-pip-wrapper) alone. Turning the experiment off leaves every rule below unmatched. */
+   .lyssna-pip-wrapper) alone. Turning the experiment off leaves every rule below unmatched. */
 
 @media (orientation: portrait) {
-  body > #SpicyLyricsPage.Fullscreen.Exp_PortraitFullscreen:is(.CompactMode, .ForcedCompactMode) {
+  body > #LyssnaLyricsPage.Fullscreen.Exp_PortraitFullscreen:is(.CompactMode, .ForcedCompactMode) {
     --PF_Inset: 5vw;
     /* vw, not cq: the lyrics and the header sit in different containers, and both have to agree.
        The page fills the window here, so the two units match. */
@@ -25,7 +25,7 @@
   }
 
   body
-    > #SpicyLyricsPage.Fullscreen.Exp_PortraitFullscreen:is(.CompactMode, .ForcedCompactMode)
+    > #LyssnaLyricsPage.Fullscreen.Exp_PortraitFullscreen:is(.CompactMode, .ForcedCompactMode)
     .ContentBox {
     /* Set where the compact rules define it; capped by the width so a very tall window doesn't
        blow the cover up. */
@@ -33,14 +33,14 @@
   }
 
   body
-    > #SpicyLyricsPage.Fullscreen.Exp_PortraitFullscreen:is(.CompactMode, .ForcedCompactMode)
+    > #LyssnaLyricsPage.Fullscreen.Exp_PortraitFullscreen:is(.CompactMode, .ForcedCompactMode)
     .ContentBox
     .NowBar {
     margin-top: var(--PF_Inset);
   }
 
   body
-    > #SpicyLyricsPage.Fullscreen.Exp_PortraitFullscreen:is(.CompactMode, .ForcedCompactMode)
+    > #LyssnaLyricsPage.Fullscreen.Exp_PortraitFullscreen:is(.CompactMode, .ForcedCompactMode)
     .ContentBox
     .NowBar
     .CenteredView
@@ -50,7 +50,7 @@
   }
 
   body
-    > #SpicyLyricsPage.Fullscreen.Exp_PortraitFullscreen:is(.CompactMode, .ForcedCompactMode)
+    > #LyssnaLyricsPage.Fullscreen.Exp_PortraitFullscreen:is(.CompactMode, .ForcedCompactMode)
     .ContentBox
     .NowBar
     .CenteredView
@@ -67,7 +67,7 @@
   }
 
   body
-    > #SpicyLyricsPage.Fullscreen.Exp_PortraitFullscreen:is(.CompactMode, .ForcedCompactMode)
+    > #LyssnaLyricsPage.Fullscreen.Exp_PortraitFullscreen:is(.CompactMode, .ForcedCompactMode)
     .ContentBox
     .NowBar
     .CenteredView
@@ -79,7 +79,7 @@
   }
 
   body
-    > #SpicyLyricsPage.Fullscreen.Exp_PortraitFullscreen:is(.CompactMode, .ForcedCompactMode)
+    > #LyssnaLyricsPage.Fullscreen.Exp_PortraitFullscreen:is(.CompactMode, .ForcedCompactMode)
     .ContentBox
     .NowBar
     .CenteredView
@@ -97,7 +97,7 @@
 
   /* The lyrics start just under the bar, and follow it at its own pace when the cover grows. */
   body
-    > #SpicyLyricsPage.Fullscreen.Exp_PortraitFullscreen:is(.CompactMode, .ForcedCompactMode)
+    > #LyssnaLyricsPage.Fullscreen.Exp_PortraitFullscreen:is(.CompactMode, .ForcedCompactMode)
     .ContentBox
     .LyricsContainer {
     margin-top: calc(var(--PF_Inset) + var(--Compact_NowBarHeight) + var(--PF_LyricsGap));
@@ -105,12 +105,12 @@
   }
 
   body
-    > #SpicyLyricsPage.Fullscreen.Exp_PortraitFullscreen:is(.CompactMode, .ForcedCompactMode)
+    > #LyssnaLyricsPage.Fullscreen.Exp_PortraitFullscreen:is(.CompactMode, .ForcedCompactMode)
     .LyricsContainer
     .LyricsContent {
-    --DefaultLyricsSize: calc(var(--PF_LyricsSize) * var(--SL-LyricsScale, 1));
+    --DefaultLyricsSize: calc(var(--PF_LyricsSize) * var(--LL-LyricsScale, 1));
     /* The top fade is sized for regular lyrics; at this size a line above the active one would
        be sliced off at the bar instead of fading out. */
-    --SL-LyricsContent_MaskTopPadding: calc(var(--DefaultLyricsSize) * 0.9);
+    --LL-LyricsContent_MaskTopPadding: calc(var(--DefaultLyricsSize) * 0.9);
   }
 }

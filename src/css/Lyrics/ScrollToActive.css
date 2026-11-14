@@ -3,15 +3,15 @@
    and positioning it would move the loader and skeleton that sit against the page. Only the
    column's right edge is taken by name: as the default anchor, the scrolling column would carry
    the button along with it. */
-#SpicyLyricsPage .LyricsContainer .LyricsContent {
-  anchor-name: --SL-LyricsContent;
+#LyssnaLyricsPage .LyricsContainer .LyricsContent {
+  anchor-name: --LL-LyricsContent;
 }
 
-#SpicyLyricsPage .LyricsContainer .VirtualLyricsContainer {
-  anchor-name: --SL-LyricsColumn;
+#LyssnaLyricsPage .LyricsContainer .VirtualLyricsContainer {
+  anchor-name: --LL-LyricsColumn;
 }
 
-#SpicyLyricsPage .ScrollToActive {
+#LyssnaLyricsPage .ScrollToActive {
   --ScrollToActiveInset: 24px;
   --ScrollToActiveSize: 44px;
   position: absolute;
@@ -25,7 +25,7 @@
   display: grid;
   place-items: center;
   cursor: pointer;
-  color: var(--color-text-primary);
+  color: var(--lyssna-color-text-primary);
   background: #0d0d0f6b;
   -webkit-backdrop-filter: blur(15px) brightness(.85);
   backdrop-filter: blur(15px) brightness(.85);
@@ -42,83 +42,83 @@
 
 /* Without anchor positioning there is no box to pin it to. */
 @supports not (anchor-name: --a) {
-  #SpicyLyricsPage .ScrollToActive {
+  #LyssnaLyricsPage .ScrollToActive {
     display: none;
   }
 }
 
 @supports (anchor-name: --a) {
-  #SpicyLyricsPage .ScrollToActive {
-    position-anchor: --SL-LyricsContent;
-    right: anchor(--SL-LyricsColumn right, calc(anchor(right) + var(--ScrollToActiveInset)));
+  #LyssnaLyricsPage .ScrollToActive {
+    position-anchor: --LL-LyricsContent;
+    right: anchor(--LL-LyricsColumn right, calc(anchor(right) + var(--ScrollToActiveInset)));
     top: calc(anchor(top) + var(--ScrollToActiveInset));
   }
 
-  #SpicyLyricsPage .ScrollToActive.Above {
+  #LyssnaLyricsPage .ScrollToActive.Above {
     bottom: calc(anchor(bottom) + var(--ScrollToActiveInset));
     top: auto;
   }
 
   /* In page view, level with the view controls strip on the same edge (24px in, 5cqh tall,
      see default.css), so the two read as one row instead of the button hanging below it. */
-  #SpicyLyricsPage.ViewControlsPosition_Top:not(.Fullscreen) .ScrollToActive:not(.Above) {
+  #LyssnaLyricsPage.ViewControlsPosition_Top:not(.Fullscreen) .ScrollToActive:not(.Above) {
     top: calc(24px + 2.5cqh - var(--ScrollToActiveSize) / 2);
   }
 
-  #SpicyLyricsPage.ViewControlsPosition_Bottom:not(.Fullscreen) .ScrollToActive.Above {
+  #LyssnaLyricsPage.ViewControlsPosition_Bottom:not(.Fullscreen) .ScrollToActive.Above {
     bottom: calc(24px + 2.5cqh - var(--ScrollToActiveSize) / 2);
   }
 
   /* Without the global nav, the top strip sits at the bottom, 36px in. */
   .Root:not(.global-nav)
     :is(.Root__main-view, :where(#main-view))
-    #SpicyLyricsPage.ViewControlsPosition_Top:not(.Fullscreen)
+    #LyssnaLyricsPage.ViewControlsPosition_Top:not(.Fullscreen)
     .ScrollToActive:not(.Above) {
     top: calc(anchor(top) + var(--ScrollToActiveInset));
   }
 
   .Root:not(.global-nav)
     :is(.Root__main-view, :where(#main-view))
-    #SpicyLyricsPage.ViewControlsPosition_Top:not(.Fullscreen)
+    #LyssnaLyricsPage.ViewControlsPosition_Top:not(.Fullscreen)
     .ScrollToActive.Above {
     bottom: calc(36px + 2.5cqh - var(--ScrollToActiveSize) / 2);
   }
 }
 
-#SpicyLyricsPage .ScrollToActive.Visible {
+#LyssnaLyricsPage .ScrollToActive.Visible {
   opacity: 1;
   scale: 1;
   pointer-events: auto;
 }
 
-#SpicyLyricsPage .ScrollToActive.Visible:hover {
+#LyssnaLyricsPage .ScrollToActive.Visible:hover {
   background: #0008;
   box-shadow: none;
 }
 
 /* A short ease of its own: the appear curve overshoots, which reads as a bounce under the finger. */
-#SpicyLyricsPage .ScrollToActive.Visible:active {
+#LyssnaLyricsPage .ScrollToActive.Visible:active {
   scale: 0.94;
   transition: scale 0.1s ease-out;
 }
 
-#SpicyLyricsPage .ScrollToActive:focus-visible {
-  outline: 2px solid var(--color-text-primary);
+#LyssnaLyricsPage .ScrollToActive:focus-visible {
+  outline: 2px solid var(--lyssna-color-text-primary);
   outline-offset: 2px;
 }
 
-#SpicyLyricsPage .ScrollToActive svg {
+#LyssnaLyricsPage .ScrollToActive svg {
   width: 20px;
   height: 20px;
 }
 
-#SpicyLyricsPage .ScrollToActive.Above svg {
+#LyssnaLyricsPage .ScrollToActive.Above svg {
   rotate: 180deg;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  #SpicyLyricsPage .ScrollToActive,
-  #SpicyLyricsPage .ScrollToActive.Visible:active {
+  #LyssnaLyricsPage .ScrollToActive,
+  #LyssnaLyricsPage .ScrollToActive.Visible:active {
     scale: 1;
   }
 }

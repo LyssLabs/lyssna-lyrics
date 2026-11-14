@@ -16,7 +16,7 @@ export async function OpenLyricsSourcesManager() {
   };
 
   const backButton = modalDocument.createElement("button");
-  backButton.className = "sl-sp-btn sl-modal-header-back-btn";
+  backButton.className = "ll-sp-btn ll-modal-header-back-btn";
   backButton.type = "button";
   backButton.textContent = "← Back";
   backButton.onclick = openSettings;

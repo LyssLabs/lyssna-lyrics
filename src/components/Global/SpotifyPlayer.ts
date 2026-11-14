@@ -392,7 +392,7 @@ export const SpotifyPlayer = {
         registerOnCreate: boolean = true
       ) {
         this.element = document.createElement("button");
-        this.element.classList.add("main-genericButton-button", "SpicyLyrics_PlaybarButton");
+        this.element.classList.add("main-genericButton-button", "LyssnaLyrics_PlaybarButton");
         this.iconElement = document.createElement("span");
         this.iconElement.classList.add("Wrapper-sm-only", "Wrapper-small-only");
         this.element.appendChild(this.iconElement);
@@ -516,7 +516,7 @@ export const SpotifyPlayer = {
         'button[data-testid="fullscreen-mode-button"]',
         'button[data-testid="pip-toggle-button"]',
         'button[data-testid="lyrics-button"]',
-        ".main-genericButton-button:not(.SpicyLyrics_PlaybarButton)",
+        ".main-genericButton-button:not(.LyssnaLyrics_PlaybarButton)",
       ]) {
         sibling = controls?.querySelector<HTMLElement>(selector) ?? null;
         if (sibling) break;

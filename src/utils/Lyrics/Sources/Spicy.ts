@@ -5,7 +5,7 @@ import type { ExternalLyricsResult } from "./Types.ts";
 
 const SOURCE_IDS: Record<string, string> = { spicy_lyrics: "spl", apple_music: "aml", spotify: "spt" };
 
-export async function fetchSpicyLyricsRaw(trackId: string): Promise<ExternalLyricsResult | null> {
+export async function fetchLyssnaLyricsRaw(trackId: string): Promise<ExternalLyricsResult | null> {
   try {
     const result = await getDeveloperLyrics(trackId);
     if (result.status === 503) return { lyrics: null, status: 503 };

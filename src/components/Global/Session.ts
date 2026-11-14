@@ -1,5 +1,6 @@
 import { $lyssnaLyricsVersion } from "../../utils/stores.ts";
 import { fetchSelectedChannelVersion } from "../../utils/version/ChannelVersion.ts";
+import { compareLyssnaVersions } from "../../utils/version/VersionOrder.ts";
 import Global from "./Global.ts";
 
 interface Location {
@@ -91,10 +92,7 @@ const Session = {
      * Returns 1 if a > b, -1 if a < b, 0 if equal.
      */
     CompareVersions: (a: NonNullable<VersionParsedData>, b: NonNullable<VersionParsedData>): number => {
-      if (a.Major !== b.Major) return a.Major > b.Major ? 1 : -1;
-      if (a.Minor !== b.Minor) return a.Minor > b.Minor ? 1 : -1;
-      if (a.Patch !== b.Patch) return a.Patch > b.Patch ? 1 : -1;
-      return 0;
+      return compareLyssnaVersions(a.Text, b.Text);
     },
     /**
      * Returns "outdated" if current < latest, "downgraded" if current > latest, or "current" if equal.

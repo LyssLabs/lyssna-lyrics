@@ -1,7 +1,7 @@
 import { GLYPH_PROBE_FONT } from "../../components/Styling/GlyphProbeFont.ts";
 import { toCssFontFamily } from "../cssFontFamily.ts";
 
-const PROBE_FAMILY = "SpicyLyricsGlyphProbe";
+const PROBE_FAMILY = "LyssnaLyricsGlyphProbe";
 const probes = new WeakMap<Document, Promise<CanvasRenderingContext2D | null>>();
 
 function getGlyphProbe(targetDocument: Document): Promise<CanvasRenderingContext2D | null> {

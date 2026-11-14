@@ -80,8 +80,8 @@ export default function SettingsPanel({ onOpenHiddenSettings, onManageAnimator, 
   };
 
   return (
-    <div className="slm sl-sp-panel sl-sp-panel--settings">
-      <div className="sl-sp-settings-header">
+    <div className="llm ll-sp-panel ll-sp-panel--settings">
+      <div className="ll-sp-settings-header">
         <div className="ll-settings-heading">
           <h2><span aria-hidden="true">{SettingsIcons.General}</span>Lyssna Lyrics settings</h2>
           <SearchBar value={query} onChange={(value) => {
@@ -90,12 +90,12 @@ export default function SettingsPanel({ onOpenHiddenSettings, onManageAnimator, 
           }} />
           <button className="ll-settings-close" type="button" aria-label="Close settings" onClick={() => PopupModal.hide()}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6" /></svg></button>
         </div>
-        <div className="sl-sp-tabs" ref={tabsRef} role="tablist" aria-label="Settings categories" aria-orientation="horizontal">
+        <div className="ll-sp-tabs" ref={tabsRef} role="tablist" aria-label="Settings categories" aria-orientation="horizontal">
         <span className="ll-settings-tab-marker" aria-hidden="true" style={{ transform: `translateX(${marker.x}px)`, width: marker.width, opacity: marker.width ? 1 : 0 }} />
         {TABS.map(([label, tab, icon], index) => <button
           key={tab}
           ref={(element) => { tabRefs.current[index] = element; }}
-          className={`sl-sp-tab${sectionFilter === tab && !searching ? " sl-sp-tab--active" : ""}`}
+          className={`ll-sp-tab${sectionFilter === tab && !searching ? " ll-sp-tab--active" : ""}`}
           role="tab"
           type="button"
           aria-selected={sectionFilter === tab && !searching}
@@ -104,14 +104,14 @@ export default function SettingsPanel({ onOpenHiddenSettings, onManageAnimator, 
           aria-controls="ll-settings-content"
           onClick={() => selectTab(tab)}
           onKeyDown={(event) => onTabKeyDown(event, index)}
-        ><span className="sl-sp-tab-icon" aria-hidden="true">{icon}</span>{label}</button>)}
+        ><span className="ll-sp-tab-icon" aria-hidden="true">{icon}</span>{label}</button>)}
         </div>
 
       </div>
 
-      <div className="sl-sp-settings-scroll" ref={scrollRef}>
-        <div className="sl-sp-settings-content">
-          <div className="sl-sp-settings-main">
+      <div className="ll-sp-settings-scroll" ref={scrollRef}>
+        <div className="ll-sp-settings-content">
+          <div className="ll-sp-settings-main">
             <ShowHiddenSettingsInSearchContext.Provider value={searching}>
               <div id="ll-settings-content" role={searching || !TABS.some(([, tab]) => tab === sectionFilter) ? "region" : "tabpanel"} aria-label={searching ? "Search results" : sectionFilter}>
                 <AppearanceSection query={query} sectionFilter={searching ? "All" : sectionFilter} />

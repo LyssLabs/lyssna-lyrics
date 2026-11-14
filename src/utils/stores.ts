@@ -294,6 +294,7 @@ export const $ttmlMakerMode = persistAtom<boolean>("ttmlMakerMode", true);
 export type TtmlReviewerMode = "off" | "temporary" | "always";
 export const $ttmlReviewerMode = persistAtom<TtmlReviewerMode>("ttmlReviewerMode", "off");
 export const $developerMode = persistAtom<boolean>("developerMode", false);
+export const $dontSyncSpicySettings = persistAtom<boolean>("dontSyncSpicySettings", false);
 export const $rememberSettingsMenuLocation = persistAtom<boolean>(
   "rememberSettingsMenuLocation",
   false

@@ -84,7 +84,7 @@ function lyricsOnScreen(): boolean {
     !!PageContainer?.isConnected &&
     // The lyrics' own window: with Popup Lyrics, the main one can be minimised.
     PageContainer.ownerDocument.visibilityState === "visible" &&
-    !document.querySelector(".sl-sp") &&
+    !document.querySelector(".ll-sp") &&
     !!PageContainer.querySelector(".LyricsContainer .line")
   );
 }
@@ -95,7 +95,7 @@ onAnimationFrame((timestamp) => {
   if (second !== samplingCheckedFor) {
     samplingCheckedFor = second;
     sampling = lyricsOnScreen();
-    panelOpenedAt = document.querySelector(".sl-sp") ? (panelOpenedAt ?? second) : null;
+    panelOpenedAt = document.querySelector(".ll-sp") ? (panelOpenedAt ?? second) : null;
   }
   const gap = timestamp - lastFrame;
   lastFrame = timestamp;
@@ -127,7 +127,7 @@ function describeSmoothness(): string {
 export function DescribeView(): string {
   if (!PageContainer) return "Lyrics page closed";
   const parts: string[] = [];
-  const pip = !!PageContainer.closest(".spicy-pip-wrapper");
+  const pip = !!PageContainer.closest(".lyssna-pip-wrapper");
   if (PageContainer.classList.contains("CardMode")) parts.push("Sidebar card");
   else if (pip) parts.push("Popup");
   else if (Fullscreen.CinemaViewOpen) parts.push("Cinema");
@@ -150,7 +150,7 @@ function describeSidebar(): string {
   if (layout === "closed") return layout;
   const parts = [layout];
   parts.push($showNpvDynamicBg.get() ? "animated background" : "no animated background");
-  if (document.querySelector("#SpicyLyricsPage.CardMode")) {
+  if (document.querySelector("#LyssnaLyricsPage.CardMode")) {
     parts.push(
       !$npvLyricsOpen.get() ? "lyrics card folded" : $npvLyricsExpanded.get() ? "lyrics card expanded" : "lyrics card"
     );

@@ -14,9 +14,9 @@ const NPV_KAWARP_KEY = "npvbg";
 // inside the artwork block's [data-canvas-surface].
 const NPV_CANVAS_VIDEO =
   ".canvasVideoContainerNPV video, [data-npv-root] [data-canvas-surface] video";
-const NPV_BACKGROUND_CANVAS = "aside.spicy-dynamic-bg-in-this canvas.spicy-dynamic-bg";
+const NPV_BACKGROUND_CANVAS = "aside.lyssna-dynamic-bg-in-this canvas.lyssna-dynamic-bg";
 // Set by NPVLyrics.ts while its card fills the NPV.
-const NPV_CARD_EXPANDED_CLASS = "SpicyLyrics_NPVCardExpanded";
+const NPV_CARD_EXPANDED_CLASS = "LyssnaLyrics_NPVCardExpanded";
 // How often to look for the video while there is none.
 const LOOKUP_INTERVAL_MS = 500;
 

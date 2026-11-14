@@ -15,11 +15,11 @@ function onMarketplaceUserCssDetected(userCssText: string | null) {
       "/* check out a cool project: https://github.com/Rigellute/spotify-tui",
     )
   ) {
-    document.body.classList.add("sltm__ThemeMatch__textdt");
+    document.body.classList.add("lltm__ThemeMatch__textdt");
     return;
   }
 
-  document.body.classList.remove("sltm__ThemeMatch__textdt");
+  document.body.classList.remove("lltm__ThemeMatch__textdt");
 }
 
 export function watchMarketplaceUserCss(): () => void {
@@ -98,7 +98,7 @@ export function watchMarketplaceUserCss(): () => void {
   };
 }
 
-const STOCK_PLAYBAR_CLASS = "SpicyLyrics_StockPlaybar";
+const STOCK_PLAYBAR_CLASS = "LyssnaLyrics_StockPlaybar";
 // Which arrangement of the progress wrapper the bar has, for default.scss. These
 // were :has() checks there, but a :has() in a rule that applies while the page is
 // open made every element insertion in the app restyle most of the document
@@ -106,8 +106,8 @@ const STOCK_PLAYBAR_CLASS = "SpicyLyrics_StockPlaybar";
 // - UNCLASSED: nothing in the bar is .playback-progressbar (1.3.x hashes it all).
 // - PADDED: .playback-progressbar sits in a wrapper that isn't
 //   .playback-progressbar-container.
-const PLAYBAR_UNCLASSED_CLASS = "SpicyLyrics_PlaybarUnclassed";
-const PLAYBAR_PADDED_CLASS = "SpicyLyrics_PlaybarPadded";
+const PLAYBAR_UNCLASSED_CLASS = "LyssnaLyrics_PlaybarUnclassed";
+const PLAYBAR_PADDED_CLASS = "LyssnaLyrics_PlaybarPadded";
 
 // default.scss pins the elapsed time out of the playback bar's flow while the
 // page is open, and pads the progress bar to make room for it. That assumes
@@ -167,7 +167,7 @@ const PLAYBAR_WAIT_INTERVAL_MS = 250;
 const PLAYBAR_WAIT_MAX_TRIES = 120;
 let pendingPlaybarSync: ReturnType<typeof setTimeout> | undefined;
 
-// The page the class is held for. This used to be a `body:has(#SpicyLyricsPage)`
+// The page the class is held for. This used to be a `body:has(#LyssnaLyricsPage)`
 // gate in default.scss, but a :has() on <body> ahead of a descendant selector
 // makes Blink re-check body's whole subtree on every DOM change anywhere (the
 // lyrics virtualizer, Spotify's own React updates), which showed up as dropped

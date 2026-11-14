@@ -209,7 +209,7 @@ const OpenPopupLyricsFlow = async () => {
     // Destroy leaves fullscreen itself and is synchronous, so the page is
     // guaranteed closed before we recurse — whether or not GoBack applies.
     await PageView.Destroy();
-    Session.GoBackFrom("/SpicyLyrics");
+    Session.GoBackFrom("/LyssnaLyrics");
 
     await OpenPopupLyricsFlow();
     return;
@@ -276,41 +276,41 @@ const OpenPopupLyricsFlow = async () => {
   });
 
   // Copy the main SpicyLyrics style element
-  // Find any <style> element in the DOM that includes '#SpicyLyricsPage' in its textContent
-  // Find all <style> elements in the DOM that include '#SpicyLyricsPage' in their textContent
-  const spicyLyricsStyleElement = document.querySelector("#slstyles");
-  let spicyLyricsStyleContent: string | null = null;
+  // Find any <style> element in the DOM that includes '#LyssnaLyricsPage' in its textContent
+  // Find all <style> elements in the DOM that include '#LyssnaLyricsPage' in their textContent
+  const lyssnaLyricsStyleElement = document.querySelector("#lyssna-lyrics-styles");
+  let lyssnaLyricsStyleContent: string | null = null;
 
-  if (spicyLyricsStyleElement) {
-    if (spicyLyricsStyleElement.tagName.toLowerCase() === "link") {
+  if (lyssnaLyricsStyleElement) {
+    if (lyssnaLyricsStyleElement.tagName.toLowerCase() === "link") {
       // @ts-ignore
-      const href = spicyLyricsStyleElement.getAttribute("href");
+      const href = lyssnaLyricsStyleElement.getAttribute("href");
       if (href) {
         try {
           const res = await fetch(href);
           if (res.ok) {
-            spicyLyricsStyleContent = await res.text();
+            lyssnaLyricsStyleContent = await res.text();
           }
         } catch (e) {
-          spicyLyricsStyleContent = null;
+          lyssnaLyricsStyleContent = null;
         }
       }
-    } else if (spicyLyricsStyleElement.tagName.toLowerCase() === "style") {
-      spicyLyricsStyleContent = spicyLyricsStyleElement.textContent;
+    } else if (lyssnaLyricsStyleElement.tagName.toLowerCase() === "style") {
+      lyssnaLyricsStyleContent = lyssnaLyricsStyleElement.textContent;
     }
   }
 
-  if (spicyLyricsStyleContent) {
+  if (lyssnaLyricsStyleContent) {
     const newStyleElement = document.createElement("style");
-    newStyleElement.textContent = spicyLyricsStyleContent;
+    newStyleElement.textContent = lyssnaLyricsStyleContent;
     currentPipWindow.document.head.appendChild(newStyleElement);
   }
 
-  // Additionally, copy the styles element with the id 'spicyLyrics-additionalStyling'
-  const additionalStyling = document.getElementById("spicyLyrics-additionalStyling");
+  // Additionally, copy the styles element with the id 'lyssnaLyrics-additionalStyling'
+  const additionalStyling = document.getElementById("lyssnaLyrics-additionalStyling");
   if (additionalStyling) {
     const newAdditionalStyling = document.createElement("style");
-    newAdditionalStyling.id = "spicyLyrics-additionalStyling";
+    newAdditionalStyling.id = "lyssnaLyrics-additionalStyling";
     newAdditionalStyling.textContent = additionalStyling.textContent;
     currentPipWindow.document.head.appendChild(newAdditionalStyling);
   }
@@ -339,13 +339,13 @@ const OpenPopupLyricsFlow = async () => {
     return;
   }
 
-  currentPipWindow.document.body.innerHTML = `<div class="app-drag-region"></div><div class="spicy-pip-wrapper"></div>`;
-  const customFont = document.documentElement.style.getPropertyValue("--spicy-custom-font");
+  currentPipWindow.document.body.innerHTML = `<div class="app-drag-region"></div><div class="lyssna-pip-wrapper"></div>`;
+  const customFont = document.documentElement.style.getPropertyValue("--lyssna-custom-font");
   if (customFont) {
-    currentPipWindow.document.documentElement.style.setProperty("--spicy-custom-font", customFont);
+    currentPipWindow.document.documentElement.style.setProperty("--lyssna-custom-font", customFont);
   }
 
-  const pipWrapper = currentPipWindow.document.body.querySelector(".spicy-pip-wrapper") as HTMLElement;
+  const pipWrapper = currentPipWindow.document.body.querySelector(".lyssna-pip-wrapper") as HTMLElement;
 
   IsPIP = true;
 

@@ -9,12 +9,12 @@ import { IsPIP } from "./PopupLyrics.ts";
 let CompactMode = false;
 
 export const EnableCompactMode = () => {
-  const SpicyLyricsPage = PageContainer;
-  if (!SpicyLyricsPage) return;
+  const LyssnaLyricsPage = PageContainer;
+  if (!LyssnaLyricsPage) return;
 
-  SpicyLyricsPage.classList.add("CompactMode", "NowBarSide__Left");
-  SpicyLyricsPage.classList.remove("NowBarSide__Right");
-  const NowBar = SpicyLyricsPage.querySelector<HTMLElement>(".ContentBox .NowBar");
+  LyssnaLyricsPage.classList.add("CompactMode", "NowBarSide__Left");
+  LyssnaLyricsPage.classList.remove("NowBarSide__Right");
+  const NowBar = LyssnaLyricsPage.querySelector<HTMLElement>(".ContentBox .NowBar");
   if (!NowBar) return;
   NowBar.classList.add("LeftSide");
   NowBar.classList.remove("RightSide");
@@ -34,10 +34,10 @@ export const EnableCompactMode = () => {
 };
 
 export const DisableCompactMode = () => {
-  const SpicyLyricsPage = PageContainer;
-  if (!SpicyLyricsPage) return;
+  const LyssnaLyricsPage = PageContainer;
+  if (!LyssnaLyricsPage) return;
 
-  SpicyLyricsPage.classList.remove("CompactMode");
+  LyssnaLyricsPage.classList.remove("CompactMode");
   Session_NowBar_SetSide();
   CompactMode = false;
   SyncNoLyricsLayout();
@@ -57,10 +57,10 @@ export const ToggleCompactMode = () => {
 
 $lockedMediaBox.listen((v) => {
   if (!CompactMode) return;
-  const SpicyLyricsPage = PageContainer;
-  if (!SpicyLyricsPage) return;
+  const LyssnaLyricsPage = PageContainer;
+  if (!LyssnaLyricsPage) return;
   if (IsPIP) return;
-  const NowBar = SpicyLyricsPage.querySelector<HTMLElement>(".ContentBox .NowBar");
+  const NowBar = LyssnaLyricsPage.querySelector<HTMLElement>(".ContentBox .NowBar");
   if (!NowBar) return;
   if (v) {
     NowBar.classList.add("LockedMediaBox");

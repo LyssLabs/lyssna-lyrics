@@ -32,7 +32,7 @@ const MIN_OVERFLOW_PX = 1;
 /** Quiet time after the last resize before a running scroll is re-measured. */
 const RESIZE_SETTLE_MS = 200;
 
-const ANIMATION_ID = "SL_TextScroller";
+const ANIMATION_ID = "LL_TextScroller";
 
 export interface TextScrollerOptions {
   /** Hold the text at its start under prefers-reduced-motion, instead of scrolling it. */

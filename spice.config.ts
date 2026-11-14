@@ -10,8 +10,8 @@ export default defineConfig({
   linter: "oxlint",
   template: "extension",
   packageManager: "bun",
-  cssId: "slstyles",
-  devModeVarName: "__SLdev__m",
+  cssId: "lyssna-lyrics-styles",
+  devModeVarName: "__LYSSNA_LYRICS_DEV__",
   esbuildOptions: {
     legalComments: "inline",
     define: {

@@ -1,16 +1,16 @@
 // Match canvas wrappers when the NPV changes, rather than during every
 // document-wide restyle. Album-cover pseudo-elements remain untouched.
 const VISUAL_MARKERS = [
-  { className: "spicy-npv-canvas-video", selector: "video" },
+  { className: "lyssna-npv-canvas-video", selector: "video" },
   {
-    className: "spicy-npv-canvas-image",
+    className: "lyssna-npv-canvas-image",
     selector: [
       ".main-nowPlayingView-canvasVisualEnhancement div:has(> img)",
       '[data-testid="track-visual-enhancement"] + * div:has(> img)',
     ].join(", "),
   },
   {
-    className: "spicy-npv-canvas-host",
+    className: "lyssna-npv-canvas-host",
     selector: [
       '.main-nowPlayingView-coverArtContainer:has(video, .main-nowPlayingView-canvasVisualEnhancement img)',
       'div:has(> [data-testid="track-visual-enhancement"]):has(video)',
@@ -18,7 +18,7 @@ const VISUAL_MARKERS = [
     ].join(", "),
   },
   {
-    className: "spicy-npv-canvas-overlay",
+    className: "lyssna-npv-canvas-overlay",
     selector: [
       ".main-nowPlayingView-coverArtContainer :is(div, .E08D6ucrHuPJYzzGO7HG):has(video)",
       "div.Of__Db4QgB9osz_mFxhw:has(video)",

@@ -149,7 +149,7 @@ function syncCreditsOffset(box: HTMLElement) {
   if (!root) return;
   const container = box.querySelector<HTMLElement>(".LyricsContainer");
   const height = container?.classList.contains("HasPinnedCredits")
-    ? container.style.getPropertyValue("--SL-PinnedCreditsHeight").trim()
+    ? container.style.getPropertyValue("--LL-PinnedCreditsHeight").trim()
     : "";
   const value = height ? `calc(${height} + 24px)` : "";
   if (root.style.getPropertyValue("--NextUpCredits") === value) return;
@@ -176,10 +176,10 @@ function liftLyrics(box: HTMLElement, lift: boolean) {
   // Where the fade reaches transparent without the lift, measured from the bottom of the lyrics
   // (main.css; PinnedCredits.css moves it above the pinned rows).
   const fadeEnd = container.classList.contains("HasPinnedCredits")
-    ? (parseFloat(container.style.getPropertyValue("--SL-PinnedCreditsHeight")) || 0) + 24 + 8
+    ? (parseFloat(container.style.getPropertyValue("--LL-PinnedCreditsHeight")) || 0) + 24 + 8
     : 16;
   const room = Math.max(0, Math.round(contentBottom - top + LYRICS_CLEARANCE_PX - fadeEnd));
-  container.style.setProperty("--SL-NextUpRoom", `${room}px`);
+  container.style.setProperty("--LL-NextUpRoom", `${room}px`);
   container.classList.add("NextUpRoom");
 }
 

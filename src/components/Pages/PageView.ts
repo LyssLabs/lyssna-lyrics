@@ -75,7 +75,7 @@ import {
   IsCompactMode,
 } from "../Utils/CompactMode.ts";
 import Fullscreen, {
-  EnterSpicyLyricsFullscreen,
+  EnterLyssnaLyricsFullscreen,
   ExitFullscreenElement,
   IsFullscreenClosing,
 } from "../Utils/Fullscreen.ts";
@@ -205,9 +205,9 @@ $animatorPreset.listen(() => {
 function applyCustomFontSetting(fontFamily: string, targetDocument: Document = PageContainer?.ownerDocument ?? document) {
   const cssFontFamily = toCssFontFamily(fontFamily);
   if ($customFontEnabled.get() && cssFontFamily) {
-    targetDocument.documentElement.style.setProperty("--spicy-custom-font", cssFontFamily);
+    targetDocument.documentElement.style.setProperty("--lyssna-custom-font", cssFontFamily);
   } else {
-    targetDocument.documentElement.style.removeProperty("--spicy-custom-font");
+    targetDocument.documentElement.style.removeProperty("--lyssna-custom-font");
   }
   const page = PageContainer;
   if (page?.ownerDocument === targetDocument) {
@@ -244,13 +244,13 @@ async function OpenPage(
   cancelPendingPageMount();
   if (PageView.IsOpened) return;
 
-  // The main-view page belongs to the /SpicyLyrics route. The awaits above can
+  // The main-view page belongs to the /LyssnaLyrics route. The awaits above can
   // outlast a quick navigate-away; opening now would strand the page on
   // whatever route the user moved to, with nothing left to destroy it.
   if (
     AppendTo === undefined &&
     !options?.cardMode &&
-    Spicetify.Platform?.History?.location?.pathname !== "/SpicyLyrics"
+    Spicetify.Platform?.History?.location?.pathname !== "/LyssnaLyrics"
   ) {
     return;
   }
@@ -260,7 +260,7 @@ async function OpenPage(
     pageLogger.warn("Cannot open page: main view is unavailable");
     if (AppendTo === undefined && !options?.cardMode) {
       PageMountObserver = new MutationObserver(() => {
-        if (Spicetify.Platform.History.location.pathname !== "/SpicyLyrics") {
+        if (Spicetify.Platform.History.location.pathname !== "/LyssnaLyrics") {
           cancelPendingPageMount();
           return;
         }
@@ -279,7 +279,7 @@ async function OpenPage(
     } */
   const targetDocument = AppendTo?.ownerDocument ?? document;
   const elem = targetDocument.createElement("div");
-  elem.id = "SpicyLyricsPage";
+  elem.id = "LyssnaLyricsPage";
   // Spotify's OverlayScrollbars (main view, NPV panel) ignores mutations inside
   // this marker. Without it, every per-frame word style write made it re-measure
   // its viewport, forcing an extra style + layout pass mid-frame. The page's size
@@ -322,7 +322,7 @@ async function OpenPage(
             </div>
             <div class="LyricsContainer">
                 <div class="loaderContainer" aria-hidden="true">
-                    <div id="DotLoader" aria-hidden="true"></div>
+                    <div id="LyssnaDotLoader" aria-hidden="true"></div>
                     <p class="loaderMessage" role="status" aria-live="polite" hidden></p>
                 </div>
                 ${SkeletonMarkup}
@@ -368,7 +368,7 @@ async function OpenPage(
   applyAnimatorPreset(elem);
   PageContainer = elem;
 
-  elem.style.setProperty("--SL-LyricsScale", String($lyricsSize.get() / 100));
+  elem.style.setProperty("--LL-LyricsScale", String($lyricsSize.get() / 100));
 
   if (!$customFontEnabled.get()) {
     elem.classList.add("UseSpicyFont");
@@ -452,7 +452,7 @@ async function OpenPage(
   if (!IsCardMode) {
     Session_OpenNowBar();
 
-    /* const ArtworkButton = document.querySelector<HTMLElement>("#SpicyLyricsPage .ContentBox .NowBar .Header .Artwork");
+    /* const ArtworkButton = document.querySelector<HTMLElement>("#LyssnaLyricsPage .ContentBox .NowBar .Header .Artwork");
 
       ArtworkButton.addEventListener("click", () => {
           NowBar_SwapSides();
@@ -738,7 +738,7 @@ function AppendViewControls(ReAppend: boolean = false) {
         }
 
         if ((Fullscreen.IsOpen || IsFullscreenClosing()) && !(await Fullscreen.Close())) return;
-        Session.GoBackFrom("/SpicyLyrics");
+        Session.GoBackFrom("/LyssnaLyrics");
       });
       try {
         if (!IsPIP) {
@@ -766,14 +766,14 @@ function AppendViewControls(ReAppend: boolean = false) {
         compactModeToggle.addEventListener("click", () => {
           PressToggle(compactModeToggle);
           // Use PageContainer instead of document.querySelector
-          const SpicyLyricsPage = PageContainer;
+          const LyssnaLyricsPage = PageContainer;
           if (Fullscreen.IsOpen || Fullscreen.CinemaViewOpen) {
             if (IsCompactMode()) {
-              SpicyLyricsPage?.classList.remove("ForcedCompactMode");
+              LyssnaLyricsPage?.classList.remove("ForcedCompactMode");
               DisableCompactMode();
               $forceCompactMode.set(false);
             } else {
-              SpicyLyricsPage?.classList.add("ForcedCompactMode");
+              LyssnaLyricsPage?.classList.add("ForcedCompactMode");
               EnableCompactMode();
               $forceCompactMode.set(true);
             }
@@ -888,7 +888,7 @@ function AppendViewControls(ReAppend: boolean = false) {
           // If we're in cinema view, go to full fullscreen
           if (Fullscreen.CinemaViewOpen) {
             Fullscreen.CinemaViewOpen = false;
-            await EnterSpicyLyricsFullscreen();
+            await EnterLyssnaLyricsFullscreen();
             PageView.AppendViewControls(true);
           } else {
             Fullscreen.CinemaViewOpen = true;
@@ -1012,7 +1012,7 @@ function AppendViewControls(ReAppend: boolean = false) {
 
 function RefreshRightAlignedLyrics() {
   const lyricsContainer = PageContainer?.querySelector<HTMLElement>(
-    ".LyricsContainer .LyricsContent .SpicyLyricsScrollContainer"
+    ".LyricsContainer .LyricsContent .LyssnaLyricsScrollContainer"
   );
   if (!lyricsContainer || lyricsContainer.dataset.lyricsType === "Static") return;
 
@@ -1052,7 +1052,7 @@ $romanizationDisplay.listen(rebuildLyrics);
 $romanization.listen((v) => PageContainer?.classList.toggle("RomanizedRowsShown", v));
 $lyricsSize.listen((v, previous) => {
   if (!PageContainer) return;
-  PageContainer.style.setProperty("--SL-LyricsScale", String(v / 100));
+  PageContainer.style.setProperty("--LL-LyricsScale", String(v / 100));
   lyricsSizeChanged(v / previous);
   ResetLastLine();
 });

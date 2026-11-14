@@ -105,8 +105,8 @@ export default function LyricsDBPanel({ onBack }: LyricsDBPanelProps) {
   }
 
   return (
-    <div className="sl-ldb-root">
-      <div className="sl-ldb-toolbar">
+    <div className="ll-ldb-root">
+      <div className="ll-ldb-toolbar">
         <IconButton
           icon={<ArrowLeftIcon size={14} />}
           label="Back"
@@ -124,7 +124,7 @@ export default function LyricsDBPanel({ onBack }: LyricsDBPanelProps) {
         />
       </div>
 
-      <div className="sl-ldb-list">
+      <div className="ll-ldb-list">
         {loading ? (
           Array.from({ length: 5 }).map((_, i) => (
             <TrackRow
@@ -138,7 +138,7 @@ export default function LyricsDBPanel({ onBack }: LyricsDBPanelProps) {
             />
           ))
         ) : filtered.length === 0 ? (
-          <div className="sl-ldb-empty">
+          <div className="ll-ldb-empty">
             <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <path d="M20 8v14M20 27.5v1" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
               <circle cx="20" cy="20" r="16.5" stroke="currentColor" strokeWidth="2"/>

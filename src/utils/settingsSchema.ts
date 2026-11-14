@@ -60,6 +60,7 @@ export const SHARED_SETTING_KEYS = new Set([
 ]);
 
 export const MANAGED_SETTING_KEYS = new Set([
+  "dontSyncSpicySettings",
   "liquidGlassDialogs",
   "discordCreditUsernames",
   "discordLookupEndpoint",

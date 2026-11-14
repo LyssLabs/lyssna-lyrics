@@ -16,15 +16,35 @@ const upgrade = (db: IDBPDatabase) => {
 };
 
 async function openLyricsDb() {
-  // Forks use this database too and raise its version. Asking for a lower version
-  // throws VersionError and takes the Local DB down, so open at whatever is there.
-  const db = await openDB("spicylyrics", undefined, { upgrade });
-  if (db.objectStoreNames.contains(ObjectStores.LyricsStore)) return db;
-
-  // Bumping stops a build pinned to the old version from opening it, so only when the store is missing.
-  const nextVersion = db.version + 1;
-  db.close();
-  return openDB("spicylyrics", nextVersion, { upgrade });
+  const db = await openDB("lyssnalyrics", undefined, { upgrade });
+  const migrationKey = "LL:localLyricsCopied";
+  if (Spicetify.LocalStorage.get(migrationKey) === "true") return db;
+  let legacy: IDBPDatabase | undefined;
+  try {
+    legacy = await openDB("spicylyrics", undefined, {
+      upgrade(_database, oldVersion, _newVersion, transaction) {
+        // An absent legacy database must not be created as part of this read.
+        if (oldVersion === 0) transaction.abort();
+      },
+    });
+    if (legacy.objectStoreNames.contains(ObjectStores.LyricsStore)) {
+      const read = legacy.transaction(ObjectStores.LyricsStore, "readonly");
+      const [keys, values] = await Promise.all([read.store.getAllKeys(), read.store.getAll()]);
+      await read.done;
+      const write = db.transaction(ObjectStores.LyricsStore, "readwrite");
+      for (let index = 0; index < keys.length; index++) {
+        if (await write.store.get(keys[index]) === undefined) await write.store.put(values[index], keys[index]);
+      }
+      await write.done;
+    }
+    Spicetify.LocalStorage.set(migrationKey, "true");
+  } catch (error) {
+    // Missing databases are normal on fresh installations; keep existing stores intact.
+    if (!(error instanceof DOMException && error.name === "AbortError")) dbLogger.warn("Could not copy older local lyrics", error);
+  } finally {
+    legacy?.close();
+  }
+  return db;
 }
 
 export const dbPromise = openLyricsDb();

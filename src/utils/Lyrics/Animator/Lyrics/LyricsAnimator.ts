@@ -14,11 +14,11 @@ import { cubicBezier } from "../CubicBezier.ts";
 /* import { CurveInterpolator } from "curve-interpolator"; */
 
 const getSLMAnimation = (duration: number, elapsed = 0) => {
-  return `SLM_Animation ${duration}ms linear -${elapsed}ms forwards`;
+  return `lyssna-SLM_Animation ${duration}ms linear -${elapsed}ms forwards`;
 };
 
 const getPreSLMAnimation = (duration: number, delay: number) => {
-  return `Pre_SLM_GradientAnimation ${duration}ms linear ${delay}ms forwards`;
+  return `lyssna-Pre_SLM_GradientAnimation ${duration}ms linear ${delay}ms forwards`;
 };
 
 // Define types for animation ranges
@@ -475,7 +475,7 @@ const refreshedLiftOffset = (lift: number) => -RefreshedLift.Em * lift;
 // at each one. Here the words are laid end to end on one strip (each box
 // already holds the space after it), the edge crosses each word in that
 // word's time and waits where the last one ended through a gap, and every word
-// and letter reads its --SLM_GradientPosition off it. The fade so spills into
+// and letter reads its --LLM_GradientPosition off it. The fade so spills into
 // the next word while the one before is finishing.
 //
 // The fade trails the light: as a word is sung, the far end of the fade runs
@@ -486,7 +486,7 @@ const refreshedLiftOffset = (lift: number) => -RefreshedLift.Em * lift;
 // keeps it close, and once a row's last word is done the rest of the row
 // lights up in RushMs. Each row starts dim again.
 const RefreshedSweep = {
-  // Mixed.css --SLR_FadeWidth, in em.
+  // Mixed.css --LLR_FadeWidth, in em.
   FadeEm: 0.882,
   Reach: {
     RowEnd: 1,
@@ -701,7 +701,7 @@ function updateLineSweep(sweep: LineSweep, words: SyllableLead[], position: numb
   }
 }
 
-// --SLM_GradientPosition for a box at `x`, `width` wide, with the edge at
+// --LLM_GradientPosition for a box at `x`, `width` wide, with the edge at
 // `edge`: -50 is fully dim and 100 fully lit (see Mixed.css).
 function getSweepGradientPosition(edge: number, x: number, width: number, fade: number): number {
   if (edge === -Infinity) return -50;
@@ -720,14 +720,14 @@ function getSweepLetterPosition(sweep: LineSweep, wordIndex: number, letterIndex
   );
 }
 
-// The tone a split letter is drawn at, from its --SLM_GradientPosition (-50 dim,
-// 100 lit), as --SLR_LetterLit; its glow is dimmed by it (Mixed.css). The
-// tones are Mixed.css --SLR_Unlit and --SLR_Lit.
+// The tone a split letter is drawn at, from its --LLM_GradientPosition (-50 dim,
+// 100 lit), as --LLR_LetterLit; its glow is dimmed by it (Mixed.css). The
+// tones are Mixed.css --LLR_Unlit and --LLR_Lit.
 const LetterTone = { Unlit: 0.18, Lit: 0.94 };
 function setLetterLit(letter: SplitLetter, gradient: number): void {
   const lit = Clamp((gradient + 50) / 150, 0, 1);
   const tone = LetterTone.Unlit + (LetterTone.Lit - LetterTone.Unlit) * lit;
-  setStyleIfChanged(letter.HTMLElement, "--SLR_LetterLit", tone.toFixed(3), 0.005);
+  setStyleIfChanged(letter.HTMLElement, "--LLR_LetterLit", tone.toFixed(3), 0.005);
 }
 
 // Writes everything about one split letter but its gradient. Returns whether
@@ -1386,7 +1386,7 @@ function reconcileLineAnimation(line: LyricsSyllable | LyricsLine, position: num
 
     word.HTMLElement.style.animation = "none";
     if (!word.LetterGroup) {
-      if (simple) word.HTMLElement.style.setProperty("--SLM_GradientPosition", wordState === "Sung" ? "100%" : "-50%");
+      if (simple) word.HTMLElement.style.setProperty("--LLM_GradientPosition", wordState === "Sung" ? "100%" : "-50%");
       else setStyleIfChanged(word.HTMLElement, "--gradient-position", `${wordState === "Sung" ? 100 : wordActive ? -20 + 120 * wordProgress : -20}%`);
     }
 
@@ -1409,7 +1409,7 @@ function reconcileLineAnimation(line: LyricsSyllable | LyricsLine, position: num
         setStyleIfChanged(letter.HTMLElement, "--text-shadow-opacity", `${letterGlow * LetterGlowMultiplier_Opacity}%`);
       }
       letter.HTMLElement.style.animation = "none";
-      if (simple) letter.HTMLElement.style.setProperty("--SLM_GradientPosition", letterState === "Sung" ? "100%" : "-50%");
+      if (simple) letter.HTMLElement.style.setProperty("--LLM_GradientPosition", letterState === "Sung" ? "100%" : "-50%");
       else setStyleIfChanged(letter.HTMLElement, "--gradient-position", `${letterState === "Sung" ? 100 : letterState === "Active" ? -20 + 120 * letterProgress : -20}%`);
     }
   }
@@ -1720,7 +1720,7 @@ export function Animate(position: number): void {
             );
             if (!isLetterGroup) {
               if (isBloomRenderer()) {
-                setStyleIfChanged(word.HTMLElement, "--SLM_GradientPosition", `${targetGradientPos}%`);
+                setStyleIfChanged(word.HTMLElement, "--LLM_GradientPosition", `${targetGradientPos}%`);
               } else {
                 setStyleIfChanged(word.HTMLElement, "--gradient-position", `${targetGradientPos}%`);
               }
@@ -2006,7 +2006,7 @@ export function Animate(position: number): void {
 
                 // Apply the calculated gradient
                 if (isBloomRenderer()) {
-                  setStyleIfChanged(letter.HTMLElement, "--SLM_GradientPosition", `${targetGradient}%`);
+                  setStyleIfChanged(letter.HTMLElement, "--LLM_GradientPosition", `${targetGradient}%`);
                 } else {
                   setStyleIfChanged(letter.HTMLElement, "--gradient-position", `${targetGradient}%`);
                 }
@@ -2029,7 +2029,7 @@ export function Animate(position: number): void {
                 const totalDuration = letter.EndTime - letter.StartTime;
                 // Apply styles from springs and calculated gradient
                 setStyleIfChanged(letter.HTMLElement,
-                  isBloomRenderer() ? "--SLM_GradientPosition" : "--gradient-position", `${targetGradient}%`);
+                  isBloomRenderer() ? "--LLM_GradientPosition" : "--gradient-position", `${targetGradient}%`);
                 // Use translate3d to ensure GPU-accelerated transforms
                 setStyleIfChanged(
                   letter.HTMLElement,
@@ -2074,7 +2074,7 @@ export function Animate(position: number): void {
 
                 if (restStrength) {
                   const gradient = (sweep && getSweepLetterPosition(sweep, wordIndex, k)) ?? -50;
-                  setStyleIfChanged(letter.HTMLElement, "--SLM_GradientPosition", `${gradient}%`);
+                  setStyleIfChanged(letter.HTMLElement, "--LLM_GradientPosition", `${gradient}%`);
                   setLetterLit(letter, gradient);
                   stepRefreshedLetter(letter, k, restFlame!);
                   continue;
@@ -2089,7 +2089,7 @@ export function Animate(position: number): void {
                 const currentGlow = letter.AnimatorStore.Glow.Step(deltaTime);
 
                 if (isBloomRenderer()) {
-                  setStyleIfChanged(letter.HTMLElement, "--SLM_GradientPosition", "-50%");
+                  setStyleIfChanged(letter.HTMLElement, "--LLM_GradientPosition", "-50%");
                 } else {
                   setStyleIfChanged(letter.HTMLElement, "--gradient-position", `-20%`);
                 }
@@ -2135,7 +2135,7 @@ export function Animate(position: number): void {
 
                 if (sungStrength) {
                   const gradient = (sweep && getSweepLetterPosition(sweep, wordIndex, k)) ?? 100;
-                  setStyleIfChanged(letter.HTMLElement, "--SLM_GradientPosition", `${gradient}%`);
+                  setStyleIfChanged(letter.HTMLElement, "--LLM_GradientPosition", `${gradient}%`);
                   setLetterLit(letter, gradient);
                   stepRefreshedLetter(letter, k, sungFlame!);
                   continue;
@@ -2150,7 +2150,7 @@ export function Animate(position: number): void {
                 const currentGlow = letter.AnimatorStore.Glow.Step(deltaTime);
 
                 if (isBloomRenderer()) {
-                  setStyleIfChanged(letter.HTMLElement, "--SLM_GradientPosition", "100%");
+                  setStyleIfChanged(letter.HTMLElement, "--LLM_GradientPosition", "100%");
                 } else {
                   setStyleIfChanged(letter.HTMLElement, "--gradient-position", `100%`);
                 }
@@ -2340,7 +2340,7 @@ export function Animate(position: number): void {
               //}
               if (!word.LetterGroup) {
                 if (isBloomRenderer()) {
-                  setStyleIfChanged(word.HTMLElement, "--SLM_GradientPosition", "100%");
+                  setStyleIfChanged(word.HTMLElement, "--LLM_GradientPosition", "100%");
                 } else {
                   setStyleIfChanged(word.HTMLElement, "--gradient-position", "100%");
                 }
@@ -2535,7 +2535,7 @@ export function Animate(position: number): void {
 
                 if (sungStrength) {
                   const gradient = (sweep && getSweepLetterPosition(sweep, i, k)) ?? 100;
-                  setStyleIfChanged(letter.HTMLElement, "--SLM_GradientPosition", `${gradient}%`);
+                  setStyleIfChanged(letter.HTMLElement, "--LLM_GradientPosition", `${gradient}%`);
                   setLetterLit(letter, gradient);
                   // A letter still up keeps the line settling until it's back at rest.
                   if (stepRefreshedLetter(letter, k, sungFlame!, liftLeft)) {
@@ -2555,7 +2555,7 @@ export function Animate(position: number): void {
                 track(letter.AnimatorStore);
 
                 if (isBloomRenderer()) {
-                  setStyleIfChanged(letter.HTMLElement, "--SLM_GradientPosition", "100%");
+                  setStyleIfChanged(letter.HTMLElement, "--LLM_GradientPosition", "100%");
                 } else {
                   setStyleIfChanged(letter.HTMLElement, "--gradient-position", `100%`);
                 }

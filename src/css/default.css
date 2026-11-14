@@ -1,20 +1,20 @@
 :root {
-  --bg-rotation-degree: 258deg;
-  /* --sltoaster-bottom-padding: 104px; */
+  --lyssna-bg-rotation-degree: 258deg;
+  /* --lyssna-toaster-bottom-padding: 104px; */
 }
 
-:root:has(#SpicyLyricsPage.Fullscreen) {
-  --sltoaster-bottom-padding: 32px;
+:root:has(#LyssnaLyricsPage.Fullscreen) {
+  --lyssna-toaster-bottom-padding: 32px;
 }
 
-.main-nowPlayingView-contextItemInfo::before,
-aside.NowPlayingView.spicy-dynamic-bg-in-this
+aside.lyssna-dynamic-bg-in-this .main-nowPlayingView-contextItemInfo::before,
+aside.NowPlayingView.lyssna-dynamic-bg-in-this
   [data-testid="NPV_Panel_OpenDiv"]
   div:has(> [data-testid="track-visual-enhancement"]) ~ div::before {
   display: none;
 }
 
-#SpicyLyricsPage {
+#LyssnaLyricsPage {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -35,45 +35,45 @@ aside.NowPlayingView.spicy-dynamic-bg-in-this
   will-change: transform;
 }
 
-.Root__main-view .main-view-container:has(> #SpicyLyricsPage) {
+.Root__main-view .main-view-container:has(> #LyssnaLyricsPage) {
   position: relative;
 }
 
-.Root__main-view .main-view-container > #SpicyLyricsPage {
+.Root__main-view .main-view-container > #LyssnaLyricsPage {
   z-index: 1;
   border-radius: inherit;
 }
 
-#SpicyLyricsPage.frame_F_Exit {
+#LyssnaLyricsPage.frame_F_Exit {
   transform: translateY(100%);
 }
 
-#SpicyLyricsPage.UseSpicyFont,
-#SpicyLyricsPage.UseSpicyFont *,
-.SpicyLyricsFontPixel,
-.SpicyLyricsFontPixel * {
+#LyssnaLyricsPage.UseSpicyFont,
+#LyssnaLyricsPage.UseSpicyFont *,
+.LyssnaLyricsFontPixel,
+.LyssnaLyricsFontPixel * {
   font-family: SpicyLyrics, "Noto Sans Georgian", "VazirmatnRegular", sans-serif !important;
 }
 
-#SpicyLyricsPage:not(.UseSpicyFont),
-#SpicyLyricsPage:not(.UseSpicyFont) *:not(.musical-line, .musical-line *) {
-  font-family: var(--spicy-custom-font, var(--encore-body-font-stack, sans-serif)), "Noto Sans Georgian", "VazirmatnRegular", sans-serif !important;
+#LyssnaLyricsPage:not(.UseSpicyFont),
+#LyssnaLyricsPage:not(.UseSpicyFont) *:not(.musical-line, .musical-line *) {
+  font-family: var(--lyssna-custom-font, var(--encore-body-font-stack, sans-serif)), "Noto Sans Georgian", "VazirmatnRegular", sans-serif !important;
   font-synthesis: none;
 }
 
-#SpicyLyricsPage.LyricsFontFallback .LyricsContainer :is(.line, .line *, .SpaceGravityWord, .SpaceGravityWord *) {
+#LyssnaLyricsPage.LyricsFontFallback .LyricsContainer :is(.line, .line *, .SpaceGravityWord, .SpaceGravityWord *) {
   font-family: SpicyLyrics, "Noto Sans Georgian", "VazirmatnRegular", sans-serif !important;
   font-synthesis: auto;
 }
 
-:is(.Root__main-view, :where(#main-view)):has(#SpicyLyricsPage) .main-view-container__scroll-node-child,
-:is(.Root__main-view, :where(#main-view)):has(#SpicyLyricsPage) .main-view-container__scroll-node-child-spacer,
-:is(.Root__main-view, :where(#main-view)):has(#SpicyLyricsPage) .main-view-container__scroll-node-child,
-:is(.Root__main-view, :where(#main-view)):has(#SpicyLyricsPage) .main-view-container__scroll-node-child-spacer {
+:is(.Root__main-view, :where(#main-view)):has(#LyssnaLyricsPage) .main-view-container__scroll-node-child,
+:is(.Root__main-view, :where(#main-view)):has(#LyssnaLyricsPage) .main-view-container__scroll-node-child-spacer,
+:is(.Root__main-view, :where(#main-view)):has(#LyssnaLyricsPage) .main-view-container__scroll-node-child,
+:is(.Root__main-view, :where(#main-view)):has(#LyssnaLyricsPage) .main-view-container__scroll-node-child-spacer {
   display: none;
 }
 
-#SpicyLyricsPage .ViewControls {
+#LyssnaLyricsPage .ViewControls {
   container-type: size;
   display: flex;
   gap: 6px;
@@ -87,7 +87,7 @@ aside.NowPlayingView.spicy-dynamic-bg-in-this
 
 
 
-#SpicyLyricsPage:not(.Fullscreen) .ViewControls {
+#LyssnaLyricsPage:not(.Fullscreen) .ViewControls {
   position: absolute;
   width: 100cqw;
   visibility: hidden;
@@ -102,61 +102,61 @@ aside.NowPlayingView.spicy-dynamic-bg-in-this
   --ViewControlSize: clamp(32px, 5.5vh, 64px);
 }
 
-#SpicyLyricsPage.ViewControlsPosition_Bottom:not(.Fullscreen) .ViewControls {
+#LyssnaLyricsPage.ViewControlsPosition_Bottom:not(.Fullscreen) .ViewControls {
   bottom: 24px;
 }
 
-#SpicyLyricsPage.ViewControlsPosition_Top:not(.Fullscreen) .ViewControls {
+#LyssnaLyricsPage.ViewControlsPosition_Top:not(.Fullscreen) .ViewControls {
   top: 24px;
 }
 
 @container (max-width: 500px) {
-  #SpicyLyricsPage.ViewControlsPosition_Top:not(.Fullscreen) .ViewControls {
+  #LyssnaLyricsPage.ViewControlsPosition_Top:not(.Fullscreen) .ViewControls {
     top: 56px;
   }
 }
 
-.Root:not(.global-nav) :is(.Root__main-view, :where(#main-view)) #SpicyLyricsPage.ViewControlsPosition_Top:not(.Fullscreen) .ViewControls {
+.Root:not(.global-nav) :is(.Root__main-view, :where(#main-view)) #LyssnaLyricsPage.ViewControlsPosition_Top:not(.Fullscreen) .ViewControls {
   bottom: 36px;
   top: unset;
 }
 
 
 
-/* :root:has(.SpicyBG.BackgroundLayer)
-  #SpicyLyricsPage:not(.Fullscreen)
+/* :root:has(.LyssnaBG.BackgroundLayer)
+  #LyssnaLyricsPage:not(.Fullscreen)
   .ViewControls,
-:root:has(.lucid-bg-wrapper) #SpicyLyricsPage:not(.Fullscreen) .ViewControls {
+:root:has(.lucid-bg-wrapper) #LyssnaLyricsPage:not(.Fullscreen) .ViewControls {
   bottom: 115px !important;
 }
 
-body.player-floating:has(.glassify-bg) #SpicyLyricsPage:not(.Fullscreen) .ViewControls {
+body.player-floating:has(.glassify-bg) #LyssnaLyricsPage:not(.Fullscreen) .ViewControls {
   bottom: 96px !important;
 }
 
-:root:has(.lucid-bg) #SpicyLyricsPage:not(.Fullscreen) .ViewControls {
+:root:has(.lucid-bg) #LyssnaLyricsPage:not(.Fullscreen) .ViewControls {
   bottom: 80px !important;
 } */
 
-#SpicyLyricsPage:not(.Fullscreen):hover .ViewControls {
+#LyssnaLyricsPage:not(.Fullscreen):hover .ViewControls {
   visibility: visible;
   pointer-events: auto;
   transition-delay: 0s;
 }
 
-#SpicyLyricsPage:not(.Fullscreen) .ViewControls .ViewControl {
+#LyssnaLyricsPage:not(.Fullscreen) .ViewControls .ViewControl {
   opacity: 0;
   transition: opacity 670ms cubic-bezier(0.22, 1, 0.36, 1), scale 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-#SpicyLyricsPage:not(.Fullscreen):hover .ViewControls .ViewControl {
+#LyssnaLyricsPage:not(.Fullscreen):hover .ViewControls .ViewControl {
   opacity: 1;
 }
 
-#SpicyLyricsPage .ViewControls .ViewControl {
+#LyssnaLyricsPage .ViewControls .ViewControl {
   --ViewControlHeight: var(--ViewControlSize, 100cqh);
   aspect-ratio: 1;
-  background: color-mix(in srgb, var(--material-regular-bg) 30%, transparent) !important;
+  background: color-mix(in srgb, var(--lyssna-material-regular-bg) 30%, transparent) !important;
   -webkit-backdrop-filter: blur(4px) saturate(1.12) brightness(1.01);
   backdrop-filter: blur(4px) saturate(1.12) brightness(1.01);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -169,7 +169,7 @@ body.player-floating:has(.glassify-bg) #SpicyLyricsPage:not(.Fullscreen) .ViewCo
   width: var(--ViewControlHeight);
   -webkit-app-region: no-drag;
   align-items: center;
-  color: var(--color-text-primary);
+  color: var(--lyssna-color-text-primary);
   justify-content: center;
   text-align: center;
   -webkit-box-align: center;
@@ -180,10 +180,10 @@ body.player-floating:has(.glassify-bg) #SpicyLyricsPage:not(.Fullscreen) .ViewCo
 
 /* Separate frosted buttons. The :where() keeps these at their old weight while staying out of the
    grouped capsule (below). */
-#SpicyLyricsPage:where(:not(.Exp_GroupedViewControls)) .ViewControls .ViewControl {
-  background: var(--material-regular-bg);
-  -webkit-backdrop-filter: var(--material-regular-blur);
-  backdrop-filter: var(--material-regular-blur);
+#LyssnaLyricsPage:where(:not(.Exp_GroupedViewControls)) .ViewControls .ViewControl {
+  background: var(--lyssna-material-regular-bg);
+  -webkit-backdrop-filter: var(--lyssna-material-regular-blur);
+  backdrop-filter: var(--lyssna-material-regular-blur);
   box-shadow:
     0 10px 24px -8px rgba(8, 10, 18, 0.42),
     inset 0 1px 0 rgba(255, 255, 255, 0.36),
@@ -191,80 +191,80 @@ body.player-floating:has(.glassify-bg) #SpicyLyricsPage:not(.Fullscreen) .ViewCo
     inset 0 -1px 0 rgba(255, 255, 255, 0.18);
 }
 
-#SpicyLyricsPage:where(:not(.Exp_GroupedViewControls)) .ViewControls .ViewControl:hover {
+#LyssnaLyricsPage:where(:not(.Exp_GroupedViewControls)) .ViewControls .ViewControl:hover {
   scale: 1.015;
   color: #fff;
   background: rgba(255, 255, 255, 0.045) !important;
-  -webkit-backdrop-filter: var(--material-regular-blur);
-  backdrop-filter: var(--material-regular-blur);
+  -webkit-backdrop-filter: var(--lyssna-material-regular-blur);
+  backdrop-filter: var(--lyssna-material-regular-blur);
   border-color: rgba(255, 255, 255, 0.28);
   box-shadow: 0 14px 32px -8px rgba(8, 10, 18, 0.5), 0 0 22px -4px rgba(255, 255, 255, 0.24);
 }
 
-#SpicyLyricsPage .ViewControls .ViewControl:focus-visible {
+#LyssnaLyricsPage .ViewControls .ViewControl:focus-visible {
   background: rgba(255, 255, 255, 0.045) !important;
-  -webkit-backdrop-filter: var(--material-regular-blur);
-  backdrop-filter: var(--material-regular-blur);
+  -webkit-backdrop-filter: var(--lyssna-material-regular-blur);
+  backdrop-filter: var(--lyssna-material-regular-blur);
 }
 
-#SpicyLyricsPage .ViewControls .ViewControl:active {
+#LyssnaLyricsPage .ViewControls .ViewControl:active {
   scale: 0.94;
 }
 
-#SpicyLyricsPage:where(:not(.Exp_GroupedViewControls)) .ViewControls:has(.ViewControl:hover) > .ViewControl:not(:hover) {
+#LyssnaLyricsPage:where(:not(.Exp_GroupedViewControls)) .ViewControls:has(.ViewControl:hover) > .ViewControl:not(:hover) {
   opacity: 0.78;
 }
 
-#SpicyLyricsPage .ViewControls .ViewControl svg:not(.NoFill) {
+#LyssnaLyricsPage .ViewControls .ViewControl svg:not(.NoFill) {
   fill: currentColor;
 }
 
-#SpicyLyricsPage .ViewControls .ViewControl svg.NoFill {
+#LyssnaLyricsPage .ViewControls .ViewControl svg.NoFill {
   fill: none !important;
 }
 
 /* Icon parts (Icons.ts) follow page state, so the icon always shows the layout the page has. */
-#SpicyLyricsPage .ViewControls .SL_IconPart {
+#LyssnaLyricsPage .ViewControls .LL_IconPart {
   transform-box: fill-box;
   transform-origin: center;
-  transition: transform var(--dur-base, 0.25s) var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1));
+  transition: transform var(--lyssna-dur-base, 0.25s) var(--lyssna-ease-out, cubic-bezier(0.23, 1, 0.32, 1));
 }
 
-#SpicyLyricsPage.NowBarSide__Right .ViewControls #NowBarToggle .SL_IconCover {
+#LyssnaLyricsPage.NowBarSide__Right .ViewControls #NowBarToggle .LL_IconCover {
   transform: translateX(9px);
 }
 
-#SpicyLyricsPage.NowBarSide__Right .ViewControls #NowBarToggle .SL_IconLyrics {
+#LyssnaLyricsPage.NowBarSide__Right .ViewControls #NowBarToggle .LL_IconLyrics {
   transform: translateX(-12.5px);
 }
 
-#SpicyLyricsPage.NowBarSide__Right .ViewControls #NowBarSideToggle .SL_IconCover {
+#LyssnaLyricsPage.NowBarSide__Right .ViewControls #NowBarSideToggle .LL_IconCover {
   transform: translateX(10px);
 }
 
-#SpicyLyricsPage.NowBarSide__Right .ViewControls .SL_IconSwapArrow {
+#LyssnaLyricsPage.NowBarSide__Right .ViewControls .LL_IconSwapArrow {
   transform: translateX(-11.5px) rotate(180deg);
 }
 
 /* Hover leans each part toward what the button will do: corners out, the gear a tooth on. */
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  #SpicyLyricsPage .ViewControls .ViewControl:hover .SL_NudgeTL { translate: -1px -1px; }
-  #SpicyLyricsPage .ViewControls .ViewControl:hover .SL_NudgeTR { translate: 1px -1px; }
-  #SpicyLyricsPage .ViewControls .ViewControl:hover .SL_NudgeBR { translate: 1px 1px; }
-  #SpicyLyricsPage .ViewControls .ViewControl:hover .SL_NudgeBL { translate: -1px 1px; }
-  #SpicyLyricsPage .ViewControls .ViewControl:hover .SL_IconGear { rotate: 45deg; }
+  #LyssnaLyricsPage .ViewControls .ViewControl:hover .LL_NudgeTL { translate: -1px -1px; }
+  #LyssnaLyricsPage .ViewControls .ViewControl:hover .LL_NudgeTR { translate: 1px -1px; }
+  #LyssnaLyricsPage .ViewControls .ViewControl:hover .LL_NudgeBR { translate: 1px 1px; }
+  #LyssnaLyricsPage .ViewControls .ViewControl:hover .LL_NudgeBL { translate: -1px 1px; }
+  #LyssnaLyricsPage .ViewControls .ViewControl:hover .LL_IconGear { rotate: 45deg; }
   /* The swap arrow leans at the side the cover will move to, whichever way it points. */
-  #SpicyLyricsPage .ViewControls .ViewControl:hover .SL_IconSwapArrow { translate: 1px 0; }
-  #SpicyLyricsPage.NowBarSide__Right .ViewControls .ViewControl:hover .SL_IconSwapArrow { translate: -1px 0; }
+  #LyssnaLyricsPage .ViewControls .ViewControl:hover .LL_IconSwapArrow { translate: 1px 0; }
+  #LyssnaLyricsPage.NowBarSide__Right .ViewControls .ViewControl:hover .LL_IconSwapArrow { translate: -1px 0; }
 }
 
 /* A glyph that replaced another on its own button's click (Icons.ts) settles in, so the press
    visibly changed the state. Buttons rebuilt for any other reason appear as they are. */
-#SpicyLyricsPage .ViewControls .ViewControl svg.SL_IconSwapIn {
-  animation: SL_IconSwapIn 0.2s var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1));
+#LyssnaLyricsPage .ViewControls .ViewControl svg.LL_IconSwapIn {
+  animation: lyssna-LL_IconSwapIn 0.2s var(--lyssna-ease-out, cubic-bezier(0.23, 1, 0.32, 1));
 }
 
-@keyframes SL_IconSwapIn {
+@keyframes lyssna-LL_IconSwapIn {
   from {
     opacity: 0;
     transform: scale(0.9);
@@ -272,36 +272,36 @@ body.player-floating:has(.glassify-bg) #SpicyLyricsPage:not(.Fullscreen) .ViewCo
 }
 
 @media (prefers-reduced-motion: reduce) {
-  #SpicyLyricsPage .ViewControls .ViewControl svg.SL_IconSwapIn {
-    animation-name: SL_IconSwapInFade;
+  #LyssnaLyricsPage .ViewControls .ViewControl svg.LL_IconSwapIn {
+    animation-name: lyssna-LL_IconSwapInFade;
   }
 }
 
-@keyframes SL_IconSwapInFade {
+@keyframes lyssna-LL_IconSwapInFade {
   from {
     opacity: 0;
   }
 }
 
-#SpicyLyricsPage .ViewControls .SL_IconSwapArrow,
-#SpicyLyricsPage .ViewControls .SL_NudgeTL,
-#SpicyLyricsPage .ViewControls .SL_NudgeTR,
-#SpicyLyricsPage .ViewControls .SL_NudgeBR,
-#SpicyLyricsPage .ViewControls .SL_NudgeBL,
-#SpicyLyricsPage .ViewControls .SL_IconGear {
+#LyssnaLyricsPage .ViewControls .LL_IconSwapArrow,
+#LyssnaLyricsPage .ViewControls .LL_NudgeTL,
+#LyssnaLyricsPage .ViewControls .LL_NudgeTR,
+#LyssnaLyricsPage .ViewControls .LL_NudgeBR,
+#LyssnaLyricsPage .ViewControls .LL_NudgeBL,
+#LyssnaLyricsPage .ViewControls .LL_IconGear {
   transition:
-    transform var(--dur-base, 0.25s) var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1)),
-    translate 0.2s var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1)),
-    rotate 0.3s var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1));
+    transform var(--lyssna-dur-base, 0.25s) var(--lyssna-ease-out, cubic-bezier(0.23, 1, 0.32, 1)),
+    translate 0.2s var(--lyssna-ease-out, cubic-bezier(0.23, 1, 0.32, 1)),
+    rotate 0.3s var(--lyssna-ease-out, cubic-bezier(0.23, 1, 0.32, 1));
 }
 
 @media (prefers-reduced-motion: reduce) {
-  #SpicyLyricsPage .ViewControls .SL_IconPart {
+  #LyssnaLyricsPage .ViewControls .LL_IconPart {
     transition: none;
   }
 }
 
-#SpicyLyricsPage .LyricsContainer .ScrollToActiveLyric {
+#LyssnaLyricsPage .LyricsContainer .ScrollToActiveLyric {
   position: absolute;
   z-index: 12;
   right: clamp(2rem, 4.4cqw, 4rem);
@@ -311,12 +311,12 @@ body.player-floating:has(.glassify-bg) #SpicyLyricsPage:not(.Fullscreen) .ViewCo
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-text-primary);
-  background: var(--material-regular-bg);
+  color: var(--lyssna-color-text-primary);
+  background: var(--lyssna-material-regular-bg);
   border: 0;
   border-radius: clamp(0.8rem, 1.5cqh, 1.15rem);
-  -webkit-backdrop-filter: var(--material-regular-blur);
-  backdrop-filter: var(--material-regular-blur);
+  -webkit-backdrop-filter: var(--lyssna-material-regular-blur);
+  backdrop-filter: var(--lyssna-material-regular-blur);
   box-shadow:
     0 10px 24px -8px rgba(8, 10, 18, 0.42),
     inset 0 1px 0 rgba(255, 255, 255, 0.36),
@@ -329,70 +329,70 @@ body.player-floating:has(.glassify-bg) #SpicyLyricsPage:not(.Fullscreen) .ViewCo
   transition: opacity 0.2s ease, transform 0.16s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease;
 }
 
-#SpicyLyricsPage .LyricsContainer .ScrollToActiveLyric.Visible {
+#LyssnaLyricsPage .LyricsContainer .ScrollToActiveLyric.Visible {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
   transform: scale(1);
 }
 
-#SpicyLyricsPage .LyricsContainer .ScrollToActiveLyric.ActiveAbove {
+#LyssnaLyricsPage .LyricsContainer .ScrollToActiveLyric.ActiveAbove {
   top: auto;
   bottom: clamp(2rem, 8cqh, 6rem);
 }
 
-#SpicyLyricsPage .LyricsContainer .ScrollToActiveLyric svg {
+#LyssnaLyricsPage .LyricsContainer .ScrollToActiveLyric svg {
   transition: transform 0.2s ease;
 }
 
-#SpicyLyricsPage .LyricsContainer .ScrollToActiveLyric.ActiveAbove svg {
+#LyssnaLyricsPage .LyricsContainer .ScrollToActiveLyric.ActiveAbove svg {
   transform: rotate(180deg);
 }
 
-#SpicyLyricsPage .LyricsContainer .ScrollToActiveLyric:hover {
+#LyssnaLyricsPage .LyricsContainer .ScrollToActiveLyric:hover {
   background: rgba(255, 255, 255, 0.12);
 }
 
-#SpicyLyricsPage .LyricsContainer .ScrollToActiveLyric:active {
+#LyssnaLyricsPage .LyricsContainer .ScrollToActiveLyric:active {
   transform: scale(0.94);
 }
 
-#SpicyLyricsPage.CardMode .ScrollToActiveLyric {
+#LyssnaLyricsPage.CardMode .ScrollToActiveLyric {
   display: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  #SpicyLyricsPage .LyricsContainer .ScrollToActiveLyric,
-  #SpicyLyricsPage .LyricsContainer .ScrollToActiveLyric svg {
+  #LyssnaLyricsPage .LyricsContainer .ScrollToActiveLyric,
+  #LyssnaLyricsPage .LyricsContainer .ScrollToActiveLyric svg {
     transition: none;
   }
 }
 
-/* #SpicyLyricsPage:not(.Fullscreen, .NowBarSide__Right) .ViewControls:hover {
+/* #LyssnaLyricsPage:not(.Fullscreen, .NowBarSide__Right) .ViewControls:hover {
   opacity: 1 !important;
   left: var(--ControlsHoverOffset) !important;
   scale: var(--ControlsHoverScale) !important;
 }
 
-#SpicyLyricsPage:not(.Fullscreen, .NowBarSide__Right):hover .ViewControls {
+#LyssnaLyricsPage:not(.Fullscreen, .NowBarSide__Right):hover .ViewControls {
   opacity: .6;
   left: var(--PageHoverOffset);
   scale: var(--PageHoverScale);
 }
 
-#SpicyLyricsPage:not(.Fullscreen):is(.NowBarSide__Right):is(.NowBarStatus__Open) .ViewControls:hover {
+#LyssnaLyricsPage:not(.Fullscreen):is(.NowBarSide__Right):is(.NowBarStatus__Open) .ViewControls:hover {
   opacity: 1 !important;
   right: var(--ControlsHoverOffset) !important;
   scale: var(--ControlsHoverScale) !important;
 }
 
-#SpicyLyricsPage:not(.Fullscreen):is(.NowBarSide__Right):is(.NowBarStatus__Open):hover .ViewControls {
+#LyssnaLyricsPage:not(.Fullscreen):is(.NowBarSide__Right):is(.NowBarStatus__Open):hover .ViewControls {
   opacity: .6;
   right: var(--PageHoverOffset);
   scale: var(--PageHoverScale);
 } */
 
-#SpicyLyricsPage .ViewControls button {
+#LyssnaLyricsPage .ViewControls button {
   cursor: pointer;
 }
 
@@ -400,48 +400,48 @@ body.player-floating:has(.glassify-bg) #SpicyLyricsPage:not(.Fullscreen) .ViewCo
    these rules also reach the NPV through aside.NowPlayingView, the panel's test id
    and child position, which hold on both builds. The panel's first child is the
    cover widget; every later child except our card is a section. */
-body:not(.SpicyLyrics_StaticBackground)
+body:not(.LyssnaLyrics_StaticBackground)
   .Root__right-sidebar:has(.main-nowPlayingView-section, canvas),
-body:not(.SpicyLyrics_StaticBackground)
+body:not(.LyssnaLyrics_StaticBackground)
   aside.NowPlayingView {
   --background-tint: color-mix(in srgb, rgb(var(--spice-rgb-selected-row)) 7%, transparent);
   --spice-card: var(--background-tint);
   --background-tinted-base: var(--background-tint);
 }
 
-body:not(.SpicyLyrics_StaticBackground)
-  .Root__right-sidebar:has(.spicy-dynamic-bg):has(.main-nowPlayingView-section, canvas)
+body:not(.LyssnaLyrics_StaticBackground)
+  .Root__right-sidebar:has(.lyssna-dynamic-bg):has(.main-nowPlayingView-section, canvas)
   .main-nowPlayingView-content,
 /* A :has() ancestor with a bare `> div` subject made Blink restyle every div in
-   the document on any DOM change. The aside carries .spicy-dynamic-bg-in-this
+   the document on any DOM change. The aside carries .lyssna-dynamic-bg-in-this
    exactly while it holds the background, and the section implies the old
    :has(.main-nowPlayingView-section) check; the doubled class keeps specificity. */
-body:not(.SpicyLyrics_StaticBackground)
+body:not(.LyssnaLyrics_StaticBackground)
   .Root__right-sidebar
-  .spicy-dynamic-bg-in-this.spicy-dynamic-bg-in-this
+  .lyssna-dynamic-bg-in-this.lyssna-dynamic-bg-in-this
   .main-nowPlayingView-section > div,
-body:not(.SpicyLyrics_StaticBackground)
-  aside.NowPlayingView.spicy-dynamic-bg-in-this.spicy-dynamic-bg-in-this
-  [data-testid="NPV_Panel_OpenDiv"] > div:not(:first-child, #SpicyLyricsNPVCard) > div {
+body:not(.LyssnaLyrics_StaticBackground)
+  aside.NowPlayingView.lyssna-dynamic-bg-in-this.lyssna-dynamic-bg-in-this
+  [data-testid="NPV_Panel_OpenDiv"] > div:not(:first-child, #LyssnaLyricsNPVCard) > div {
   background: transparent;
 }
 
-body:not(.SpicyLyrics_StaticBackground)
-  .Root__right-sidebar:has(.spicy-dynamic-bg):has(.main-nowPlayingView-section, canvas)
+body:not(.LyssnaLyrics_StaticBackground)
+  .Root__right-sidebar:has(.lyssna-dynamic-bg):has(.main-nowPlayingView-section, canvas)
   .main-nowPlayingView-contextItemInfo:before {
   display: none;
 }
 
-body:not(.SpicyLyrics_StaticBackground)
-  .Root__right-sidebar:has(.spicy-dynamic-bg):has(.main-nowPlayingView-section, canvas)
-  .spicy-dynamic-bg
+body:not(.LyssnaLyrics_StaticBackground)
+  .Root__right-sidebar:has(.lyssna-dynamic-bg):has(.main-nowPlayingView-section, canvas)
+  .lyssna-dynamic-bg
   div[data-overlayscrollbars-viewport] {
   background: transparent;
 }
 
-body:not(.SpicyLyrics_StaticBackground)
-  .Root__right-sidebar:has(.spicy-dynamic-bg):has(.main-nowPlayingView-section, canvas)
-  .spicy-dynamic-bg
+body:not(.LyssnaLyrics_StaticBackground)
+  .Root__right-sidebar:has(.lyssna-dynamic-bg):has(.main-nowPlayingView-section, canvas)
+  .lyssna-dynamic-bg
   .main-trackInfo-artists {
   filter: brightness(1.15);
   opacity: 0.75;
@@ -450,85 +450,85 @@ body:not(.SpicyLyrics_StaticBackground)
 /* Zero-specificity gate so a theme restyling the cover (a round vinyl, its own
    shadow) wins. No opacity: it made everything a theme draws on the cover,
    pseudo-elements included, see-through. */
-:where(body:not(.SpicyLyrics_StaticBackground)
-  .Root__right-sidebar:has(.spicy-dynamic-bg):has(.main-nowPlayingView-section, canvas))
+:where(body:not(.LyssnaLyrics_StaticBackground)
+  .Root__right-sidebar:has(.lyssna-dynamic-bg):has(.main-nowPlayingView-section, canvas))
   .main-nowPlayingView-coverArt,
-:where(body:not(.SpicyLyrics_StaticBackground)
-  aside.NowPlayingView.spicy-dynamic-bg-in-this
+:where(body:not(.LyssnaLyrics_StaticBackground)
+  aside.NowPlayingView.lyssna-dynamic-bg-in-this
   [data-testid="track-visual-enhancement"])
   [data-testid="context-link"] > div {
   box-shadow: 0 9px 20px 0 rgba(0, 0, 0, 0.271);
 }
 
-body:not(.SpicyLyrics_StaticBackground)
-  .Root__right-sidebar:has(.spicy-dynamic-bg):has(.main-nowPlayingView-section, canvas)
+body:not(.LyssnaLyrics_StaticBackground)
+  .Root__right-sidebar:has(.lyssna-dynamic-bg):has(.main-nowPlayingView-section, canvas)
   .main-nowPlayingView-section.QR9JmVmX9LYwo62NRtew
   .CvxzmyND_aGd2RR8ZoSr,
-body:not(.SpicyLyrics_StaticBackground)
-  .Root__right-sidebar:has(.spicy-dynamic-bg):has(.main-nowPlayingView-section, canvas)
+body:not(.LyssnaLyrics_StaticBackground)
+  .Root__right-sidebar:has(.lyssna-dynamic-bg):has(.main-nowPlayingView-section, canvas)
   .Uw4tcZdmh7s4BMdgCCuu,
-body:not(.SpicyLyrics_StaticBackground)
-  .Root__right-sidebar:has(.spicy-dynamic-bg):has(.main-nowPlayingView-section, canvas)
+body:not(.LyssnaLyrics_StaticBackground)
+  .Root__right-sidebar:has(.lyssna-dynamic-bg):has(.main-nowPlayingView-section, canvas)
   .main-nowPlayingView-section:is(.main-nowPlayingView-aboutArtist, .main-nowPlayingView-aboutArtistV2) :is(.jHqD4CkJSTwpZihD, .main-nowPlayingView-aboutArtistV2TextContent),
-body:not(.SpicyLyrics_StaticBackground)
-  .Root__right-sidebar:has(.spicy-dynamic-bg):has(.main-nowPlayingView-section, canvas)
+body:not(.LyssnaLyrics_StaticBackground)
+  .Root__right-sidebar:has(.lyssna-dynamic-bg):has(.main-nowPlayingView-section, canvas)
   .aN6RjOsDo5DSOGDMRF2G,
-body:not(.SpicyLyrics_StaticBackground)
-  .Root__right-sidebar:has(.spicy-dynamic-bg):has(.main-nowPlayingView-section, canvas)
+body:not(.LyssnaLyrics_StaticBackground)
+  .Root__right-sidebar:has(.lyssna-dynamic-bg):has(.main-nowPlayingView-section, canvas)
   .dYRZ9rexJXs7DswS,
 /* About the artist's text block (1.2.98's .jHqD4CkJSTwpZihD): the one div that
    holds the artist link directly. */
-body:not(.SpicyLyrics_StaticBackground)
-  aside.NowPlayingView.spicy-dynamic-bg-in-this
-  [data-testid="NPV_Panel_OpenDiv"] > div:not(:first-child, #SpicyLyricsNPVCard) div:has(> a[href^="/artist/"]) {
+body:not(.LyssnaLyrics_StaticBackground)
+  aside.NowPlayingView.lyssna-dynamic-bg-in-this
+  [data-testid="NPV_Panel_OpenDiv"] > div:not(:first-child, #LyssnaLyricsNPVCard) div:has(> a[href^="/artist/"]) {
     background-color: transparent !important;
 }
 
-body:not(.SpicyLyrics_StaticBackground)
-  .Root__right-sidebar:has(.spicy-dynamic-bg):has(.main-nowPlayingView-section, canvas)
+body:not(.LyssnaLyrics_StaticBackground)
+  .Root__right-sidebar:has(.lyssna-dynamic-bg):has(.main-nowPlayingView-section, canvas)
   .main-nowPlayingView-section:not(:has(.search-searchCategory-carousel)):not(:has(button[type="button"])),
-body:not(.SpicyLyrics_StaticBackground)
-  .Root__right-sidebar:has(.spicy-dynamic-bg):has(.main-nowPlayingView-section, canvas)
+body:not(.LyssnaLyrics_StaticBackground)
+  .Root__right-sidebar:has(.lyssna-dynamic-bg):has(.main-nowPlayingView-section, canvas)
   .main-nowPlayingView-aboutArtist,
-body:not(.SpicyLyrics_StaticBackground)
-  aside.NowPlayingView.spicy-dynamic-bg-in-this
+body:not(.LyssnaLyrics_StaticBackground)
+  aside.NowPlayingView.lyssna-dynamic-bg-in-this
   /* Every section but the carousel ("Related music videos"), About the artist
      included, as the classed rules above do on 1.2.98. */
-  [data-testid="NPV_Panel_OpenDiv"] > div:not(:first-child, #SpicyLyricsNPVCard, .dYRZ9rexJXs7DswS):not(:has([data-carousel-item])) {
+  [data-testid="NPV_Panel_OpenDiv"] > div:not(:first-child, #LyssnaLyricsNPVCard, .dYRZ9rexJXs7DswS):not(:has([data-carousel-item])) {
   background-color: var(--background-tinted-base) !important;
   backdrop-filter: blur(6px);
 }
 
-body:not(.SpicyLyrics_StaticBackground)
-  .Root__right-sidebar:has(.spicy-dynamic-bg):has(.main-nowPlayingView-section, canvas)
+body:not(.LyssnaLyrics_StaticBackground)
+  .Root__right-sidebar:has(.lyssna-dynamic-bg):has(.main-nowPlayingView-section, canvas)
   .main-nowPlayingView-section.main-nowPlayingView-aboutArtistV2 .main-nowPlayingView-aboutArtistV2TextContent {
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
 }
 
 
-body:not(.SpicyLyrics_StaticBackground)
-  .Root__right-sidebar:has(.spicy-dynamic-bg):has(.main-nowPlayingView-section, canvas)
+body:not(.LyssnaLyrics_StaticBackground)
+  .Root__right-sidebar:has(.lyssna-dynamic-bg):has(.main-nowPlayingView-section, canvas)
   .main-nowPlayingView-section:has(button[type="button"]),
-body:not(.SpicyLyrics_StaticBackground)
-  aside.NowPlayingView.spicy-dynamic-bg-in-this
-  [data-testid="NPV_Panel_OpenDiv"] > div:not(:first-child, #SpicyLyricsNPVCard):has(button[type="button"]) {
+body:not(.LyssnaLyrics_StaticBackground)
+  aside.NowPlayingView.lyssna-dynamic-bg-in-this
+  [data-testid="NPV_Panel_OpenDiv"] > div:not(:first-child, #LyssnaLyricsNPVCard):has(button[type="button"]) {
   background-color: transparent;
 }
 
-body:not(.SpicyLyrics_StaticBackground)
-  .Root__right-sidebar:has(.spicy-dynamic-bg):has(.main-nowPlayingView-section, canvas)
+body:not(.LyssnaLyrics_StaticBackground)
+  .Root__right-sidebar:has(.lyssna-dynamic-bg):has(.main-nowPlayingView-section, canvas)
   button[type="button"],
-body:not(.SpicyLyrics_StaticBackground)
-  aside.NowPlayingView.spicy-dynamic-bg-in-this
+body:not(.LyssnaLyrics_StaticBackground)
+  aside.NowPlayingView.lyssna-dynamic-bg-in-this
   button[type="button"] {
   /* background-color: var(--background-tinted-base); */
   background-color: transparent;
   /* color: hsla(0, 0%, 100%, 0.8); */
 }
 
-body:not(.SpicyLyrics_StaticBackground)
-  .Root__right-sidebar:has(.spicy-dynamic-bg):has(.main-nowPlayingView-section, canvas)
+body:not(.LyssnaLyrics_StaticBackground)
+  .Root__right-sidebar:has(.lyssna-dynamic-bg):has(.main-nowPlayingView-section, canvas)
   button[type="button"]
   .Button-sm-buttonSecondary-isUsingKeyboard-useBrowserDefaultFocusStyle,
 .Root__right-sidebar:has(.main-nowPlayingView-section, canvas)
@@ -544,8 +544,8 @@ body:not(.SpicyLyrics_StaticBackground)
    children of the info block's children (the sections list and the "Next in
    queue" wrapper); nested cards such as "About the artist" reuse the same
    variable, so it's cleared below the cards to keep the tint from stacking. */
-body:not(.SpicyLyrics_StaticBackground)
-  aside.spicy-dynamic-bg-in-this > [data-npv-root] {
+body:not(.LyssnaLyrics_StaticBackground)
+  aside.lyssna-dynamic-bg-in-this > [data-npv-root] {
   --background-tint: color-mix(in srgb, rgb(var(--spice-rgb-selected-row)) 7%, transparent);
   --spice-card: var(--background-tint);
   --background-tinted-base: var(--background-tint);
@@ -553,15 +553,15 @@ body:not(.SpicyLyrics_StaticBackground)
   background-color: transparent;
 }
 
-body:not(.SpicyLyrics_StaticBackground)
-  aside.spicy-dynamic-bg-in-this > [data-npv-root]
+body:not(.LyssnaLyrics_StaticBackground)
+  aside.lyssna-dynamic-bg-in-this > [data-npv-root]
   [data-overlayscrollbars-viewport] > * > * > * > * > * {
   --section-background-base: transparent;
 }
 
 /* Tour date badges paint --background-base, the old panel colour. */
-body:not(.SpicyLyrics_StaticBackground)
-  aside.spicy-dynamic-bg-in-this > [data-npv-root] a time:has(> p) {
+body:not(.LyssnaLyrics_StaticBackground)
+  aside.lyssna-dynamic-bg-in-this > [data-npv-root] a time:has(> p) {
   background: rgba(255, 255, 255, 0.078);
 }
 
@@ -572,19 +572,19 @@ body:not(.SpicyLyrics_StaticBackground)
    behind the header's own content, which is all static. The legacy layout
    keeps the blur at rest too, but over a bright Canvas that cuts a hard edge
    at the header's bottom, so here it waits for the scroll.
-   app.tsx sets data-sl-npv-scrolled on the panel root while it's scrolled, so
+   app.tsx sets data-ll-npv-scrolled on the panel root while it's scrolled, so
    these play as timed transitions, as on the legacy layout, rather than
-   following the scroll position. It also sets data-sl-npv-canvas while a Canvas
+   following the scroll position. It also sets data-ll-npv-canvas while a Canvas
    is showing: the legacy header floats over a Canvas but sits above the content
    without one, so there the content is cut off at the header's bottom. */
-body:not(.SpicyLyrics_StaticBackground)
-  aside.spicy-dynamic-bg-in-this > [data-npv-root] > :first-child:not([data-scroll-background-disabled]) {
+body:not(.LyssnaLyrics_StaticBackground)
+  aside.lyssna-dynamic-bg-in-this > [data-npv-root] > :first-child:not([data-scroll-background-disabled]) {
   animation: none;
   isolation: isolate;
 }
 
-body:not(.SpicyLyrics_StaticBackground)
-  aside.spicy-dynamic-bg-in-this > [data-npv-root] > :first-child:not([data-scroll-background-disabled])::before {
+body:not(.LyssnaLyrics_StaticBackground)
+  aside.lyssna-dynamic-bg-in-this > [data-npv-root] > :first-child:not([data-scroll-background-disabled])::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -593,21 +593,21 @@ body:not(.SpicyLyrics_StaticBackground)
   transition: backdrop-filter .5s ease, bottom .5s step-end;
 }
 
-body:not(.SpicyLyrics_StaticBackground)
-  aside.spicy-dynamic-bg-in-this > [data-npv-root][data-sl-npv-scrolled] > :first-child:not([data-scroll-background-disabled])::before {
+body:not(.LyssnaLyrics_StaticBackground)
+  aside.lyssna-dynamic-bg-in-this > [data-npv-root][data-ll-npv-scrolled] > :first-child:not([data-scroll-background-disabled])::before {
   backdrop-filter: blur(6px);
 }
 
 /* Without a Canvas the content moves up 4px into the header (below), and the
    legacy content paints over the header's blur, so the blur stops where the
    content starts, until it has faded back out. */
-body:not(.SpicyLyrics_StaticBackground)
-  aside.spicy-dynamic-bg-in-this > [data-npv-root][data-sl-npv-scrolled]:not([data-sl-npv-canvas]) > :first-child:not([data-scroll-background-disabled])::before {
+body:not(.LyssnaLyrics_StaticBackground)
+  aside.lyssna-dynamic-bg-in-this > [data-npv-root][data-ll-npv-scrolled]:not([data-ll-npv-canvas]) > :first-child:not([data-scroll-background-disabled])::before {
   bottom: 4px;
   transition: backdrop-filter .5s ease;
 }
 
-@property --sl_npvFadeFrom {
+@property --lyssna-npv-fade-from {
   syntax: '<length>';
   inherits: false;
   initial-value: 0px;
@@ -619,59 +619,59 @@ body:not(.SpicyLyrics_StaticBackground)
    both ways. It makes the host a backdrop root, so glass inside it blurs only
    the host's own content.
    Without a Canvas the host still runs under the header, so the mask starts
-   --sl_npvFadeFrom down (outside it the host is hidden): the header's 4rem while
+   --lyssna-npv-fade-from down (outside it the host is hidden): the header's 4rem while
    scrolled, from the moment the panel scrolls until the fade has run back out,
    so the fade always starts at the header's bottom and runs over the same
    height as the legacy content's. The host also moves up 4px there, at once
    and easing back, as the legacy content does. */
-body:not(.SpicyLyrics_StaticBackground)
-  aside.spicy-dynamic-bg-in-this > [data-npv-root] > :first-child:not([data-scroll-background-disabled])
+body:not(.LyssnaLyrics_StaticBackground)
+  aside.lyssna-dynamic-bg-in-this > [data-npv-root] > :first-child:not([data-scroll-background-disabled])
   ~ [data-overlayscrollbars] {
-  --sl_rsb-wrapperFade: 0%;
-  --sl_npvFadeFrom: 0px;
+  --lyssna-rsb-wrapper-fade: 0%;
+  --lyssna-npv-fade-from: 0px;
   top: 0;
   height: 100%;
-  mask-image: linear-gradient(to bottom, transparent 0%, black var(--sl_rsb-wrapperFade));
-  mask-position: 0 var(--sl_npvFadeFrom);
-  mask-size: 100% calc(100% - var(--sl_npvFadeFrom));
+  mask-image: linear-gradient(to bottom, transparent 0%, black var(--lyssna-rsb-wrapper-fade));
+  mask-position: 0 var(--lyssna-npv-fade-from);
+  mask-size: 100% calc(100% - var(--lyssna-npv-fade-from));
   mask-repeat: no-repeat;
-  transition: top .5s ease, height .5s ease, --sl_rsb-wrapperFade .5s ease, --sl_npvFadeFrom .5s step-end;
+  transition: top .5s ease, height .5s ease, --lyssna-rsb-wrapper-fade .5s ease, --lyssna-npv-fade-from .5s step-end;
 }
 
 /* The expanded lyrics card starts at the host's top, so it doesn't wait for it. */
-body.SpicyLyrics_NPVCardExpanded:not(.SpicyLyrics_StaticBackground)
-  aside.spicy-dynamic-bg-in-this > [data-npv-root]:not([data-sl-npv-scrolled]) > :first-child:not([data-scroll-background-disabled])
+body.LyssnaLyrics_NPVCardExpanded:not(.LyssnaLyrics_StaticBackground)
+  aside.lyssna-dynamic-bg-in-this > [data-npv-root]:not([data-ll-npv-scrolled]) > :first-child:not([data-scroll-background-disabled])
   ~ [data-overlayscrollbars] {
-  --sl_npvFadeFrom: 0px;
-  transition: top .5s ease, height .5s ease, --sl_rsb-wrapperFade .5s ease;
+  --lyssna-npv-fade-from: 0px;
+  transition: top .5s ease, height .5s ease, --lyssna-rsb-wrapper-fade .5s ease;
 }
 
-body:not(.SpicyLyrics_StaticBackground)
-  aside.spicy-dynamic-bg-in-this > [data-npv-root][data-sl-npv-scrolled] > :first-child:not([data-scroll-background-disabled])
+body:not(.LyssnaLyrics_StaticBackground)
+  aside.lyssna-dynamic-bg-in-this > [data-npv-root][data-ll-npv-scrolled] > :first-child:not([data-scroll-background-disabled])
   ~ [data-overlayscrollbars] {
-  --sl_rsb-wrapperFade: 10%;
-  --sl_npvFadeFrom: 4rem;
+  --lyssna-rsb-wrapper-fade: 10%;
+  --lyssna-npv-fade-from: 4rem;
   top: -4px;
   height: calc(100% + 4px);
-  transition: --sl_rsb-wrapperFade .5s ease;
+  transition: --lyssna-rsb-wrapper-fade .5s ease;
 }
 
-body:not(.SpicyLyrics_StaticBackground)
-  aside.spicy-dynamic-bg-in-this > [data-npv-root][data-sl-npv-scrolled][data-sl-npv-canvas] > :first-child:not([data-scroll-background-disabled])
+body:not(.LyssnaLyrics_StaticBackground)
+  aside.lyssna-dynamic-bg-in-this > [data-npv-root][data-ll-npv-scrolled][data-ll-npv-canvas] > :first-child:not([data-scroll-background-disabled])
   ~ [data-overlayscrollbars] {
-  --sl_rsb-wrapperFade: 20%;
-  --sl_npvFadeFrom: 0px;
+  --lyssna-rsb-wrapper-fade: 20%;
+  --lyssna-npv-fade-from: 0px;
   top: 2rem;
   height: calc(100% - 2rem);
-  transition: top .5s ease, height .5s ease, --sl_rsb-wrapperFade .5s ease;
+  transition: top .5s ease, height .5s ease, --lyssna-rsb-wrapper-fade .5s ease;
 }
 
 /* The Canvas's scrims darken to the old panel colour, solid at the bottom, which
    cut a hard edge across the dynamic background. The video sits in the first
    child of the surface's wrapper and the scrims in the one after it; the video
-   already fades out on its own (spicy-dynamic-bg.css). */
-body:not(.SpicyLyrics_StaticBackground)
-  aside.spicy-dynamic-bg-in-this [data-canvas-surface] > * > :not(:first-child) {
+   already fades out on its own (lyssna-dynamic-bg.css). */
+body:not(.LyssnaLyrics_StaticBackground)
+  aside.lyssna-dynamic-bg-in-this [data-canvas-surface] > * > :not(:first-child) {
   display: none;
 }
 
@@ -680,30 +680,30 @@ body:not(.SpicyLyrics_StaticBackground)
    the panel: at fractional zoom, text and images in it landed a pixel off from the
    legacy layout's. Without the hint it's painted with the panel, as there; a
    transform animation still gets its own layer while it runs. */
-[data-npv-root] > [data-overlayscrollbars] [data-overlayscrollbars-viewport] > :first-child > :nth-child(2) {
+aside.lyssna-dynamic-bg-in-this > [data-npv-root] > [data-overlayscrollbars] [data-overlayscrollbars-viewport] > :first-child > :nth-child(2) {
   will-change: auto;
 }
 
 /* The legacy layout's scroll content tones subdued text (subtitles, credits roles,
    the queue's artists) as translucent text colour rather than solid grey. */
-[data-npv-root] > [data-overlayscrollbars] [data-overlayscrollbars-viewport] > :first-child {
+aside.lyssna-dynamic-bg-in-this > [data-npv-root] > [data-overlayscrollbars] [data-overlayscrollbars-viewport] > :first-child {
   --text-subdued: rgba(var(--spice-rgb-text), 0.7019607843137254);
 }
 
 /* "Next in queue" (app.tsx marks it): the legacy card is 8px shorter at the bottom. */
-[data-npv-root] [data-sl-npv-queue] > :first-child {
+[data-npv-root] [data-ll-npv-queue] > :first-child {
   padding-bottom: 8px;
 }
 
 /* A list row's labelled icon (e.g. a music video's) is followed by its label and a
    separator on the legacy layout; the icon's label is the same localized text. */
-[data-npv-root] [data-encore-id="listRowSubtitle"] [data-encore-id="text"][aria-label][title]::before {
+aside.lyssna-dynamic-bg-in-this > [data-npv-root] [data-encore-id="listRowSubtitle"] [data-encore-id="text"][aria-label][title]::before {
   content: attr(aria-label);
   order: 1;
   font-size: 14px;
 }
 
-[data-npv-root] [data-encore-id="listRowSubtitle"] [data-encore-id="text"][aria-label][title]::after {
+aside.lyssna-dynamic-bg-in-this > [data-npv-root] [data-encore-id="listRowSubtitle"] [data-encore-id="text"][aria-label][title]::after {
   content: "•";
   order: 2;
   font-size: 14px;
@@ -713,37 +713,37 @@ body:not(.SpicyLyrics_StaticBackground)
    holds a 56px cover slot, with its text centred in it and the same space below,
    and the artists at the legacy size and tone. The names sit in a 14px span
    coloured through a --text-subdued that's white at that depth. */
-[data-npv-root] [data-sl-npv-track-info] {
+[data-npv-root] [data-ll-npv-track-info] {
   min-height: 56px;
   margin-bottom: 8px;
 }
 
-[data-npv-root] [data-sl-npv-track-info] a[href^="/artist/"] {
+[data-npv-root] [data-ll-npv-track-info] a[href^="/artist/"] {
   color: rgba(255, 255, 255, 0.7);
 }
 
-[data-npv-root] [data-sl-npv-track-info] a[href^="/artist/"]:is(:hover, :focus, :active) {
+[data-npv-root] [data-ll-npv-track-info] a[href^="/artist/"]:is(:hover, :focus, :active) {
   color: var(--spice-text);
 }
 
-[data-npv-root] [data-sl-npv-track-info] a[href^="/artist/"] > * {
+[data-npv-root] [data-ll-npv-track-info] a[href^="/artist/"] > * {
   color: inherit;
   font-size: 16px;
 }
 
 /* Mirrors Spotify's .main-nowPlayingBar-lyricsButton rule, which our buttons no longer carry. */
-.SpicyLyrics_PlaybarButton {
+.LyssnaLyrics_PlaybarButton {
   flex-shrink: 0;
   padding: 0;
 }
 
-.SpicyLyrics_PlaybarButton.main-genericButton-buttonActive {
+.LyssnaLyrics_PlaybarButton.main-genericButton-buttonActive {
   color: var(--spice-button, #1db954) !important;
 }
 
 /* Spotify's own tooltip rule. Spicetify's Tippy still renders .main-contextMenu-tippy,
    which Spotify 1.3.x no longer styles; on older builds this repeats the same values. */
-.SpicyLyrics_Tooltip > .main-contextMenu-tippy {
+.LyssnaLyrics_Tooltip > .main-contextMenu-tippy {
   --generic-tooltip-background-color: var(--spice-card);
   color: var(--spice-text);
   background-color: var(--generic-tooltip-background-color);
@@ -760,14 +760,14 @@ body:not(.SpicyLyrics_StaticBackground)
   font-size: 14px !important;
 }
 
-#SpicyLyricsPageSvg {
+#LyssnaLyricsPageSvg {
   width: 16px !important;
   height: 16px !important;
   fill: none;
   stroke: currentColor;
 }
 
-#SpicyLyrics_PopupLyricsButton svg {
+#LyssnaLyrics_PopupLyricsButton svg {
   fill: var(--encore-icon-fill, currentColor);
   height: var(--encore-icon-height, var(--encore-graphic-size-decorative-base));
   width: var(--encore-icon-width, var(--encore-graphic-size-decorative-base));
@@ -777,138 +777,131 @@ body:not(.SpicyLyrics_StaticBackground)
 /* Our Popup Lyrics button takes the place of Spotify's Miniplayer button. A rule
    rather than a one-off inline style, so a Miniplayer button Spotify re-renders
    or adds back later is hidden as well. */
-body.SpicyLyrics_PopupLyricsEnabled
+body.LyssnaLyrics_PopupLyricsEnabled
   :is([data-testid="now-playing-bar"], .Root__now-playing-bar)
   button[data-testid="pip-toggle-button"] {
   display: none !important;
 }
 
-button:has(#SpicyLyricsPageSvg)::after {
+button:has(#LyssnaLyricsPageSvg)::after {
   transform: translateX(-50%) !important;
 }
 
-button:has(#SpicyLyricsPageSvg):not(.main-genericButton-buttonActive, .main-genericButton-buttonActiveDot, .OJsKOflU3SmUHnQ5_QKE)::after {
+button:has(#LyssnaLyricsPageSvg):not(.main-genericButton-buttonActive, .main-genericButton-buttonActiveDot, .OJsKOflU3SmUHnQ5_QKE)::after {
   content: unset;
 }
 
 /* "Page Not Visible" fix */
-:is(.Root__main-view, :where(#main-view)):has(#SpicyLyricsPage),
-:is(.Root__main-view, :where(#main-view)):has(#SpicyLyricsPage) .KL8t9WB65UfUEPuTFAhO,
-:is(.Root__main-view, :where(#main-view)):has(#SpicyLyricsPage) .main-content-view,
-:is(.Root__main-view, :where(#main-view)):has(#SpicyLyricsPage) .main-view-container,
-:is(.Root__main-view, :where(#main-view)):has(#SpicyLyricsPage) .main-view-container__scroll-node,
-:is(.Root__main-view, :where(#main-view)):has(#SpicyLyricsPage) .main-view-container .div[data-overlayscrollbars-viewport] {
+:is(.Root__main-view, :where(#main-view)):has(#LyssnaLyricsPage),
+:is(.Root__main-view, :where(#main-view)):has(#LyssnaLyricsPage) .KL8t9WB65UfUEPuTFAhO,
+:is(.Root__main-view, :where(#main-view)):has(#LyssnaLyricsPage) .main-content-view,
+:is(.Root__main-view, :where(#main-view)):has(#LyssnaLyricsPage) .main-view-container,
+:is(.Root__main-view, :where(#main-view)):has(#LyssnaLyricsPage) .main-view-container__scroll-node,
+:is(.Root__main-view, :where(#main-view)):has(#LyssnaLyricsPage) .main-view-container .div[data-overlayscrollbars-viewport] {
   height: 100% !important;
 }
 
-body:not(:has(.Root__main-view-overlay #SpicyLyricsPage:is(.Fullscreen)))
-  #SpicyLyrics_FullscreenButton {
+body:not(:has(.Root__main-view-overlay #LyssnaLyricsPage:is(.Fullscreen)))
+  #LyssnaLyrics_FullscreenButton {
   scale: 1.25;
 }
 
-#SpicyLyrics_FullscreenButton {
+#LyssnaLyrics_FullscreenButton {
   color: rgba(var(--spice-rgb-selected-row), 0.7) !important;
 }
 
-#SpicyLyrics_FullscreenButton svg {
+#LyssnaLyrics_FullscreenButton svg {
   fill: currentColor;
 }
 
-body:not(:has(.Root__main-view-overlay .BeautifulLyricsPage:is(.Fullscreen)))
-  #BeautifulLyricsFullscreenButton {
-  scale: 0.85 !important;
-  order: 1000 !important;
-  opacity: 0.65 !important;
-}
-
-#SpicyLyricsPage .MediaImageContainer,
-#SpicyLyricsPage .MediaContent {
+#LyssnaLyricsPage .MediaImageContainer,
+#LyssnaLyricsPage .MediaContent {
   user-select: none;
 }
 
-#SpicyLyricsPage .ViewControls svg {
+#LyssnaLyricsPage .ViewControls svg {
   aspect-ratio: 1;
   height: calc(var(--ViewControlSize) * 0.4);
   width: auto;
 }
 /* 
-#SpicyLyricsPage.Fullscreen .ViewControls svg {
+#LyssnaLyricsPage.Fullscreen .ViewControls svg {
   height: calc(var(--ViewControlSize)* .4);
 } */
 
-sl-generic-modal.SpicyLyricsModal .sl-modal-overlay {
+lyssna-lyrics-modal.LyssnaLyricsModal .ll-modal-overlay {
   z-index: 999;
 }
 
 
-/* .QdB2YtfEq0ks5O4QbtwX .WRGTOibB8qNEkgPNtMxq:has(#SpicyLyricsPage) *:not(#SpicyLyricsPage),
-.QdB2YtfEq0ks5O4QbtwX:has(#SpicyLyricsPage) .DJcMUKFwkFECf5ksmSfU {
+/* .QdB2YtfEq0ks5O4QbtwX .WRGTOibB8qNEkgPNtMxq:has(#LyssnaLyricsPage) *:not(#LyssnaLyricsPage),
+.QdB2YtfEq0ks5O4QbtwX:has(#LyssnaLyricsPage) .DJcMUKFwkFECf5ksmSfU {
   display: none !important;
 } */
 
-#SpicyLyricsPage:not(.Lyrics_RomanizationAvailable) .ViewControls #RomanizationToggle,
-#SpicyLyricsPage:not(.SpicyRenderer) .ViewControls #RomanizationToggle {
+#LyssnaLyricsPage:not(.Lyrics_RomanizationAvailable) .ViewControls #RomanizationToggle,
+#LyssnaLyricsPage:not(.SpicyRenderer) .ViewControls #RomanizationToggle {
   display: none !important;
 }
 
-#SpicyLyricsPage.CompactifyEnabledCompactMode .ViewControls .ViewControl#CompactModeToggle {
+#LyssnaLyricsPage.CompactifyEnabledCompactMode .ViewControls .ViewControl#CompactModeToggle {
   display: none !important;
 }
 
-sl-generic-modal.SpicyLyricsModal .sl-modal-overlay {
-  .slmodal-updateDialog .sl-modal-container-large:has(.update-card-wrapper),
-  .slmodal-updateDialog .sl-modal-container:has(.update-card-wrapper) {
+lyssna-lyrics-modal.LyssnaLyricsModal .ll-modal-overlay {
+  .llmodal-updateDialog .ll-modal-container-large:has(.update-card-wrapper),
+  .llmodal-updateDialog .ll-modal-container:has(.update-card-wrapper) {
     width: min(824px, calc(100vw - 48px));
     max-height: 80vh;
   }
 
-  .slmodal-updateDialog .sl-modal-main-section {
+  .llmodal-updateDialog .ll-modal-main-section {
     overflow-y: visible;
   }
 
   .update-card-wrapper {
     display: flex;
-    gap: var(--space-3);
+    gap: var(--lyssna-space-3);
     flex-direction: column;
 
     .uc-title {
       font-size: 1.2rem !important;
-      font-weight: var(--w-semibold);
-      color: var(--color-text-primary);
+      font-weight: var(--lyssna-w-semibold);
+      color: var(--lyssna-color-text-primary);
       line-height: 1.3;
       letter-spacing: -0.015em;
       margin: 0;
     }
 
     .uc-subtitle {
-      font-size: var(--text-body-size) !important;
-      color: var(--color-text-secondary);
+      font-size: var(--lyssna-text-body-size) !important;
+      color: var(--lyssna-color-text-secondary);
       margin: 0;
       line-height: 1.45;
 
       strong {
-        color: var(--color-text-primary);
+        color: var(--lyssna-color-text-primary);
         font-variant-numeric: tabular-nums;
       }
     }
 
     .uc-divider {
       height: 1px;
-      background: var(--hairline);
-      margin: var(--space-1) 0;
+      background: var(--lyssna-hairline);
+      margin: var(--lyssna-space-1) 0;
     }
 
     button {
       border: none;
-      border-radius: var(--radius-sm);
+      border-radius: var(--lyssna-radius-sm);
       padding: 9px 18px;
-      font-size: var(--text-body-size) !important;
-      font-weight: var(--w-semibold);
+      font-size: var(--lyssna-text-body-size) !important;
+      font-weight: var(--lyssna-w-semibold);
       cursor: pointer;
       transition:
-        background-color 0.15s var(--ease-standard),
-        box-shadow 0.15s var(--ease-standard),
-        color 0.15s var(--ease-standard),
+        background-color 0.15s var(--lyssna-ease-standard),
+        box-shadow 0.15s var(--lyssna-ease-standard),
+        color 0.15s var(--lyssna-ease-standard),
         transform 0.12s ease;
       letter-spacing: 0.01em;
 
@@ -918,11 +911,11 @@ sl-generic-modal.SpicyLyricsModal .sl-modal-overlay {
     }
 
     .btn-primary {
-      background-color: var(--accent);
-      color: var(--accent-on-fill);
+      background-color: var(--lyssna-accent);
+      color: var(--lyssna-accent-on-fill);
 
       &:hover {
-        background-color: var(--accent-hover);
+        background-color: var(--lyssna-accent-hover);
       }
     }
 
@@ -938,20 +931,20 @@ sl-generic-modal.SpicyLyricsModal .sl-modal-overlay {
         width: 52px;
         height: 52px;
         border-radius: 50%;
-        background: var(--accent-tint-bg);
-        box-shadow: inset 0 0 0 1px var(--hairline);
+        background: var(--lyssna-accent-tint-bg);
+        box-shadow: inset 0 0 0 1px var(--lyssna-hairline);
         margin-bottom: 2px;
         flex-shrink: 0;
 
         .udc-migrate-svg {
           width: 24px;
           height: 24px;
-          color: var(--color-text-primary);
+          color: var(--lyssna-color-text-primary);
         }
       }
 
       .udc-desc {
-        color: var(--color-text-secondary);
+        color: var(--lyssna-color-text-secondary);
         max-width: 22rem;
         line-height: 1.55;
       }
@@ -962,8 +955,8 @@ sl-generic-modal.SpicyLyricsModal .sl-modal-overlay {
     }
 
     a {
-      color: var(--color-text-primary);
-      font-weight: var(--w-semibold);
+      color: var(--lyssna-color-text-primary);
+      font-weight: var(--lyssna-w-semibold);
       text-decoration: none;
 
       &:hover {
@@ -975,18 +968,18 @@ sl-generic-modal.SpicyLyricsModal .sl-modal-overlay {
 
 
 
-sl-generic-modal.SpicyLyricsModal .sl-modal-overlay {
+lyssna-lyrics-modal.LyssnaLyricsModal .ll-modal-overlay {
   .dev-tools-wrapper {
     display: flex;
     flex-direction: column;
     gap: 4px;
 
     .dt-section-label {
-      font-size: var(--text-footnote-size) !important;
-      font-weight: var(--w-semibold);
+      font-size: var(--lyssna-text-footnote-size) !important;
+      font-weight: var(--lyssna-w-semibold);
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: var(--color-text-tertiary);
+      color: var(--lyssna-color-text-tertiary);
       padding: 0 2px;
       margin-bottom: 4px;
     }
@@ -995,10 +988,10 @@ sl-generic-modal.SpicyLyricsModal .sl-modal-overlay {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: var(--space-4);
-      padding: var(--space-3) var(--space-4);
-      border-radius: var(--radius-md);
-      transition: background var(--dur-fast) var(--ease-standard);
+      gap: var(--lyssna-space-4);
+      padding: var(--lyssna-space-3) var(--lyssna-space-4);
+      border-radius: var(--lyssna-radius-md);
+      transition: background var(--lyssna-dur-fast) var(--lyssna-ease-standard);
 
       &:hover {
         background: rgba(255, 255, 255, 0.05);
@@ -1012,30 +1005,30 @@ sl-generic-modal.SpicyLyricsModal .sl-modal-overlay {
       }
 
       .dt-setting-name {
-        font-size: var(--text-headline-size) !important;
-        font-weight: var(--w-semibold);
-        color: var(--color-text-primary);
+        font-size: var(--lyssna-text-headline-size) !important;
+        font-weight: var(--lyssna-w-semibold);
+        color: var(--lyssna-color-text-primary);
         white-space: nowrap;
       }
 
       .dt-setting-desc {
-        font-size: var(--text-caption-size) !important;
-        font-weight: var(--w-regular);
-        color: var(--color-text-tertiary);
+        font-size: var(--lyssna-text-caption-size) !important;
+        font-weight: var(--lyssna-w-regular);
+        color: var(--lyssna-color-text-tertiary);
       }
     }
 
     .dt-btn {
       border: none;
-      border-radius: var(--radius-sm);
+      border-radius: var(--lyssna-radius-sm);
       padding: 8px 16px;
-      font-size: var(--text-caption-size) !important;
-      font-weight: var(--w-semibold);
+      font-size: var(--lyssna-text-caption-size) !important;
+      font-weight: var(--lyssna-w-semibold);
       cursor: pointer;
       white-space: nowrap;
       flex-shrink: 0;
       letter-spacing: 0.01em;
-      min-height: var(--tap-min);
+      min-height: var(--lyssna-tap-min);
       transition: background-color 0.18s ease, box-shadow 0.18s ease, transform 0.12s ease;
       width: 132px;
 
@@ -1044,11 +1037,11 @@ sl-generic-modal.SpicyLyricsModal .sl-modal-overlay {
       }
 
       &.dt-btn-primary {
-        background-color: var(--accent);
-        color: var(--accent-on-fill);
+        background-color: var(--lyssna-accent);
+        color: var(--lyssna-accent-on-fill);
 
         &:hover {
-          background-color: var(--accent-hover);
+          background-color: var(--lyssna-accent-hover);
           box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
         }
       }
@@ -1057,10 +1050,10 @@ sl-generic-modal.SpicyLyricsModal .sl-modal-overlay {
         background-color: rgba(255, 255, 255, 0.06);
         -webkit-backdrop-filter: blur(8px) saturate(1.4);
         backdrop-filter: blur(8px) saturate(1.4);
-        color: var(--color-text-primary);
+        color: var(--lyssna-color-text-primary);
         box-shadow:
           inset 0 1px 0 rgba(255, 255, 255, 0.18),
-          inset 0 0 0 1px var(--hairline-strong),
+          inset 0 0 0 1px var(--lyssna-hairline-strong),
           inset 0 -1px 0 rgba(255, 255, 255, 0.14);
         border: 0;
 
@@ -1076,22 +1069,22 @@ sl-generic-modal.SpicyLyricsModal .sl-modal-overlay {
   }
 }
 
-sl-generic-modal.SpicyLyricsModal .sl-modal,
-sl-generic-modal.SpicyLyricsModal .sl-modal .sl-modal-container {
-  border-radius: var(--radius-lg);
+lyssna-lyrics-modal.LyssnaLyricsModal .ll-modal,
+lyssna-lyrics-modal.LyssnaLyricsModal .ll-modal .ll-modal-container {
+  border-radius: var(--lyssna-radius-lg);
 }
 
-.sl-modal-main-section:has(.scroll-x-hidden) {
+.ll-modal-main-section:has(.scroll-x-hidden) {
   overflow-x: hidden;
 }
 
 
-.Root.global-nav :is(.Root__main-view, :where(#main-view)):has(#SpicyLyricsPage) > header,
-.Root.global-nav :is(.Root__main-view, :where(#main-view)):has(#SpicyLyricsPage) > .main-topBar-container {
+.Root.global-nav :is(.Root__main-view, :where(#main-view)):has(#LyssnaLyricsPage) > header,
+.Root.global-nav :is(.Root__main-view, :where(#main-view)):has(#LyssnaLyricsPage) > .main-topBar-container {
   display: none !important;
 }
 
-.sl-modal:has(.hidden-modal-header-style) .sl-modal-header {
+.ll-modal:has(.hidden-modal-header-style) .ll-modal-header {
   /* border-bottom: none !important;
   padding: 24px 46px 0px !important;
   margin-bottom: -40px !important;
@@ -1101,12 +1094,12 @@ sl-generic-modal.SpicyLyricsModal .sl-modal .sl-modal-container {
   display: none;
 }
 
-/* .sl-modal:has(.slm.hidden-modal-header-style) .sl-modal-content {
+/* .ll-modal:has(.llm.hidden-modal-header-style) .ll-modal-content {
   position: relative;
   z-index: 106;
 }
 
-.sl-modal:has(.slm.hidden-modal-header-style) .sl-modal-header h1 {
+.ll-modal:has(.llm.hidden-modal-header-style) .ll-modal-header h1 {
   opacity: 0 !important;
   pointer-events: none !important;
   height: 0px !important;
@@ -1114,16 +1107,16 @@ sl-generic-modal.SpicyLyricsModal .sl-modal .sl-modal-container {
 } */
 
 /* The backdrop fades separately; each dialog's surface and contents move as one. */
-sl-generic-modal.SpicyLyricsModal .sl-modal-overlay.sl-modal-overlay-animated {
+lyssna-lyrics-modal.LyssnaLyricsModal .ll-modal-overlay.ll-modal-overlay-animated {
   background-color: rgba(0, 0, 0, 0);
   transition: background-color 0.22s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-sl-generic-modal.SpicyLyricsModal .sl-modal-overlay.sl-modal-overlay-animated.Active {
+lyssna-lyrics-modal.LyssnaLyricsModal .ll-modal-overlay.ll-modal-overlay-animated.Active {
   background-color: rgba(0, 0, 0, 0.45);
 }
 
-sl-generic-modal.SpicyLyricsModal .sl-modal-overlay-animated .sl-modal {
+lyssna-lyrics-modal.LyssnaLyricsModal .ll-modal-overlay-animated .ll-modal {
   transition:
     opacity 0.22s cubic-bezier(0.23, 1, 0.32, 1),
     transform 0.22s cubic-bezier(0.23, 1, 0.32, 1);
@@ -1131,35 +1124,35 @@ sl-generic-modal.SpicyLyricsModal .sl-modal-overlay-animated .sl-modal {
   transform: scale(0.96);
 }
 
-sl-generic-modal.SpicyLyricsModal .sl-modal-overlay-animated.Active .sl-modal {
+lyssna-lyrics-modal.LyssnaLyricsModal .ll-modal-overlay-animated.Active .ll-modal {
   opacity: 1;
   transform: scale(1);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  sl-generic-modal.SpicyLyricsModal .sl-modal-overlay.sl-modal-overlay-animated,
-  sl-generic-modal.SpicyLyricsModal .sl-modal-overlay-animated .sl-modal {
+  lyssna-lyrics-modal.LyssnaLyricsModal .ll-modal-overlay.ll-modal-overlay-animated,
+  lyssna-lyrics-modal.LyssnaLyricsModal .ll-modal-overlay-animated .ll-modal {
     transition: none;
   }
-  sl-generic-modal.SpicyLyricsModal .sl-modal-overlay-animated .sl-modal {
+  lyssna-lyrics-modal.LyssnaLyricsModal .ll-modal-overlay-animated .ll-modal {
     transform: none;
   }
 }
 
-#SpicyLyricsPage .ContentBox.LyricsHidden .ViewControls #NowBarSideToggle {
+#LyssnaLyricsPage .ContentBox.LyricsHidden .ViewControls #NowBarSideToggle {
   display: none !important;
 }
 
-#SpicyLyricsPage.episode-content-type .ContentBox .NowBar .Heart {
+#LyssnaLyricsPage.episode-content-type .ContentBox .NowBar .Heart {
   opacity: 0 !important;
   pointer-events: none !important;
 }
 
-.SL_spinAnimation {
-  animation: SL_spin 0.8s linear infinite;
+.LL_spinAnimation {
+  animation: lyssna-LL_spin 0.8s linear infinite;
 }
 
-@keyframes SL_spin {
+@keyframes lyssna-LL_spin {
   0% {
     transform: rotate(0deg);
   }
@@ -1168,14 +1161,14 @@ sl-generic-modal.SpicyLyricsModal .sl-modal-overlay-animated.Active .sl-modal {
   }
 }
 
-aside.NowPlayingView,
-.Root__right-sidebar aside {
-  border-radius: var(--radius-sm);
+aside.NowPlayingView.lyssna-dynamic-bg-in-this,
+.Root__right-sidebar aside.lyssna-dynamic-bg-in-this {
+  border-radius: var(--lyssna-radius-sm);
   overflow: hidden;
 }
 
 
-.main-genericButton-button.main-genericButton-buttonActiveDot:after {
+button:has(#LyssnaLyricsPageSvg).main-genericButton-button.main-genericButton-buttonActiveDot:after {
   content: "";
   background-color: var(--spice-button);
   border-radius: 50%;
@@ -1189,9 +1182,9 @@ aside.NowPlayingView,
   inline-size: 4px !important;
 }
 
-/* "Remove Spotify's lyrics button" setting. Our own button carries #SpicyLyricsPageSvg. */
-body.SpicyLyrics_RemoveSpotifyLyricsButton .main-nowPlayingBar-lyricsButton[data-testid="lyrics-button"]:not(:has(#SpicyLyricsPageSvg)),
-body.SpicyLyrics_RemoveSpotifyLyricsButton [data-testid="now-playing-bar"] [data-testid="lyrics-button"]:not(:has(#SpicyLyricsPageSvg)),
-body.SpicyLyrics_RemoveSpotifyLyricsButton .main-nowPlayingBar-extraControls > [data-testid="lyrics-button"]:not(:has(#SpicyLyricsPageSvg)) {
+/* "Remove Spotify's lyrics button" setting. Our own button carries #LyssnaLyricsPageSvg. */
+body.LyssnaLyrics_RemoveSpotifyLyricsButton .main-nowPlayingBar-lyricsButton[data-testid="lyrics-button"]:not(:has(#LyssnaLyricsPageSvg)),
+body.LyssnaLyrics_RemoveSpotifyLyricsButton [data-testid="now-playing-bar"] [data-testid="lyrics-button"]:not(:has(#LyssnaLyricsPageSvg)),
+body.LyssnaLyrics_RemoveSpotifyLyricsButton .main-nowPlayingBar-extraControls > [data-testid="lyrics-button"]:not(:has(#LyssnaLyricsPageSvg)) {
   display: none !important;
 }

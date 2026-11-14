@@ -30,7 +30,7 @@ const FADE_MS = 900;
 const AMBIENT_WIDTH = 80;
 // Canvases run at 24 to 30 fps, so redrawing the backdrop faster buys nothing.
 const AMBIENT_INTERVAL_MS = 1000 / 30;
-// Same grade as the Kawarp background (spicy-dynamic-bg.css), so lyrics contrast is unchanged.
+// Same grade as the Kawarp background (lyssna-dynamic-bg.css), so lyrics contrast is unchanged.
 const AMBIENT_FILTER = "blur(5px) saturate(2.5) brightness(0.65)";
 const DOCK_GLIDE_MS = 600;
 // The rows that change place when the dock layout turns on or off.

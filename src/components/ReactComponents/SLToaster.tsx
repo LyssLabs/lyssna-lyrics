@@ -38,8 +38,9 @@ export default function SLToaster() {
 
   return (
     <Toaster
+      className="lyssna-lyrics-toaster"
       position="bottom-center"
-      offset={{ bottom: `var(--sltoaster-bottom-padding, ${String(nowPlayingBarHeight + 16 + (isGlobalNav ? 0 : 8))}px)` }}
+      offset={{ bottom: `var(--lyssna-toaster-bottom-padding, ${String(nowPlayingBarHeight + 16 + (isGlobalNav ? 0 : 8))}px)` }}
       theme="dark"
       style={{ "--width": "380px" } as CSSProperties}
     />

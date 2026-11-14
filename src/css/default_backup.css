@@ -1,5 +1,5 @@
 :root {
-  --bg-rotation-degree: 258deg;
+  --lyssna-bg-rotation-degree: 258deg;
 }
 
 .main-nowPlayingView-contextItemInfo::before {
@@ -258,11 +258,11 @@ div.os-host:has(#SpicyLyricsPage) .ViewControls button {
 
 @keyframes bgAnim {
   0% {
-    transform: rotate(var(--bg-rotation-degree));
+    transform: rotate(var(--lyssna-bg-rotation-degree));
   }
 
   to {
-    transform: rotate(calc(var(--bg-rotation-degree) + 1turn));
+    transform: rotate(calc(var(--lyssna-bg-rotation-degree) + 1turn));
   }
 }
 

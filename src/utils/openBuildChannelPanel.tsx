@@ -4,7 +4,7 @@ import { createReactModalContent } from "./reactModalContent.tsx";
 
 export function OpenBuildChannelPanel({ onBack, targetDocument = PopupModal.ownerDocument }: { onBack?: () => void; targetDocument?: Document } = {}) {
   const backButton = targetDocument.createElement("button");
-  backButton.className = "sl-sp-btn sl-modal-header-back-btn";
+  backButton.className = "ll-sp-btn ll-modal-header-back-btn";
   backButton.type = "button";
   backButton.textContent = "← Back";
   backButton.onclick = onBack ?? (() => {

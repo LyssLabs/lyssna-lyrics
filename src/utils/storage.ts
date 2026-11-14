@@ -6,7 +6,7 @@ import {
 } from "./stores.ts";
 import { $isNowBarOpen, $nowBarSide } from "./uiState.ts";
 
-const prefix = "SpicyLyrics-";
+const prefix = "LyssnaLyrics-";
 
 function stringify(value: any): string {
   return typeof value === "string" ? value : JSON.stringify(value);

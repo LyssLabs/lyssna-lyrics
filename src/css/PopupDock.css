@@ -9,7 +9,7 @@
    rules this replaces are switched off with :not(.Exp_PopupDock) in ContentBox.css, so turning the
    experiment off restores them as they were. */
 
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .ContentBox {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .ContentBox {
   /* vw/vh: the popup's viewport is the window, and unlike cq units they resolve the same in every
      container down the tree. */
   --PD_U: min(1vw, 1.2vh);
@@ -44,31 +44,31 @@
 
 /* Short popups keep the bar and drop the times under it. */
 @media (max-height: 230px) {
-  .spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .ContentBox {
+  .lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .ContentBox {
     --PD_TimelineH: var(--PD_BarRow);
   }
 
-  .spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .ContentBox .NowBar .MediaContent .Timeline :is(.Time, .TimelineCredits) {
+  .lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .ContentBox .NowBar .MediaContent .Timeline :is(.Time, .TimelineCredits) {
     display: none;
   }
 }
 
 /* The lyrics take the window down to the resting dock. */
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .ContentBox .LyricsContainer {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .ContentBox .LyricsContainer {
   height: calc(100% - var(--PD_IdleH));
   margin-top: 0 !important;
   margin-bottom: auto;
 }
 
 /* The NowBar spans the window so the dock can pin to its bottom; only the dock takes the pointer. */
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .ContentBox .NowBar {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .ContentBox .NowBar {
   height: 100% !important;
   margin-top: 0 !important;
   pointer-events: none;
   transition: none;
 }
 
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .ContentBox .NowBar .CenteredView .Header {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .ContentBox .NowBar .CenteredView .Header {
   /* Resolved here, where Fullscreen.ts sets --DockLift, and inherited by the rows. */
   --PD_Drop: calc((1 - var(--DockLift, 0)) * var(--PD_Reserve));
   /* The transport drops the bottom inset further, clear of the window: at rest it's invisible, and
@@ -81,7 +81,7 @@
 }
 
 /* Keeps the dock readable over bright backgrounds; rises with it. */
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .ContentBox .NowBar .CenteredView .Header::before {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .ContentBox .NowBar .CenteredView .Header::before {
   content: "";
   position: absolute;
   left: 0;
@@ -94,14 +94,14 @@
 }
 
 /* The cover is already the background; the dock doesn't repeat it. */
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaImageContainer {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaImageContainer {
   display: none;
 }
 
 /* With the No Lyrics Notice off there are no lyrics to give the window to, so the cover fills it,
    sitting on the caption's gutter. It hangs off the MediaBox, so it rises with the dock; --PD_Art
    is sized for the raised dock, which keeps its top inside the window. */
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .ContentBox.LyricsHidden {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .ContentBox.LyricsHidden {
   --PD_ArtGap: clamp(8px, calc(var(--PD_U) * 3), 16px);
   --PD_Art: min(
     100vh - var(--PD_Gutter) - var(--PD_ArtGap) - var(--PD_MetaH) - var(--PD_BoxH) - var(--PD_Bottom),
@@ -109,7 +109,7 @@
   );
 }
 
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .ContentBox.LyricsHidden .NowBar .CenteredView .Header .MediaBox .MediaImageContainer {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .ContentBox.LyricsHidden .NowBar .CenteredView .Header .MediaBox .MediaImageContainer {
   display: block;
   position: absolute;
   left: var(--PD_Gutter);
@@ -131,21 +131,21 @@
 }
 
 @starting-style {
-  .spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .ContentBox.LyricsHidden .NowBar .CenteredView .Header .MediaBox .MediaImageContainer {
+  .lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .ContentBox.LyricsHidden .NowBar .CenteredView .Header .MediaBox .MediaImageContainer {
     opacity: 0;
     scale: 0.96;
   }
 }
 
 /* The image layers size off the MediaBox's container units, and the MediaBox is the control rows. */
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .ContentBox.LyricsHidden .NowBar .MediaImageContainer .ib_ImageBox,
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .ContentBox.LyricsHidden .NowBar .MediaImageContainer .fi_FromImage::before {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .ContentBox.LyricsHidden .NowBar .MediaImageContainer .ib_ImageBox,
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .ContentBox.LyricsHidden .NowBar .MediaImageContainer .fi_FromImage::before {
   width: 100%;
   height: 100%;
 }
 
 /* Title and artist: a caption on the gutter, above the control rows. */
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .ContentBox .NowBar .CenteredView .Header .Metadata {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .ContentBox .NowBar .CenteredView .Header .Metadata {
   position: absolute;
   left: 0;
   right: 0;
@@ -164,32 +164,32 @@
   z-index: 4;
 }
 
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .ContentBox .NowBar .CenteredView .Header .Metadata :is(.SongName, .Artists) {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .ContentBox .NowBar .CenteredView .Header .Metadata :is(.SongName, .Artists) {
   max-width: 100%;
   text-align: left;
   -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 6px, #000 calc(100% - 14px), transparent 100%);
   mask-image: linear-gradient(90deg, transparent 0, #000 6px, #000 calc(100% - 14px), transparent 100%);
 }
 
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .ContentBox .NowBar .CenteredView .Header .Metadata :is(.SongName, .Artists) > span {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .ContentBox .NowBar .CenteredView .Header .Metadata :is(.SongName, .Artists) > span {
   padding: 0 14px 0 6px;
   text-align: left;
 }
 
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .ContentBox .NowBar .CenteredView .Header .Metadata .SongName {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .ContentBox .NowBar .CenteredView .Header .Metadata .SongName {
   font-size: var(--PD_TitleSize) !important;
   line-height: 1.25 !important;
   letter-spacing: -0.01em;
 }
 
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .ContentBox .NowBar .CenteredView .Header .Metadata .Artists {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .ContentBox .NowBar .CenteredView .Header .Metadata .Artists {
   font-size: var(--PD_ArtistSize) !important;
   line-height: 1.35 !important;
 }
 
 /* The control rows. The MediaBox is the hover target, so it is exactly the rows. At rest only the
    transport's slot drops away, which leaves the timeline sitting on the bottom inset. */
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .ContentBox .NowBar .CenteredView .Header .MediaBox {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .ContentBox .NowBar .CenteredView .Header .MediaBox {
   position: absolute;
   left: 0;
   right: 0;
@@ -203,7 +203,7 @@
 
 /* Timeline over the transport; like button and volume either side of it, the transport centered.
    The timeline stays up at rest, so the fade moves from this box onto each of the other rows. */
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock.Fullscreen .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock.Fullscreen .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent {
   inset: 0;
   width: auto;
   height: auto;
@@ -218,23 +218,23 @@
   pointer-events: none;
 }
 
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock.Fullscreen .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent > * {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock.Fullscreen .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent > * {
   pointer-events: auto;
 }
 
 /* The spring drives these every frame, so a transition would only make them trail it. */
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock.Fullscreen .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent > :is(.Heart, .PlaybackControls, .VolumeControl, .ViewControls) {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock.Fullscreen .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent > :is(.Heart, .PlaybackControls, .VolumeControl, .ViewControls) {
   opacity: var(--ControlsOpacity) !important;
   transition: none !important;
 }
 
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock.Fullscreen .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent > :is(.Heart, .PlaybackControls) {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock.Fullscreen .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent > :is(.Heart, .PlaybackControls) {
   translate: 0 var(--PD_TransportDrop);
 }
 
 /* Times sit under the bar, so the bar runs the full width. Its row is fixed, so it can thicken on
    hover without nudging the times. */
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock.Fullscreen .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent .Timeline {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock.Fullscreen .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent .Timeline {
   position: relative;
   inset: auto;
   grid-column: 1 / -1;
@@ -249,7 +249,7 @@
   padding: 0;
 }
 
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .ContentBox .NowBar .MediaContent .Timeline .SliderBar {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .ContentBox .NowBar .MediaContent .Timeline .SliderBar {
   grid-column: 1 / -1;
   grid-row: 1;
   align-self: center;
@@ -257,16 +257,16 @@
   margin: 0;
 }
 
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock.Exp_NewProgressBar .ContentBox .NowBar .MediaContent .Timeline .SliderBar:is(:hover, .Dragging) {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock.Exp_NewProgressBar .ContentBox .NowBar .MediaContent .Timeline .SliderBar:is(:hover, .Dragging) {
   height: calc(var(--PD_BarH) * 1.8);
 }
 
 /* The legacy skin is a line with a handle, not a capsule. */
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock:not(.Exp_NewProgressBar) .ContentBox .NowBar .MediaContent .Timeline .SliderBar {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock:not(.Exp_NewProgressBar) .ContentBox .NowBar .MediaContent .Timeline .SliderBar {
   height: calc(var(--PD_BarH) * 0.65);
 }
 
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .ContentBox .NowBar .MediaContent .Timeline .Time {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .ContentBox .NowBar .MediaContent .Timeline .Time {
   grid-row: 2;
   min-width: 0;
   font-size: var(--PD_TimeSize) !important;
@@ -275,7 +275,7 @@
 
 /* The dock's opacity layer is a backdrop root, so the frost can't blur what's behind
    the preview here; a denser tint keeps it readable instead. */
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .ContentBox .NowBar .ScrubPreview {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .ContentBox .NowBar .ScrubPreview {
   font-size: var(--PD_TimeSize) !important;
   background: rgba(18, 18, 22, 0.78);
 }
@@ -283,19 +283,19 @@
 /* The title stacks above the MediaBox here, so the timeline's preview hangs below the bar,
    over the times row, instead of above it. */
 @supports (anchor-name: --a) {
-  .spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .ContentBox .NowBar .Timeline .ScrubPreview {
+  .lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .ContentBox .NowBar .Timeline .ScrubPreview {
     bottom: auto;
     top: calc(anchor(bottom) + var(--ScrubPreviewGap));
     transform-origin: 0 0;
   }
 }
 
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .ContentBox .NowBar .MediaContent .Timeline .Time.Position {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .ContentBox .NowBar .MediaContent .Timeline .Time.Position {
   grid-column: 1;
   text-align: left;
 }
 
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .ContentBox .NowBar .MediaContent .Timeline .Time.Duration {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .ContentBox .NowBar .MediaContent .Timeline .Time.Duration {
   grid-column: 3;
   text-align: right;
 }
@@ -305,7 +305,7 @@
    grid, so it stays centred under the bar as the dock rises, falls and resizes. A credit
    that doesn't fit drops its avatars (data-marquee, set by PinnedCredits.ts) and scrolls
    like the song name (TextScroller.ts). */
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .NowBar .Timeline .TimelineCredits {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .NowBar .Timeline .TimelineCredits {
   grid-column: 2;
   grid-row: 2;
   min-width: 0;
@@ -315,72 +315,72 @@
   padding-inline: var(--TC_Pad);
   font-size: var(--PD_TimeSize);
   line-height: 1.3;
-  font-weight: var(--w-medium);
-  color: var(--color-text-secondary);
+  font-weight: var(--lyssna-w-medium);
+  color: var(--lyssna-color-text-secondary);
   white-space: nowrap;
   overflow: hidden;
   /* Room under the line for the names' underline, which the clip would cut at small sizes;
      the negative margin keeps the row as tall as the times. */
   padding-bottom: 0.25em;
   margin-bottom: -0.25em;
-  animation: TimelineCreditsIn 0.36s cubic-bezier(0.23, 1, 0.32, 1);
+  animation: lyssna-TimelineCreditsIn 0.36s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .NowBar .Timeline .TimelineCredits.Leaving {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .NowBar .Timeline .TimelineCredits.Leaving {
   pointer-events: none;
-  animation: TimelineCreditsOut 0.15s ease-out forwards;
+  animation: lyssna-TimelineCreditsOut 0.15s ease-out forwards;
 }
 
-@keyframes TimelineCreditsIn {
+@keyframes lyssna-TimelineCreditsIn {
   from {
     opacity: 0;
     translate: 0 -0.35em;
   }
 }
 
-@keyframes TimelineCreditsFade {
+@keyframes lyssna-TimelineCreditsFade {
   from {
     opacity: 0;
   }
 }
 
-@keyframes TimelineCreditsOut {
+@keyframes lyssna-TimelineCreditsOut {
   to {
     opacity: 0;
   }
 }
 
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .NowBar .TimelineCredits :is(.SongCredits, .SongInfo, .Maker, .Uploader, .song-info-profile-section) {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .NowBar .TimelineCredits :is(.SongCredits, .SongInfo, .Maker, .Uploader, .song-info-profile-section) {
   display: flex;
   align-items: center;
 }
 
 /* Nothing shrinks, so the line's scrollWidth is its natural width. */
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .NowBar .TimelineCredits * {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .NowBar .TimelineCredits * {
   flex-shrink: 0;
 }
 
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .NowBar .TimelineCredits .SongCredits.FromCommunity > .LyricsProvider,
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .NowBar .TimelineCredits .SongInfoNote,
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .NowBar .TimelineCredits[data-marquee] .song-info-profile-section img {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .NowBar .TimelineCredits .SongCredits.FromCommunity > .LyricsProvider,
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .NowBar .TimelineCredits .SongInfoNote,
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .NowBar .TimelineCredits[data-marquee] .song-info-profile-section img {
   display: none;
 }
 
 /* While it scrolls: hold, slide across, hold, and back. The edges fade across the
    padding, so the text's ends are clear at either hold. */
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .NowBar .TimelineCredits[data-marquee] {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .NowBar .TimelineCredits[data-marquee] {
   --TC_Pad: max(clamp(6px, calc(var(--PD_U) * 2), 12px), 1em);
   -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 var(--TC_Pad), #000 calc(100% - var(--TC_Pad)), transparent 100%);
   mask-image: linear-gradient(90deg, transparent 0, #000 var(--TC_Pad), #000 calc(100% - var(--TC_Pad)), transparent 100%);
 }
 
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .NowBar .TimelineCredits .SongInfoLead::after,
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .NowBar .TimelineCredits :is(.Maker, .Uploader):not(.SongInfoLead + *)::before {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .NowBar .TimelineCredits .SongInfoLead::after,
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .NowBar .TimelineCredits :is(.Maker, .Uploader):not(.SongInfoLead + *)::before {
   content: "\00b7";
   margin-inline: 0.45em;
 }
 
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .NowBar .TimelineCredits .song-info-profile-section {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .NowBar .TimelineCredits .song-info-profile-section {
   gap: 0.3em;
   padding: 0;
   border: 0;
@@ -392,7 +392,7 @@
 }
 
 /* Avatar between the role and the name, as in the lyrics' credits. */
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .NowBar .TimelineCredits .song-info-profile-section img {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .NowBar .TimelineCredits .song-info-profile-section img {
   order: 1;
   width: 1.2em;
   height: 1.2em;
@@ -401,27 +401,27 @@
   object-fit: cover;
 }
 
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .NowBar .TimelineCredits :is(.SongInfoName, .LyricsProviderViaLink) {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .NowBar .TimelineCredits :is(.SongInfoName, .LyricsProviderViaLink) {
   order: 2;
-  color: var(--color-text-primary);
+  color: var(--lyssna-color-text-primary);
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.18em;
   text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
-  transition: text-decoration-color var(--dur-fast) ease;
+  transition: text-decoration-color var(--lyssna-dur-fast) ease;
 }
 
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .NowBar .TimelineCredits .song-info-profile-section:is(:hover, :focus-visible) .SongInfoName,
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .NowBar .TimelineCredits .LyricsProviderViaLink:is(:hover, :focus-visible) {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .NowBar .TimelineCredits .song-info-profile-section:is(:hover, :focus-visible) .SongInfoName,
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .NowBar .TimelineCredits .LyricsProviderViaLink:is(:hover, :focus-visible) {
   text-decoration-color: currentColor;
 }
 
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .NowBar .TimelineCredits :is(.song-info-profile-section, .LyricsProviderViaLink):focus-visible {
-  outline: 2px solid var(--accent);
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .NowBar .TimelineCredits :is(.song-info-profile-section, .LyricsProviderViaLink):focus-visible {
+  outline: 2px solid var(--lyssna-accent);
   outline-offset: 2px;
 }
 
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock.Fullscreen .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent .Heart {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock.Fullscreen .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent .Heart {
   position: relative;
   grid-column: 1;
   grid-row: 2;
@@ -431,7 +431,7 @@
   margin: 0;
 }
 
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock.Fullscreen .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent .PlaybackControls {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock.Fullscreen .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent .PlaybackControls {
   position: relative;
   grid-column: 2;
   grid-row: 2;
@@ -446,26 +446,26 @@
 }
 
 /* Each button's hit area is the row's height; the glyph inside is sized on its own. */
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock.Fullscreen .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent .PlaybackControls .PlaybackControl {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock.Fullscreen .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent .PlaybackControls .PlaybackControl {
   height: 100%;
   width: calc(var(--PD_PlayH) * 1.45);
 }
 
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock.Fullscreen .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent .PlaybackControls .PlaybackControl svg {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock.Fullscreen .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent .PlaybackControls .PlaybackControl svg {
   width: auto;
   height: var(--PD_SkipH);
 }
 
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock.Fullscreen .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent .PlaybackControls .PlaybackControl.PlayStateToggle svg {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock.Fullscreen .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent .PlaybackControls .PlaybackControl.PlayStateToggle svg {
   height: var(--PD_PlayH);
 }
 
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock.Fullscreen .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent .PlaybackControls .PlaybackControl:is(.ShuffleToggle, .LoopToggle) svg {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock.Fullscreen .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent .PlaybackControls .PlaybackControl:is(.ShuffleToggle, .LoopToggle) svg {
   height: var(--PD_ToggleH);
 }
 
 /* Laid flat at the end of the transport row. NowBar.ts reads the drag axis from the capsule's shape. */
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock.Fullscreen.ShowVolumeSlider .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent .VolumeControl {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock.Fullscreen.ShowVolumeSlider .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent .VolumeControl {
   --CapsuleWidth: var(--PD_VolumeH);
   --CapsuleHeight: var(--PD_VolumeW);
   position: relative;
@@ -484,11 +484,11 @@
   transition: height 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
 }
 
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock.Fullscreen.ShowVolumeSlider.Exp_NewProgressBar .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent .VolumeControl:is(:hover, .Dragging) {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock.Fullscreen.ShowVolumeSlider.Exp_NewProgressBar .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent .VolumeControl:is(:hover, .Dragging) {
   --CapsuleWidth: calc(var(--PD_VolumeH) * 1.5);
 }
 
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock.Fullscreen.ShowVolumeSlider:not(.Exp_NewProgressBar) .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent .VolumeControl {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock.Fullscreen.ShowVolumeSlider:not(.Exp_NewProgressBar) .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent .VolumeControl {
   --CapsuleWidth: calc(var(--PD_VolumeH) * 0.5);
   background: linear-gradient(
     90deg,
@@ -499,25 +499,25 @@
   );
 }
 
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .NowBar .VolumeControl .VolumeFill {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .NowBar .VolumeControl .VolumeFill {
   border-radius: inherit;
   transform: none;
   clip-path: inset(0 calc((1 - var(--VolumeLevel)) * 100%) 0 0);
   transition: clip-path 0.18s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .NowBar .VolumeControl.Dragging .VolumeFill {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .NowBar .VolumeControl.Dragging .VolumeFill {
   transition: none;
 }
 
 /* A few px of track is a hard thing to grab; widen the hit area in both skins. */
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .NowBar .VolumeControl::after {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .NowBar .VolumeControl::after {
   content: "";
   position: absolute;
   inset: -8px 0;
 }
 
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock:not(.Exp_NewProgressBar) .NowBar .VolumeControl .Handle {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock:not(.Exp_NewProgressBar) .NowBar .VolumeControl .Handle {
   left: 0;
   top: 50%;
   bottom: auto;
@@ -525,7 +525,7 @@
 }
 
 /* The glyph sits before the capsule, so the thin track doesn't have to hold it in either skin. */
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .NowBar .VolumeControl .VolumeIcon {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .NowBar .VolumeControl .VolumeIcon {
   top: 50%;
   bottom: auto;
   left: auto;
@@ -535,11 +535,11 @@
   transform: translateY(-50%);
 }
 
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .NowBar .VolumeControl.IconOnFill .VolumeIcon {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .NowBar .VolumeControl.IconOnFill .VolumeIcon {
   fill: #fff;
 }
 
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .NowBar .VolumeControl .VolumeIcon svg {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .NowBar .VolumeControl .VolumeIcon svg {
   height: calc(var(--PD_VolumeIcon) * 0.8);
 }
 
@@ -548,7 +548,7 @@
    from the top edge instead. The buttons are already no-drag, so they work over the drag strip.
    Top left, reversed so close stays in the corner: the right edge is the scroll-to-active
    button's, which rises to the top there without running into them. */
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock.Fullscreen .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent .ViewControls {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock.Fullscreen .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent .ViewControls {
   --ViewControlSize: var(--PD_ViewSize);
   container-type: normal;
   top: calc(var(--PD_ViewInset) - 100vh + var(--PD_Bottom) + var(--PD_BoxH));
@@ -560,23 +560,23 @@
   translate: 0 calc(-1 * var(--PD_Drop) - (1 - var(--DockLift, 0)) * 8px);
 }
 
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .ContentBox .NowBar .MediaContent .ViewControls svg {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .ContentBox .NowBar .MediaContent .ViewControls svg {
   height: calc(var(--PD_ViewSize) * 0.42);
 }
 
 /* The scroll-to-active button, sized and inset like the view controls, in the opposite corner. */
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .ScrollToActive {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .ScrollToActive {
   --ScrollToActiveSize: var(--PD_ViewSize);
   --ScrollToActiveInset: var(--PD_ViewInset);
 }
 
 @supports (anchor-name: --a) {
-  .spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .ScrollToActive {
+  .lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .ScrollToActive {
     right: calc(anchor(right) + var(--ScrollToActiveInset));
   }
 }
 
-.spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .ScrollToActive svg {
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .ScrollToActive svg {
   width: calc(var(--PD_ViewSize) * 0.42);
   height: calc(var(--PD_ViewSize) * 0.42);
 }
@@ -584,16 +584,16 @@
 /* Narrow popups: the like button goes first, then shuffle and repeat. With the like button gone the
    transport moves onto the gutter and the volume takes the rest of the row. */
 @media (max-width: 330px) {
-  .spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock.Fullscreen .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent {
+  .lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock.Fullscreen .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent {
     grid-template-columns: auto 1fr;
     column-gap: clamp(10px, calc(var(--PD_U) * 4), 20px);
   }
 
-  .spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock.Fullscreen .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent .Heart {
+  .lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock.Fullscreen .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent .Heart {
     display: none;
   }
 
-  .spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock.Fullscreen .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent .PlaybackControls {
+  .lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock.Fullscreen .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent .PlaybackControls {
     grid-column: 1;
     justify-self: start;
     /* The first button's hit area is wider than its glyph (shuffle's viewBox is 25 x 20); this puts
@@ -602,49 +602,49 @@
     margin-left: var(--PD_LeadInset);
   }
 
-  .spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock.Fullscreen.ShowVolumeSlider .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent .VolumeControl {
+  .lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock.Fullscreen.ShowVolumeSlider .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent .VolumeControl {
     grid-column: 2;
     justify-self: stretch;
     width: auto;
   }
 
   /* --CapsuleHeight is a fixed length, which a stretched capsule no longer has. */
-  .spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock:not(.Exp_NewProgressBar) .NowBar .VolumeControl .Handle {
+  .lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock:not(.Exp_NewProgressBar) .NowBar .VolumeControl .Handle {
     left: calc(100% * var(--VolumeLevel));
     transform: translate(-50%, -50%);
   }
 }
 
 @media (max-width: 280px) {
-  .spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock.Fullscreen .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent .PlaybackControls {
+  .lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock.Fullscreen .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent .PlaybackControls {
     --PD_LeadInset: 0px;
   }
 
-  .spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock.Fullscreen .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent .PlaybackControls .PlaybackControl:is(.ShuffleToggle, .LoopToggle) {
+  .lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock.Fullscreen .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent .PlaybackControls .PlaybackControl:is(.ShuffleToggle, .LoopToggle) {
     display: none;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   /* The rows stay raised, so the lyrics stop above all of them; only the controls fade. */
-  .spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .ContentBox .LyricsContainer {
+  .lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .ContentBox .LyricsContainer {
     height: calc(100% - var(--PD_IdleH) - var(--PD_Reserve));
   }
 
-  .spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .ContentBox .NowBar .CenteredView .Header {
+  .lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .ContentBox .NowBar .CenteredView .Header {
     --PD_Drop: 0px;
     --PD_TransportDrop: 0px;
   }
 
-  .spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock.Fullscreen .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent .ViewControls {
+  .lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock.Fullscreen .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent .ViewControls {
     translate: none;
   }
 
-  .spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .NowBar .Timeline .TimelineCredits:not(.Leaving) {
-    animation-name: TimelineCreditsFade;
+  .lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .NowBar .Timeline .TimelineCredits:not(.Leaving) {
+    animation-name: lyssna-TimelineCreditsFade;
   }
 
-  .spicy-pip-wrapper #SpicyLyricsPage.Exp_PopupDock .ContentBox.LyricsHidden .NowBar .CenteredView .Header .MediaBox .MediaImageContainer {
+  .lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .ContentBox.LyricsHidden .NowBar .CenteredView .Header .MediaBox .MediaImageContainer {
     transition: opacity 0.2s ease !important;
   }
 }

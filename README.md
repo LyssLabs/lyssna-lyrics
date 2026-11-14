@@ -8,7 +8,9 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/AGPL--3.0-303d34?style=for-the-badge" alt="AGPL version 3 license" /></a>
 </p>
 
-**[Discord & support](https://discord.gg/qfYAsFQawp) · [Download the launcher](https://raw.githubusercontent.com/iPixelGalaxy/lyssna-lyrics/dev/builds/lyssna-lyrics.mjs) · [Lyssna Standalone](https://clypdat.xyz/lyssna.exe)**
+**Rewrite planned.**
+
+**[Discord & support](https://discord.gg/qfYAsFQawp) · [Download the launcher](https://ipixelgalaxy.com/lyssna-plugin/download.html) · [Lyssna Standalone](https://clypdat.xyz/lyssna.exe)**
 
 </div>
 
@@ -44,21 +46,20 @@ Start with **Spotify's desktop app and a working [Spicetify installation](https:
 sh -c 'lyssna_script=$(curl -fsSL https://raw.githubusercontent.com/iPixelGalaxy/lyssna-lyrics/dev/scripts/lyssna-lyrics.sh) && sh -c "$lyssna_script" -- install'
 ```
 
-The installer downloads **[lyssna-lyrics.mjs](https://raw.githubusercontent.com/iPixelGalaxy/lyssna-lyrics/dev/builds/lyssna-lyrics.mjs)** from this GitHub repo and enables that filename. It disables the old `spicy-lyrics-pixel.mjs` and `spicy-lyrics.mjs` entries so two lyrics plugins do not load together. Your other extensions and saved settings stay in place.
+The installer downloads **[lyssna-lyrics.mjs](https://ipixelgalaxy.com/lyssna-plugin/download.html)** from this GitHub repo and enables that filename. It replaces the old `spicy-lyrics-pixel.mjs` entry. Spicy Lyrics can stay installed and enabled alongside Lyssna, with a separate button and settings panel for each.
 
-You can read the [PowerShell script](scripts/lyssna-lyrics.ps1) or [shell script](scripts/lyssna-lyrics.sh) here. Running the install command again replaces the launcher with the current copy.
+You can read the [launcher source](builds/lyssna-lyrics.mjs), [PowerShell script](scripts/lyssna-lyrics.ps1), or [shell script](scripts/lyssna-lyrics.sh) here. The launcher loads the repository's v2 entrypoint through jsDelivr. Running the install command again replaces the launcher with the current copy.
 
 <details>
 <summary><strong>Install manually</strong></summary>
 
-1. Download [lyssna-lyrics.mjs](https://raw.githubusercontent.com/iPixelGalaxy/lyssna-lyrics/dev/builds/lyssna-lyrics.mjs) and save it with that exact filename.
+1. Download [lyssna-lyrics.mjs](https://ipixelgalaxy.com/lyssna-plugin/download.html) and save it with that exact filename.
 2. Run `spicetify config-dir` and place the file in its **Extensions** folder.
-3. Enable Lyssna and disable the older filenames:
+3. Enable Lyssna and replace the old Pixel entry:
 
    ```sh
    spicetify config extensions lyssna-lyrics.mjs
    spicetify config extensions spicy-lyrics-pixel.mjs-
-   spicetify config extensions spicy-lyrics.mjs-
    spicetify apply
    ```
 
@@ -84,9 +85,13 @@ This disables the Lyssna and old Pixel entries, reapplies Spicetify, and removes
 
 ## Switching from Pixel Edition or Spicy Lyrics
 
-The new installer handles the old Pixel extension entry. Lyssna's settings keep compatible preferences shared with Spicy Lyrics, while its own options and update history stay separate.
+The new installer handles the old Pixel extension entry. Lyssna and Spicy Lyrics can run together. Their pages, controls, local TTML collections, branch selections, and update history stay separate. Existing local TTML files are copied into Lyssna's collection on first use.
 
-In **Settings → Advanced → Build Channel**, **Lyssna** is the default. **Spicy Lyrics** loads the official plugin. You can also manage custom branches or pin a version. The entrypoint and the in-plugin picker use the same channel selection.
+Compatible preferences remain shared by default. Enable **Don't sync settings to Spicy Lyrics counterparts** under **Advanced** to keep your Lyssna setup independent. Turning it off resumes sharing compatible preferences.
+
+In **Settings → Advanced → Build Channel**, **Lyssna** is the default. **Spicy Lyrics** loads the official plugin when it isn't already enabled separately. You can also manage custom branches or pin a version. The entrypoint and the in-plugin picker use the same Lyssna channel selection.
+
+Lyssna's release series begins at **0.1.0**. Historical **100.10.x** Pixel Edition versions come before the new series in update checks and patch notes.
 
 Community and Apple Music lyrics use the public Spicy Lyrics developer API. Other available sources include Musixmatch, Spotify, LRCLIB, and NetEase. Source availability varies by track; manage their order in **Settings → Sources**. The fork's private plugin API integration has been removed.
 
@@ -107,7 +112,7 @@ You can also [open a GitHub issue](https://github.com/iPixelGalaxy/lyssna-lyrics
 ## Credits
 
 - **[Spicy Lyrics](https://github.com/Spikerko/spicy-lyrics)** by Spikerko and its contributors, for the plugin and lyric renderer this fork is built on.
-- **[Lyssna](https://github.com/Stormanzanii/Lyssna) · Arashii**, for the name, microphone icon, settings and toolbar designs, used with permission.
+- **[Lyssna](https://github.com/Stormanzanii/Lyssna) · Arashii**, for the name, microphone icon, settings and toolbar designs.
 - **[iPixelGalaxy](https://github.com/iPixelGalaxy)**, for maintaining this fork.
 
 ## License and history

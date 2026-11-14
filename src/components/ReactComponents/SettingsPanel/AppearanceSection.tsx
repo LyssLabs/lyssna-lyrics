@@ -124,7 +124,7 @@ export default function AppearanceSection({ query, sectionFilter, showHidden = f
       {r2 && (
         <Row label="Font Name" description="Enter the installed font family name to use for lyrics.">
           <input
-            className="sl-sp-text-input"
+            className="ll-sp-text-input"
             type="text"
             placeholder="Spotify Mix"
             value={customFont}

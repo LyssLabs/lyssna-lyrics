@@ -68,7 +68,7 @@ function unpin(): void {
   }
   const container = layer?.parentElement;
   container?.classList.remove("HasPinnedCredits");
-  container?.style.removeProperty("--SL-PinnedCreditsHeight");
+  container?.style.removeProperty("--LL-PinnedCreditsHeight");
   layer?.remove();
   layer = null;
 }
@@ -116,7 +116,7 @@ function attachToTimeline(nowBar: Element): void {
 function syncLayout(): void {
   const container = layer?.parentElement;
   const content = container?.querySelector<HTMLElement>(":scope > .LyricsContent");
-  const scroll = content?.querySelector<HTMLElement>(".SpicyLyricsScrollContainer");
+  const scroll = content?.querySelector<HTMLElement>(".LyssnaLyricsScrollContainer");
   if (!layer || !container || !content || !scroll) return;
 
   // The padding goes on the column inside: the layer itself spans the lyrics area's width,
@@ -128,7 +128,7 @@ function syncLayout(): void {
   layer.style.fontSize = style.fontSize;
   column.style.paddingLeft = `${scrollRect.left - contentRect.left + parseFloat(style.paddingLeft)}px`;
   column.style.paddingRight = `${contentRect.right - scrollRect.right + parseFloat(style.paddingRight)}px`;
-  container.style.setProperty("--SL-PinnedCreditsHeight", `${Math.ceil(layer.offsetHeight)}px`);
+  container.style.setProperty("--LL-PinnedCreditsHeight", `${Math.ceil(layer.offsetHeight)}px`);
 }
 
 function place(): void {
@@ -151,10 +151,10 @@ function place(): void {
   const view = doc.defaultView ?? window;
   // The sidebar card is too short to give up its bottom to the credits, and without
   // anchor positioning there is no box to pin them to: both keep them in the scroll.
-  if (container.closest("#SpicyLyricsPage")?.classList.contains("CardMode")) return;
+  if (container.closest("#LyssnaLyricsPage")?.classList.contains("CardMode")) return;
 
   const nowBar =
-    container.closest(".spicy-pip-wrapper") && isExperimentEnabled("popupDock")
+    container.closest(".lyssna-pip-wrapper") && isExperimentEnabled("popupDock")
       ? container.closest(".ContentBox")?.querySelector(".NowBar")
       : null;
   if (nowBar) {

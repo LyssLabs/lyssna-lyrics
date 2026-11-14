@@ -1,5 +1,5 @@
 import { resolveLyricsSourceLabel, type LyricsSourceProviderId } from "../LyricsSourcePreferences.ts";
-import type { ExternalLyricsResult, TimedLine, TimedWordLine, SpicyLyricsCreditSource } from "./Types.ts";
+import type { ExternalLyricsResult, TimedLine, TimedWordLine, LyssnaLyricsCreditSource } from "./Types.ts";
 
 export function normalizeText(text: string | undefined, emptySymbol: boolean = true): string {
   let result = (text ?? "")
@@ -74,7 +74,7 @@ export function countBracketCharacters(
   return ((text ?? "").match(matcher) ?? []).length;
 }
 
-export function tryGetSongWriters(lyrics: SpicyLyricsCreditSource | null | undefined): string[] | null {
+export function tryGetSongWriters(lyrics: LyssnaLyricsCreditSource | null | undefined): string[] | null {
   return Array.isArray(lyrics?.SongWriters) && lyrics.SongWriters.length > 0
     ? lyrics.SongWriters
     : null;

@@ -4,7 +4,7 @@ import { LocalLyricsManager } from "./Lyrics/manager";
 import { openSettingsPanel } from "./settings";
 import { OpenLyricsDBPanel } from "./openLyricsDBPanel";
 import { DeepFreeze } from "./utils";
-import { triggerSpicyLyricsFakeUpdate } from "./version/CheckForUpdates";
+import { triggerLyssnaLyricsFakeUpdate } from "./version/CheckForUpdates";
 import { BreakerDebug } from "./API/CircuitBreaker";
 import { showUpdatedDialog } from "../components/ReactComponents/UpdateDialog.tsx";
 import GetProgress from "./Gets/GetProgress";
@@ -40,7 +40,7 @@ export function exposeToWindow() {
             // telling users to clear localStorage by hand.
             breaker: BreakerDebug,
             autoUpdate: {
-                triggerFakeUpdate: triggerSpicyLyricsFakeUpdate,
+                triggerFakeUpdate: triggerLyssnaLyricsFakeUpdate,
                 showUpdatedDialog: (fromVersion: string, toVersion: string) => showUpdatedDialog(fromVersion, toVersion),
             },
             getProgress: () => GetProgress(),
@@ -59,5 +59,4 @@ export function exposeToWindow() {
     };
 
     (window as any).LyssnaLyrics = DeepFreeze(api);
-    (window as any).SpicyLyrics = (window as any).LyssnaLyrics;
 }

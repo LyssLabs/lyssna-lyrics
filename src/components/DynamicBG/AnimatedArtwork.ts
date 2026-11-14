@@ -146,7 +146,7 @@ function syncPlayback() {
 
 // True once the static cover shows the playing track's art and isn't mid-swap.
 function coverSettled(container: HTMLElement): boolean {
-  if (container.querySelector(".MB_anim_enter, .MB_anim_fimg")) return false;
+  if (container.querySelector(".lyssna-MB_anim_enter, .MB_anim_fimg")) return false;
   const cover = SpotifyPlayer.GetCover("xlarge");
   return !cover || container.getAttribute("last-image") === cover;
 }

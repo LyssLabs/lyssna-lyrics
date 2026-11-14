@@ -162,6 +162,7 @@ try {
     const pluginDir = join(dest, PLUGIN_DIRECTORY);
     const bundlesDir = join(pluginDir, BUNDLES_DIRECTORY);
     mkdirSync(bundlesDir, { recursive: true });
+    copyFileReplacing(resolve("website", "download.html"), join(pluginDir, "download.html"));
 
     // Copy existing releases before publishing the new manifest or entrypoint.
     // Canonical filenames take precedence when both older aliases exist.

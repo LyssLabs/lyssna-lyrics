@@ -27,7 +27,7 @@ function getHttpErrorStatus(error: unknown): number | undefined {
 }
 
 // A getter so a pushed TTL applies to every write from then on.
-export const AudioAnalysisStore = GetExpireStore<CachedAudioAnalysis>("SpicyLyrics_AudioAnalysis", 1, {
+export const AudioAnalysisStore = GetExpireStore<CachedAudioAnalysis>("LyssnaLyrics_AudioAnalysis", 1, {
     get Duration() {
         return getRemoteConfig().cache.audioAnalysisTtlMonths;
     },
@@ -36,7 +36,7 @@ export const AudioAnalysisStore = GetExpireStore<CachedAudioAnalysis>("SpicyLyri
 
 // Spotify's 404 here isn't always permanent, so a miss is only trusted for a
 // short while (`cache.audioAnalysisNotFoundTtlHours`) before asking again.
-const AudioAnalysisNotFoundStore = GetExpireStore<true>("SpicyLyrics_AudioAnalysisNotFound", 1, {
+const AudioAnalysisNotFoundStore = GetExpireStore<true>("LyssnaLyrics_AudioAnalysisNotFound", 1, {
     get Duration() {
         return getRemoteConfig().cache.audioAnalysisNotFoundTtlHours;
     },

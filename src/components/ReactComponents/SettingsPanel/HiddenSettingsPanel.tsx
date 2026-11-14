@@ -21,10 +21,10 @@ export default function HiddenSettingsPanel({ onBack }: { onBack: () => void }) 
     if (sectionFilter !== "All" && !sections.includes(sectionFilter)) setSectionFilter("All");
   }, [sectionFilter, sections.join("|")]);
 
-  return <div style={{ padding: "8px 0" }} className="slm w-40">
-    <div className="sl-sp-subheader"><button className="sl-sp-back-btn" onClick={onBack} aria-label="Back to Settings"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M8.5 2.5L4 7l4.5 4.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/></svg>Settings</button></div>
-    <div className="sl-sp-toolbar"><SearchBar value={query} onChange={setQuery} /><FilterDropdown sections={sections} value={sectionFilter} onChange={setSectionFilter} /></div>
-    {hiddenSettings.length === 0 ? <p className="sl-sp-empty">No hidden settings.</p> : <HiddenSettingsContext.Provider value>
+  return <div style={{ padding: "8px 0" }} className="llm w-40">
+    <div className="ll-sp-subheader"><button className="ll-sp-back-btn" onClick={onBack} aria-label="Back to Settings"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M8.5 2.5L4 7l4.5 4.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/></svg>Settings</button></div>
+    <div className="ll-sp-toolbar"><SearchBar value={query} onChange={setQuery} /><FilterDropdown sections={sections} value={sectionFilter} onChange={setSectionFilter} /></div>
+    {hiddenSettings.length === 0 ? <p className="ll-sp-empty">No hidden settings.</p> : <HiddenSettingsContext.Provider value>
       <AppearanceSection query={query} sectionFilter={sectionFilter} showHidden />
       <LyricsSection query={query} sectionFilter={sectionFilter} showHidden />
       <EffectsSection query={query} sectionFilter={sectionFilter} showHidden />

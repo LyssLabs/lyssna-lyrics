@@ -68,8 +68,8 @@ export default function InterfaceSection({ query, sectionFilter, showHidden = fa
       description="Show or hide the Cinema Lyrics button in the playback bar. Requires Spotify DevTools."
       labelAccessory={
         <a
-          className="sl-sp-help-link"
-          href="https://github.com/iPixelGalaxy/spicy-lyrics/blob/dev/ENABLE_DEVTOOLS.md"
+          className="ll-sp-help-link"
+          href="https://github.com/iPixelGalaxy/lyssna-lyrics/blob/dev/ENABLE_DEVTOOLS.md"
           target="_blank"
           rel="noreferrer"
           onClick={(event) => event.stopPropagation()}

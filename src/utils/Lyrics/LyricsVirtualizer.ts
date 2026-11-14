@@ -879,7 +879,7 @@ class LyricsVirtualizer {
 
     const scrollContainer = virtualContainer.parentElement;
     const lyricsContent = scrollContainer?.closest<HTMLElement>(".LyricsContent");
-    const page = lyricsContent?.closest<HTMLElement>("#SpicyLyricsPage");
+    const page = lyricsContent?.closest<HTMLElement>("#LyssnaLyricsPage");
     if (
       !scrollContainer ||
       !lyricsContent ||
@@ -887,9 +887,9 @@ class LyricsVirtualizer {
       page.classList.contains("CardMode")
     ) {
       this._pinnedFooterLayoutKey = null;
-      setPinnedFooterProperty(scrollContainer, "--SL-PinnedFooterBottomMargin", "");
-      setPinnedFooterProperty(lyricsContent, "--SL-PinnedFooterTrackBottom", "");
-      setPinnedFooterProperty(lyricsContent, "--SL-PinnedFooterFadeHeight", "");
+      setPinnedFooterProperty(scrollContainer, "--LL-PinnedFooterBottomMargin", "");
+      setPinnedFooterProperty(lyricsContent, "--LL-PinnedFooterTrackBottom", "");
+      setPinnedFooterProperty(lyricsContent, "--LL-PinnedFooterFadeHeight", "");
       return;
     }
 
@@ -948,11 +948,11 @@ class LyricsVirtualizer {
       }
     }
 
-    setPinnedFooterProperty(lyricsContent, "--SL-PinnedFooterTrackBottom", `${Math.ceil(trackBottom)}px`);
-    setPinnedFooterProperty(lyricsContent, "--SL-PinnedFooterFadeHeight", `${Math.ceil(fadeHeight)}px`);
+    setPinnedFooterProperty(lyricsContent, "--LL-PinnedFooterTrackBottom", `${Math.ceil(trackBottom)}px`);
+    setPinnedFooterProperty(lyricsContent, "--LL-PinnedFooterFadeHeight", `${Math.ceil(fadeHeight)}px`);
     lyricsContent.classList.toggle("PinnedFooterSingleLine", singleLine);
     if (bottomMargin !== null) {
-      setPinnedFooterProperty(scrollContainer, "--SL-PinnedFooterBottomMargin", `${Math.ceil(bottomMargin)}px`);
+      setPinnedFooterProperty(scrollContainer, "--LL-PinnedFooterBottomMargin", `${Math.ceil(bottomMargin)}px`);
     }
   }
 
@@ -1948,7 +1948,7 @@ class LyricsVirtualizer {
     let delay = 0;
     let step = CASCADE_STEP_MS;
     const indices = [...this._mountedIndices].sort((a, b) => a - b);
-    if (!fadesAwayPreviousLines(this._scrollEl?.closest("#SpicyLyricsPage"))) {
+    if (!fadesAwayPreviousLines(this._scrollEl?.closest("#LyssnaLyricsPage"))) {
       // Timed: every row sets off from where it's drawn now.
       for (const idx of indices) {
         let row = this._cascadeRows.get(idx);

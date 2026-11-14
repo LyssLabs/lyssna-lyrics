@@ -23,16 +23,16 @@ export function IconButton({
 }: IconButtonProps) {
   return (
     <button
-      className={`sl-ldb-icon-btn sl-ldb-icon-btn--${variant}${className ? ` ${className}` : ""}`}
+      className={`ll-ldb-icon-btn ll-ldb-icon-btn--${variant}${className ? ` ${className}` : ""}`}
       onClick={onClick}
       disabled={disabled}
       title={title}
       aria-label={title ?? label}
       type="button"
     >
-      {icon && <span className="sl-ldb-icon-btn__icon">{icon}</span>}
+      {icon && <span className="ll-ldb-icon-btn__icon">{icon}</span>}
       {(label || children) && (
-        <span className="sl-ldb-icon-btn__label">{label ?? children}</span>
+        <span className="ll-ldb-icon-btn__label">{label ?? children}</span>
       )}
     </button>
   );

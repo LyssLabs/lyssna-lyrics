@@ -46,9 +46,7 @@ if ($Action -eq 'install') {
     }
 
     Invoke-Spicetify -CliArguments @('config', 'extensions', $launcherName)
-    foreach ($legacyName in @($pixelLauncherName, 'spicy-lyrics.mjs')) {
-        Invoke-Spicetify -CliArguments @('config', 'extensions', ($legacyName + '-'))
-    }
+    Invoke-Spicetify -CliArguments @('config', 'extensions', ($pixelLauncherName + '-'))
     Invoke-Spicetify -CliArguments @('apply')
     Write-Host 'Lyssna Lyrics installed. Open lyrics with the microphone button in Spotify.'
 } else {

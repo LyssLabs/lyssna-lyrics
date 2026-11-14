@@ -1,4 +1,4 @@
-sl-generic-modal.SpicyLyricsModal .sl-modal-overlay {
+lyssna-lyrics-modal.LyssnaLyricsModal .ll-modal-overlay {
     z-index: 999;
     background-color: rgba(0, 0, 0, 0.45);
     bottom: 0;
@@ -12,76 +12,76 @@ sl-generic-modal.SpicyLyricsModal .sl-modal-overlay {
     overflow: hidden;
 }
 
-sl-generic-modal.SpicyLyricsModal .sl-modal {
+lyssna-lyrics-modal.LyssnaLyricsModal .ll-modal {
     position: relative;
 }
 
-sl-generic-modal.SpicyLyricsModal .sl-modal-container-large,
-sl-generic-modal.SpicyLyricsModal .sl-modal-container {
+lyssna-lyrics-modal.LyssnaLyricsModal .ll-modal-container-large,
+lyssna-lyrics-modal.LyssnaLyricsModal .ll-modal-container {
     display: flex;
     flex-direction: column;
     background-color: transparent;
-    border-radius: var(--radius-lg);
-    color: var(--color-text-primary);
+    border-radius: var(--lyssna-radius-lg);
+    color: var(--lyssna-color-text-primary);
     max-height: 90vh;
     position: relative;
     z-index: 1;
     font-family: var(--encore-body-font-stack, var(--fallback-fonts, sans-serif));
 }
 
-sl-generic-modal.SpicyLyricsModal .sl-modal-container-large {
+lyssna-lyrics-modal.LyssnaLyricsModal .ll-modal-container-large {
     width: 664px;
 }
 
-sl-generic-modal.SpicyLyricsModal .sl-modal-container {
+lyssna-lyrics-modal.LyssnaLyricsModal .ll-modal-container {
     width: 420px;
 }
 
 /* Animator preview leaves the lyrics view unobscured and occupies artwork space. */
-sl-generic-modal.SpicyLyricsModal:has(.slmodal-animatorPreview) .sl-modal-overlay {
+lyssna-lyrics-modal.LyssnaLyricsModal:has(.llmodal-animatorPreview) .ll-modal-overlay {
     background: transparent;
     justify-content: flex-start;
     align-items: center;
     pointer-events: none;
 }
 
-sl-generic-modal.SpicyLyricsModal:has(.slmodal-animatorPreview) .sl-modal {
+lyssna-lyrics-modal.LyssnaLyricsModal:has(.llmodal-animatorPreview) .ll-modal {
     margin: 0;
     left: clamp(24px, calc(var(--animator-preview-center, 50vw) - 412px), calc(100vw - 848px));
     pointer-events: auto;
 }
 
-sl-generic-modal.SpicyLyricsModal:has(.slmodal-animatorPreview) .sl-modal-container {
+lyssna-lyrics-modal.LyssnaLyricsModal:has(.llmodal-animatorPreview) .ll-modal-container {
     width: min(824px, calc(100vw - 48px));
     height: 80vh;
     max-height: 80vh;
 }
 
 /* The preview panel is glass over fullscreen lyrics, never a page-wide fade. */
-sl-generic-modal.SpicyLyricsModal:has(.slmodal-animatorPreview) .sl-modal-overlay.sl-modal-overlay-animated,
-sl-generic-modal.SpicyLyricsModal:has(.slmodal-animatorPreview) .sl-modal-overlay.sl-modal-overlay-animated.Active {
+lyssna-lyrics-modal.LyssnaLyricsModal:has(.llmodal-animatorPreview) .ll-modal-overlay.ll-modal-overlay-animated,
+lyssna-lyrics-modal.LyssnaLyricsModal:has(.llmodal-animatorPreview) .ll-modal-overlay.ll-modal-overlay-animated.Active {
     background-color: transparent;
 }
 
-sl-generic-modal.SpicyLyricsModal .sl-modal-header {
+lyssna-lyrics-modal.LyssnaLyricsModal .ll-modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid var(--hairline);
+    border-bottom: 1px solid var(--lyssna-hairline);
     padding: 20px 24px 16px;
     gap: 12px;
 }
 
-sl-generic-modal.SpicyLyricsModal .sl-modal-header h1 {
-    font-size: var(--text-title-size) !important;
-    font-weight: var(--w-semibold);
-    color: var(--color-text-primary);
+lyssna-lyrics-modal.LyssnaLyricsModal .ll-modal-header h1 {
+    font-size: var(--lyssna-text-title-size) !important;
+    font-weight: var(--lyssna-w-semibold);
+    color: var(--lyssna-color-text-primary);
     letter-spacing: -0.01em;
     text-transform: none;
     margin: 0;
 }
 
-sl-generic-modal.SpicyLyricsModal .sl-modal-main-section {
+lyssna-lyrics-modal.LyssnaLyricsModal .ll-modal-main-section {
     overflow-y: auto;
     overflow-x: hidden;
     padding: 20px 24px 24px;
@@ -89,36 +89,36 @@ sl-generic-modal.SpicyLyricsModal .sl-modal-main-section {
     will-change: transform;
 }
 
-sl-generic-modal.SpicyLyricsModal .sl-modal-content {
+lyssna-lyrics-modal.LyssnaLyricsModal .ll-modal-content {
     display: flex;
     flex-direction: column;
 }
 
-sl-generic-modal.SpicyLyricsModal .sl-modal-close-btn {
+lyssna-lyrics-modal.LyssnaLyricsModal .ll-modal-close-btn {
     background-color: transparent;
     border: none;
-    width: var(--tap-min);
-    height: var(--tap-min);
-    border-radius: var(--radius-pill);
-    color: var(--color-text-secondary);
+    width: var(--lyssna-tap-min);
+    height: var(--lyssna-tap-min);
+    border-radius: var(--lyssna-radius-pill);
+    color: var(--lyssna-color-text-secondary);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition:
-      background-color var(--dur-fast) var(--ease-standard),
-      box-shadow var(--dur-fast) var(--ease-standard),
-      color var(--dur-fast) var(--ease-standard),
+      background-color var(--lyssna-dur-fast) var(--lyssna-ease-standard),
+      box-shadow var(--lyssna-dur-fast) var(--lyssna-ease-standard),
+      color var(--lyssna-dur-fast) var(--lyssna-ease-standard),
       transform 0.12s ease;
     flex-shrink: 0;
 }
 
-sl-generic-modal.SpicyLyricsModal .sl-modal-close-btn:hover {
-    background-color: var(--accent-tint-bg);
-    color: var(--color-text-primary);
+lyssna-lyrics-modal.LyssnaLyricsModal .ll-modal-close-btn:hover {
+    background-color: var(--lyssna-accent-tint-bg);
+    color: var(--lyssna-color-text-primary);
 }
 
-sl-generic-modal.SpicyLyricsModal .sl-modal-close-btn:active {
-    background-color: var(--accent-tint-bg-hover);
+lyssna-lyrics-modal.LyssnaLyricsModal .ll-modal-close-btn:active {
+    background-color: var(--lyssna-accent-tint-bg-hover);
     transform: scale(0.96);
 }

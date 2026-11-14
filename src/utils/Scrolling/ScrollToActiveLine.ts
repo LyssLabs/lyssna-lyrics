@@ -537,7 +537,7 @@ const GetScrollLine = (Lines: LyricsLine[] | LyricsSyllable[], ProcessedPosition
 // Gap above the active line in "Top" scrolling. A resized popup can leave only
 // a sliver of lyrics, where a fixed 50px pushed the line into the bottom fade,
 // so in PiP it shrinks with the viewport, staying just inside the mask's top
-// fade, which scales too (.spicy-pip-wrapper in Lyrics/main.css).
+// fade, which scales too (.lyssna-pip-wrapper in Lyrics/main.css).
 const GetTopScrollOffset = (container: HTMLElement) =>
   IsPIP ? Math.min(50, Math.round(container.clientHeight * 0.2)) : 85;
 
@@ -547,7 +547,7 @@ const GetTopScrollOffset = (container: HTMLElement) =>
 // Not while Canvas Stage shows a canvas (.CanvasImmersive): the lines keep the
 // usual offset there.
 const GetCenterScrollOffset = (container: HTMLElement) => {
-  const page = container.closest("#SpicyLyricsPage")?.classList;
+  const page = container.closest("#LyssnaLyricsPage")?.classList;
   if (!page?.contains("Fullscreen") || page.contains("CanvasImmersive")) return 30;
   return lyricsUseRefreshedLayout() || page.contains("Exp_PlayerBelowCover") ? 80 : 30;
 };
@@ -738,7 +738,7 @@ export function ScrollToActiveLine(ScrollSimplebar: any) {
   const isForceScrollQueued = forceScrollQueued;
   const isSmoothForceScrollQueued = smoothForceScrollQueued;
 
-  //if (Spicetify.Platform.History.location.pathname === "/SpicyLyrics") {
+  //if (Spicetify.Platform.History.location.pathname === "/LyssnaLyrics") {
   const Position = SpotifyPlayer.GetPosition();
   // Early scroll: pick the scroll target as if the clock were this far ahead, so
   // the list starts moving before the line lights up instead of snapping to it
@@ -747,7 +747,7 @@ export function ScrollToActiveLine(ScrollSimplebar: any) {
   // Bloom times its own scroll, except while sung lines are faded away. Only in
   // Popup Lyrics and the Now Playing card does it also start that scroll early;
   // elsewhere Early Scroll decides, as it does for Spring.
-  const page = ScrollSimplebar?.getScrollElement()?.closest("#SpicyLyricsPage");
+  const page = ScrollSimplebar?.getScrollElement()?.closest("#LyssnaLyricsPage");
   const bloomTimed = lyricsUseRefreshedLayout() && !fadesAwayPreviousLines(page);
   let PositionOffset = $scrollLeadEnabled.get() ? Math.max(0, $scrollLeadMs.get()) : 0;
   const bloomEarly = bloomTimed && (IsPIP || !!page?.classList.contains("CardMode"));

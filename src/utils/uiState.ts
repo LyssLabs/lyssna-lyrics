@@ -32,6 +32,10 @@ function migrateUiStateKeys(blob: Record<string, any>): Record<string, any> {
 
 const _uiState: Record<string, any> = migrateUiStateKeys(uiStorage.load());
 
+export function syncUiStateToSpicy(): void {
+  saveUiStateBlob(_uiState);
+}
+
 function persistAtom<T>(key: string, defaultValue: T) {
   MANAGED_UI_KEYS.add(key);
   const store = atom<T>(_uiState[key] !== undefined ? _uiState[key] : defaultValue);

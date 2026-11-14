@@ -1,23 +1,23 @@
-.fontpack-anim-container {
+.lyssna-fontpack-anim-container {
   position: relative;
   width: 100%;
   min-height: 60vh;
 }
-.animated-slide-in {
+.lyssna-animated-slide-in {
   opacity: 1;
   transform: translateX(0);
 }
-.animated-slide-in.from-right {
-  animation: fontpack-slide-in-right 0.35s cubic-bezier(.4,0,.2,1);
+.lyssna-animated-slide-in.from-right {
+  animation: lyssna-fontpack-slide-in-right 0.35s cubic-bezier(.4,0,.2,1);
 }
-.animated-slide-in.from-left {
-  animation: fontpack-slide-in-left 0.35s cubic-bezier(.4,0,.2,1);
+.lyssna-animated-slide-in.from-left {
+  animation: lyssna-fontpack-slide-in-left 0.35s cubic-bezier(.4,0,.2,1);
 }
-@keyframes fontpack-slide-in-right {
+@keyframes lyssna-fontpack-slide-in-right {
   from { opacity: 0; transform: translateX(60px);}
   to   { opacity: 1; transform: translateX(0);}
 }
-@keyframes fontpack-slide-in-left {
+@keyframes lyssna-fontpack-slide-in-left {
   from { opacity: 0; transform: translateX(-60px);}
   to   { opacity: 1; transform: translateX(0);}
 }

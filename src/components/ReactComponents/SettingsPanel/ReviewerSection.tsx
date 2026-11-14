@@ -13,18 +13,18 @@ const LABELS: Record<string, string> = {
 export function ReviewerPane({ onBack }: { onBack: () => void }) {
   const active = useStore($ttmlReviewer);
   const others = getOtherLyricsExtensions();
-  return <div className="slm sl-reviewer-details">
-    <button type="button" className="sl-sp-btn" onClick={onBack}>Back to Load TTML</button>
+  return <div className="llm ll-reviewer-details">
+    <button type="button" className="ll-sp-btn" onClick={onBack}>Back to Load TTML</button>
     <p>Reviewer mode saves your preferences before applying the profile below. When it stops, your original preferences return.</p>
-    <dl className="sl-reviewer-modes">
+    <dl className="ll-reviewer-modes">
       <dt>Off</dt><dd>Use your usual settings.</dd>
       <dt>Apply on Temp</dt><dd>Apply only while a file from Temporary Load is displayed. Resetting it, loading regular lyrics, or changing tracks restores your settings. Session and persistent loads use your usual settings.</dd>
       <dt>Always Apply</dt><dd>Apply to all lyrics until you choose another mode.</dd>
     </dl>
     <p role="status">Review profile: {active ? "active" : "inactive"}.</p>
-    {others.length > 0 && <p className="sl-sp-banner">{others.join(" and ")} can still change lyrics. Reviewer mode does not change other extensions.</p>}
+    {others.length > 0 && <p className="ll-sp-banner">{others.join(" and ")} can still change lyrics. Reviewer mode does not change other extensions.</p>}
     <h3>What changes</h3>
-    <dl className="sl-reviewer-values">
+    <dl className="ll-reviewer-values">
       {REVIEWER_SETTINGS.map(({ key, shown }) => <div key={key}><dt>{LABELS[key] ?? key}</dt><dd>{shown}</dd></div>)}
       <div><dt>Per-song offsets</dt><dd>Ignored</dd></div>
       {REVIEWER_EXPERIMENTS_OFF.map(id => getExperiment(id)).filter(experiment => !experiment.hidden).map(experiment => <div key={experiment.id}><dt>{experiment.label}</dt><dd>{experiment.forceState === true ? "Forced on" : "Off"}</dd></div>)}

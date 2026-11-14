@@ -44,7 +44,6 @@ if [ "$action" = install ]; then
 
     spicetify config extensions "$launcher_name"
     spicetify config extensions "$pixel_launcher_name-"
-    spicetify config extensions 'spicy-lyrics.mjs-'
     spicetify apply
     printf '%s\n' 'Lyssna Lyrics installed. Open lyrics with the microphone button in Spotify.'
 else

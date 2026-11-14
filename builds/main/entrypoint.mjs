@@ -2,6 +2,9 @@ import { BUILT_IN_CHANNELS as CHANNEL_MAP, CHANNELS_CHANGED_EVENT, DEFAULT_CHANN
 import { readActiveLyricsApp, recordActiveLyricsApp } from "../shared/app-state.mjs";
 import { channelApp, channelBundleUrl, channelVersionUrl } from "../shared/build-paths.mjs";
 
+const ownsEntrypoint = !globalThis.__LYSSNA_LYRICS_ENTRYPOINT__;
+if (ownsEntrypoint) globalThis.__LYSSNA_LYRICS_ENTRYPOINT__ = true;
+
 const BUILT_IN_CHANNELS = Object.keys(CHANNEL_MAP);
 const DEFAULT_API_HOST = DEFAULT_BUILD_HOST;
 const DEFAULT_STORAGE_HOST = DEFAULT_BUILD_HOST;
@@ -18,70 +21,70 @@ const moveCustomChannel = (name, direction) => {
 
 // ─── Style injection ───
 // The entrypoint runs independently of the plugin bundle, so it injects its
-// own stylesheet to ensure the panel and sl-* components are always styled.
+// own stylesheet to ensure the panel and ll-* components are always styled.
 
 const injectStyles = () => {
-  if (document.getElementById("spicy-lyrics-entry-styles")) return;
+  if (document.getElementById("lyssna-lyrics-entry-styles")) return;
   const style = document.createElement("style");
-  style.id = "spicy-lyrics-entry-styles";
+  style.id = "lyssna-lyrics-entry-styles";
   style.textContent = `
-    .SpicyLyricsSettingsOverlay{position:fixed;inset:0;z-index:9998;background:transparent;}
-    .SpicyLyricsSettingsContainer{position:fixed;z-index:9999;background:rgba(46,46,46,.72);border:1px solid var(--hairline,rgba(255,255,255,.16));border-radius:var(--radius-md,12px);display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--liquid-cast-soft,0 18px 52px rgba(0,0,0,.42)),inset 0 1px 0 rgba(255,255,255,.08);-webkit-backdrop-filter:var(--material-regular-blur,blur(24px));backdrop-filter:var(--material-regular-blur,blur(24px));}
-    .SpicyLyricsSettingsHeader{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--hairline,rgba(255,255,255,.1));flex-shrink:0;}
-    .SpicyLyricsSettingsHeader span{font-size:var(--text-headline-size,.95rem)!important;font-weight:var(--w-semibold,600);color:var(--color-text-primary,#fff);letter-spacing:0;}
-    .SpicyLyricsSettingsHeaderClose{background:transparent;border:none;color:var(--color-text-secondary,rgba(255,255,255,.58));cursor:pointer;padding:6px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-sm,8px);transition:color .15s,background .15s,transform .12s;}
-    .SpicyLyricsSettingsHeaderClose:hover{color:var(--color-text-primary,#fff);background:var(--accent-tint-bg,rgba(255,255,255,.1));}
-    .SpicyLyricsSettingsHeaderClose:active{transform:scale(.96);}
-    .SpicyLyricsSettingsScroll{flex:1;overflow-y:auto;padding:10px 16px 16px;}
-    .SpicyLyricsSettingsScroll::-webkit-scrollbar{width:4px;}
-    .SpicyLyricsSettingsScroll::-webkit-scrollbar-track{background:transparent;}
-    .SpicyLyricsSettingsScroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:4px;}
-    .sl-settings-group{font-size:var(--text-caption-size,.78rem)!important;font-weight:var(--w-semibold,600);color:var(--color-text-primary,#fff);letter-spacing:0;margin-top:18px;margin-bottom:4px;padding:12px 2px 8px;border-top:1px solid var(--hairline,rgba(255,255,255,.1));}
-    .sl-settings-group:first-child{margin-top:8px;}
-    .sl-settings-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 8px;border-radius:var(--radius-md,10px);transition:background .15s;}
-    .sl-settings-row:hover{background:var(--accent-tint-bg,rgba(255,255,255,.09));}
-    .sl-settings-label{font-size:var(--text-body-size,.875rem)!important;font-weight:var(--w-medium,500);color:var(--color-text-primary,rgba(255,255,255,.9));flex:1;line-height:1.35;}
-    .sl-toggle{position:relative;display:inline-flex;width:40px;height:22px;flex-shrink:0;cursor:pointer;}
-    .sl-toggle input{opacity:0;width:0;height:0;position:absolute;}
-    .sl-toggle span{position:absolute;inset:0;background:rgba(0,0,0,.42);border-radius:100px;box-shadow:inset 0 1px 2px rgba(0,0,0,.45),inset 0 0 0 1px rgba(255,255,255,.06);transition:background .2s,box-shadow .2s;}
-    .sl-toggle span::after{content:"";position:absolute;width:16px;height:16px;left:3px;top:3px;background:rgba(245,245,245,.86);box-shadow:0 2px 5px rgba(0,0,0,.5),0 0 0 .5px rgba(0,0,0,.28);border-radius:50%;transition:transform .2s,background .2s;}
-    .sl-toggle input:checked+span{background:rgba(255,255,255,.42);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),inset 0 0 0 1px rgba(255,255,255,.24);}
-    .sl-toggle input:checked+span::after{transform:translateX(18px);}
-    .sl-select-wrap{position:relative;display:inline-flex;align-items:center;flex-shrink:0;max-width:220px;}
-    .sl-select-wrap::after{content:"";position:absolute;right:9px;top:50%;width:12px;height:12px;transform:translateY(-50%);pointer-events:none;background:currentColor;opacity:.62;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") center/12px 12px no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") center/12px 12px no-repeat;}
-    .sl-select{-webkit-appearance:none;appearance:none;background-color:var(--accent-tint-bg,rgba(255,255,255,.09));background-image:none!important;color:var(--color-text-primary,rgba(255,255,255,.9));border:0;box-shadow:inset 0 0 0 1px var(--hairline,rgba(255,255,255,.12));border-radius:var(--radius-sm,8px);padding:7px 28px 7px 10px;font-size:var(--text-caption-size,.8rem)!important;font-weight:var(--w-medium,500);cursor:pointer;width:100%;max-width:220px;}
-    .SpicyLyricsSettingsContainer .sl-select:hover{background-color:var(--accent-tint-bg-hover,rgba(255,255,255,.14));background-image:none!important;box-shadow:inset 0 0 0 1px var(--hairline-strong,rgba(255,255,255,.25));}
-    .sl-select option{background:#1a1a1a;color:rgba(255,255,255,.85);}
-    .sl-select:focus{outline:none;box-shadow:inset 0 0 0 1px var(--hairline-strong,rgba(255,255,255,.28));}
-    .sl-input{background:var(--accent-tint-bg,rgba(255,255,255,.09));border:0;box-shadow:inset 0 0 0 1px var(--hairline,rgba(255,255,255,.12));border-radius:var(--radius-sm,8px);color:var(--color-text-primary,rgba(255,255,255,.9));padding:7px 10px;font-size:var(--text-caption-size,.8rem)!important;flex-shrink:0;width:220px;outline:none;transition:box-shadow .15s,background .15s;}
-    .sl-input::placeholder{color:var(--color-text-tertiary,rgba(255,255,255,.38));}
-    .sl-input:focus{background:var(--accent-tint-bg-hover,rgba(255,255,255,.14));box-shadow:inset 0 0 0 1px var(--hairline-strong,rgba(255,255,255,.28));}
-    .sl-btn{background:var(--accent-tint-bg,rgba(255,255,255,.09));color:var(--color-text-primary,rgba(255,255,255,.9));border:0;box-shadow:inset 0 0 0 1px var(--hairline,rgba(255,255,255,.12));border-radius:var(--radius-sm,8px);padding:7px 14px;font-size:var(--text-caption-size,.8rem)!important;font-weight:var(--w-semibold,600);cursor:pointer;flex-shrink:0;transition:background .15s,box-shadow .15s,transform .12s;}
-    .sl-btn:hover{background:var(--accent-tint-bg-hover,rgba(255,255,255,.14));box-shadow:inset 0 0 0 1px var(--hairline-strong,rgba(255,255,255,.25));}
-    .sl-btn:active{transform:scale(.97);}
-    .sl-btn.sl-btn-primary{background:var(--accent,#fff);color:var(--accent-on-fill,#111);box-shadow:none;}
-    .sl-btn.sl-btn-primary:hover{background:var(--accent-hover,#fff);box-shadow:none;}
-    .sl-btn.sl-btn-danger{color:rgba(255,132,112,.95);box-shadow:inset 0 0 0 1px rgba(255,132,112,.28);}
-    .sl-btn.sl-btn-danger:hover{background:rgba(255,132,112,.1);box-shadow:inset 0 0 0 1px rgba(255,132,112,.45);}
-    .GenericModal:has(.slm),.GenericModal:has(.slm) .main-trackCreditsModal-container{border-radius:16px;}
-    .main-trackCreditsModal-mainSection:has(.slm.scroll-x-hidden){overflow-x:hidden;}
+    .LyssnaLyricsSettingsOverlay{position:fixed;inset:0;z-index:9998;background:transparent;}
+    .LyssnaLyricsSettingsContainer{position:fixed;z-index:9999;background:rgba(46,46,46,.72);border:1px solid var(--lyssna-hairline,rgba(255,255,255,.16));border-radius:var(--lyssna-radius-md,12px);display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--lyssna-liquid-cast-soft,0 18px 52px rgba(0,0,0,.42)),inset 0 1px 0 rgba(255,255,255,.08);-webkit-backdrop-filter:var(--lyssna-material-regular-blur,blur(24px));backdrop-filter:var(--lyssna-material-regular-blur,blur(24px));}
+    .LyssnaLyricsSettingsHeader{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--lyssna-hairline,rgba(255,255,255,.1));flex-shrink:0;}
+    .LyssnaLyricsSettingsHeader span{font-size:var(--lyssna-text-headline-size,.95rem)!important;font-weight:var(--lyssna-w-semibold,600);color:var(--lyssna-color-text-primary,#fff);letter-spacing:0;}
+    .LyssnaLyricsSettingsHeaderClose{background:transparent;border:none;color:var(--lyssna-color-text-secondary,rgba(255,255,255,.58));cursor:pointer;padding:6px;display:flex;align-items:center;justify-content:center;border-radius:var(--lyssna-radius-sm,8px);transition:color .15s,background .15s,transform .12s;}
+    .LyssnaLyricsSettingsHeaderClose:hover{color:var(--lyssna-color-text-primary,#fff);background:var(--lyssna-accent-tint-bg,rgba(255,255,255,.1));}
+    .LyssnaLyricsSettingsHeaderClose:active{transform:scale(.96);}
+    .LyssnaLyricsSettingsScroll{flex:1;overflow-y:auto;padding:10px 16px 16px;}
+    .LyssnaLyricsSettingsScroll::-webkit-scrollbar{width:4px;}
+    .LyssnaLyricsSettingsScroll::-webkit-scrollbar-track{background:transparent;}
+    .LyssnaLyricsSettingsScroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:4px;}
+    .ll-settings-group{font-size:var(--lyssna-text-caption-size,.78rem)!important;font-weight:var(--lyssna-w-semibold,600);color:var(--lyssna-color-text-primary,#fff);letter-spacing:0;margin-top:18px;margin-bottom:4px;padding:12px 2px 8px;border-top:1px solid var(--lyssna-hairline,rgba(255,255,255,.1));}
+    .ll-settings-group:first-child{margin-top:8px;}
+    .ll-settings-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 8px;border-radius:var(--lyssna-radius-md,10px);transition:background .15s;}
+    .ll-settings-row:hover{background:var(--lyssna-accent-tint-bg,rgba(255,255,255,.09));}
+    .ll-settings-label{font-size:var(--lyssna-text-body-size,.875rem)!important;font-weight:var(--lyssna-w-medium,500);color:var(--lyssna-color-text-primary,rgba(255,255,255,.9));flex:1;line-height:1.35;}
+    .ll-toggle{position:relative;display:inline-flex;width:40px;height:22px;flex-shrink:0;cursor:pointer;}
+    .ll-toggle input{opacity:0;width:0;height:0;position:absolute;}
+    .ll-toggle span{position:absolute;inset:0;background:rgba(0,0,0,.42);border-radius:100px;box-shadow:inset 0 1px 2px rgba(0,0,0,.45),inset 0 0 0 1px rgba(255,255,255,.06);transition:background .2s,box-shadow .2s;}
+    .ll-toggle span::after{content:"";position:absolute;width:16px;height:16px;left:3px;top:3px;background:rgba(245,245,245,.86);box-shadow:0 2px 5px rgba(0,0,0,.5),0 0 0 .5px rgba(0,0,0,.28);border-radius:50%;transition:transform .2s,background .2s;}
+    .ll-toggle input:checked+span{background:rgba(255,255,255,.42);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),inset 0 0 0 1px rgba(255,255,255,.24);}
+    .ll-toggle input:checked+span::after{transform:translateX(18px);}
+    .ll-select-wrap{position:relative;display:inline-flex;align-items:center;flex-shrink:0;max-width:220px;}
+    .ll-select-wrap::after{content:"";position:absolute;right:9px;top:50%;width:12px;height:12px;transform:translateY(-50%);pointer-events:none;background:currentColor;opacity:.62;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") center/12px 12px no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") center/12px 12px no-repeat;}
+    .ll-select{-webkit-appearance:none;appearance:none;background-color:var(--lyssna-accent-tint-bg,rgba(255,255,255,.09));background-image:none!important;color:var(--lyssna-color-text-primary,rgba(255,255,255,.9));border:0;box-shadow:inset 0 0 0 1px var(--lyssna-hairline,rgba(255,255,255,.12));border-radius:var(--lyssna-radius-sm,8px);padding:7px 28px 7px 10px;font-size:var(--lyssna-text-caption-size,.8rem)!important;font-weight:var(--lyssna-w-medium,500);cursor:pointer;width:100%;max-width:220px;}
+    .LyssnaLyricsSettingsContainer .ll-select:hover{background-color:var(--lyssna-accent-tint-bg-hover,rgba(255,255,255,.14));background-image:none!important;box-shadow:inset 0 0 0 1px var(--lyssna-hairline-strong,rgba(255,255,255,.25));}
+    .ll-select option{background:#1a1a1a;color:rgba(255,255,255,.85);}
+    .ll-select:focus{outline:none;box-shadow:inset 0 0 0 1px var(--lyssna-hairline-strong,rgba(255,255,255,.28));}
+    .ll-input{background:var(--lyssna-accent-tint-bg,rgba(255,255,255,.09));border:0;box-shadow:inset 0 0 0 1px var(--lyssna-hairline,rgba(255,255,255,.12));border-radius:var(--lyssna-radius-sm,8px);color:var(--lyssna-color-text-primary,rgba(255,255,255,.9));padding:7px 10px;font-size:var(--lyssna-text-caption-size,.8rem)!important;flex-shrink:0;width:220px;outline:none;transition:box-shadow .15s,background .15s;}
+    .ll-input::placeholder{color:var(--lyssna-color-text-tertiary,rgba(255,255,255,.38));}
+    .ll-input:focus{background:var(--lyssna-accent-tint-bg-hover,rgba(255,255,255,.14));box-shadow:inset 0 0 0 1px var(--lyssna-hairline-strong,rgba(255,255,255,.28));}
+    .ll-btn{background:var(--lyssna-accent-tint-bg,rgba(255,255,255,.09));color:var(--lyssna-color-text-primary,rgba(255,255,255,.9));border:0;box-shadow:inset 0 0 0 1px var(--lyssna-hairline,rgba(255,255,255,.12));border-radius:var(--lyssna-radius-sm,8px);padding:7px 14px;font-size:var(--lyssna-text-caption-size,.8rem)!important;font-weight:var(--lyssna-w-semibold,600);cursor:pointer;flex-shrink:0;transition:background .15s,box-shadow .15s,transform .12s;}
+    .ll-btn:hover{background:var(--lyssna-accent-tint-bg-hover,rgba(255,255,255,.14));box-shadow:inset 0 0 0 1px var(--lyssna-hairline-strong,rgba(255,255,255,.25));}
+    .ll-btn:active{transform:scale(.97);}
+    .ll-btn.ll-btn-primary{background:var(--lyssna-accent,#fff);color:var(--lyssna-accent-on-fill,#111);box-shadow:none;}
+    .ll-btn.ll-btn-primary:hover{background:var(--lyssna-accent-hover,#fff);box-shadow:none;}
+    .ll-btn.ll-btn-danger{color:rgba(255,132,112,.95);box-shadow:inset 0 0 0 1px rgba(255,132,112,.28);}
+    .ll-btn.ll-btn-danger:hover{background:rgba(255,132,112,.1);box-shadow:inset 0 0 0 1px rgba(255,132,112,.45);}
+    .GenericModal:has(.llm),.GenericModal:has(.llm) .main-trackCreditsModal-container{border-radius:16px;}
+    .main-trackCreditsModal-mainSection:has(.llm.scroll-x-hidden){overflow-x:hidden;}
   `;
   document.head.appendChild(style);
 };
 
 // ─── Panel helper ───
-// Creates an overlay matching the SpicyLyricsSettingsContainer style,
+// Creates an overlay matching the LyssnaLyricsSettingsContainer style,
 // centered within the Spotify viewport.
 
 const showPanel = (title, buildContent) => {
-  const existing = document.querySelector(".SpicyLyricsChannelOverlay");
+  const existing = document.querySelector(".LyssnaLyricsChannelOverlay");
   if (existing) existing.remove();
 
   const backdrop = document.createElement("div");
-  backdrop.className = "SpicyLyricsSettingsOverlay SpicyLyricsChannelOverlay";
+  backdrop.className = "LyssnaLyricsSettingsOverlay LyssnaLyricsChannelOverlay";
 
   const container = document.createElement("div");
-  container.className = "SpicyLyricsSettingsContainer";
+  container.className = "LyssnaLyricsSettingsContainer";
 
   const panelWidth = 540;
 
@@ -109,11 +112,11 @@ const showPanel = (title, buildContent) => {
   removalObserver.observe(document.body, { childList: true });
 
   const header = document.createElement("div");
-  header.className = "SpicyLyricsSettingsHeader";
+  header.className = "LyssnaLyricsSettingsHeader";
   const titleEl = document.createElement("span");
   titleEl.textContent = title;
   const closeBtn = document.createElement("button");
-  closeBtn.className = "SpicyLyricsSettingsHeaderClose";
+  closeBtn.className = "LyssnaLyricsSettingsHeaderClose";
   closeBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
 
   const close = () => backdrop.remove();
@@ -125,7 +128,7 @@ const showPanel = (title, buildContent) => {
   header.appendChild(closeBtn);
 
   const scroll = document.createElement("div");
-  scroll.className = "SpicyLyricsSettingsScroll";
+  scroll.className = "LyssnaLyricsSettingsScroll";
 
   buildContent(scroll, close, { titleEl, container, backdrop });
 
@@ -141,9 +144,9 @@ const showPanel = (title, buildContent) => {
 
 const makeRow = (labelText, control) => {
   const row = document.createElement("div");
-  row.className = "sl-settings-row";
+  row.className = "ll-settings-row";
   const lbl = document.createElement("span");
-  lbl.className = "sl-settings-label";
+  lbl.className = "ll-settings-label";
   lbl.textContent = labelText;
   row.appendChild(lbl);
   row.appendChild(control);
@@ -152,7 +155,7 @@ const makeRow = (labelText, control) => {
 
 const makeToggle = () => {
   const wrap = document.createElement("label");
-  wrap.className = "sl-toggle";
+  wrap.className = "ll-toggle";
   const input = document.createElement("input");
   input.type = "checkbox";
   const knob = document.createElement("span");
@@ -164,7 +167,7 @@ const makeToggle = () => {
 const makeInput = (placeholder) => {
   const input = document.createElement("input");
   input.type = "text";
-  input.className = "sl-input";
+  input.className = "ll-input";
   input.placeholder = placeholder;
   return input;
 };
@@ -172,14 +175,14 @@ const makeInput = (placeholder) => {
 const makeBtn = (text, modifiers = "") => {
   const btn = document.createElement("button");
   btn.type = "button";
-  btn.className = "sl-btn" + (modifiers ? " " + modifiers : "");
+  btn.className = "ll-btn" + (modifiers ? " " + modifiers : "");
   btn.textContent = text;
   return btn;
 };
 
 const makeGroup = (text) => {
   const h = document.createElement("h3");
-  h.className = "sl-settings-group";
+  h.className = "ll-settings-group";
   h.textContent = text;
   return h;
 };
@@ -203,7 +206,7 @@ const showChannelSwitcher = () => {
     const allNames = Object.keys(map);
     const current = getCurrentChannel();
     const select = document.createElement("select");
-    select.className = "sl-select";
+    select.className = "ll-select";
     for (const name of allNames) {
       const opt = document.createElement("option");
       opt.value = name;
@@ -213,7 +216,7 @@ const showChannelSwitcher = () => {
     }
 
     const selectWrap = document.createElement("span");
-    selectWrap.className = "sl-select-wrap";
+    selectWrap.className = "ll-select-wrap";
     selectWrap.appendChild(select);
 
     const channelControl = document.createElement("span");
@@ -244,7 +247,7 @@ const showChannelSwitcher = () => {
 
     const btnRow = makeBtnRow();
 
-    const applyBtn = makeBtn("Apply & Reload", "sl-btn-primary");
+    const applyBtn = makeBtn("Apply & Reload", "ll-btn-primary");
     applyBtn.addEventListener("click", () => { setCurrentChannel(select.value); close(); window.location.reload(); });
     btnRow.appendChild(applyBtn);
 
@@ -294,7 +297,7 @@ const showAddCustomChannel = () => {
     cancelBtn.addEventListener("click", () => reopenPanel(close, showChannelManager));
     btnRow.appendChild(cancelBtn);
 
-    const saveBtn = makeBtn("Save Branch", "sl-btn-primary");
+    const saveBtn = makeBtn("Save Branch", "ll-btn-primary");
     saveBtn.addEventListener("click", () => {
       const name = nameInput.value.trim();
       const apiHostRaw = apiInput.value.trim();
@@ -331,7 +334,7 @@ const showChannelManager = () => {
   showPanel("Manage Branches", (scroll, close) => {
     for (const name of names) {
       const row = document.createElement("div");
-      row.className = "sl-settings-row";
+      row.className = "ll-settings-row";
 
       const info = document.createElement("div");
       const nameEl = document.createElement("div");
@@ -384,7 +387,7 @@ const showChannelManager = () => {
         actions.appendChild(switchBtn);
 
         if (!BUILT_IN_CHANNELS.includes(name)) {
-          const removeBtn = makeBtn("Remove", "sl-btn-danger");
+          const removeBtn = makeBtn("Remove", "ll-btn-danger");
           removeBtn.addEventListener("click", () => {
             const customChannels = getCustomChannels();
             delete customChannels[name];
@@ -403,7 +406,7 @@ const showChannelManager = () => {
     }
 
     const btnRow = makeBtnRow();
-    const addBtn = makeBtn("Add Branch", "sl-btn-primary");
+    const addBtn = makeBtn("Add Branch", "ll-btn-primary");
     addBtn.addEventListener("click", () => reopenPanel(close, showAddCustomChannel));
     btnRow.appendChild(addBtn);
     scroll.appendChild(btnRow);
@@ -412,7 +415,7 @@ const showChannelManager = () => {
 
 // ─── Expose channel manager globally for the plugin to use ───
 
-window._spicy_lyrics_channels = {
+if (ownsEntrypoint) window._lyssna_lyrics_channels = {
   showSwitcher: showChannelSwitcher,
   showAdd: showAddCustomChannel,
   showManage: showChannelManager,
@@ -424,25 +427,25 @@ window._spicy_lyrics_channels = {
 // Stable renders its own settings modal. Observe that modal and add one native
 // row without importing or patching the upstream bundle.
 
-const CHANNEL_SETTING_ROW_ID = "spicy-lyrics-entry-channel-row";
-const CHANNEL_SETTING_GROUP_ID = "spicy-lyrics-entry-channel-group";
+const CHANNEL_SETTING_ROW_ID = "lyssna-lyrics-entry-channel-row";
+const CHANNEL_SETTING_GROUP_ID = "lyssna-lyrics-entry-channel-group";
 let channelSettingsObserver = null;
 let channelSettingsRenderQueued = false;
 
 const renderChannelSettings = () => {
   const modal = document.querySelector(
-    "sl-generic-modal.SpicyLyricsModal .slmodal-settingsPanel"
+    "lyssna-lyrics-modal.LyssnaLyricsModal .llmodal-settingsPanel"
   );
   if (!modal || document.getElementById(CHANNEL_SETTING_ROW_ID)) return;
 
   // Pixel builds already render their own channel control.
-  if (Array.from(modal.querySelectorAll(".sl-sp-label"))
+  if (Array.from(modal.querySelectorAll(".ll-sp-label"))
     .some((element) => element.textContent?.trim() === "Build Channel")) return;
 
   const advancedPane = modal.querySelector(
-    '#sl-sp-panel[aria-labelledby="sl-sp-tab-advanced"] .sl-sp-pane-body'
+    '#ll-sp-panel[aria-labelledby="ll-sp-tab-advanced"] .ll-sp-pane-body'
   );
-  const developerTitle = Array.from(modal.querySelectorAll(".sl-sp-section-title"))
+  const developerTitle = Array.from(modal.querySelectorAll(".ll-sp-section-title"))
     .find((element) => element.textContent?.trim() === "Developer");
   if (!advancedPane && !developerTitle) return;
 
@@ -450,31 +453,31 @@ const renderChannelSettings = () => {
   const current = channels[getCurrentChannel()] ? getCurrentChannel() : DEFAULT_CHANNEL;
   const row = document.createElement("div");
   row.id = CHANNEL_SETTING_ROW_ID;
-  row.className = advancedPane ? "sl-sp-row sl-sp-row--stacked" : "sl-sp-row sl-list-row";
+  row.className = advancedPane ? "ll-sp-row ll-sp-row--stacked" : "ll-sp-row ll-list-row";
 
   const labelWrap = document.createElement("div");
-  labelWrap.className = "sl-sp-label-wrap";
+  labelWrap.className = "ll-sp-label-wrap";
   const label = document.createElement("span");
-  label.className = "sl-sp-label";
+  label.className = "ll-sp-label";
   label.textContent = "Build Channel";
   const description = document.createElement("span");
-  description.className = "sl-sp-description";
+  description.className = "ll-sp-description";
   description.textContent = "Choose the release stream used after reload.";
   labelWrap.append(label, description);
 
   const control = document.createElement("div");
-  control.className = "sl-sp-control";
+  control.className = "ll-sp-control";
   control.style.display = "flex";
   control.style.alignItems = "center";
   control.style.gap = "8px";
   control.style.minWidth = "0";
   const manage = document.createElement("button");
   manage.type = "button";
-  manage.className = "sl-sp-btn";
+  manage.className = "ll-sp-btn";
   manage.textContent = "Manage";
   manage.addEventListener("click", showChannelManager);
   const select = document.createElement("select");
-  select.className = "sl-sp-select";
+  select.className = "ll-sp-select";
   select.style.minWidth = "0";
   select.style.maxWidth = "100%";
   select.setAttribute("aria-label", "Build Channel");
@@ -494,9 +497,9 @@ const renderChannelSettings = () => {
   if (advancedPane) {
     const group = document.createElement("div");
     group.id = CHANNEL_SETTING_GROUP_ID;
-    group.className = "sl-sp-group";
+    group.className = "ll-sp-group";
     const card = document.createElement("div");
-    card.className = "sl-sp-card";
+    card.className = "ll-sp-card";
     card.appendChild(row);
     group.appendChild(card);
     advancedPane.prepend(group);
@@ -516,7 +519,7 @@ const registerChannelSettings = () => {
     });
   };
   channelSettingsObserver = new MutationObserver(scheduleRender);
-  channelSettingsObserver.observe(document.body, { childList: true, subtree: true });
+  channelSettingsObserver.observe(document.body, { childList: true });
   window.addEventListener(CHANNELS_CHANGED_EVENT, () => {
     const injected = document.getElementById(CHANNEL_SETTING_GROUP_ID) ??
       document.getElementById(CHANNEL_SETTING_ROW_ID);
@@ -582,6 +585,16 @@ async function load() {
     }
     if (!VERSION_PATTERN.test(version)) throw new Error("Invalid build version");
     const app = channelApp(channel);
+    const configured = Spicetify.Config?.extensions ?? [];
+    const enabled = Array.isArray(configured) ? configured : String(configured).split("|");
+    const separateSpicy = enabled.includes("lyssna-lyrics.mjs") && enabled.some(name => /^spicy-lyrics\.(?:mjs|js)$/.test(name));
+    if (app === "spicy" && (separateSpicy || window._spicy_lyrics || window.SpicyLyrics)) {
+      Spicetify.showNotification?.("Spicy Lyrics is enabled separately. Select Lyssna in the Lyssna build-channel menu to run both.");
+      return;
+    }
+    if (app === "lyssna" && /^100\.10\./.test(version) && separateSpicy) {
+      throw new Error("Pixel Edition versions predate coexistence support. Select a current Lyssna version to run alongside Spicy Lyrics.");
+    }
     const previousApp = readActiveLyricsApp(Spicetify.LocalStorage)?.app;
     if (app === "lyssna") window._lyssna_lyrics_metadata = { LoadedVersion: version, PreviousApp: previousApp ?? null };
     else window._spicy_lyrics_metadata = { LoadedVersion: version };
@@ -610,8 +623,10 @@ async function load() {
 }
 
 async function run() {
+  if (!ownsEntrypoint) return;
   while (!window.Spicetify?.React || !Spicetify.ReactDOM || !Spicetify.ReactDOMServer || !Spicetify.LocalStorage) await sleep(100);
   injectStyles();
+  if (Spicetify.Menu?.Item) new Spicetify.Menu.Item("Lyssna Lyrics build channel", false, showChannelSwitcher).register();
   registerChannelSettings();
   await load();
 }

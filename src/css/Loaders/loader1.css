@@ -1,4 +1,4 @@
-#Loader1 {
+#LyssnaLoader1 {
   width: 40px;
   aspect-ratio: 1;
   --c: no-repeat linear-gradient(#ffffff 0 0);
@@ -10,11 +10,11 @@
     var(--c) 100% 0,
     var(--c) 100% 100%;
   background-size: 8px 50%;
-  animation: l7-0 1s infinite;
+  animation: lyssna-l7-0 1s infinite;
   position: relative;
   overflow: hidden;
 }
-#Loader1:before {
+#LyssnaLoader1:before {
   content: "";
   position: absolute;
   width: 8px;
@@ -24,10 +24,10 @@
   top: calc(50% - 4px);
   left: -8px;
   animation: inherit;
-  animation-name: l7-1;
+  animation-name: lyssna-l7-1;
 }
 
-@keyframes l7-0 {
+@keyframes lyssna-l7-0 {
   16.67% {
     background-size:
       8px 30%,
@@ -75,7 +75,7 @@
   }
 }
 
-@keyframes l7-1 {
+@keyframes lyssna-l7-1 {
   20% {
     left: 0px;
   }

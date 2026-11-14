@@ -2,7 +2,7 @@ import { LYSSNA_MICROPHONE_PATHS } from "../../brand.ts";
 /*
  * View-control icons share one grid: 24×24, 2-unit round stroke, ink centred on 12,12.
  * Layout icons draw the page as it actually lays out (frame, cover square, lyric lines),
- * so they mirror and move with the page. Parts tagged `SL_Icon*` are driven by state
+ * so they mirror and move with the page. Parts tagged `LL_Icon*` are driven by state
  * classes in default.css and NPVLyrics.css, which is why those buttons are never rebuilt
  * just to change state.
  *
@@ -36,32 +36,32 @@ const TrackSkip = `
  */
 export function KnockoutDisc(icon: string, maskId: string) {
   const body = icon.match(/<svg[^>]*>([\s\S]*)<\/svg>/)?.[1] ?? "";
-  return `<svg class="SL_KnockoutDisc" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" aria-hidden="true"><mask id="${maskId}" maskUnits="userSpaceOnUse" x="0" y="0" width="48" height="48"><rect width="48" height="48" fill="#fff"/><g transform="translate(12 12)" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${body}</g></mask><circle cx="24" cy="24" r="24" fill="#fff" mask="url(#${maskId})"/></svg>`;
+  return `<svg class="LL_KnockoutDisc" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" aria-hidden="true"><mask id="${maskId}" maskUnits="userSpaceOnUse" x="0" y="0" width="48" height="48"><rect width="48" height="48" fill="#fff"/><g transform="translate(12 12)" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${body}</g></mask><circle cx="24" cy="24" r="24" fill="#fff" mask="url(#${maskId})"/></svg>`;
 }
 
 export const Icons = {
-  LyricsPage: `<svg class="Svg-sc-ytk21e-0 Svg-img-16-icon" id="SpicyLyricsPageSvg" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${LYSSNA_MICROPHONE_PATHS.map(d => `<path fill="none" d="${d}"/>`).join("")}<circle cx="16" cy="7" r="5" fill="none"/></svg>`,
+  LyricsPage: `<svg class="Svg-sc-ytk21e-0 Svg-img-16-icon" id="LyssnaLyricsPageSvg" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${LYSSNA_MICROPHONE_PATHS.map(d => `<path fill="none" d="${d}"/>`).join("")}<circle cx="16" cy="7" r="5" fill="none"/></svg>`,
   Close: Line(`<path d="m5.5 5.5 13 13"/><path d="m18.5 5.5-13 13"/>`),
   // The page in miniature: cover on the NowBar's side, lyric lines on the other.
   NowBar: Line(
-    `<rect class="SL_IconPart SL_IconCover" x="3" y="7.5" width="9" height="9" rx="2"/><g class="SL_IconPart SL_IconLyrics"><path d="M15.5 6.5H21"/><path d="M15.5 12H21"/><path d="M15.5 17.5H19"/></g>`
+    `<rect class="LL_IconPart LL_IconCover" x="3" y="7.5" width="9" height="9" rx="2"/><g class="LL_IconPart LL_IconLyrics"><path d="M15.5 6.5H21"/><path d="M15.5 12H21"/><path d="M15.5 17.5H19"/></g>`
   ),
   // Screen edges, no window: the whole display.
   Fullscreen: Line(
-    `<path class="SL_IconPart SL_NudgeTL" d="M3.5 8.5V6A2.5 2.5 0 0 1 6 3.5h2.5"/><path class="SL_IconPart SL_NudgeTR" d="M15.5 3.5H18A2.5 2.5 0 0 1 20.5 6v2.5"/><path class="SL_IconPart SL_NudgeBR" d="M20.5 15.5V18a2.5 2.5 0 0 1-2.5 2.5h-2.5"/><path class="SL_IconPart SL_NudgeBL" d="M8.5 20.5H6A2.5 2.5 0 0 1 3.5 18v-2.5"/>`
+    `<path class="LL_IconPart LL_NudgeTL" d="M3.5 8.5V6A2.5 2.5 0 0 1 6 3.5h2.5"/><path class="LL_IconPart LL_NudgeTR" d="M15.5 3.5H18A2.5 2.5 0 0 1 20.5 6v2.5"/><path class="LL_IconPart LL_NudgeBR" d="M20.5 15.5V18a2.5 2.5 0 0 1-2.5 2.5h-2.5"/><path class="LL_IconPart LL_NudgeBL" d="M8.5 20.5H6A2.5 2.5 0 0 1 3.5 18v-2.5"/>`
   ),
   // Fullscreen turned inside out: the way back to Cinema View from fullscreen. Each corner
   // leans toward the centre on hover, so it carries the opposite nudge to its position.
   CloseFullscreen: Line(
-    `<path class="SL_IconPart SL_NudgeBR" d="M8.5 3.5V6A2.5 2.5 0 0 1 6 8.5H3.5"/><path class="SL_IconPart SL_NudgeBL" d="M20.5 8.5H18A2.5 2.5 0 0 1 15.5 6V3.5"/><path class="SL_IconPart SL_NudgeTL" d="M15.5 20.5V18a2.5 2.5 0 0 1 2.5-2.5h2.5"/><path class="SL_IconPart SL_NudgeTR" d="M3.5 15.5H6A2.5 2.5 0 0 1 8.5 18v2.5"/>`
+    `<path class="LL_IconPart LL_NudgeBR" d="M8.5 3.5V6A2.5 2.5 0 0 1 6 8.5H3.5"/><path class="LL_IconPart LL_NudgeBL" d="M20.5 8.5H18A2.5 2.5 0 0 1 15.5 6V3.5"/><path class="LL_IconPart LL_NudgeTL" d="M15.5 20.5V18a2.5 2.5 0 0 1 2.5-2.5h2.5"/><path class="LL_IconPart LL_NudgeTR" d="M3.5 15.5H6A2.5 2.5 0 0 1 8.5 18v2.5"/>`
   ),
   // The Spotify window, with the lyrics growing to its edges.
   CinemaView: Line(
-    `${Frame}<path class="SL_IconPart SL_NudgeTL" d="M7.5 11.5v-3h3"/><path class="SL_IconPart SL_NudgeBR" d="M16.5 12.5v3h-3"/>`
+    `${Frame}<path class="LL_IconPart LL_NudgeTL" d="M7.5 11.5v-3h3"/><path class="LL_IconPart LL_NudgeBR" d="M16.5 12.5v3h-3"/>`
   ),
   // Spotify's layout: lyrics leave the right sidebar for the main view.
   OpenPage: Line(
-    `${Frame}<path d="M15.5 4v16"/><path class="SL_NudgeL" d="m10.5 8.5-3.5 3.5 3.5 3.5"/>`
+    `${Frame}<path d="M15.5 4v16"/><path class="LL_NudgeL" d="m10.5 8.5-3.5 3.5 3.5 3.5"/>`
   ),
 
   PrevTrack: TrackSkip.replace("REPLACEME", "PrevTrack"),
@@ -96,10 +96,10 @@ export const Icons = {
   // never has to be swapped while the level changes.
   Volume: `
 		<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="Volume">
-			<path id="SpicyLyrics_VolumeSpeaker" d="M11 4.5 6.5 8.5H3.5c-.83 0-1.5.67-1.5 1.5v4c0 .83.67 1.5 1.5 1.5h3l4.5 4c.65.58 1.5.1 1.5-.68V5.18c0-.78-.85-1.26-1.5-.68z"/>
-			<path id="SpicyLyrics_VolumeWaveLow" d="M15.2 9.6a1 1 0 0 1 1.4 0 3.4 3.4 0 0 1 0 4.8 1 1 0 1 1-1.4-1.4 1.4 1.4 0 0 0 0-2 1 1 0 0 1 0-1.4z"/>
-			<path id="SpicyLyrics_VolumeWaveHigh" d="M17.9 6.9a1 1 0 0 1 1.4 0 7.2 7.2 0 0 1 0 10.2 1 1 0 1 1-1.4-1.4 5.2 5.2 0 0 0 0-7.4 1 1 0 0 1 0-1.4z"/>
-			<path id="SpicyLyrics_VolumeMute" d="M15.3 8.8a1 1 0 0 1 1.4 0l1.8 1.8 1.8-1.8a1 1 0 1 1 1.4 1.4L19.9 12l1.8 1.8a1 1 0 0 1-1.4 1.4l-1.8-1.8-1.8 1.8a1 1 0 0 1-1.4-1.4l1.8-1.8-1.8-1.8a1 1 0 0 1 0-1.4z"/>
+			<path id="LyssnaLyrics_VolumeSpeaker" d="M11 4.5 6.5 8.5H3.5c-.83 0-1.5.67-1.5 1.5v4c0 .83.67 1.5 1.5 1.5h3l4.5 4c.65.58 1.5.1 1.5-.68V5.18c0-.78-.85-1.26-1.5-.68z"/>
+			<path id="LyssnaLyrics_VolumeWaveLow" d="M15.2 9.6a1 1 0 0 1 1.4 0 3.4 3.4 0 0 1 0 4.8 1 1 0 1 1-1.4-1.4 1.4 1.4 0 0 0 0-2 1 1 0 0 1 0-1.4z"/>
+			<path id="LyssnaLyrics_VolumeWaveHigh" d="M17.9 6.9a1 1 0 0 1 1.4 0 7.2 7.2 0 0 1 0 10.2 1 1 0 1 1-1.4-1.4 5.2 5.2 0 0 0 0-7.4 1 1 0 0 1 0-1.4z"/>
+			<path id="LyssnaLyrics_VolumeMute" d="M15.3 8.8a1 1 0 0 1 1.4 0l1.8 1.8 1.8-1.8a1 1 0 1 1 1.4 1.4L19.9 12l1.8 1.8a1 1 0 0 1-1.4 1.4l-1.8-1.8-1.8 1.8a1 1 0 0 1-1.4-1.4l1.8-1.8-1.8-1.8a1 1 0 0 1 0-1.4z"/>
 		</svg>
 	`,
   // A fixed full-volume glyph marking the loud end of a horizontal volume bar. No ids, so the
@@ -116,23 +116,23 @@ export const Icons = {
   CardToggle: Line(`<path d="m6 15 6-6 6 6"/>`),
   // The card pushing out to the sidebar's top and bottom, then the chevrons turned inward
   // once it has. Both are stacked so NPVLyrics.css can cross-fade them on the compositor.
-  CardExpand: `<span class="SL_IconStack">${Line(
-    `<path class="SL_NudgeU" d="m8 9.5 4-4 4 4"/><path class="SL_NudgeD" d="m8 14.5 4 4 4-4"/>`
+  CardExpand: `<span class="LL_IconStack">${Line(
+    `<path class="LL_NudgeU" d="m8 9.5 4-4 4 4"/><path class="LL_NudgeD" d="m8 14.5 4 4 4-4"/>`
   )}${Line(
     `<path d="m8 5.5 4 4 4-4"/><path d="m8 18.5 4-4 4 4"/>`
   )}</span>`,
   // Cover on the NowBar's current side, pointing at the side it will move to.
   NowBarSideSwap: Line(
-    `<rect class="SL_IconPart SL_IconCover" x="3" y="8" width="8" height="8" rx="2"/><path class="SL_IconPart SL_IconSwapArrow" d="M14.5 12H21m-3-3 3 3-3 3"/>`
+    `<rect class="LL_IconPart LL_IconCover" x="3" y="8" width="8" height="8" rx="2"/><path class="LL_IconPart LL_IconSwapArrow" d="M14.5 12H21m-3-3 3 3-3 3"/>`
   ),
   Heart: `
         <svg viewBox="0 0 1000 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <g id="SpicyLyrics_HeartFrame">
-                <g id="SpicyLyrics_Heart" clip-path="url(#clip0_1_2)">
-                    <g id="SpicyLyrics_HeartOutline">
+            <g id="LyssnaLyrics_HeartFrame">
+                <g id="LyssnaLyrics_Heart" clip-path="url(#clip0_1_2)">
+                    <g id="LyssnaLyrics_HeartOutline">
                         <path id="Vector" d="M982.995 324.097C982.995 180.45 866.598 64 723.02 64C628.493 64 545.998 114.641 500.496 190.119C454.992 114.641 372.499 64 277.973 64C134.394 64 18 180.45 18 324.097C18 356.935 24.3385 388.224 35.436 417.155C121.399 664.536 500.499 936 500.499 936C500.499 936 879.595 664.536 965.562 417.155C976.659 388.226 982.995 356.935 982.995 324.097Z" stroke="white" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
                     </g>
-                    <g id="SpicyLyrics_HeartFill">
+                    <g id="LyssnaLyrics_HeartFill">
                         <ellipse cx="276.5" cy="285.5" rx="244.5" ry="215.5" fill="white"/>
                         <ellipse cx="725" cy="285.5" rx="247" ry="217.5" fill="white"/>
                         <ellipse cx="189" cy="325.5" rx="165" ry="214.5" fill="white"/>
@@ -159,7 +159,7 @@ export const Icons = {
   "panel-right-open": `<svg class="NoFill" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2.5"/><path d="M15 3v18"/><path d="m10 15-3-3 3-3"/></svg>`,
   ExternalCinema: `<svg class="NoFill" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 10.5H6.75A1.75 1.75 0 0 0 5 12.25v7.5c0 .97.78 1.75 1.75 1.75h10.5c.97 0 1.75-.78 1.75-1.75v-7.5a1.75 1.75 0 0 0-1.75-1.75H16"/><path d="M12 14V4"/><path d="m8.5 7.5 3.5-3.5 3.5 3.5"/></svg>`,
   ClearCache: `<svg class="NoFill" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M6 6l1 15h10l1-15"/><path d="M10 11v5"/><path d="M14 11v5"/></svg>`,
-  Spinner: `<svg xmlns="http://www.w3.org/2000/svg" width="{SIZE}" height="{SIZE}" viewBox="0 0 24 24" fill="none" color="currentColor" class="SL_spinAnimation" stroke-width="2" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" role="status" aria-label="Loading"><path d="M12 3v3"/><path d="M12 18v3"/><path d="M21 12h-3"/><path d="M6 12H3"/><path d="m18.36 5.64-2.12 2.12"/><path d="m7.76 16.24-2.12 2.12"/><path d="m18.36 18.36-2.12-2.12"/><path d="m7.76 7.76-2.12-2.12"/></svg>`,
+  Spinner: `<svg xmlns="http://www.w3.org/2000/svg" width="{SIZE}" height="{SIZE}" viewBox="0 0 24 24" fill="none" color="currentColor" class="LL_spinAnimation" stroke-width="2" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" role="status" aria-label="Loading"><path d="M12 3v3"/><path d="M12 18v3"/><path d="M21 12h-3"/><path d="M6 12H3"/><path d="m18.36 5.64-2.12 2.12"/><path d="m7.76 16.24-2.12 2.12"/><path d="m18.36 18.36-2.12-2.12"/><path d="m7.76 7.76-2.12-2.12"/></svg>`,
   ArrowUpRight: `<svg xmlns="http://www.w3.org/2000/svg" width="{SIZE}" height="{SIZE}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="NoFill" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>`,
   // A speech bubble holding two lines of words: the lyrics.
   Lyrics: Line(
@@ -193,6 +193,6 @@ export const Icons = {
   PiPMode: `<svg data-encore-id="icon" role="img" aria-hidden="true" class="e-91000-icon e-91000-baseline" viewBox="0 0 16 16" style="--encore-icon-height: var(--encore-graphic-size-decorative-smaller); --encore-icon-width: var(--encore-graphic-size-decorative-smaller);"><path d="M16 2.45c0-.8-.65-1.45-1.45-1.45H1.45C.65 1 0 1.65 0 2.45v11.1C0 14.35.65 15 1.45 15h5.557v-1.5H1.5v-11h13V7H16z"></path><path d="M15.25 9.007a.75.75 0 0 1 .75.75v4.493a.75.75 0 0 1-.75.75H9.325a.75.75 0 0 1-.75-.75V9.757a.75.75 0 0 1 .75-.75z"></path></svg>`,
   // Eight teeth, so the 45° hover turn in default.css lands on an identical gear.
   Settings: Line(
-    `<g class="SL_IconPart SL_IconGear"><path d="M10.07 5.69L10.48 3.38A8.75 8.75 0 0 1 13.52 3.38L13.93 5.69A6.6 6.6 0 0 1 15.1 6.17L17.02 4.83A8.75 8.75 0 0 1 19.17 6.98L17.83 8.9A6.6 6.6 0 0 1 18.31 10.07L20.62 10.48A8.75 8.75 0 0 1 20.62 13.52L18.31 13.93A6.6 6.6 0 0 1 17.83 15.1L19.17 17.02A8.75 8.75 0 0 1 17.02 19.17L15.1 17.83A6.6 6.6 0 0 1 13.93 18.31L13.52 20.62A8.75 8.75 0 0 1 10.48 20.62L10.07 18.31A6.6 6.6 0 0 1 8.9 17.83L6.98 19.17A8.75 8.75 0 0 1 4.83 17.02L6.17 15.1A6.6 6.6 0 0 1 5.69 13.93L3.38 13.52A8.75 8.75 0 0 1 3.38 10.48L5.69 10.07A6.6 6.6 0 0 1 6.17 8.9L4.83 6.98A8.75 8.75 0 0 1 6.98 4.83L8.9 6.17A6.6 6.6 0 0 1 10.07 5.69Z"/><circle cx="12" cy="12" r="2.75"/></g>`
+    `<g class="LL_IconPart LL_IconGear"><path d="M10.07 5.69L10.48 3.38A8.75 8.75 0 0 1 13.52 3.38L13.93 5.69A6.6 6.6 0 0 1 15.1 6.17L17.02 4.83A8.75 8.75 0 0 1 19.17 6.98L17.83 8.9A6.6 6.6 0 0 1 18.31 10.07L20.62 10.48A8.75 8.75 0 0 1 20.62 13.52L18.31 13.93A6.6 6.6 0 0 1 17.83 15.1L19.17 17.02A8.75 8.75 0 0 1 17.02 19.17L15.1 17.83A6.6 6.6 0 0 1 13.93 18.31L13.52 20.62A8.75 8.75 0 0 1 10.48 20.62L10.07 18.31A6.6 6.6 0 0 1 8.9 17.83L6.98 19.17A8.75 8.75 0 0 1 4.83 17.02L6.17 15.1A6.6 6.6 0 0 1 5.69 13.93L3.38 13.52A8.75 8.75 0 0 1 3.38 10.48L5.69 10.07A6.6 6.6 0 0 1 6.17 8.9L4.83 6.98A8.75 8.75 0 0 1 6.98 4.83L8.9 6.17A6.6 6.6 0 0 1 10.07 5.69Z"/><circle cx="12" cy="12" r="2.75"/></g>`
   ),
 };

@@ -9,7 +9,7 @@ type ModalDisplayOptions = {
 	closeHandler?: (() => void) | null;
 	headerLeft?: Node | null;
 	contentScrollTop?: number | null;
-	/** Optional class appended to `.sl-modal` for per-modal styling/identification. */
+	/** Optional class appended to `.ll-modal` for per-modal styling/identification. */
 	modalId?: string | null;
 	targetDocument?: Document | null;
 };
@@ -22,7 +22,7 @@ type ModalTransitionOptions = {
 	closeHandler?: (() => void) | null;
 	headerLeft?: Node | null;
 	contentScrollTop?: number | null;
-	/** Optional class appended to `.sl-modal`. Replaces any previously set modalId class. */
+	/** Optional class appended to `.ll-modal`. Replaces any previously set modalId class. */
 	modalId?: string | null;
 	/** Optional new header title. Omit to keep the current one. */
 	title?: string | null;
@@ -36,7 +36,7 @@ class _HTMLGenericModal extends HTMLElement {
 
 	constructor() {
 		super();
-		this.classList.add("SpicyLyricsModal");
+		this.classList.add("LyssnaLyricsModal");
 		this._onClose = null;
 		this._currentModalId = null;
 		this._closeKeyDocument = null;
@@ -67,11 +67,11 @@ class _HTMLGenericModal extends HTMLElement {
 	}
 
 	private _applyModalId(modalId: string | null | undefined): void {
-		const modalEl = this.querySelector(".sl-modal");
+		const modalEl = this.querySelector(".ll-modal");
 		if (this._currentModalId && modalEl) {
 			modalEl.classList.remove(this._currentModalId);
 		}
-		const nextId = typeof modalId === "string" && modalId.length > 0 ? `slmodal-${modalId}` : null;
+		const nextId = typeof modalId === "string" && modalId.length > 0 ? `llmodal-${modalId}` : null;
 		if (nextId && modalEl) {
 			modalEl.classList.add(nextId);
 		}
@@ -93,7 +93,7 @@ class _HTMLGenericModal extends HTMLElement {
             }, timeoutDuration)
         };
 
-        const genericModal = this?.querySelector(".sl-modal-overlay-animated");
+        const genericModal = this?.querySelector(".ll-modal-overlay-animated");
         if (genericModal) {
             genericModal.classList.remove("Active");
             _removeFromDom((0.22 * 1000) + 30);
@@ -107,21 +107,21 @@ class _HTMLGenericModal extends HTMLElement {
 	 * Use for modal-to-modal transitions where the frame should stay visible.
 	 */
 	private _applyHeaderLeft(headerLeft: Node | null | undefined): void {
-		const header = this.querySelector(".sl-modal-header");
+		const header = this.querySelector(".ll-modal-header");
 		if (!header) return;
 
-		header.querySelector(".sl-modal-header-left")?.remove();
+		header.querySelector(".ll-modal-header-left")?.remove();
 		if (!headerLeft) return;
 
 		const slot = this.ownerDocument.createElement("div");
-		slot.className = "sl-modal-header-left";
+		slot.className = "ll-modal-header-left";
 		slot.append(headerLeft);
 		header.prepend(slot);
 	}
 
 	private _restoreContentScroll(scrollTop: number): void {
 		const targetWindow = this._getWindow();
-		const scrollTargets = Array.from(this.querySelectorAll<HTMLElement>("main, .sl-modal-main-section, .sl-modal-container-large, .sl-modal-container, .sl-modal-content, .slm, .sl-sp-settings-scroll"));
+		const scrollTargets = Array.from(this.querySelectorAll<HTMLElement>("main, .ll-modal-main-section, .ll-modal-container-large, .ll-modal-container, .ll-modal-content, .llm, .ll-sp-settings-scroll"));
 
 		const applyScroll = () => {
 			for (const target of scrollTargets) {
@@ -136,7 +136,7 @@ class _HTMLGenericModal extends HTMLElement {
 	}
 
 	private _resetContentScroll(): void {
-		for (const target of Array.from(this.querySelectorAll<HTMLElement>("main, .sl-modal-main-section, .sl-modal-container-large, .sl-modal-container, .sl-modal-content, .slm, .sl-sp-settings-scroll"))) {
+		for (const target of Array.from(this.querySelectorAll<HTMLElement>("main, .ll-modal-main-section, .ll-modal-container-large, .ll-modal-container, .ll-modal-content, .llm, .ll-sp-settings-scroll"))) {
 			target.scrollTop = 0;
 		}
 	}
@@ -145,22 +145,22 @@ class _HTMLGenericModal extends HTMLElement {
 		const previousOnClose = this._onClose;
 		this._onClose = onClose;
 		const hidePopup = closeHandler ?? this.hide.bind(this);
-		const closeButton = this.querySelector(".sl-modal-close-btn");
+		const closeButton = this.querySelector(".ll-modal-close-btn");
 		if (closeButton) {
 			(closeButton as HTMLButtonElement).onclick = hidePopup;
 		}
 		this._setCloseHandler(hidePopup);
 		if (title) {
-			const modal = this.querySelector(".sl-modal");
-			const modalTitle = this.querySelector(".sl-modal-title");
+			const modal = this.querySelector(".ll-modal");
+			const modalTitle = this.querySelector(".ll-modal-title");
 			if (modal) modal.setAttribute("aria-label", title);
 			if (modalTitle) modalTitle.textContent = title;
 		}
 		if (typeof isLarge === "boolean") {
-			const container = this.querySelector(".sl-modal-container, .sl-modal-container-large");
+			const container = this.querySelector(".ll-modal-container, .ll-modal-container-large");
 			if (container) {
-				container.classList.toggle("sl-modal-container-large", isLarge);
-				container.classList.toggle("sl-modal-container", !isLarge);
+				container.classList.toggle("ll-modal-container-large", isLarge);
+				container.classList.toggle("ll-modal-container", !isLarge);
 			}
 		}
 		this._applyHeaderLeft(headerLeft);
@@ -197,25 +197,25 @@ class _HTMLGenericModal extends HTMLElement {
 			this._onClose();
 		}
 		this._onClose = onClose;
-		// Reset tracked modalId since innerHTML below replaces the previous `.sl-modal` element.
+		// Reset tracked modalId since innerHTML below replaces the previous `.ll-modal` element.
 		this._currentModalId = null;
 		this.innerHTML = `
-<div class="sl-modal-overlay sl-modal-overlay-animated">
-	<div class="sl-modal" tabindex="-1" role="dialog" aria-label="${title}" aria-modal="true">
-		<div class="${isLarge ? "sl-modal-container-large" : "sl-modal-container"}">
-			<div class="sl-modal-header">
-				<h1 class="sl-modal-title" as="h1">${title}</h1>
-				${closeBtn ? '<button aria-label="Close" class="sl-modal-close-btn"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="m3 3 10 10M13 3 3 13"/></svg></button>' : ""}
+<div class="ll-modal-overlay ll-modal-overlay-animated">
+	<div class="ll-modal" tabindex="-1" role="dialog" aria-label="${title}" aria-modal="true">
+		<div class="${isLarge ? "ll-modal-container-large" : "ll-modal-container"}">
+			<div class="ll-modal-header">
+				<h1 class="ll-modal-title" as="h1">${title}</h1>
+				${closeBtn ? '<button aria-label="Close" class="ll-modal-close-btn"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="m3 3 10 10M13 3 3 13"/></svg></button>' : ""}
 			</div>
-			<div class="sl-modal-main-section">
-				<main class="sl-modal-content"></main>
+			<div class="ll-modal-main-section">
+				<main class="ll-modal-content"></main>
 			</div>
 		</div>
 	</div>
 </div>`;
 
 		const hidePopup = closeHandler ?? this.hide.bind(this);
-		const closeButton = this.querySelector(".sl-modal-close-btn");
+		const closeButton = this.querySelector(".ll-modal-close-btn");
 		if (closeButton) {
 			(closeButton as HTMLButtonElement).onclick = hidePopup;
 		}
@@ -223,7 +223,7 @@ class _HTMLGenericModal extends HTMLElement {
 		this._applyModalId(modalId);
 		const main = this.querySelector("main");
 		// Listen for click events on Overlay
-		const overlay = this.querySelector(".sl-modal-overlay");
+		const overlay = this.querySelector(".ll-modal-overlay");
 		if (overlay) {
 			// Only a press that also started on the overlay closes the modal. A drag that
 			// began inside (a slider) and ended outside clicks the overlay too.
@@ -250,10 +250,10 @@ class _HTMLGenericModal extends HTMLElement {
 		this._setCloseHandler(hidePopup);
 
         this._getWindow().setTimeout(() => {
-            const genericModal = this.querySelector(".sl-modal-overlay-animated");
+            const genericModal = this.querySelector(".ll-modal-overlay-animated");
             if (genericModal) genericModal.classList.add("Active");
         }, 50);
 	}
 }
-customElements.define("sl-generic-modal", _HTMLGenericModal);
+customElements.define("lyssna-lyrics-modal", _HTMLGenericModal);
 export const PopupModal = new _HTMLGenericModal();

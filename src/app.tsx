@@ -6,7 +6,7 @@ import "./css/default.css";
 import "./css/default.scss";
 import "./css/Simplebar.css";
 import "./css/ContentBox.css";
-import "./css/DynamicBG/spicy-dynamic-bg.css";
+import "./css/DynamicBG/lyssna-dynamic-bg.css";
 import "./css/Lyrics/main.css";
 import "./css/Lyrics/Mixed.css";
 import "./css/Lyrics/RefinedCredits.css";
@@ -52,6 +52,7 @@ import {
   $lyssnaLyricsVersion,
   $staticBackgroundMode,
   $developerMode,
+  $dontSyncSpicySettings,
 } from "./utils/stores.ts";
 import Defaults from "./components/Global/Defaults.ts";
 import Global from "./components/Global/Global.ts";
@@ -62,7 +63,7 @@ import PageView, { GetPageRoot, PageContainer } from "./components/Pages/PageVie
 import LoadFonts, { ApplyFontPixel } from "./components/Styling/Fonts.ts";
 import { Icons } from "./components/Styling/Icons.ts";
 import Fullscreen, {
-  EnterSpicyLyricsFullscreen,
+  EnterLyssnaLyricsFullscreen,
   IsFullscreenClosing,
   ExitFullscreenElement,
   RefreshFullscreenControlsVisibility,
@@ -80,7 +81,7 @@ import ApplyLyrics, {
 import { ScrollingIntervalTime } from "./utils/Lyrics/lyrics.ts";
 import { ScrollToActiveLine } from "./utils/Scrolling/ScrollToActiveLine.ts";
 import { ScrollSimplebar } from "./utils/Scrolling/Simplebar/ScrollSimplebar.ts";
-import { $lastFetchedUri } from "./utils/uiState.ts";
+import { $lastFetchedUri, syncUiStateToSpicy } from "./utils/uiState.ts";
 import { needsMigration, showMigrationModal } from "./utils/migration/DataMigration.tsx";
 import { OpenBuildChannelPanel } from "./utils/openBuildChannelPanel.tsx";
 import "./css/settings-panel.css";
@@ -131,23 +132,24 @@ function bindDefault<T>(store: { get: () => T; listen: (listener: (value: T) => 
 function applyCustomFont(enabled = $customFontEnabled.get(), font = $customFont.get()) {
   const cssFontFamily = toCssFontFamily(font);
   if (enabled && cssFontFamily) {
-    document.documentElement.style.setProperty("--spicy-custom-font", cssFontFamily);
+    document.documentElement.style.setProperty("--lyssna-custom-font", cssFontFamily);
   } else {
-    document.documentElement.style.removeProperty("--spicy-custom-font");
+    document.documentElement.style.removeProperty("--lyssna-custom-font");
   }
 }
 
 function closeSettingsOwnedModalOnNavigation(data: { pathname: string }) {
   if (!PopupModal.isConnected) return;
-  if (data.pathname === "/SpicyLyrics/Update") return;
+  if (data.pathname === "/LyssnaLyrics/Update") return;
 
   const settingsOwnedModal = PopupModal.querySelector(
-    ".slmodal-settingsPanel, .slmodal-buildChannelPanel, .slmodal-lyricsSourcesManager, .slmodal-settingsTTMLDatabase"
+    ".llmodal-settingsPanel, .llmodal-buildChannelPanel, .llmodal-lyricsSourcesManager, .llmodal-settingsTTMLDatabase"
   );
   if (settingsOwnedModal) PopupModal.hide();
 }
 
 function syncLegacyStaticBackgroundSettings(mode: string) {
+  if ($dontSyncSpicySettings.get()) return;
   const normalizedMode = mode === "off" ? "default" : mode;
   const legacyTypeMap: Record<string, string> = {
     auto: "Auto",
@@ -201,6 +203,12 @@ function bindForkDefaults() {
   bindDefault($releaseYearPosition, (value) => { Defaults.ReleaseYearPosition = value; });
   bindDefault($coverArtAnimation, (value) => { Defaults.CoverArtAnimation = value; });
   bindDefault($staticBackgroundMode, syncLegacyStaticBackgroundSettings);
+  $dontSyncSpicySettings.listen((disabled) => {
+    if (!disabled) {
+      syncUiStateToSpicy();
+      syncLegacyStaticBackgroundSettings($staticBackgroundMode.get());
+    }
+  });
   bindDefault($memeFormat, (value) => {
     Defaults.MemeFormat = ["Gibberish", "all lowercase", "ALL UPPERCASE"].includes(value)
       ? value
@@ -291,13 +299,13 @@ async function main() {
   skeletonStyle.innerHTML = `
         /* This style is here to prevent the @keyframes removal in the CSS. I still don't know why that's happening. */
         /* Based on Spicy Lyrics */
-        @keyframes skeleton {
+        @keyframes lyssna-skeleton {
             to {
                 background-position-x: 0;
             }
         }
 
-        @keyframes Marquee_SongName {
+        @keyframes lyssna-Marquee_SongName {
           0% {
             transform: translateX(calc(0px + min(-100% + 100cqw, 0px) * 0));
           }
@@ -312,7 +320,7 @@ async function main() {
           }
         }
 
-        @keyframes Marquee_SongName_SongMoreInfo {
+        @keyframes lyssna-Marquee_SongName_SongMoreInfo {
           0% {
             transform: translateX(calc(0px + min(-100% + 98cqw, 0px) * 0));
           }
@@ -327,7 +335,7 @@ async function main() {
           }
         }
 
-        @keyframes Marquee_Artists {
+        @keyframes lyssna-Marquee_Artists {
           0% {
             transform: translateX(0);
           }
@@ -335,14 +343,14 @@ async function main() {
             transform: translateX(0);
           }
           90% {
-            transform: translateX(var(--sl-marquee-distance, calc(min(-100% + 100cqw, 0px))));
+            transform: translateX(var(--ll-marquee-distance, calc(min(-100% + 100cqw, 0px))));
           }
           100% {
-            transform: translateX(var(--sl-marquee-distance, calc(min(-100% + 100cqw, 0px))));
+            transform: translateX(var(--ll-marquee-distance, calc(min(-100% + 100cqw, 0px))));
           }
         }
 
-        @keyframes Marquee_Artists_SongMoreInfo {
+        @keyframes lyssna-Marquee_Artists_SongMoreInfo {
           0% {
             transform: translateX(calc(0px + min(-100% + 98cqw, 0px) * 0));
           }
@@ -357,7 +365,7 @@ async function main() {
           }
         }
 
-        @keyframes Marquee_SongName_Compact {
+        @keyframes lyssna-Marquee_SongName_Compact {
           0% {
             transform: translateX(calc(0px + min(-100% + 100cqw, 0px) * 0));
           }
@@ -372,7 +380,7 @@ async function main() {
           }
         }
 
-        @keyframes Marquee_Artists_Compact {
+        @keyframes lyssna-Marquee_Artists_Compact {
           0% {
             transform: translateX(0);
           }
@@ -380,24 +388,24 @@ async function main() {
             transform: translateX(0);
           }
           90% {
-            transform: translateX(var(--sl-marquee-distance, calc(min(-100% + 100cqw, 0px))));
+            transform: translateX(var(--ll-marquee-distance, calc(min(-100% + 100cqw, 0px))));
           }
           100% {
-            transform: translateX(var(--sl-marquee-distance, calc(min(-100% + 100cqw, 0px))));
+            transform: translateX(var(--ll-marquee-distance, calc(min(-100% + 100cqw, 0px))));
           }
         }
 
-        @keyframes SLM_Animation {
-          0% { --SLM_GradientPosition: -27.5%; }
-          100% { --SLM_GradientPosition: 100%; }
+        @keyframes lyssna-SLM_Animation {
+          0% { --LLM_GradientPosition: -27.5%; }
+          100% { --LLM_GradientPosition: 100%; }
         }
 
-        @keyframes Pre_SLM_GradientAnimation {
-          0% { --SLM_GradientPosition: -50%; }
-          100% { --SLM_GradientPosition: -27.5%; }
+        @keyframes lyssna-Pre_SLM_GradientAnimation {
+          0% { --LLM_GradientPosition: -50%; }
+          100% { --LLM_GradientPosition: -27.5%; }
         }
 
-        @keyframes SL_SkeletonSweep {
+        @keyframes lyssna-LL_SkeletonSweep {
           from {
             transform: translateX(-100%);
           }
@@ -406,7 +414,7 @@ async function main() {
           }
         }
 
-        @keyframes SL_SkeletonDot {
+        @keyframes lyssna-LL_SkeletonDot {
           0%,
           100% {
             opacity: 0.25;
@@ -418,7 +426,7 @@ async function main() {
           }
         }
 
-        @keyframes MB_anim_enter {
+        @keyframes lyssna-MB_anim_enter {
           0% {
             transform: translate(100%, 0);
           }
@@ -428,7 +436,7 @@ async function main() {
         }
   `;
 
-  skeletonStyle.id = "spicyLyrics-additionalStyling";
+  skeletonStyle.id = "lyssnaLyrics-additionalStyling";
   document.head.appendChild(skeletonStyle);
 
   // Enter fullscreen once the route change has mounted the page. Bounded, and
@@ -438,10 +446,10 @@ async function main() {
   const openFullscreenOncePageMounts = (cinemaView: boolean) => {
     pendingFullscreenOpen?.Cancel();
     pendingFullscreenOpen = Whentil.When(
-      () => document.querySelector<HTMLElement>(":is(.Root__main-view, :where(#main-view)) #SpicyLyricsPage"),
+      () => document.querySelector<HTMLElement>(":is(.Root__main-view, :where(#main-view)) #LyssnaLyricsPage"),
       () => {
         pendingFullscreenOpen = null;
-        if (Spicetify.Platform.History.location?.pathname !== "/SpicyLyrics") return;
+        if (Spicetify.Platform.History.location?.pathname !== "/LyssnaLyrics") return;
         if (Fullscreen.IsOpen) return;
         Fullscreen.Open(cinemaView);
       },
@@ -456,7 +464,7 @@ async function main() {
     const popupButtonEntry = ButtonList?.[2];
     const popupButton = popupButtonEntry?.Button;
     const popupLyricsAllowed = ('documentPictureInPicture' in window) && $popupLyricsAllowed.get();
-    document.body.classList.toggle("SpicyLyrics_PopupLyricsEnabled", popupLyricsAllowed);
+    document.body.classList.toggle("LyssnaLyrics_PopupLyricsEnabled", popupLyricsAllowed);
     const isPopupButtonRegistered = Boolean(popupButtonEntry?.Registered);
 
     if (popupButton) {
@@ -470,7 +478,7 @@ async function main() {
     }
 
     if (!popupLyricsAllowed) {
-      document.querySelectorAll<HTMLElement>("#SpicyLyrics_PopupLyricsButton").forEach((element) => element.remove());
+      document.querySelectorAll<HTMLElement>("#LyssnaLyrics_PopupLyricsButton").forEach((element) => element.remove());
     }
 
     const spotifyPipButton = document.querySelector<HTMLElement>('[data-testid="pip-toggle-button"]');
@@ -496,7 +504,7 @@ async function main() {
       }
     }
 
-    document.querySelector<HTMLElement>("#SpicyLyrics_ExternalCinemaButton")?.classList.toggle("disabled", !externalCinemaLyricsAllowed);
+    document.querySelector<HTMLElement>("#LyssnaLyrics_ExternalCinemaButton")?.classList.toggle("disabled", !externalCinemaLyricsAllowed);
   };
 
   if (SpotifyPlayer.Playbar?.Button) {
@@ -513,7 +521,7 @@ async function main() {
                   PageView.Open();
                   self.active = true;
                 } else  */
-              Session.Navigate({ pathname: "/SpicyLyrics" });
+              Session.Navigate({ pathname: "/LyssnaLyrics" });
               if (Global.Saves.shift_key_pressed) {
                 openFullscreenOncePageMounts(true);
               }
@@ -534,7 +542,7 @@ async function main() {
           `<svg role="img" height="16" width="16" aria-hidden="true" viewBox="0 0 16 16" data-encore-id="icon" class="Svg-sc-ytk21e-0 Svg-img-16-icon"><path d="M6.064 10.229l-2.418 2.418L2 11v4h4l-1.647-1.646 2.418-2.418-.707-.707zM11 2l1.647 1.647-2.418 2.418.707.707 2.418-2.418L15 6V2h-4z"/></svg>`,
           async (self) => {
             if (!self.active) {
-              Session.Navigate({ pathname: "/SpicyLyrics" });
+              Session.Navigate({ pathname: "/LyssnaLyrics" });
               openFullscreenOncePageMounts(Global.Saves.shift_key_pressed ?? false);
             } else {
               Session.GoBack();
@@ -595,7 +603,7 @@ async function main() {
   let isHandlingEscape = false;
   const handleEscapeKey = async () => {
     if (isHandlingEscape || IsPIP) return true;
-    if (PopupModal.isConnected && PopupModal.querySelector(".slmodal-settingsPanel, .slmodal-animatorPreview")) {
+    if (PopupModal.isConnected && PopupModal.querySelector(".llmodal-settingsPanel, .llmodal-animatorPreview")) {
       PopupModal.hide();
       return true;
     }
@@ -614,10 +622,10 @@ async function main() {
         }
         case "Exit Fully": {
           if (Fullscreen.IsOpen || Fullscreen.CinemaViewOpen || IsFullscreenClosing()) {
-            if (await Fullscreen.Close()) Session.GoBackFrom("/SpicyLyrics");
+            if (await Fullscreen.Close()) Session.GoBackFrom("/LyssnaLyrics");
             return true;
           }
-          Session.GoBackFrom("/SpicyLyrics");
+          Session.GoBackFrom("/LyssnaLyrics");
           return true;
         }
         default: {
@@ -625,10 +633,10 @@ async function main() {
             return false;
           }
           if (Fullscreen.IsOpen || Fullscreen.CinemaViewOpen || IsFullscreenClosing()) {
-            if (await Fullscreen.Close()) Session.GoBackFrom("/SpicyLyrics");
+            if (await Fullscreen.Close()) Session.GoBackFrom("/LyssnaLyrics");
             return true;
           }
-          Session.GoBackFrom("/SpicyLyrics");
+          Session.GoBackFrom("/LyssnaLyrics");
           return true;
         }
       }
@@ -644,6 +652,17 @@ async function main() {
     }
 
     if (e.key === "Escape") {
+      if (PopupModal.isConnected) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        const closeButton = PopupModal.querySelector<HTMLButtonElement>(".ll-modal-close-btn");
+        if (closeButton) closeButton.click();
+        else PopupModal.hide();
+        return;
+      }
+      if (!PageView.IsOpened || IsPIP) return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
       const handled = await handleEscapeKey();
       if (handled) {
         e.preventDefault();
@@ -681,23 +700,23 @@ async function main() {
   // to abort the rest of main(): no routing, song-change handling or backgrounds.
   if (ButtonList) {
     const lyricsPageButton = ButtonList[0].Button;
-    lyricsPageButton.element.id = "SpicyLyrics_PageButton";
+    lyricsPageButton.element.id = "LyssnaLyrics_PageButton";
     lyricsPageButton.element.style.setProperty("display", "inline-block", "important");
 
     const fullscreenButton = ButtonList[1].Button;
     fullscreenButton.element.style.order = "100001";
-    fullscreenButton.element.id = "SpicyLyrics_FullscreenButton";
+    fullscreenButton.element.id = "LyssnaLyrics_FullscreenButton";
     fullscreenButton.element.style.setProperty("display", "inline-block", "important");
 
     const popupLyricsButton = ButtonList[2].Button;
     if (popupLyricsButton) {
       popupLyricsButton.element.style.order = "100000";
-      popupLyricsButton.element.id = "SpicyLyrics_PopupLyricsButton";
+      popupLyricsButton.element.id = "LyssnaLyrics_PopupLyricsButton";
       popupLyricsButton.element.style.setProperty("display", "inline-block", "important");
     }
     const externalCinemaButton = ButtonList[3].Button;
     externalCinemaButton.element.style.order = "99999";
-    externalCinemaButton.element.id = "SpicyLyrics_ExternalCinemaButton";
+    externalCinemaButton.element.id = "LyssnaLyrics_ExternalCinemaButton";
 
     syncPopupLyricsButtonVisibility();
     syncExternalCinemaButtonVisibility();
@@ -716,10 +735,10 @@ async function main() {
 
         if (
           (isFullscreen || isGenericControl) &&
-          element.id !== "SpicyLyrics_PageButton" &&
-          element.id !== "SpicyLyrics_FullscreenButton" &&
-          element.id !== "SpicyLyrics_PopupLyricsButton" &&
-          element.id !== "SpicyLyrics_ExternalCinemaButton"
+          element.id !== "LyssnaLyrics_PageButton" &&
+          element.id !== "LyssnaLyrics_FullscreenButton" &&
+          element.id !== "LyssnaLyrics_PopupLyricsButton" &&
+          element.id !== "LyssnaLyrics_ExternalCinemaButton"
         ) {
           (element as HTMLElement).style.display = "none";
         }
@@ -772,7 +791,7 @@ async function main() {
       document.body.appendChild(div);
     }
 
-    // Lets set out Dynamic Background (spicy-dynamic-bg) to the now playing bar
+    // Lets set out Dynamic Background (lyssna-dynamic-bg) to the now playing bar
     let lastImgUrl: string | null;
     let lastNowPlayingBarElement: HTMLElement | null = null;
     let nowPlayingBarObserver: MutationObserver | null = null;
@@ -803,7 +822,7 @@ async function main() {
       if (!(viewport instanceof HTMLElement) || !viewport.hasAttribute("data-overlayscrollbars-viewport")) return;
       // Only the panel's own scroller, not one nested inside it.
       const root = viewport.closest("[data-overlayscrollbars]")?.parentElement;
-      if (root?.hasAttribute("data-npv-root")) root.toggleAttribute("data-sl-npv-scrolled", viewport.scrollTop > 0);
+      if (root?.hasAttribute("data-npv-root")) root.toggleAttribute("data-ll-npv-scrolled", viewport.scrollTop > 0);
     };
 
     // On every observed panel change, so a Canvas that mounts late or goes with a
@@ -817,8 +836,8 @@ async function main() {
       const root = nowPlayingBarObservedRoot?.querySelector("[data-npv-root]");
       if (!root) return;
       const viewport = root.querySelector(":scope > [data-overlayscrollbars] [data-overlayscrollbars-viewport]");
-      root.toggleAttribute("data-sl-npv-scrolled", (viewport?.scrollTop ?? 0) > 0);
-      root.toggleAttribute("data-sl-npv-canvas", Boolean(root.querySelector("[data-canvas-surface]")));
+      root.toggleAttribute("data-ll-npv-scrolled", (viewport?.scrollTop ?? 0) > 0);
+      root.toggleAttribute("data-ll-npv-canvas", Boolean(root.querySelector("[data-canvas-surface]")));
       const trackInfo = viewport?.querySelector(
         ':scope > :first-child > :nth-child(2) > :has(a[href^="/album/"]):has(a[href^="/artist/"])'
       );
@@ -826,13 +845,13 @@ async function main() {
       // so it doesn't count as one of the blocks.
       const nextBlock = (block: Element | null | undefined) => {
         let next = block?.nextElementSibling;
-        while (next?.id === "SpicyLyricsNPVCard") next = next.nextElementSibling;
+        while (next?.id === "LyssnaLyricsNPVCard") next = next.nextElementSibling;
         return next ?? null;
       };
       const queue = nextBlock(nextBlock(trackInfo));
       for (const [attribute, target] of [
-        ["data-sl-npv-track-info", trackInfo],
-        ["data-sl-npv-queue", queue],
+        ["data-ll-npv-track-info", trackInfo],
+        ["data-ll-npv-queue", queue],
       ] as const) {
         for (const marked of root.querySelectorAll(`[${attribute}]`)) {
           if (marked !== target) marked.removeAttribute(attribute);
@@ -898,13 +917,13 @@ async function main() {
       });
     };
 
-    // CSS gates on this body class rather than body:has(aside.spicy-dynamic-bg-in-this),
+    // CSS gates on this body class rather than body:has(aside.lyssna-dynamic-bg-in-this),
     // which made every DOM change a candidate for a full-document restyle.
     // Derived from the live aside so a React-swapped aside can't leave it stale.
     const syncNPVDynamicBackgroundClass = () => {
       document.body.classList.toggle(
-        "SpicyLyrics_NPVDynamicBackground",
-        Boolean(document.querySelector("aside.spicy-dynamic-bg-in-this"))
+        "LyssnaLyrics_NPVDynamicBackground",
+        Boolean(document.querySelector("aside.lyssna-dynamic-bg-in-this"))
       );
     };
 
@@ -916,11 +935,11 @@ async function main() {
         kawarpInstance.dispose();
         KawarpMap.delete("npvbg");
       }
-      nowPlayingBar?.querySelector<HTMLElement>(".spicy-dynamic-bg")?.remove();
+      nowPlayingBar?.querySelector<HTMLElement>(".lyssna-dynamic-bg")?.remove();
       // Guarded: even a no-op classList write queues a `class` record, which the
       // NPV observer turns into another apply — and another cleanup — every 50 ms.
-      if (nowPlayingBar?.classList.contains("spicy-dynamic-bg-in-this")) {
-        nowPlayingBar.classList.remove("spicy-dynamic-bg-in-this");
+      if (nowPlayingBar?.classList.contains("lyssna-dynamic-bg-in-this")) {
+        nowPlayingBar.classList.remove("lyssna-dynamic-bg-in-this");
       }
       syncNPVDynamicBackgroundClass();
       lastNowPlayingBarElement = null;
@@ -1027,14 +1046,14 @@ async function main() {
         // class and the canvas; the cover is the same, but it needs painting again.
         if (
           coverUrl === lastImgUrl &&
-          nowPlayingBar.classList.contains("spicy-dynamic-bg-in-this") &&
-          nowPlayingBar.querySelector(":scope > .spicy-dynamic-bg")
+          nowPlayingBar.classList.contains("lyssna-dynamic-bg-in-this") &&
+          nowPlayingBar.querySelector(":scope > .lyssna-dynamic-bg")
         ) return;
 
         // Guarded for the same reason as in CleanupNowBarDynamicBgLets: when no layer
         // can be painted, an unconditional add would re-trigger this apply forever.
-        if (!nowPlayingBar.classList.contains("spicy-dynamic-bg-in-this")) {
-          nowPlayingBar.classList.add("spicy-dynamic-bg-in-this");
+        if (!nowPlayingBar.classList.contains("lyssna-dynamic-bg-in-this")) {
+          nowPlayingBar.classList.add("lyssna-dynamic-bg-in-this");
         }
         syncNPVDynamicBackgroundClass();
 
@@ -1055,7 +1074,7 @@ async function main() {
     });
 
     $removeSpotifyLyricsButton.subscribe((v) => {
-      document.body.classList.toggle("SpicyLyrics_RemoveSpotifyLyricsButton", v);
+      document.body.classList.toggle("LyssnaLyrics_RemoveSpotifyLyricsButton", v);
     });
 
     startNowPlayingBarObserver();
@@ -1190,10 +1209,10 @@ async function main() {
       // previous location, not whatever was current when this call started.
       const previous = lastLocation;
       lastLocation = location;
-      if (location.pathname === "/SpicyLyrics") {
+      if (location.pathname === "/LyssnaLyrics") {
         PageView.Open();
         if (button) button.Button.active = true;
-      } else if (previous?.pathname === "/SpicyLyrics") {
+      } else if (previous?.pathname === "/LyssnaLyrics") {
         if (button) button.Button.active = false;
         await PageView.Destroy();
       }
@@ -1201,7 +1220,7 @@ async function main() {
 
     Global.Event.listen("platform:history", loadPage);
 
-    if (Spicetify.Platform.History.location.pathname === "/SpicyLyrics") {
+    if (Spicetify.Platform.History.location.pathname === "/LyssnaLyrics") {
       Global.Event.listen("pagecontainer:available", () => {
         loadPage(Spicetify.Platform.History.location);
         if (!button) return;
@@ -1428,7 +1447,7 @@ async function main() {
 
       Global.Event.listen("session:navigation", (data: Location) => {
         closeSettingsOwnedModalOnNavigation(data);
-        if (data.pathname === "/SpicyLyrics/Update") {
+        if (data.pathname === "/LyssnaLyrics/Update") {
           Session.GoBack();
           OpenBuildChannelPanel();
         }
@@ -1466,15 +1485,11 @@ async function main() {
 
   runThemeMatcher();
 
-  Spicetify.Keyboard.registerImportantShortcut(Spicetify.Keyboard.KEYS.ESCAPE, async () => {
-    await handleEscapeKey();
-  });
-
   let isHandlingDocumentFullscreenExit = false;
   document.addEventListener("fullscreenchange", async () => {
     if (isHandlingDocumentFullscreenExit) return;
     if (!document.fullscreenElement && Fullscreen.IsOpen && !Fullscreen.CinemaViewOpen) {
-      if (PopupModal.isConnected && PopupModal.querySelector(".slmodal-animatorPreview")) {
+      if (PopupModal.isConnected && PopupModal.querySelector(".llmodal-animatorPreview")) {
         PopupModal.hide();
       }
       if (Defaults.EscapeKeyFunction === "Exit Fullscreen") {
@@ -1490,7 +1505,7 @@ async function main() {
       if (Defaults.EscapeKeyFunction === "Exit Fully") {
         isHandlingDocumentFullscreenExit = true;
         try {
-          if (await Fullscreen.Close()) Session.GoBackFrom("/SpicyLyrics");
+          if (await Fullscreen.Close()) Session.GoBackFrom("/LyssnaLyrics");
         } finally {
           isHandlingDocumentFullscreenExit = false;
         }
@@ -1503,8 +1518,10 @@ async function main() {
     }
   });
 
-  Spicetify.Keyboard.registerImportantShortcut(Spicetify.Keyboard.KEYS.F11, async () => {
-    if (IsPIP) return;
+  window.addEventListener("keydown", async (event) => {
+    if (event.key !== "F11" || IsPIP || !PageView.IsOpened || !Fullscreen.IsOpen) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
     if (Fullscreen.IsOpen) {
       if (!Fullscreen.CinemaViewOpen) {
         Fullscreen.CinemaViewOpen = true;
@@ -1512,11 +1529,11 @@ async function main() {
         PageView.AppendViewControls(true);
       } else {
         Fullscreen.CinemaViewOpen = false;
-        await EnterSpicyLyricsFullscreen();
+        await EnterLyssnaLyricsFullscreen();
         PageView.AppendViewControls(true);
       }
     }
-  });
+  }, true);
 
 }
 

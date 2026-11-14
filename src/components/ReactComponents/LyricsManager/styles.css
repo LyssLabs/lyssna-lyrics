@@ -1,5 +1,5 @@
 /* ── Local Lyrics Database Panel ────────────────────────────── */
-sl-generic-modal.SpicyLyricsModal .sl-modal-overlay .sl-ldb-root {
+lyssna-lyrics-modal.LyssnaLyricsModal .ll-modal-overlay .ll-ldb-root {
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -8,16 +8,16 @@ sl-generic-modal.SpicyLyricsModal .sl-modal-overlay .sl-ldb-root {
   padding: 4px 2px;
 
   /* ── Toolbar ──────────────────────────────────────────────── */
-  .sl-ldb-toolbar {
+  .ll-ldb-toolbar {
     display: flex;
     align-items: center;
-    gap: var(--space-2);
-    margin-bottom: var(--space-4);
+    gap: var(--lyssna-space-2);
+    margin-bottom: var(--lyssna-space-4);
     flex-shrink: 0;
   }
 
   /* ── List ────────────────────────────────────────────────── */
-  .sl-ldb-list {
+  .ll-ldb-list {
     display: flex;
     flex-direction: column;
     gap: 4px;
@@ -28,59 +28,59 @@ sl-generic-modal.SpicyLyricsModal .sl-modal-overlay .sl-ldb-root {
   }
 
   /* ── Empty state ─────────────────────────────────────────── */
-  .sl-ldb-empty {
+  .ll-ldb-empty {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: var(--space-4);
+    gap: var(--lyssna-space-4);
     padding: 72px 0;
-    font-size: var(--text-body-size) !important;
-    color: var(--color-text-secondary);
+    font-size: var(--lyssna-text-body-size) !important;
+    color: var(--lyssna-color-text-secondary);
     text-align: center;
   }
 
   /* ── Track row ───────────────────────────────────────────── */
-  .sl-ldb-row {
+  .ll-ldb-row {
     display: flex;
     align-items: center;
-    gap: var(--space-3);
-    padding: 10px var(--space-3);
-    border-radius: var(--radius-md);
-    transition: background var(--dur-fast) var(--ease-standard);
+    gap: var(--lyssna-space-3);
+    padding: 10px var(--lyssna-space-3);
+    border-radius: var(--lyssna-radius-md);
+    transition: background var(--lyssna-dur-fast) var(--lyssna-ease-standard);
 
     &:hover {
-      background: var(--accent-tint-bg);
+      background: var(--lyssna-accent-tint-bg);
     }
 
-    &.sl-ldb-row--skeleton {
+    &.ll-ldb-row--skeleton {
       pointer-events: none;
     }
 
-    &.sl-ldb-row--playing {
-      background: var(--accent-tint-bg);
-      box-shadow: inset 0 0 0 1px var(--hairline-strong);
+    &.ll-ldb-row--playing {
+      background: var(--lyssna-accent-tint-bg);
+      box-shadow: inset 0 0 0 1px var(--lyssna-hairline-strong);
 
       &:hover {
-        background: var(--accent-tint-bg-hover);
+        background: var(--lyssna-accent-tint-bg-hover);
       }
 
-      .sl-ldb-row__title {
-        color: var(--color-text-primary);
-        font-weight: var(--w-semibold);
+      .ll-ldb-row__title {
+        color: var(--lyssna-color-text-primary);
+        font-weight: var(--lyssna-w-semibold);
       }
     }
 
-    .sl-ldb-row__cover {
+    .ll-ldb-row__cover {
       width: 44px;
       height: 44px;
       border-radius: 6px;
       flex-shrink: 0;
       object-fit: cover;
-      background: var(--accent-tint-bg-hover);
+      background: var(--lyssna-accent-tint-bg-hover);
     }
 
-    .sl-ldb-row__info {
+    .ll-ldb-row__info {
       flex: 1;
       min-width: 0;
       display: flex;
@@ -88,17 +88,17 @@ sl-generic-modal.SpicyLyricsModal .sl-modal-overlay .sl-ldb-root {
       gap: 2px;
     }
 
-    .sl-ldb-row__title-row {
+    .ll-ldb-row__title-row {
       display: flex;
       align-items: center;
-      gap: var(--space-2);
+      gap: var(--lyssna-space-2);
       min-width: 0;
     }
 
-    .sl-ldb-row__title {
-      font-size: var(--text-body-size) !important;
-      font-weight: var(--w-medium);
-      color: var(--color-text-primary);
+    .ll-ldb-row__title {
+      font-size: var(--lyssna-text-body-size) !important;
+      font-weight: var(--lyssna-w-medium);
+      color: var(--lyssna-color-text-primary);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -109,7 +109,7 @@ sl-generic-modal.SpicyLyricsModal .sl-modal-overlay .sl-ldb-root {
        A 6px dot in primary color says the same thing in a fraction of
        the visual real estate. Gentle pulse signals motion without
        being theatrical. */
-    .sl-ldb-row__playing-dot {
+    .ll-ldb-row__playing-dot {
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -122,27 +122,27 @@ sl-generic-modal.SpicyLyricsModal .sl-modal-overlay .sl-ldb-root {
         width: 6px;
         height: 6px;
         border-radius: 50%;
-        background: var(--accent);
+        background: var(--lyssna-accent);
         box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);
-        animation: sl-ldb-pulse 2s ease-in-out infinite;
+        animation: lyssna-ll-ldb-pulse 2s ease-in-out infinite;
       }
     }
 
-    @keyframes sl-ldb-pulse {
+    @keyframes lyssna-ll-ldb-pulse {
       0%, 100% { opacity: 1; transform: scale(1); }
       50% { opacity: 0.55; transform: scale(0.92); }
     }
 
-    .sl-ldb-row__artists {
-      font-size: var(--text-caption-size) !important;
-      font-weight: var(--w-regular);
-      color: var(--color-text-secondary);
+    .ll-ldb-row__artists {
+      font-size: var(--lyssna-text-caption-size) !important;
+      font-weight: var(--lyssna-w-regular);
+      color: var(--lyssna-color-text-secondary);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
-    .sl-ldb-row__actions {
+    .ll-ldb-row__actions {
       display: flex;
       align-items: center;
       gap: 4px;
@@ -151,18 +151,18 @@ sl-generic-modal.SpicyLyricsModal .sl-modal-overlay .sl-ldb-root {
   }
 
   /* ── Skeleton ────────────────────────────────────────────── */
-  .sl-ldb-skeleton {
-    background: var(--accent-tint-bg-hover);
+  .ll-ldb-skeleton {
+    background: var(--lyssna-accent-tint-bg-hover);
     border-radius: 4px;
-    animation: sl-ldb-shimmer 1.4s ease-in-out infinite;
+    animation: lyssna-ll-ldb-shimmer 1.4s ease-in-out infinite;
 
-    &.sl-ldb-skeleton--title {
+    &.ll-ldb-skeleton--title {
       height: 12px;
       width: 60%;
       border-radius: 3px;
     }
 
-    &.sl-ldb-skeleton--artist {
+    &.ll-ldb-skeleton--artist {
       height: 10px;
       width: 40%;
       border-radius: 3px;
@@ -170,41 +170,41 @@ sl-generic-modal.SpicyLyricsModal .sl-modal-overlay .sl-ldb-root {
     }
   }
 
-  @keyframes sl-ldb-shimmer {
+  @keyframes lyssna-ll-ldb-shimmer {
     0%, 100% { opacity: 0.5; }
     50% { opacity: 1; }
   }
 }
 
 /* ── Icon button (shared) ──────────────────────────────────── */
-sl-generic-modal.SpicyLyricsModal .sl-modal-overlay .sl-ldb-icon-btn {
+lyssna-lyrics-modal.LyssnaLyricsModal .ll-modal-overlay .ll-ldb-icon-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-2);
+  gap: var(--lyssna-space-2);
   height: 36px;
   padding: 0 14px;
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: var(--lyssna-radius-sm);
   cursor: pointer;
-  font-size: var(--text-caption-size) !important;
-  font-weight: var(--w-semibold);
+  font-size: var(--lyssna-text-caption-size) !important;
+  font-weight: var(--lyssna-w-semibold);
   letter-spacing: 0.01em;
   white-space: nowrap;
   transition:
-    background var(--dur-fast) var(--ease-standard),
-    box-shadow var(--dur-fast) var(--ease-standard),
-    color var(--dur-fast) var(--ease-standard),
+    background var(--lyssna-dur-fast) var(--lyssna-ease-standard),
+    box-shadow var(--lyssna-dur-fast) var(--lyssna-ease-standard),
+    color var(--lyssna-dur-fast) var(--lyssna-ease-standard),
     transform 0.12s ease;
 
   /* Icon-only variant — no label, becomes a square */
-  &:not(:has(.sl-ldb-icon-btn__label)) {
+  &:not(:has(.ll-ldb-icon-btn__label)) {
     width: 32px;
     height: 32px;
     padding: 0;
   }
 
-  .sl-ldb-icon-btn__icon {
+  .ll-ldb-icon-btn__icon {
     display: flex;
     align-items: center;
   }
@@ -219,27 +219,27 @@ sl-generic-modal.SpicyLyricsModal .sl-modal-overlay .sl-ldb-icon-btn {
   }
 
   /* Default — flat tinted surface, hairline border */
-  &.sl-ldb-icon-btn--default {
-    background: var(--accent-tint-bg);
-    color: var(--color-text-secondary);
-    box-shadow: inset 0 0 0 1px var(--hairline);
+  &.ll-ldb-icon-btn--default {
+    background: var(--lyssna-accent-tint-bg);
+    color: var(--lyssna-color-text-secondary);
+    box-shadow: inset 0 0 0 1px var(--lyssna-hairline);
 
     &:hover:not(:disabled) {
-      background: var(--accent-tint-bg-hover);
-      color: var(--color-text-primary);
-      box-shadow: inset 0 0 0 1px var(--hairline-strong);
+      background: var(--lyssna-accent-tint-bg-hover);
+      color: var(--lyssna-color-text-primary);
+      box-shadow: inset 0 0 0 1px var(--lyssna-hairline-strong);
     }
   }
 
   /* Primary — solid accent fill, dark text on white. The only place in
      the panel that uses the filled accent so it's unambiguous. */
-  &.sl-ldb-icon-btn--primary {
-    background: var(--accent);
-    color: var(--accent-on-fill);
+  &.ll-ldb-icon-btn--primary {
+    background: var(--lyssna-accent);
+    color: var(--lyssna-accent-on-fill);
     box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.12);
 
     &:hover:not(:disabled) {
-      background: var(--accent-hover);
+      background: var(--lyssna-accent-hover);
     }
   }
 
@@ -247,9 +247,9 @@ sl-generic-modal.SpicyLyricsModal .sl-modal-overlay .sl-ldb-icon-btn {
      border + warm text gives a clear visual escalation from the
      neutral default state, so the second click of a destructive
      two-step lands on a surface that looks unmistakably different. */
-  &.sl-ldb-icon-btn--danger {
+  &.ll-ldb-icon-btn--danger {
     background: rgba(255, 110, 110, 0.1);
-    color: var(--color-status-danger);
+    color: var(--lyssna-color-status-danger);
     box-shadow: inset 0 0 0 1px rgba(255, 110, 110, 0.22);
 
     &:hover:not(:disabled) {
@@ -261,62 +261,62 @@ sl-generic-modal.SpicyLyricsModal .sl-modal-overlay .sl-ldb-icon-btn {
 }
 
 /* ── Load TTML Modal ───────────────────────────────────────── */
-sl-generic-modal.SpicyLyricsModal .sl-modal-overlay .sl-ldb-upload-root {
+lyssna-lyrics-modal.LyssnaLyricsModal .ll-modal-overlay .ll-ldb-upload-root {
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
-  padding: var(--space-2) 4px;
+  gap: var(--lyssna-space-5);
+  padding: var(--lyssna-space-2) 4px;
 
-  .sl-ldb-upload-header {
+  .ll-ldb-upload-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: var(--space-3);
+    gap: var(--lyssna-space-3);
 
-    .sl-ldb-upload-subtitle {
+    .ll-ldb-upload-subtitle {
       margin: 0;
       min-width: 0;
-      font-size: var(--text-body-size) !important;
-      color: var(--color-text-secondary);
+      font-size: var(--lyssna-text-body-size) !important;
+      color: var(--lyssna-color-text-secondary);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
 
-    .sl-ldb-upload-actions {
+    .ll-ldb-upload-actions {
       flex: 0 0 auto;
       display: inline-flex;
       align-items: center;
       justify-content: flex-end;
-      gap: var(--space-2);
+      gap: var(--lyssna-space-2);
       min-width: 0;
     }
 
   }
 
-  .sl-ldb-database-link {
+  .ll-ldb-database-link {
     flex: 0 0 auto;
     display: inline-flex;
     align-items: center;
-    gap: var(--space-2);
+    gap: var(--lyssna-space-2);
     height: 32px;
     padding: 0 12px;
     border: 0;
-    border-radius: var(--radius-sm);
-    background: var(--accent-tint-bg);
-    box-shadow: inset 0 0 0 1px var(--hairline);
-    color: var(--color-text-primary);
+    border-radius: var(--lyssna-radius-sm);
+    background: var(--lyssna-accent-tint-bg);
+    box-shadow: inset 0 0 0 1px var(--lyssna-hairline);
+    color: var(--lyssna-color-text-primary);
     cursor: pointer;
-    font-size: var(--text-caption-size) !important;
-    font-weight: var(--w-medium);
+    font-size: var(--lyssna-text-caption-size) !important;
+    font-weight: var(--lyssna-w-medium);
     transition:
-      background 0.18s var(--ease-standard),
-      box-shadow 0.18s var(--ease-standard),
+      background 0.18s var(--lyssna-ease-standard),
+      box-shadow 0.18s var(--lyssna-ease-standard),
       transform 0.12s ease;
 
     &:hover {
-      background: var(--accent-tint-bg-hover);
-      box-shadow: inset 0 0 0 1px var(--hairline-strong);
+      background: var(--lyssna-accent-tint-bg-hover);
+      box-shadow: inset 0 0 0 1px var(--lyssna-hairline-strong);
     }
 
     &:active {
@@ -330,7 +330,7 @@ sl-generic-modal.SpicyLyricsModal .sl-modal-overlay .sl-ldb-upload-root {
   }
 
 
-  .sl-ldb-file-input {
+  .ll-ldb-file-input {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -338,32 +338,32 @@ sl-generic-modal.SpicyLyricsModal .sl-modal-overlay .sl-ldb-upload-root {
     pointer-events: none;
   }
 
-  .sl-ldb-upload-mode-section {
+  .ll-ldb-upload-mode-section {
     display: flex;
-    gap: var(--space-3);
+    gap: var(--lyssna-space-3);
     align-items: stretch;
 
-    .sl-ldb-upload-mode-card {
+    .ll-ldb-upload-mode-card {
       flex: 1;
       display: grid;
       grid-template-columns: 28px minmax(0, 1fr);
       align-items: start;
       gap: 10px;
       padding: 16px 18px;
-      border-radius: var(--radius-md);
-      background: var(--accent-tint-bg);
-      box-shadow: inset 0 0 0 1px var(--hairline);
+      border-radius: var(--lyssna-radius-md);
+      background: var(--lyssna-accent-tint-bg);
+      box-shadow: inset 0 0 0 1px var(--lyssna-hairline);
       cursor: pointer;
       text-align: left;
       transition:
-        background 0.18s var(--ease-standard),
-        box-shadow 0.18s var(--ease-standard),
+        background 0.18s var(--lyssna-ease-standard),
+        box-shadow 0.18s var(--lyssna-ease-standard),
         transform 0.12s ease;
       border: 0;
 
       &:hover {
-        background: var(--accent-tint-bg-hover);
-        box-shadow: inset 0 0 0 1px var(--hairline-strong);
+        background: var(--lyssna-accent-tint-bg-hover);
+        box-shadow: inset 0 0 0 1px var(--lyssna-hairline-strong);
       }
 
       &:active {
@@ -375,57 +375,57 @@ sl-generic-modal.SpicyLyricsModal .sl-modal-overlay .sl-ldb-upload-root {
         opacity: 0.62;
       }
 
-      .sl-ldb-upload-mode-icon {
+      .ll-ldb-upload-mode-icon {
         display: inline-flex;
         align-items: center;
         justify-content: center;
         width: 28px;
         height: 28px;
-        border-radius: var(--radius-sm);
-        color: var(--color-text-primary);
+        border-radius: var(--lyssna-radius-sm);
+        color: var(--lyssna-color-text-primary);
         background: rgba(255, 255, 255, 0.08);
-        box-shadow: inset 0 0 0 1px var(--hairline);
+        box-shadow: inset 0 0 0 1px var(--lyssna-hairline);
       }
 
-      .sl-ldb-upload-mode-copy {
+      .ll-ldb-upload-mode-copy {
         min-width: 0;
         display: flex;
         flex-direction: column;
         gap: 6px;
       }
 
-      .sl-ldb-upload-mode-title {
-        font-size: var(--text-body-size) !important;
-        font-weight: var(--w-semibold);
-        color: var(--color-text-primary);
+      .ll-ldb-upload-mode-title {
+        font-size: var(--lyssna-text-body-size) !important;
+        font-weight: var(--lyssna-w-semibold);
+        color: var(--lyssna-color-text-primary);
       }
 
-      .sl-ldb-upload-mode-desc {
-        font-size: var(--text-caption-size) !important;
-        font-weight: var(--w-regular);
-        color: var(--color-text-secondary);
+      .ll-ldb-upload-mode-desc {
+        font-size: var(--lyssna-text-caption-size) !important;
+        font-weight: var(--lyssna-w-regular);
+        color: var(--lyssna-color-text-secondary);
         line-height: 1.4;
       }
     }
   }
 }
-sl-generic-modal.SpicyLyricsModal {
-  .sl-ldb-reviewer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin: 8px 0 20px; padding: 14px 16px; border: 1px solid #ffffff1f; border-radius: 12px; background: #ffffff08; }
-  .sl-ldb-reviewer-copy { flex: 1 1 180px; min-width: 0; }
-  .sl-ldb-reviewer-actions { display: flex; align-items: center; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-left: auto; max-width: 100%; }
-  .sl-ldb-reviewer label { color: #f1f1f1; font-size: 14px !important; font-weight: 600; }
-  .sl-ldb-reviewer p { margin: 4px 0 0; color: #b3b3b3; font-size: 12px !important; font-weight: 400; line-height: 1.5; }
-  .sl-ldb-reviewer select { width: 160px; height: 34px; max-width: 100%; padding: 0 10px; border: 1px solid #ffffff26; border-radius: 8px; background: #2b2b2b; color: #f1f1f1; font-size: 13px !important; cursor: pointer; }
-  .sl-ldb-reviewer select:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
-  .sl-reviewer-details { display: flex; flex-direction: column; gap: 14px; color: #b3b3b3; font-size: 13px !important; line-height: 1.5; }
-  .sl-reviewer-details > .sl-sp-btn { align-self: flex-start; }
-  .sl-reviewer-details p, .sl-reviewer-details h3, .sl-reviewer-details dl, .sl-reviewer-details dd { margin: 0; }
-  .sl-reviewer-details p { font-size: 13px !important; font-weight: 400; }
-  .sl-reviewer-details h3 { color: #f1f1f1; font-size: 14px !important; font-weight: 600; }
-  .sl-reviewer-modes { display: grid; grid-template-columns: 130px 1fr; gap: 12px 16px; padding: 14px; border-radius: 12px; border: 1px solid #ffffff1f; }
-  .sl-reviewer-modes dt { color: #f1f1f1; font-weight: 600; }
-  .sl-reviewer-values { padding: 8px 14px; border-radius: 12px; border: 1px solid #ffffff1f; background: #ffffff08; }
-  .sl-reviewer-values > div { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 7px 0; }
-  .sl-reviewer-values > div + div { border-top: 1px solid #ffffff0d; }
-  .sl-reviewer-values dd { color: #f1f1f1; flex-shrink: 0; }
+lyssna-lyrics-modal.LyssnaLyricsModal {
+  .ll-ldb-reviewer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin: 8px 0 20px; padding: 14px 16px; border: 1px solid #ffffff1f; border-radius: 12px; background: #ffffff08; }
+  .ll-ldb-reviewer-copy { flex: 1 1 180px; min-width: 0; }
+  .ll-ldb-reviewer-actions { display: flex; align-items: center; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-left: auto; max-width: 100%; }
+  .ll-ldb-reviewer label { color: #f1f1f1; font-size: 14px !important; font-weight: 600; }
+  .ll-ldb-reviewer p { margin: 4px 0 0; color: #b3b3b3; font-size: 12px !important; font-weight: 400; line-height: 1.5; }
+  .ll-ldb-reviewer select { width: 160px; height: 34px; max-width: 100%; padding: 0 10px; border: 1px solid #ffffff26; border-radius: 8px; background: #2b2b2b; color: #f1f1f1; font-size: 13px !important; cursor: pointer; }
+  .ll-ldb-reviewer select:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+  .ll-reviewer-details { display: flex; flex-direction: column; gap: 14px; color: #b3b3b3; font-size: 13px !important; line-height: 1.5; }
+  .ll-reviewer-details > .ll-sp-btn { align-self: flex-start; }
+  .ll-reviewer-details p, .ll-reviewer-details h3, .ll-reviewer-details dl, .ll-reviewer-details dd { margin: 0; }
+  .ll-reviewer-details p { font-size: 13px !important; font-weight: 400; }
+  .ll-reviewer-details h3 { color: #f1f1f1; font-size: 14px !important; font-weight: 600; }
+  .ll-reviewer-modes { display: grid; grid-template-columns: 130px 1fr; gap: 12px 16px; padding: 14px; border-radius: 12px; border: 1px solid #ffffff1f; }
+  .ll-reviewer-modes dt { color: #f1f1f1; font-weight: 600; }
+  .ll-reviewer-values { padding: 8px 14px; border-radius: 12px; border: 1px solid #ffffff1f; background: #ffffff08; }
+  .ll-reviewer-values > div { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 7px 0; }
+  .ll-reviewer-values > div + div { border-top: 1px solid #ffffff0d; }
+  .ll-reviewer-values dd { color: #f1f1f1; flex-shrink: 0; }
 }

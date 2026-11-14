@@ -3,7 +3,7 @@
    Sizes follow the page width through --QueueFont, so a wall-sized fullscreen gets a list that
    reads from the same distance as the lyrics did. */
 
-#SpicyLyricsPage .ContentBox .QueuePanel {
+#LyssnaLyricsPage .ContentBox .QueuePanel {
   --QueueFont: clamp(14px, calc(0.62cqw + 0.5rem), 21px);
   position: absolute;
   inset: 0;
@@ -14,64 +14,64 @@
   padding-left: var(--LyricsLeftSidePadding);
   padding-right: var(--LyricsRightSidePadding);
   font-size: var(--QueueFont);
-  font-weight: var(--w-regular);
-  color: var(--color-text-primary);
+  font-weight: var(--lyssna-w-regular);
+  color: var(--lyssna-color-text-primary);
   /* Small regular-weight text over a bright cover needs a little lift off the background. */
   text-shadow: 0 1px 12px rgba(0, 0, 0, 0.28);
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
   transition:
-    opacity 160ms var(--ease-out),
+    opacity 160ms var(--lyssna-ease-out),
     visibility 0s linear 160ms;
 }
 
-#SpicyLyricsPage .ContentBox .QueuePanel.Open {
+#LyssnaLyricsPage .ContentBox .QueuePanel.Open {
   opacity: 1;
   visibility: visible;
   transition:
-    opacity 260ms var(--ease-out) 60ms,
+    opacity 260ms var(--lyssna-ease-out) 60ms,
     visibility 0s;
 }
 
-#SpicyLyricsPage.NowBarSide__Right .ContentBox .QueuePanel {
+#LyssnaLyricsPage.NowBarSide__Right .ContentBox .QueuePanel {
   padding-right: var(--LyricsLeftSidePadding);
   padding-left: calc(var(--LyricsRightSidePadding) * 1.45);
 }
 
 /* The header starts level with the top of the cover; the list runs down to the page's edge. */
-#SpicyLyricsPage.QueueOpen .ContentBox .NowBar .Header .MediaBox {
-  anchor-name: --SL-QueueCover;
+#LyssnaLyricsPage.QueueOpen .ContentBox .NowBar .Header .MediaBox {
+  anchor-name: --LL-QueueCover;
 }
 
 @supports (anchor-name: --a) {
-  #SpicyLyricsPage:not(.CompactMode, .ForcedCompactMode, .CanvasImmersive) .ContentBox .QueuePanel {
-    top: max(72px, anchor(--SL-QueueCover top, 10cqh));
+  #LyssnaLyricsPage:not(.CompactMode, .ForcedCompactMode, .CanvasImmersive) .ContentBox .QueuePanel {
+    top: max(72px, anchor(--LL-QueueCover top, 10cqh));
   }
 
   /* Compact mode moves the lyrics under the cover header, and further down while the cover grows on
      hover. The panel follows the lyrics box itself. */
-  #SpicyLyricsPage:is(.CompactMode, .ForcedCompactMode) .ContentBox .QueuePanel {
-    top: calc(anchor(--SL-LyricsContent top, 21cqh) + 4cqh);
+  #LyssnaLyricsPage:is(.CompactMode, .ForcedCompactMode) .ContentBox .QueuePanel {
+    top: calc(anchor(--LL-LyricsContent top, 21cqh) + 4cqh);
   }
 }
 
 @supports not (anchor-name: --a) {
-  #SpicyLyricsPage .ContentBox .QueuePanel {
+  #LyssnaLyricsPage .ContentBox .QueuePanel {
     top: max(72px, 10cqh);
   }
 
-  #SpicyLyricsPage:is(.CompactMode, .ForcedCompactMode) .ContentBox .QueuePanel {
+  #LyssnaLyricsPage:is(.CompactMode, .ForcedCompactMode) .ContentBox .QueuePanel {
     top: 25cqh;
   }
 }
 
 /* No cover on the side while a Canvas plays there, so the list keeps clear of the title band. */
-#SpicyLyricsPage.CanvasImmersive:not(.CompactMode, .ForcedCompactMode) .ContentBox .QueuePanel {
+#LyssnaLyricsPage.CanvasImmersive:not(.CompactMode, .ForcedCompactMode) .ContentBox .QueuePanel {
   top: max(72px, 10cqh);
 }
 
-#SpicyLyricsPage .ContentBox .QueuePanel .QueueInner {
+#LyssnaLyricsPage .ContentBox .QueuePanel .QueueInner {
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -80,38 +80,38 @@
   flex: 1;
   pointer-events: auto;
   transform: translateY(8px);
-  transition: transform 160ms var(--ease-out);
+  transition: transform 160ms var(--lyssna-ease-out);
 }
 
-#SpicyLyricsPage .ContentBox .QueuePanel.Open .QueueInner {
+#LyssnaLyricsPage .ContentBox .QueuePanel.Open .QueueInner {
   transform: none;
-  transition: transform 320ms var(--ease-out) 60ms;
+  transition: transform 320ms var(--lyssna-ease-out) 60ms;
 }
 
 /* The lyrics step aside while the queue is open. Their own transitions only matter while lyrics
    are showing, so these apply only around the swap: out quickly, then back after the panel has
    cleared. Compact mode's margin transition is kept in both. The doubled id outranks the layouts
    that set their own transition here (portrait fullscreen). */
-#SpicyLyricsPage:is(#SpicyLyricsPage).QueueOpen .ContentBox .LyricsContainer {
+#LyssnaLyricsPage:is(#LyssnaLyricsPage).QueueOpen .ContentBox .LyricsContainer {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
   transition:
-    opacity 160ms var(--ease-out),
+    opacity 160ms var(--lyssna-ease-out),
     visibility 0s linear 160ms,
     margin-top 0.4s;
 }
 
-#SpicyLyricsPage:is(#SpicyLyricsPage).QueueClosing .ContentBox .LyricsContainer {
+#LyssnaLyricsPage:is(#LyssnaLyricsPage).QueueClosing .ContentBox .LyricsContainer {
   transition:
-    opacity 280ms var(--ease-out) 80ms,
+    opacity 280ms var(--lyssna-ease-out) 80ms,
     visibility 0s,
     margin-top 0.4s;
 }
 
 /* ── Header ───────────────────────────────────────────────────────────── */
 
-#SpicyLyricsPage .QueuePanel .QueueHeader {
+#LyssnaLyricsPage .QueuePanel .QueueHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -120,10 +120,10 @@
   padding-bottom: 0.5em;
 }
 
-#SpicyLyricsPage .QueuePanel .QueueTitle {
+#LyssnaLyricsPage .QueuePanel .QueueTitle {
   margin: 0;
   font-size: 1.75em;
-  font-weight: var(--w-bold);
+  font-weight: var(--lyssna-w-bold);
   line-height: 1.1;
   letter-spacing: -0.02em;
   color: #fff;
@@ -131,7 +131,7 @@
 
 /* ── List ─────────────────────────────────────────────────────────────── */
 
-#SpicyLyricsPage .QueuePanel .QueueScroll {
+#LyssnaLyricsPage .QueuePanel .QueueScroll {
   flex: 1;
   min-height: 0;
   /* Room for the rows' hover fill and focus ring, which reach past the column's edges. */
@@ -157,24 +157,24 @@
   );
 }
 
-#SpicyLyricsPage .QueuePanel .QueueScroll::-webkit-scrollbar {
+#LyssnaLyricsPage .QueuePanel .QueueScroll::-webkit-scrollbar {
   display: none;
 }
 
-#SpicyLyricsPage .QueuePanel .QueueList {
+#LyssnaLyricsPage .QueuePanel .QueueList {
   position: relative;
   display: flex;
   flex-direction: column;
 }
 
-#SpicyLyricsPage .QueuePanel .QueueGhost {
+#LyssnaLyricsPage .QueuePanel .QueueGhost {
   position: absolute;
   left: 0;
   right: 0;
   pointer-events: none;
 }
 
-#SpicyLyricsPage .QueuePanel .QueueLabel {
+#LyssnaLyricsPage .QueuePanel .QueueLabel {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -183,66 +183,66 @@
   margin: 1.4em 0 0.35em;
 }
 
-#SpicyLyricsPage .QueuePanel .QueueList > .QueueLabel:first-child {
+#LyssnaLyricsPage .QueuePanel .QueueList > .QueueLabel:first-child {
   margin-top: 0.15em;
 }
 
-#SpicyLyricsPage .QueuePanel .QueueLabelText {
+#LyssnaLyricsPage .QueuePanel .QueueLabelText {
   margin: 0;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 0.82em;
-  font-weight: var(--w-semibold);
+  font-weight: var(--lyssna-w-semibold);
   line-height: 1.3;
   color: rgba(255, 255, 255, 0.62);
 }
 
-#SpicyLyricsPage .QueuePanel :is(.QueueClear, .QueueRetry) {
+#LyssnaLyricsPage .QueuePanel :is(.QueueClear, .QueueRetry) {
   flex: none;
   padding: 0.4em 0.9em;
   border: 0;
-  border-radius: var(--radius-pill);
+  border-radius: var(--lyssna-radius-pill);
   background: rgba(255, 255, 255, 0.1);
   color: rgba(255, 255, 255, 0.88);
   font: inherit;
   font-size: 0.74em;
-  font-weight: var(--w-semibold);
+  font-weight: var(--lyssna-w-semibold);
   line-height: 1.2;
   text-shadow: none;
   cursor: pointer;
   transition:
     background-color 150ms ease,
     color 150ms ease,
-    scale 160ms var(--ease-out);
+    scale 160ms var(--lyssna-ease-out);
 }
 
 /* Clearing is rare and can't be undone, so at rest it's text the same weight as its label. The pill
    fills in on hover, and turns white once armed: the next press clears. */
-#SpicyLyricsPage .QueuePanel .QueueClear {
+#LyssnaLyricsPage .QueuePanel .QueueClear {
   margin-right: -0.9em;
   background: transparent;
   color: rgba(255, 255, 255, 0.62);
 }
 
-#SpicyLyricsPage .QueuePanel .QueueClear.Armed {
+#LyssnaLyricsPage .QueuePanel .QueueClear.Armed {
   margin-right: 0;
   background: rgba(255, 255, 255, 0.92);
   color: #000;
 }
 
-#SpicyLyricsPage .QueuePanel :is(.QueueClear, .QueueRetry):active {
+#LyssnaLyricsPage .QueuePanel :is(.QueueClear, .QueueRetry):active {
   scale: 0.97;
 }
 
 /* ── Rows ─────────────────────────────────────────────────────────────── */
 
-#SpicyLyricsPage .QueuePanel .QueueRow {
+#LyssnaLyricsPage .QueuePanel .QueueRow {
   position: relative;
 }
 
-#SpicyLyricsPage .QueuePanel .QueuePlay {
+#LyssnaLyricsPage .QueuePanel .QueuePlay {
   box-sizing: border-box;
   display: grid;
   grid-template-columns: 2.85em minmax(0, 1fr) auto;
@@ -261,14 +261,14 @@
   cursor: pointer;
   transition:
     background-color 150ms ease,
-    scale 160ms var(--ease-out);
+    scale 160ms var(--lyssna-ease-out);
 }
 
-#SpicyLyricsPage .QueuePanel .QueuePlay:active {
+#LyssnaLyricsPage .QueuePanel .QueuePlay:active {
   scale: 0.985;
 }
 
-#SpicyLyricsPage .QueuePanel .QueueArt {
+#LyssnaLyricsPage .QueuePanel .QueueArt {
   position: relative;
   width: 2.85em;
   height: 2.85em;
@@ -278,7 +278,7 @@
   box-shadow: 0 0.15em 0.6em rgba(0, 0, 0, 0.22);
 }
 
-#SpicyLyricsPage .QueuePanel .QueueArt img {
+#LyssnaLyricsPage .QueuePanel .QueueArt img {
   display: block;
   width: 100%;
   height: 100%;
@@ -287,12 +287,12 @@
   transition: opacity 200ms ease;
 }
 
-#SpicyLyricsPage .QueuePanel .QueueArt.Loaded img {
+#LyssnaLyricsPage .QueuePanel .QueueArt.Loaded img {
   opacity: 1;
 }
 
 /* Hovering a row says what a click does: the cover dims behind a play glyph. */
-#SpicyLyricsPage .QueuePanel .QueueArtPlay {
+#LyssnaLyricsPage .QueuePanel .QueueArtPlay {
   position: absolute;
   inset: 0;
   display: grid;
@@ -302,7 +302,7 @@
   transition: opacity 150ms ease;
 }
 
-#SpicyLyricsPage .QueuePanel .QueueArtPlay svg {
+#LyssnaLyricsPage .QueuePanel .QueueArtPlay svg {
   width: 0.8em;
   height: auto;
   fill: #fff;
@@ -310,41 +310,41 @@
   translate: 0.06em 0;
 }
 
-#SpicyLyricsPage .QueuePanel .QueueText {
+#LyssnaLyricsPage .QueuePanel .QueueText {
   display: flex;
   flex-direction: column;
   gap: 0.1em;
   min-width: 0;
 }
 
-#SpicyLyricsPage .QueuePanel .QueueName {
+#LyssnaLyricsPage .QueuePanel .QueueName {
   display: flex;
   align-items: center;
   gap: 0.4em;
   min-width: 0;
   font-size: 1em;
-  font-weight: var(--w-semibold);
+  font-weight: var(--lyssna-w-semibold);
   line-height: 1.25;
   color: rgba(255, 255, 255, 0.96);
 }
 
 /* A name or artists list wider than the text column scrolls inside its line (TextScroller in
    QueueView.ts): the line clips its track, which moves on translate. */
-#SpicyLyricsPage .QueuePanel :is(.QueueNameText, .QueueArtists) {
+#LyssnaLyricsPage .QueuePanel :is(.QueueNameText, .QueueArtists) {
   min-width: 0;
   max-width: 100%;
   overflow: hidden;
   white-space: nowrap;
 }
 
-#SpicyLyricsPage .QueuePanel .QueueTrack {
+#LyssnaLyricsPage .QueuePanel .QueueTrack {
   display: block;
   width: max-content;
 }
 
 /* Only a line that overflows fades at its edges. The left fade sits in padding the negative margin
    takes back from the column gap, so the text rests where a line that fits starts. */
-#SpicyLyricsPage .QueuePanel :is(.QueueNameText, .QueueArtists).Overflowing {
+#LyssnaLyricsPage .QueuePanel :is(.QueueNameText, .QueueArtists).Overflowing {
   /* The left fade is narrower, so text sliding out keeps clear of the artwork across the gap. */
   --QueueFadeStart: 0.35em;
   --QueueFadeEnd: 0.6em;
@@ -355,41 +355,41 @@
   mask-image: linear-gradient(90deg, transparent 0, #000 var(--QueueFadeStart), #000 calc(100% - var(--QueueFadeEnd)), transparent 100%);
 }
 
-#SpicyLyricsPage .QueuePanel .QueueExplicit {
+#LyssnaLyricsPage .QueuePanel .QueueExplicit {
   flex: none;
   padding: 0.22em 0.36em;
   border-radius: 0.25em;
   background: rgba(255, 255, 255, 0.6);
   color: rgba(0, 0, 0, 0.78);
   font-size: 0.56em;
-  font-weight: var(--w-bold);
+  font-weight: var(--lyssna-w-bold);
   line-height: 1;
   text-shadow: none;
 }
 
-#SpicyLyricsPage .QueuePanel .QueueArtists {
+#LyssnaLyricsPage .QueuePanel .QueueArtists {
   font-size: 0.84em;
-  font-weight: var(--w-regular);
+  font-weight: var(--lyssna-w-regular);
   line-height: 1.3;
   color: rgba(255, 255, 255, 0.64);
 }
 
-#SpicyLyricsPage .QueuePanel .QueueTime {
+#LyssnaLyricsPage .QueuePanel .QueueTime {
   font-size: 0.8em;
   font-variant-numeric: tabular-nums;
-  font-weight: var(--w-medium);
+  font-weight: var(--lyssna-w-medium);
   color: rgba(255, 255, 255, 0.6);
   transition: opacity 150ms ease;
 }
 
 /* Like and remove sit where the duration is and take its place on hover or focus. The duration's
    column is as wide as the pair, so a long title never runs under them. */
-#SpicyLyricsPage .QueuePanel .QueueRow.HasActions .QueueTime {
+#LyssnaLyricsPage .QueuePanel .QueueRow.HasActions .QueueTime {
   min-width: 4.7em;
   text-align: end;
 }
 
-#SpicyLyricsPage .QueuePanel .QueueActions {
+#LyssnaLyricsPage .QueuePanel .QueueActions {
   position: absolute;
   top: 50%;
   right: -0.25em;
@@ -401,7 +401,7 @@
   transition: opacity 150ms ease;
 }
 
-#SpicyLyricsPage .QueuePanel :is(.QueueRemove, .QueueLike) {
+#LyssnaLyricsPage .QueuePanel :is(.QueueRemove, .QueueLike) {
   display: grid;
   place-items: center;
   width: 2em;
@@ -416,102 +416,102 @@
   transition:
     background-color 150ms ease,
     color 150ms ease,
-    scale 160ms var(--ease-out);
+    scale 160ms var(--lyssna-ease-out);
 }
 
-#SpicyLyricsPage .QueuePanel :is(.QueueRemove, .QueueLike)[hidden] {
+#LyssnaLyricsPage .QueuePanel :is(.QueueRemove, .QueueLike)[hidden] {
   display: none;
 }
 
-#SpicyLyricsPage .QueuePanel .QueueRemove svg {
+#LyssnaLyricsPage .QueuePanel .QueueRemove svg {
   width: 42%;
   height: 42%;
 }
 
 /* The same lift off a bright cover as the text gets from its shadow. */
-#SpicyLyricsPage .QueuePanel :is(.QueueRemove, .QueueLike) svg {
+#LyssnaLyricsPage .QueuePanel :is(.QueueRemove, .QueueLike) svg {
   filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.32));
 }
 
-#SpicyLyricsPage .QueuePanel .QueueLike svg {
+#LyssnaLyricsPage .QueuePanel .QueueLike svg {
   width: 46%;
   height: 46%;
   overflow: visible;
 }
 
-#SpicyLyricsPage .QueuePanel .QueueLike path {
+#LyssnaLyricsPage .QueuePanel .QueueLike path {
   fill: transparent;
   transition: fill 150ms ease;
 }
 
-#SpicyLyricsPage .QueuePanel .QueueLike[aria-pressed="true"] {
+#LyssnaLyricsPage .QueuePanel .QueueLike[aria-pressed="true"] {
   color: #fff;
 }
 
-#SpicyLyricsPage .QueuePanel .QueueLike[aria-pressed="true"] path {
+#LyssnaLyricsPage .QueuePanel .QueueLike[aria-pressed="true"] path {
   fill: currentColor;
 }
 
-#SpicyLyricsPage .QueuePanel :is(.QueueRemove, .QueueLike):active {
+#LyssnaLyricsPage .QueuePanel :is(.QueueRemove, .QueueLike):active {
   scale: 0.92;
 }
 
-#SpicyLyricsPage .QueuePanel .QueueRow.HasActions:focus-within .QueueActions {
+#LyssnaLyricsPage .QueuePanel .QueueRow.HasActions:focus-within .QueueActions {
   opacity: 1;
   pointer-events: auto;
 }
 
-#SpicyLyricsPage .QueuePanel .QueueRow.HasActions:focus-within .QueueTime {
+#LyssnaLyricsPage .QueuePanel .QueueRow.HasActions:focus-within .QueueTime {
   opacity: 0;
 }
 
-#SpicyLyricsPage .QueuePanel .QueuePlay:focus-visible .QueueArtPlay {
+#LyssnaLyricsPage .QueuePanel .QueuePlay:focus-visible .QueueArtPlay {
   opacity: 1;
 }
 
-#SpicyLyricsPage .QueuePanel .QueueRow.Removing {
+#LyssnaLyricsPage .QueuePanel .QueueRow.Removing {
   opacity: 0.4;
   pointer-events: none;
   transition: opacity 150ms ease;
 }
 
 @media (hover: hover) and (pointer: fine) {
-  #SpicyLyricsPage .QueuePanel .QueueClear:not(.Armed):hover,
-  #SpicyLyricsPage .QueuePanel .QueueRetry:hover {
+  #LyssnaLyricsPage .QueuePanel .QueueClear:not(.Armed):hover,
+  #LyssnaLyricsPage .QueuePanel .QueueRetry:hover {
     background: rgba(255, 255, 255, 0.17);
     color: #fff;
   }
 
-  #SpicyLyricsPage .QueuePanel .QueueRow:hover .QueuePlay {
+  #LyssnaLyricsPage .QueuePanel .QueueRow:hover .QueuePlay {
     background: rgba(255, 255, 255, 0.08);
   }
 
-  #SpicyLyricsPage .QueuePanel .QueueRow:hover .QueueArtPlay {
+  #LyssnaLyricsPage .QueuePanel .QueueRow:hover .QueueArtPlay {
     opacity: 1;
   }
 
-  #SpicyLyricsPage .QueuePanel .QueueRow.HasActions:hover .QueueActions {
+  #LyssnaLyricsPage .QueuePanel .QueueRow.HasActions:hover .QueueActions {
     opacity: 1;
     pointer-events: auto;
   }
 
-  #SpicyLyricsPage .QueuePanel .QueueRow.HasActions:hover .QueueTime {
+  #LyssnaLyricsPage .QueuePanel .QueueRow.HasActions:hover .QueueTime {
     opacity: 0;
   }
 
-  #SpicyLyricsPage .QueuePanel :is(.QueueRemove, .QueueLike):hover {
+  #LyssnaLyricsPage .QueuePanel :is(.QueueRemove, .QueueLike):hover {
     background: rgba(255, 255, 255, 0.16);
   }
 }
 
 /* Without hover, the buttons stay out where a tap can find them. */
 @media (hover: none) {
-  #SpicyLyricsPage .QueuePanel .QueueRow.HasActions .QueueActions {
+  #LyssnaLyricsPage .QueuePanel .QueueRow.HasActions .QueueActions {
     opacity: 1;
     pointer-events: auto;
   }
 
-  #SpicyLyricsPage .QueuePanel .QueueRow.HasActions .QueueTime {
+  #LyssnaLyricsPage .QueuePanel .QueueRow.HasActions .QueueTime {
     opacity: 0;
   }
 }
@@ -522,30 +522,30 @@
    glass as the view controls, a little larger with a shadow under it. The row stays in the list as
    an empty gap where it will land. The rest hold still under the pointer, without hover fills or
    buttons. */
-#SpicyLyricsPage .QueuePanel .QueueInner {
+#LyssnaLyricsPage .QueuePanel .QueueInner {
   position: relative;
 }
 
-#SpicyLyricsPage .QueuePanel .QueueRow {
-  transition: scale 160ms var(--ease-out);
+#LyssnaLyricsPage .QueuePanel .QueueRow {
+  transition: scale 160ms var(--lyssna-ease-out);
 }
 
-#SpicyLyricsPage .QueuePanel .QueueRow.DragGap {
+#LyssnaLyricsPage .QueuePanel .QueueRow.DragGap {
   opacity: 0;
 }
 
-#SpicyLyricsPage .QueuePanel .QueueFloat {
+#LyssnaLyricsPage .QueuePanel .QueueFloat {
   position: absolute;
   top: 0;
   z-index: 6;
   pointer-events: none;
 }
 
-#SpicyLyricsPage .QueuePanel .QueueFloat.Lifted {
+#LyssnaLyricsPage .QueuePanel .QueueFloat.Lifted {
   scale: 1.02;
 }
 
-#SpicyLyricsPage .QueuePanel .QueueFloat .QueuePlay {
+#LyssnaLyricsPage .QueuePanel .QueueFloat .QueuePlay {
   scale: 1;
   /* Lower contrast lifts a dark backdrop and dims a bright one, so white text stays legible on
      both, as on the view controls. */
@@ -557,19 +557,19 @@
     0 12px 28px -12px rgba(8, 10, 18, 0.45),
     inset 0 1px 0 rgba(255, 255, 255, 0.22),
     inset 0 0 0 1px rgba(255, 255, 255, 0.1);
-  transition: box-shadow 160ms var(--ease-out);
+  transition: box-shadow 160ms var(--lyssna-ease-out);
 }
 
 /* Without see-through surfaces, the card is solid. */
 @media (prefers-reduced-transparency: reduce) {
-  #SpicyLyricsPage .QueuePanel .QueueFloat .QueuePlay {
+  #LyssnaLyricsPage .QueuePanel .QueueFloat .QueuePlay {
     background: rgb(64, 64, 68);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
 }
 
-#SpicyLyricsPage .QueuePanel .QueueFloat:not(.Lifted) .QueuePlay {
+#LyssnaLyricsPage .QueuePanel .QueueFloat:not(.Lifted) .QueuePlay {
   box-shadow:
     0 0 0 0 rgba(8, 10, 18, 0),
     inset 0 1px 0 rgba(255, 255, 255, 0.22),
@@ -579,7 +579,7 @@
 /* On the drop the glass clears while the card glides into place (Settle, 240ms), ending as the
    plain row (or its hover fill) that takes over from it. The filter keeps the same functions with
    neutral values so it interpolates instead of snapping. */
-#SpicyLyricsPage .QueuePanel .QueueFloat.Settling .QueuePlay {
+#LyssnaLyricsPage .QueuePanel .QueueFloat.Settling .QueuePlay {
   background: rgba(255, 255, 255, 0);
   -webkit-backdrop-filter: blur(0px) contrast(1) brightness(1) saturate(1);
   backdrop-filter: blur(0px) contrast(1) brightness(1) saturate(1);
@@ -588,40 +588,40 @@
     inset 0 1px 0 rgba(255, 255, 255, 0),
     inset 0 0 0 1px rgba(255, 255, 255, 0);
   transition:
-    background-color 240ms var(--ease-out),
-    -webkit-backdrop-filter 240ms var(--ease-out),
-    backdrop-filter 240ms var(--ease-out),
-    box-shadow 240ms var(--ease-out);
+    background-color 240ms var(--lyssna-ease-out),
+    -webkit-backdrop-filter 240ms var(--lyssna-ease-out),
+    backdrop-filter 240ms var(--lyssna-ease-out),
+    box-shadow 240ms var(--lyssna-ease-out);
 }
 
-#SpicyLyricsPage .QueuePanel .QueueFloat.Settling.SettleHover .QueuePlay {
+#LyssnaLyricsPage .QueuePanel .QueueFloat.Settling.SettleHover .QueuePlay {
   background: rgba(255, 255, 255, 0.08);
 }
 
-#SpicyLyricsPage .QueuePanel.Dragging,
-#SpicyLyricsPage .QueuePanel.Dragging * {
+#LyssnaLyricsPage .QueuePanel.Dragging,
+#LyssnaLyricsPage .QueuePanel.Dragging * {
   cursor: grabbing !important;
   user-select: none;
 }
 
-#SpicyLyricsPage .QueuePanel.Dragging .QueueRow:not(.QueueFloat) .QueuePlay {
+#LyssnaLyricsPage .QueuePanel.Dragging .QueueRow:not(.QueueFloat) .QueuePlay {
   background: transparent;
 }
 
-#SpicyLyricsPage .QueuePanel.Dragging .QueueArtPlay {
+#LyssnaLyricsPage .QueuePanel.Dragging .QueueArtPlay {
   opacity: 0 !important;
 }
 
-#SpicyLyricsPage .QueuePanel.Dragging .QueueActions {
+#LyssnaLyricsPage .QueuePanel.Dragging .QueueActions {
   opacity: 0 !important;
   pointer-events: none !important;
 }
 
-#SpicyLyricsPage .QueuePanel.Dragging .QueueTime {
+#LyssnaLyricsPage .QueuePanel.Dragging .QueueTime {
   opacity: 1 !important;
 }
 
-#SpicyLyricsPage .QueuePanel .QueueAnnounce {
+#LyssnaLyricsPage .QueuePanel .QueueAnnounce {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -630,16 +630,16 @@
   white-space: nowrap;
 }
 
-#SpicyLyricsPage .QueuePanel :is(.QueuePlay, .QueueRemove, .QueueLike, .QueueClear, .QueueRetry):focus-visible {
+#LyssnaLyricsPage .QueuePanel :is(.QueuePlay, .QueueRemove, .QueueLike, .QueueClear, .QueueRetry):focus-visible {
   outline: 2px solid rgba(255, 255, 255, 0.9);
   outline-offset: 2px;
 }
 
-#SpicyLyricsPage .QueuePanel .QueuePlay:focus-visible {
+#LyssnaLyricsPage .QueuePanel .QueuePlay:focus-visible {
   outline-offset: 0;
 }
 
-#SpicyLyricsPage .QueuePanel .QueueMore {
+#LyssnaLyricsPage .QueuePanel .QueueMore {
   margin-top: 1em;
   font-size: 0.78em;
   color: rgba(255, 255, 255, 0.55);
@@ -647,60 +647,60 @@
 
 /* ── Loading, empty, error ────────────────────────────────────────────── */
 
-#SpicyLyricsPage .QueuePanel .QueueStatus:empty {
+#LyssnaLyricsPage .QueuePanel .QueueStatus:empty {
   display: none;
 }
 
-#SpicyLyricsPage .QueuePanel .QueueStatus.Loading {
+#LyssnaLyricsPage .QueuePanel .QueueStatus.Loading {
   display: flex;
   flex-direction: column;
   padding-top: 0.15em;
 }
 
-#SpicyLyricsPage .QueuePanel .QueueSkeletonRow {
+#LyssnaLyricsPage .QueuePanel .QueueSkeletonRow {
   display: grid;
   grid-template-columns: 2.85em minmax(0, 1fr);
   align-items: center;
   column-gap: 0.9em;
   padding: 0.42em 0;
-  animation: SL_QueueSkeleton 1.4s ease-in-out infinite alternate;
+  animation: lyssna-LL_QueueSkeleton 1.4s ease-in-out infinite alternate;
 }
 
-#SpicyLyricsPage .QueuePanel .QueueSkeletonRow:nth-child(2) { animation-delay: 0.1s; }
-#SpicyLyricsPage .QueuePanel .QueueSkeletonRow:nth-child(3) { animation-delay: 0.2s; }
-#SpicyLyricsPage .QueuePanel .QueueSkeletonRow:nth-child(4) { animation-delay: 0.3s; }
-#SpicyLyricsPage .QueuePanel .QueueSkeletonRow:nth-child(5) { animation-delay: 0.4s; }
+#LyssnaLyricsPage .QueuePanel .QueueSkeletonRow:nth-child(2) { animation-delay: 0.1s; }
+#LyssnaLyricsPage .QueuePanel .QueueSkeletonRow:nth-child(3) { animation-delay: 0.2s; }
+#LyssnaLyricsPage .QueuePanel .QueueSkeletonRow:nth-child(4) { animation-delay: 0.3s; }
+#LyssnaLyricsPage .QueuePanel .QueueSkeletonRow:nth-child(5) { animation-delay: 0.4s; }
 
-#SpicyLyricsPage .QueuePanel .QueueSkeletonArt {
+#LyssnaLyricsPage .QueuePanel .QueueSkeletonArt {
   width: 2.85em;
   height: 2.85em;
   border-radius: 0.4em;
   background: rgba(255, 255, 255, 0.09);
 }
 
-#SpicyLyricsPage .QueuePanel .QueueSkeletonText {
+#LyssnaLyricsPage .QueuePanel .QueueSkeletonText {
   display: flex;
   flex-direction: column;
   gap: 0.5em;
 }
 
-#SpicyLyricsPage .QueuePanel .QueueSkeletonText > span {
+#LyssnaLyricsPage .QueuePanel .QueueSkeletonText > span {
   height: 0.7em;
   width: 55%;
   border-radius: 0.35em;
   background: rgba(255, 255, 255, 0.09);
 }
 
-#SpicyLyricsPage .QueuePanel .QueueSkeletonText > span + span {
+#LyssnaLyricsPage .QueuePanel .QueueSkeletonText > span + span {
   width: 32%;
 }
 
-@keyframes SL_QueueSkeleton {
+@keyframes lyssna-LL_QueueSkeleton {
   from { opacity: 0.55; }
   to { opacity: 1; }
 }
 
-#SpicyLyricsPage .QueuePanel .QueueStatus.Message {
+#LyssnaLyricsPage .QueuePanel .QueueStatus.Message {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -708,14 +708,14 @@
   padding-top: 0.6em;
 }
 
-#SpicyLyricsPage .QueuePanel .QueueStatusTitle {
+#LyssnaLyricsPage .QueuePanel .QueueStatusTitle {
   margin: 0;
   font-size: 1.05em;
-  font-weight: var(--w-semibold);
+  font-weight: var(--lyssna-w-semibold);
   color: #fff;
 }
 
-#SpicyLyricsPage .QueuePanel .QueueStatusBody {
+#LyssnaLyricsPage .QueuePanel .QueueStatusBody {
   margin: 0;
   max-width: 26em;
   font-size: 0.86em;
@@ -723,35 +723,35 @@
   color: rgba(255, 255, 255, 0.66);
 }
 
-#SpicyLyricsPage .QueuePanel .QueueRetry {
+#LyssnaLyricsPage .QueuePanel .QueueRetry {
   margin-top: 0.6em;
   font-size: 0.8em;
 }
 
 /* Reduced motion keeps the fades and drops the travel. */
 @media (prefers-reduced-motion: reduce) {
-  #SpicyLyricsPage .ContentBox .QueuePanel .QueueInner,
-  #SpicyLyricsPage .ContentBox .QueuePanel.Open .QueueInner {
+  #LyssnaLyricsPage .ContentBox .QueuePanel .QueueInner,
+  #LyssnaLyricsPage .ContentBox .QueuePanel.Open .QueueInner {
     transform: none;
   }
 
-  #SpicyLyricsPage .QueuePanel :is(.QueuePlay, .QueueRemove, .QueueLike, .QueueClear, .QueueRetry):active {
+  #LyssnaLyricsPage .QueuePanel :is(.QueuePlay, .QueueRemove, .QueueLike, .QueueClear, .QueueRetry):active {
     scale: 1;
   }
 
-  #SpicyLyricsPage .QueuePanel .QueueSkeletonRow {
+  #LyssnaLyricsPage .QueuePanel .QueueSkeletonRow {
     animation: none;
     opacity: 0.8;
   }
 
   /* The card still follows the pointer (that is the drag itself) but doesn't grow as it lifts. */
-  #SpicyLyricsPage .QueuePanel .QueueFloat.Lifted {
+  #LyssnaLyricsPage .QueuePanel .QueueFloat.Lifted {
     scale: 1;
   }
 }
 
 @media (prefers-contrast: more) {
-  #SpicyLyricsPage .QueuePanel :is(.QueueArtists, .QueueTime, .QueueLabelText, .QueueMore, .QueueStatusBody) {
+  #LyssnaLyricsPage .QueuePanel :is(.QueueArtists, .QueueTime, .QueueLabelText, .QueueMore, .QueueStatusBody) {
     color: rgba(255, 255, 255, 0.85);
   }
 }
@@ -762,13 +762,13 @@
    and the two plain glyphs sit in one box and are clipped by the same thumb position, so the plate
    moves and each glyph is handed over at its edge in step (ease-in-out, since it moves on screen). */
 
-#SpicyLyricsPage .ContentBox {
+#LyssnaLyricsPage .ContentBox {
   /* One button: about the capsule's button beside the cover in Cinema View. */
   --ViewSwitchSize: clamp(34px, 3.7cqh, 54px);
   --ViewSwitchInset: clamp(16px, 2.8cqh, 40px);
 }
 
-#SpicyLyricsPage .ContentBox > .ViewSwitch {
+#LyssnaLyricsPage .ContentBox > .ViewSwitch {
   --VSPad: calc(var(--ViewSwitchSize) * 0.11);
   --KnockoutOpacity: 0.82;
   position: absolute;
@@ -791,11 +791,11 @@
      rests; held up while it is being used. */
   opacity: 0.65;
   transition:
-    opacity 0.55s var(--ease-out),
-    scale 0.14s var(--ease-out);
+    opacity 0.55s var(--lyssna-ease-out),
+    scale 0.14s var(--lyssna-ease-out);
 }
 
-#SpicyLyricsPage .ContentBox > .ViewSwitch[data-controls="Hidden"] {
+#LyssnaLyricsPage .ContentBox > .ViewSwitch[data-controls="Hidden"] {
   opacity: 0;
   transition-duration: 0.65s, 0.14s;
 }
@@ -803,7 +803,7 @@
 /* Keyboard focus only: a click leaves focus on the button, and the switch would never sleep again.
    A shown scroll-to-active button wakes it too: a wheel scroll doesn't move the pointer, so the
    controls would otherwise stay asleep with the button inside them. */
-#SpicyLyricsPage .ContentBox > .ViewSwitch:is(
+#LyssnaLyricsPage .ContentBox > .ViewSwitch:is(
     :hover,
     .HasScroll:not([data-view="queue"]),
     :has(:focus-visible)
@@ -812,13 +812,13 @@
   transition-duration: 0.2s, 0.14s;
 }
 
-#SpicyLyricsPage .ContentBox > .ViewSwitch:active {
+#LyssnaLyricsPage .ContentBox > .ViewSwitch:active {
   scale: 0.97;
 }
 
 /* The NowBar on the right puts the lyrics, and the switch, on the left, mirrored: the scroll seat
    stays on the inner side and the romanization seat at the corner end. */
-#SpicyLyricsPage.NowBarSide__Right:not(.CompactMode, .ForcedCompactMode) .ContentBox > .ViewSwitch {
+#LyssnaLyricsPage.NowBarSide__Right:not(.CompactMode, .ForcedCompactMode) .ContentBox > .ViewSwitch {
   right: auto;
   left: var(--ViewSwitchInset);
   flex-direction: row-reverse;
@@ -831,34 +831,34 @@
    view controls, SeatRomanizationToggle). A seat's width opens with the thumb's curve and length.
    The scroll button rides the opening edge and settles in just behind it; the toggle sits in the
    corner while the capsule grows out from it. Each leaves faster than it came. */
-#SpicyLyricsPage .ViewSwitch .ViewSwitchSeat {
+#LyssnaLyricsPage .ViewSwitch .ViewSwitchSeat {
   display: flex;
   flex: none;
   width: 0;
   /* Room for the focus ring, which the capsule's padding covers. */
   overflow: clip;
   overflow-clip-margin: 4px;
-  transition: width 250ms var(--ease-in-out) 40ms;
+  transition: width 250ms var(--lyssna-ease-in-out) 40ms;
 }
 
 /* Each button sits against the capsule's outer edge, with the gap toward the track. */
-#SpicyLyricsPage .ViewSwitch .ViewSwitchSeat_Romanize,
-#SpicyLyricsPage.NowBarSide__Right:not(.CompactMode, .ForcedCompactMode) .ViewSwitch .ViewSwitchSeat_Scroll {
+#LyssnaLyricsPage .ViewSwitch .ViewSwitchSeat_Romanize,
+#LyssnaLyricsPage.NowBarSide__Right:not(.CompactMode, .ForcedCompactMode) .ViewSwitch .ViewSwitchSeat_Scroll {
   justify-content: flex-end;
 }
 
-#SpicyLyricsPage.NowBarSide__Right:not(.CompactMode, .ForcedCompactMode) .ViewSwitch .ViewSwitchSeat_Romanize {
+#LyssnaLyricsPage.NowBarSide__Right:not(.CompactMode, .ForcedCompactMode) .ViewSwitch .ViewSwitchSeat_Romanize {
   justify-content: flex-start;
 }
 
-#SpicyLyricsPage .ViewSwitch.HasScroll:not([data-view="queue"]) .ViewSwitchSeat_Scroll,
-#SpicyLyricsPage.Lyrics_RomanizationAvailable.SpicyRenderer .ViewSwitch .ViewSwitchSeat_Romanize {
+#LyssnaLyricsPage .ViewSwitch.HasScroll:not([data-view="queue"]) .ViewSwitchSeat_Scroll,
+#LyssnaLyricsPage.Lyrics_RomanizationAvailable.SpicyRenderer .ViewSwitch .ViewSwitchSeat_Romanize {
   /* One button and the capsule's gap. */
   width: calc(var(--ViewSwitchSize) * 1.2);
   transition-delay: 0s;
 }
 
-#SpicyLyricsPage .ContentBox > .ViewSwitch .ViewSwitchSeat_Romanize > .ViewControl {
+#LyssnaLyricsPage .ContentBox > .ViewSwitch .ViewSwitchSeat_Romanize > .ViewControl {
   position: relative;
   display: grid;
   place-items: center;
@@ -876,44 +876,44 @@
   scale: 0.8;
   visibility: hidden;
   transition:
-    opacity 120ms var(--ease-out),
-    scale 150ms var(--ease-out),
+    opacity 120ms var(--lyssna-ease-out),
+    scale 150ms var(--lyssna-ease-out),
     background-color 0.2s ease,
     visibility 0s linear 150ms;
 }
 
-#SpicyLyricsPage.Lyrics_RomanizationAvailable.SpicyRenderer .ViewSwitch .ViewSwitchSeat_Romanize > .ViewControl {
+#LyssnaLyricsPage.Lyrics_RomanizationAvailable.SpicyRenderer .ViewSwitch .ViewSwitchSeat_Romanize > .ViewControl {
   opacity: 1;
   scale: 1;
   visibility: visible;
   transition:
-    opacity 180ms var(--ease-out) 110ms,
-    scale 260ms var(--ease-out) 60ms,
+    opacity 180ms var(--lyssna-ease-out) 110ms,
+    scale 260ms var(--lyssna-ease-out) 60ms,
     background-color 0.2s ease,
     visibility 0s;
 }
 
 /* The grouped skin (GroupedViewControls.css) styles the glyph and the disc; without it the toggle
    swaps glyphs, sized like the others here. */
-#SpicyLyricsPage:not(.Exp_GroupedViewControls) .ViewSwitch .ViewSwitchSeat_Romanize > .ViewControl > svg {
+#LyssnaLyricsPage:not(.Exp_GroupedViewControls) .ViewSwitch .ViewSwitchSeat_Romanize > .ViewControl > svg {
   width: 50%;
   height: 50%;
 }
 
-#SpicyLyricsPage .ViewSwitch .ViewSwitchSeat_Romanize > .ViewControl:focus-visible {
+#LyssnaLyricsPage .ViewSwitch .ViewSwitchSeat_Romanize > .ViewControl:focus-visible {
   outline: 2px solid #fff;
   outline-offset: 2px;
 }
 
 /* Over the reset above; a pressed toggle keeps its disc instead (GroupedViewControls.css). */
 @media (hover: hover) and (pointer: fine) {
-  #SpicyLyricsPage .ContentBox > .ViewSwitch .ViewSwitchSeat_Romanize > .ViewControl:not([aria-pressed="true"]):hover {
+  #LyssnaLyricsPage .ContentBox > .ViewSwitch .ViewSwitchSeat_Romanize > .ViewControl:not([aria-pressed="true"]):hover {
     background: rgba(255, 255, 255, 0.12);
     color: #fff;
   }
 }
 
-#SpicyLyricsPage .ViewSwitch .ViewSwitchScroll {
+#LyssnaLyricsPage .ViewSwitch .ViewSwitchScroll {
   display: grid;
   place-items: center;
   flex: none;
@@ -930,64 +930,64 @@
   scale: 0.8;
   visibility: hidden;
   transition:
-    opacity 120ms var(--ease-out),
-    scale 150ms var(--ease-out),
+    opacity 120ms var(--lyssna-ease-out),
+    scale 150ms var(--lyssna-ease-out),
     background-color 0.2s ease,
     visibility 0s linear 150ms;
 }
 
-#SpicyLyricsPage .ViewSwitch.HasScroll:not([data-view="queue"]) .ViewSwitchScroll.Visible {
+#LyssnaLyricsPage .ViewSwitch.HasScroll:not([data-view="queue"]) .ViewSwitchScroll.Visible {
   opacity: 1;
   scale: 1;
   visibility: visible;
   transition:
     /* Held back until the seat is about half open, or the glyph shows beside the thumb first. */
-    opacity 180ms var(--ease-out) 110ms,
-    scale 260ms var(--ease-out) 60ms,
+    opacity 180ms var(--lyssna-ease-out) 110ms,
+    scale 260ms var(--lyssna-ease-out) 60ms,
     background-color 0.2s ease,
     visibility 0s;
 }
 
-#SpicyLyricsPage .ViewSwitch .ViewSwitchScroll > svg {
+#LyssnaLyricsPage .ViewSwitch .ViewSwitchScroll > svg {
   width: 50%;
   height: 50%;
-  transition: rotate 250ms var(--ease-in-out);
+  transition: rotate 250ms var(--lyssna-ease-in-out);
 }
 
-#SpicyLyricsPage .ViewSwitch .ViewSwitchScroll {
+#LyssnaLyricsPage .ViewSwitch .ViewSwitchScroll {
   background: #0d0d0f6b;
   border: 1px solid #ffffff13;
 }
 
 /* The line can cross from below to above while the button is up; the chevron turns to follow.
    Hidden, it takes its new side at once, so it never shows up pointing the old way. */
-#SpicyLyricsPage .ViewSwitch .ViewSwitchScroll.Above > svg {
+#LyssnaLyricsPage .ViewSwitch .ViewSwitchScroll.Above > svg {
   rotate: 180deg;
 }
 
-#SpicyLyricsPage .ViewSwitch .ViewSwitchScroll:not(.Visible) > svg {
+#LyssnaLyricsPage .ViewSwitch .ViewSwitchScroll:not(.Visible) > svg {
   transition: none;
 }
 
-#SpicyLyricsPage .ViewSwitch .ViewSwitchScroll:focus-visible {
+#LyssnaLyricsPage .ViewSwitch .ViewSwitchScroll:focus-visible {
   outline: 2px solid #fff;
   outline-offset: 2px;
 }
 
 @media (hover: hover) and (pointer: fine) {
-  #SpicyLyricsPage .ViewSwitch .ViewSwitchScroll:hover {
+  #LyssnaLyricsPage .ViewSwitch .ViewSwitchScroll:hover {
     background: #0008;
     color: #fff;
   }
 }
 
-#SpicyLyricsPage .ViewSwitch .ViewSwitchTrack {
+#LyssnaLyricsPage .ViewSwitch .ViewSwitchTrack {
   position: relative;
   display: flex;
   gap: calc(var(--ViewSwitchSize) * 0.2);
 }
 
-#SpicyLyricsPage .ViewSwitch .ViewSwitchOption {
+#LyssnaLyricsPage .ViewSwitch .ViewSwitchOption {
   display: block;
   width: var(--ViewSwitchSize);
   height: var(--ViewSwitchSize);
@@ -1000,85 +1000,85 @@
   transition: background-color 0.2s ease;
 }
 
-#SpicyLyricsPage .ViewSwitch .ViewSwitchOption:focus-visible {
+#LyssnaLyricsPage .ViewSwitch .ViewSwitchOption:focus-visible {
   outline: 2px solid #fff;
   outline-offset: 2px;
 }
 
 @media (hover: hover) and (pointer: fine) {
-  #SpicyLyricsPage .ViewSwitch .ViewSwitchOption[aria-checked="false"]:hover {
+  #LyssnaLyricsPage .ViewSwitch .ViewSwitchOption[aria-checked="false"]:hover {
     background: rgba(255, 255, 255, 0.12);
   }
 
-  #SpicyLyricsPage .ViewSwitch .ViewSwitchOption[aria-checked="false"]:hover ~ .ViewSwitchGlyph {
+  #LyssnaLyricsPage .ViewSwitch .ViewSwitchOption[aria-checked="false"]:hover ~ .ViewSwitchGlyph {
     color: #fff;
   }
 
-  #SpicyLyricsPage .ViewSwitch .ViewSwitchOption[aria-checked="true"]:hover ~ .ViewSwitchThumb {
+  #LyssnaLyricsPage .ViewSwitch .ViewSwitchOption[aria-checked="true"]:hover ~ .ViewSwitchThumb {
     --KnockoutOpacity: 0.94;
   }
 }
 
-#SpicyLyricsPage .ViewSwitch .ViewSwitchLayer {
+#LyssnaLyricsPage .ViewSwitch .ViewSwitchLayer {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  transition: clip-path 250ms var(--ease-in-out);
+  transition: clip-path 250ms var(--lyssna-ease-in-out);
 }
 
-#SpicyLyricsPage .ViewSwitch .ViewSwitchLayer > svg {
+#LyssnaLyricsPage .ViewSwitch .ViewSwitchLayer > svg {
   display: block;
   width: 100%;
   height: 100%;
 }
 
-#SpicyLyricsPage .ViewSwitch .ViewSwitchThumb {
+#LyssnaLyricsPage .ViewSwitch .ViewSwitchThumb {
   opacity: var(--KnockoutOpacity);
   clip-path: inset(0 calc(100% - var(--ViewSwitchSize)) 0 0 round calc(var(--ViewSwitchSize) / 2));
   transition:
-    clip-path 250ms var(--ease-in-out),
+    clip-path 250ms var(--lyssna-ease-in-out),
     opacity 0.2s ease;
 }
 
-#SpicyLyricsPage .ViewSwitch .ViewSwitchGlyph_Lyrics {
+#LyssnaLyricsPage .ViewSwitch .ViewSwitchGlyph_Lyrics {
   clip-path: inset(0 100% 0 0);
 }
 
-#SpicyLyricsPage .ViewSwitch .ViewSwitchGlyph_Queue {
+#LyssnaLyricsPage .ViewSwitch .ViewSwitchGlyph_Queue {
   clip-path: inset(0 0 0 var(--ViewSwitchSize));
 }
 
-#SpicyLyricsPage .ViewSwitch[data-view="queue"] .ViewSwitchThumb {
+#LyssnaLyricsPage .ViewSwitch[data-view="queue"] .ViewSwitchThumb {
   clip-path: inset(0 0 0 calc(100% - var(--ViewSwitchSize)) round calc(var(--ViewSwitchSize) / 2));
 }
 
-#SpicyLyricsPage .ViewSwitch[data-view="queue"] .ViewSwitchGlyph_Lyrics {
+#LyssnaLyricsPage .ViewSwitch[data-view="queue"] .ViewSwitchGlyph_Lyrics {
   clip-path: inset(0 var(--ViewSwitchSize) 0 0);
 }
 
-#SpicyLyricsPage .ViewSwitch[data-view="queue"] .ViewSwitchGlyph_Queue {
+#LyssnaLyricsPage .ViewSwitch[data-view="queue"] .ViewSwitchGlyph_Queue {
   clip-path: inset(0 0 0 100%);
 }
 
 /* Reduced motion: the disc changes sides in place, and the seat opens at once with its button
    fading in. */
 @media (prefers-reduced-motion: reduce) {
-  #SpicyLyricsPage .ViewSwitch :is(.ViewSwitchLayer, .ViewSwitchSeat, .ViewSwitchScroll > svg) {
+  #LyssnaLyricsPage .ViewSwitch :is(.ViewSwitchLayer, .ViewSwitchSeat, .ViewSwitchScroll > svg) {
     transition: none;
   }
 
-  #SpicyLyricsPage .ViewSwitch .ViewSwitchScroll,
-  #SpicyLyricsPage .ContentBox > .ViewSwitch .ViewSwitchSeat_Romanize > .ViewControl {
+  #LyssnaLyricsPage .ViewSwitch .ViewSwitchScroll,
+  #LyssnaLyricsPage .ContentBox > .ViewSwitch .ViewSwitchSeat_Romanize > .ViewControl {
     scale: 1;
   }
 
-  #SpicyLyricsPage .ContentBox > .ViewSwitch:active {
+  #LyssnaLyricsPage .ContentBox > .ViewSwitch:active {
     scale: 1;
   }
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  #SpicyLyricsPage .ContentBox > .ViewSwitch {
+  #LyssnaLyricsPage .ContentBox > .ViewSwitch {
     background: rgba(30, 30, 34, 0.92);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
@@ -1086,7 +1086,7 @@
 }
 
 @media (prefers-contrast: more) {
-  #SpicyLyricsPage .ContentBox > .ViewSwitch {
+  #LyssnaLyricsPage .ContentBox > .ViewSwitch {
     background: rgba(20, 20, 24, 0.9);
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6);
     --KnockoutOpacity: 1;
@@ -1096,11 +1096,11 @@
 /* ── Portrait fullscreen (PortraitFullscreen.css): the lyrics run nearly the full width at a size
    set by the window, so the list does too. */
 @media (orientation: portrait) {
-  body > #SpicyLyricsPage.Fullscreen.Exp_PortraitFullscreen:is(.CompactMode, .ForcedCompactMode) .ContentBox .QueuePanel {
+  body > #LyssnaLyricsPage.Fullscreen.Exp_PortraitFullscreen:is(.CompactMode, .ForcedCompactMode) .ContentBox .QueuePanel {
     --QueueFont: calc(var(--PF_LyricsSize) * 0.36);
   }
 
-  body > #SpicyLyricsPage.Fullscreen.Exp_PortraitFullscreen:is(.CompactMode, .ForcedCompactMode) .ContentBox .QueuePanel .QueueInner {
+  body > #LyssnaLyricsPage.Fullscreen.Exp_PortraitFullscreen:is(.CompactMode, .ForcedCompactMode) .ContentBox .QueuePanel .QueueInner {
     max-width: none;
   }
 }

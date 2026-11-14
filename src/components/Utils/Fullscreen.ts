@@ -391,7 +391,7 @@ export const ExitFullscreenElement = async () => {
   setTimeout(Compactify, 1000);
 };
 
-export const EnterSpicyLyricsFullscreen = async () => {
+export const EnterLyssnaLyricsFullscreen = async () => {
   const pageDocument = getPageDocument();
   const mainElement = pageDocument.querySelector<HTMLElement>("#main");
   if (mainElement) {
@@ -486,7 +486,7 @@ function Open(skipDocumentFullscreen: boolean = false, moveElement: boolean = tr
     const handleFullscreen = async () => {
       try {
         if (!skipDocumentFullscreen) {
-          await EnterSpicyLyricsFullscreen();
+          await EnterLyssnaLyricsFullscreen();
         }
         getPageWindow().setTimeout(() => { if (stillOpen()) PageView.AppendViewControls(true); }, 50);
       } catch (err: unknown) {

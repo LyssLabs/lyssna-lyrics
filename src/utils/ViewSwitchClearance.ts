@@ -6,7 +6,7 @@
  * - `ViewSwitchAwake` on the switch's parent (the ContentBox) while the switch shows: the controls
  *   are awake, the pointer is on it, its scroll seat is open, or it holds keyboard focus. The same
  *   states its own opacity follows in QueueView.css.
- * - `--SL-ViewSwitchEnd`, the capsule's right edge in the ContentBox, on each element that opts in
+ * - `--LL-ViewSwitchEnd`, the capsule's right edge in the ContentBox, on each element that opts in
  *   through `ClaimSwitchClearance`. It is written on those elements rather than on the ContentBox,
  *   where every lyric line under it would restyle on each write while a seat opens.
  *
@@ -33,9 +33,9 @@ function isAwake(viewSwitch: HTMLElement): boolean {
 }
 
 function write(target: HTMLElement) {
-  if (target.style.getPropertyValue("--SL-ViewSwitchEnd") === edge) return;
-  if (edge) target.style.setProperty("--SL-ViewSwitchEnd", edge);
-  else target.style.removeProperty("--SL-ViewSwitchEnd");
+  if (target.style.getPropertyValue("--LL-ViewSwitchEnd") === edge) return;
+  if (edge) target.style.setProperty("--LL-ViewSwitchEnd", edge);
+  else target.style.removeProperty("--LL-ViewSwitchEnd");
 }
 
 /** Re-reads the switch's state and right edge, and passes them on. */

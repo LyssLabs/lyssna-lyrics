@@ -2,7 +2,7 @@
 
 ![Lyssna logo](src/assets/lyssna-microphone.svg)
 
-Synchronized lyrics for Spotify through Spicetify. Maintained by iPixelGalaxy, based on the official [Spicy Lyrics plugin](https://github.com/Spikerko/spicy-lyrics) by Spikerko and its contributors. The Lyssna name and logo are used with permission from [Stormanzanii](https://github.com/Stormanzanii/Lyssna).
+Synchronized lyrics for Spotify through Spicetify. Maintained by iPixelGalaxy, based on the official [Spicy Lyrics plugin](https://github.com/Spikerko/spicy-lyrics) by Spikerko and its contributors. The Lyssna name and icon come from [Arashii’s Lyssna project](https://github.com/Stormanzanii/Lyssna).
 
 ## Installation
 

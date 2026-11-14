@@ -176,7 +176,7 @@ function measureTextWidth(text: string, font?: string): number {
 function ApplyMarquee(baseWidth, elementWidth, name) {
     const style = document.createElement("style");
     style.innerHTML = `
-        @keyframes marquee_${name} {
+        @keyframes lyssna-marquee_${name} {
              0%, 10% {
                 transform: translateX(0);
             }
@@ -188,7 +188,7 @@ function ApplyMarquee(baseWidth, elementWidth, name) {
             }
         }
     `;
-    style.id = `spicy-lyrics-marquee_${name}`;
+    style.id = `lyssna-lyrics-lyssna-marquee_${name}`;
     document.head.appendChild(style);
     ActiveMarquees.set(name, style);
     return {
@@ -198,7 +198,7 @@ function ApplyMarquee(baseWidth, elementWidth, name) {
         },
         getElement: () => style,
         getName: () => name,
-        getComputedName: () => `marquee_${name}`,
+        getComputedName: () => `lyssna-marquee_${name}`,
     };
 } */
 
@@ -216,7 +216,7 @@ function SyncMetadataMarquee(MetadataContainer: Element) {
     const spanWidth = Math.max(span.scrollWidth, span.getBoundingClientRect().width);
     const containerWidth = Math.max(container.clientWidth, container.getBoundingClientRect().width);
     if (containerWidth <= 1 || spanWidth <= 1) {
-      container.style.removeProperty("--sl-marquee-distance");
+      container.style.removeProperty("--ll-marquee-distance");
       container.classList.remove("CanMarquee");
       return;
     }
@@ -224,9 +224,9 @@ function SyncMetadataMarquee(MetadataContainer: Element) {
     const shouldMarquee = spanWidth > containerWidth + 1;
     if (shouldMarquee) {
       const overflowDistance = Math.max(0, spanWidth - containerWidth);
-      container.style.setProperty("--sl-marquee-distance", `${-Math.ceil(overflowDistance)}px`);
+      container.style.setProperty("--ll-marquee-distance", `${-Math.ceil(overflowDistance)}px`);
     } else {
-      container.style.removeProperty("--sl-marquee-distance");
+      container.style.removeProperty("--ll-marquee-distance");
     }
     container.classList.toggle("CanMarquee", shouldMarquee);
   };
@@ -329,14 +329,14 @@ function RepositionPlaybackControls() {
 function OpenNowBar(skipSaving: boolean = false) {
   const NowBar = PageContainer?.querySelector(".ContentBox .NowBar");
   if (!NowBar) return;
-  const spicyLyricsPage = PageContainer;
+  const lyssnaLyricsPage = PageContainer;
   UpdateNowBar(true);
   NowBar.classList.add("Active");
 
-  if (spicyLyricsPage) {
-    const wasOpen = spicyLyricsPage.classList.contains("NowBarStatus__Open");
-    spicyLyricsPage.classList.remove("NowBarStatus__Closed");
-    spicyLyricsPage.classList.add("NowBarStatus__Open");
+  if (lyssnaLyricsPage) {
+    const wasOpen = lyssnaLyricsPage.classList.contains("NowBarStatus__Open");
+    lyssnaLyricsPage.classList.remove("NowBarStatus__Closed");
+    lyssnaLyricsPage.classList.add("NowBarStatus__Open");
     if (!wasOpen) Global.Event.evoke("nowbar:open", null);
   }
 
@@ -1227,14 +1227,14 @@ function OpenNowBar(skipSaving: boolean = false) {
       // becomes true and Whentil would poll every ~4ms forever.
       const mediaContentTask = Whentil.When(
         () =>
-          spicyLyricsPage?.querySelector(
+          lyssnaLyricsPage?.querySelector(
             ".ContentBox .NowBar .Header .MediaBox .MediaContent .ViewControls"
           ),
         () => {
           // This polling callback can run after Cinema/PiP/main-page handoff.
           // Never let a stale setup rewrite the new page's controls.
-          if (PageContainer !== spicyLyricsPage || !spicyLyricsPage?.isConnected) return;
-          const MediaBox = spicyLyricsPage.querySelector(
+          if (PageContainer !== lyssnaLyricsPage || !lyssnaLyricsPage?.isConnected) return;
+          const MediaBox = lyssnaLyricsPage.querySelector(
             ".ContentBox .NowBar .Header .MediaBox .MediaContent"
           );
           if (!MediaBox) return;
@@ -1243,7 +1243,7 @@ function OpenNowBar(skipSaving: boolean = false) {
           const viewControls = MediaBox.querySelector(".ViewControls");
 
           // Create a temporary fragment to avoid multiple reflows
-          const fragment = spicyLyricsPage.ownerDocument.createDocumentFragment();
+          const fragment = lyssnaLyricsPage.ownerDocument.createDocumentFragment();
           AppendQueue.forEach((element) => {
             fragment.appendChild(element);
           });
@@ -1284,15 +1284,15 @@ function OpenNowBar(skipSaving: boolean = false) {
 
   /* const DragBox = Fullscreen.IsOpen
         ? document.querySelector(
-              "#SpicyLyricsPage .ContentBox .NowBar .Header .MediaBox .MediaContent"
+              "#LyssnaLyricsPage .ContentBox .NowBar .Header .MediaBox .MediaContent"
           )
         : document.querySelector(
-              "#SpicyLyricsPage .ContentBox .NowBar .Header .MediaBox .MediaImageContainer"
+              "#LyssnaLyricsPage .ContentBox .NowBar .Header .MediaBox .MediaImageContainer"
           ); */
 
   /* {
         const dropZones = document.querySelectorAll(
-            "#SpicyLyricsPage .ContentBox .DropZone"
+            "#LyssnaLyricsPage .ContentBox .DropZone"
         );
 
         DragBox.addEventListener("dragstart", (e) => {
@@ -1300,7 +1300,7 @@ function OpenNowBar(skipSaving: boolean = false) {
             if (missingLyrics) return;
 
             // Don't prevent default - allow the drag to start
-            document.querySelector("#SpicyLyricsPage").classList.add("SomethingDragging");
+            document.querySelector("#LyssnaLyricsPage").classList.add("SomethingDragging");
             if (NowBar.classList.contains("LeftSide")) {
                 dropZones.forEach((zone) => {
                     if (zone.classList.contains("LeftSide")) {
@@ -1324,7 +1324,7 @@ function OpenNowBar(skipSaving: boolean = false) {
         DragBox.addEventListener("dragend", () => {
             const missingLyrics = $currentLyricsData.get() === `NO_LYRICS:${SpotifyPlayer.GetSongId()}`;
             if (missingLyrics) return;
-            document.querySelector("#SpicyLyricsPage").classList.remove("SomethingDragging");
+            document.querySelector("#LyssnaLyricsPage").classList.remove("SomethingDragging");
             dropZones.forEach((zone) => zone.classList.remove("Hidden"));
             DragBox.classList.remove("Dragging");
         });
@@ -1360,9 +1360,9 @@ function OpenNowBar(skipSaving: boolean = false) {
                 NowBar.classList.remove(currentClass);
                 NowBar.classList.add(newClass);
 
-                document.querySelector("#SpicyLyricsPage").classList.remove("NowBarSide__Left");
-                document.querySelector("#SpicyLyricsPage").classList.remove("NowBarSide__Right");
-                document.querySelector("#SpicyLyricsPage").classList.add(`NowBarSide__${newClass.replace("Side", "")}`);
+                document.querySelector("#LyssnaLyricsPage").classList.remove("NowBarSide__Left");
+                document.querySelector("#LyssnaLyricsPage").classList.remove("NowBarSide__Right");
+                document.querySelector("#LyssnaLyricsPage").classList.add(`NowBarSide__${newClass.replace("Side", "")}`);
 
                 const side = zone.classList.contains("RightSide") ? "right" : "left";
 
@@ -1439,11 +1439,11 @@ function CloseNowBar() {
   $isNowBarOpen.set(false);
   CleanUpActiveComponents();
 
-  const spicyLyricsPage = PageContainer;
-  if (spicyLyricsPage) {
-    const wasOpen = spicyLyricsPage.classList.contains("NowBarStatus__Open");
-    spicyLyricsPage.classList.remove("NowBarStatus__Open");
-    spicyLyricsPage.classList.add("NowBarStatus__Closed");
+  const lyssnaLyricsPage = PageContainer;
+  if (lyssnaLyricsPage) {
+    const wasOpen = lyssnaLyricsPage.classList.contains("NowBarStatus__Open");
+    lyssnaLyricsPage.classList.remove("NowBarStatus__Open");
+    lyssnaLyricsPage.classList.add("NowBarStatus__Closed");
     if (wasOpen) Global.Event.evoke("nowbar:close", null);
   }
 
@@ -1510,7 +1510,7 @@ async function getAVCStreamUrl(manifestUrl: string) {
 } */
 
 /* function UpdateNowBar(force = false) {
-    const NowBar = document.querySelector("#SpicyLyricsPage .ContentBox .NowBar");
+    const NowBar = document.querySelector("#LyssnaLyricsPage .ContentBox .NowBar");
     if (!NowBar) return;
 
     //const ArtistsDiv = NowBar.querySelector(".Header .Metadata .Artists");
@@ -1528,7 +1528,7 @@ async function getAVCStreamUrl(manifestUrl: string) {
         if (ActiveArtworkHlsInstance == null) {
             ActiveArtworkHlsInstance = new Hls({ debug: true });
         }
-        //MediaImageContainer.classList.add("Skeletoned");
+        //MediaImageContainer.classList.add("LyssnaSkeletoned");
         const Image = MediaImageContainer.querySelector<HTMLImageElement>("img");
         const Video = MediaImageContainer.querySelector<HTMLVideoElement>("video");
         if (!Image || !Video) return;
@@ -1693,7 +1693,7 @@ function UpdateNowBar(force = false) {
     }
 
     if (toImage) {
-      toImage.classList.remove("MB_anim_enter");
+      toImage.classList.remove("lyssna-MB_anim_enter");
       toImage.classList.add("MB_hidden");
     }
     MediaImageContainer.setAttribute("data-cover-initialized", "1");
@@ -1706,7 +1706,7 @@ function UpdateNowBar(force = false) {
     }
     // A new destination supersedes any interrupted crossfade immediately.
     MediaImageContainer.querySelector(".fi_FromImage")?.classList.remove("MB_anim_fimg");
-    MediaImageContainer.querySelector(".ti_ToImage")?.classList.remove("MB_anim_enter");
+    MediaImageContainer.querySelector(".ti_ToImage")?.classList.remove("lyssna-MB_anim_enter");
     // Local files don't have a remote scdn URL to fetch; use the cover URL directly.
     const displayUrlPromise = isLocalCover
       ? Promise.resolve(finalUrl)
@@ -1753,7 +1753,7 @@ function UpdateNowBar(force = false) {
         // Only run the crossfade animation if fromImage already has an image
         if (canAnimate) {
           if (toImage.classList.contains("containsImage")) {
-            toImage.classList.add("MB_anim_enter");
+            toImage.classList.add("lyssna-MB_anim_enter");
             fromImage?.classList.add("MB_anim_fimg");
           }
 
@@ -1769,13 +1769,13 @@ function UpdateNowBar(force = false) {
 
             if (coverRenderStates.get(MediaImageContainer) !== state || state.generation !== generation) return;
             toImage.classList.add("MB_hidden");
-            toImage.classList.remove("MB_anim_enter");
+            toImage.classList.remove("lyssna-MB_anim_enter");
             MediaImageContainer.setAttribute("data-cover-initialized", "1");
             state.transitionTimer = null;
           }, 1100)
         } else {
           // No fromImage image yet: just set fromImage (or fall back to toImage) without animation
-          toImage.classList.remove("MB_anim_enter");
+          toImage.classList.remove("lyssna-MB_anim_enter");
           toImage.classList.add("MB_hidden");
 
           if (fromImage) {
@@ -1862,8 +1862,8 @@ function UpdateNowBar(force = false) {
         if (span) span.textContent = showName ?? "";
       }
       ArtistsRow?.querySelector(".ArtistYear")?.remove();
-      ArtistsRow?.removeAttribute("data-sl-year");
-      ArtistsRow?.removeAttribute("data-sl-year-pos");
+      ArtistsRow?.removeAttribute("data-ll-year");
+      ArtistsRow?.removeAttribute("data-ll-year-pos");
       ArtistsDiv?.classList.remove("has-year-before", "has-year-after");
     }
 
@@ -1912,9 +1912,9 @@ function UpdateNowBar(force = false) {
         !ArtistsRow ||
         !ArtistsDiv
       ) {
-        ArtistsRow?.removeAttribute("data-sl-year");
-        ArtistsRow?.removeAttribute("data-sl-year-pos");
-        ArtistsRow?.removeAttribute("data-sl-year-pending");
+        ArtistsRow?.removeAttribute("data-ll-year");
+        ArtistsRow?.removeAttribute("data-ll-year-pos");
+        ArtistsRow?.removeAttribute("data-ll-year-pending");
         return;
       }
 
@@ -1931,9 +1931,9 @@ function UpdateNowBar(force = false) {
         ArtistsRow.appendChild(releaseYearElement);
         ArtistsDiv.classList.add("has-year-after");
       }
-      ArtistsRow.setAttribute("data-sl-year", renderedReleaseYear);
-      ArtistsRow.setAttribute("data-sl-year-pos", releaseYearPosition);
-      ArtistsRow.setAttribute("data-sl-year-pending", pending ? "1" : "0");
+      ArtistsRow.setAttribute("data-ll-year", renderedReleaseYear);
+      ArtistsRow.setAttribute("data-ll-year-pos", releaseYearPosition);
+      ArtistsRow.setAttribute("data-ll-year-pending", pending ? "1" : "0");
       if (!pending) lastDisplayedReleaseYear = releaseYear;
     };
 
@@ -2044,17 +2044,17 @@ function Session_NowBar_SetSide() {
   const NowBar = PageContainer?.querySelector(".ContentBox .NowBar");
   if (!NowBar) return;
 
-  const spicyLyricsPage = PageContainer;
-  if (!spicyLyricsPage) return;
+  const lyssnaLyricsPage = PageContainer;
+  if (!lyssnaLyricsPage) return;
 
   const CurrentSide = $nowBarSide.get();
   if (CurrentSide !== "left" && CurrentSide !== "right") $nowBarSide.set("left");
 
-  const right = ResolveNowBarSide(spicyLyricsPage) === "right";
+  const right = ResolveNowBarSide(lyssnaLyricsPage) === "right";
   NowBar.classList.toggle("RightSide", right);
   NowBar.classList.toggle("LeftSide", !right);
-  spicyLyricsPage.classList.toggle("NowBarSide__Right", right);
-  spicyLyricsPage.classList.toggle("NowBarSide__Left", !right);
+  lyssnaLyricsPage.classList.toggle("NowBarSide__Right", right);
+  lyssnaLyricsPage.classList.toggle("NowBarSide__Left", !right);
   setTimeout(() => {
     // console.log("Resizing Lyrics Container");
     GetCurrentLyricsContainerInstance()?.Resize();
@@ -2074,7 +2074,7 @@ function SyncNowBarSide() {
 
 function DeregisterNowBarBtn() {
   /* const nowBarButton = document.querySelector(
-        "#SpicyLyricsPage .ContentBox .ViewControls #NowBarToggle"
+        "#LyssnaLyricsPage .ContentBox .ViewControls #NowBarToggle"
     );
     nowBarButton?.remove(); */
   PageView.AppendViewControls(true);

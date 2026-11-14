@@ -1580,7 +1580,7 @@ function BuildSwitch(doc: Document): HTMLElement {
   root.className = "ViewSwitch";
   const lyrics = GlyphAt(Icons.Lyrics, 0);
   const queue = GlyphAt(Icons.Queue, 48 + SWITCH_GAP);
-  const mask = `SL_ViewSwitchMask_${Math.random().toString(36).slice(2, 8)}`;
+  const mask = `LL_ViewSwitchMask_${Math.random().toString(36).slice(2, 8)}`;
   // Seats on either side of the track: the scroll-to-active button while it is shown
   // (ScrollToActiveLine.ts), and the romanization toggle while the lyrics can be romanized.
   root.innerHTML = `<div class="ViewSwitchSeat ViewSwitchSeat_Scroll"></div><div class="ViewSwitchTrack" role="radiogroup" aria-label="Show"><button type="button" class="ViewSwitchOption" role="radio" data-view="lyrics" aria-label="Lyrics"></button><button type="button" class="ViewSwitchOption" role="radio" data-view="queue" aria-label="Queue"></button>${LayerSvg(

@@ -29,7 +29,7 @@ export function PlaceLyricsFooter(
   spaceGravityMode = false
 ): void {
   footer.classList.toggle("SpaceGravityFooter", spaceGravityMode);
-  const page = lyricsContent?.closest<HTMLElement>("#SpicyLyricsPage");
+  const page = lyricsContent?.closest<HTMLElement>("#LyssnaLyricsPage");
   const cardMode = page?.classList.contains("CardMode") ?? false;
 
   if (spaceGravityMode) {

@@ -6,7 +6,7 @@ import { $buildChannel } from "../../utils/stores.ts";
 type ChannelHosts = [string, string] | [string, string, string];
 type ChannelMap = Record<string, ChannelHosts>;
 
-const CHANNELS_CHANGED_EVENT = "spicy-lyrics:channels-changed";
+const CHANNELS_CHANGED_EVENT = "lyssna-lyrics:channels-changed";
 const DEFAULT_API_HOST = DEFAULT_BUILD_HOST;
 const DEFAULT_STORAGE_HOST = DEFAULT_BUILD_HOST;
 
@@ -50,13 +50,13 @@ export function BuildChannelSettingControl({ onManage }: { onManage: () => void 
   const selectedChannel = channelMap[persistedChannel] ? persistedChannel : DEFAULT_CHANNEL;
 
   return (
-    <div className="sl-sp-btn-group">
-      <span className="sl-sp-select-wrap">
-        <span className="sl-sp-select-sizer" aria-hidden="true">
+    <div className="ll-sp-btn-group">
+      <span className="ll-sp-select-wrap">
+        <span className="ll-sp-select-sizer" aria-hidden="true">
           {Object.keys(channelMap).map((channelName) => <span key={channelName}>{channelName}</span>)}
         </span>
         <select
-          className="sl-sp-select"
+          className="ll-sp-select"
           aria-label="Build Channel"
           value={selectedChannel}
           onChange={(event) => {
@@ -69,7 +69,7 @@ export function BuildChannelSettingControl({ onManage }: { onManage: () => void 
           ))}
         </select>
       </span>
-      <button className="sl-sp-btn" onClick={onManage} type="button">Manage</button>
+      <button className="ll-sp-btn" onClick={onManage} type="button">Manage</button>
     </div>
   );
 }
@@ -184,21 +184,21 @@ export default function BuildChannelPanel() {
   };
 
   return (
-    <div className="sl-build-channel-panel">
-      <div className="sl-build-channel-copy">
-        <span className="sl-build-channel-title">Build Channel</span>
-        <span className="sl-build-channel-description">
+    <div className="ll-build-channel-panel">
+      <div className="ll-build-channel-copy">
+        <span className="ll-build-channel-title">Build Channel</span>
+        <span className="ll-build-channel-description">
           Choose which release stream this install should follow.
         </span>
       </div>
 
-      <div className="sl-build-channel-picker">
+      <div className="ll-build-channel-picker">
         <label>
           <span>Channel</span>
-          <span className="sl-build-channel-channel-control">
-            <span className="sl-build-channel-select-wrap">
+          <span className="ll-build-channel-channel-control">
+            <span className="ll-build-channel-select-wrap">
               <select
-                className="sl-build-channel-select"
+                className="ll-build-channel-select"
                 value={selectedChannel}
                 onChange={(e) => setSelectedChannel(e.currentTarget.value)}
               >
@@ -212,29 +212,29 @@ export default function BuildChannelPanel() {
           </span>
         </label>
         {selectedHosts && (
-          <span className="sl-build-channel-selected-hosts">{hostSummary(selectedHosts)}</span>
+          <span className="ll-build-channel-selected-hosts">{hostSummary(selectedHosts)}</span>
         )}
       </div>
 
-      <div className="sl-build-channel-custom">
-          <div className="sl-build-channel-custom-header">
-            <span className="sl-build-channel-section-title">Branches</span>
+      <div className="ll-build-channel-custom">
+          <div className="ll-build-channel-custom-header">
+            <span className="ll-build-channel-section-title">Branches</span>
           </div>
 
           {branchNames.length > 0 && (
-            <div className="sl-build-channel-custom-list">
+            <div className="ll-build-channel-custom-list">
               {branchNames.map((channelName) => (
-                <div className="sl-build-channel-custom-row" key={channelName}>
-                  <span className="sl-build-channel-option-copy">
-                    <span className="sl-build-channel-option-title">{channelName}</span>
-                    <span className="sl-build-channel-option-description">{hostSummary(channelMap[channelName])}</span>
+                <div className="ll-build-channel-custom-row" key={channelName}>
+                  <span className="ll-build-channel-option-copy">
+                    <span className="ll-build-channel-option-title">{channelName}</span>
+                    <span className="ll-build-channel-option-description">{hostSummary(channelMap[channelName])}</span>
                   </span>
-                  <span className="sl-build-channel-channel-control">
+                  <span className="ll-build-channel-channel-control">
                     {customNames.length > 1 && customNames.includes(channelName) && (
                       <>
                         <button
                           aria-label={`Move ${channelName} up`}
-                          className="sl-build-channel-secondary"
+                          className="ll-build-channel-secondary"
                           disabled={customNames.indexOf(channelName) === 0}
                           onClick={() => moveChannel(channelName, -1)}
                           title="Move up"
@@ -244,7 +244,7 @@ export default function BuildChannelPanel() {
                         </button>
                         <button
                           aria-label={`Move ${channelName} down`}
-                          className="sl-build-channel-secondary"
+                          className="ll-build-channel-secondary"
                           disabled={customNames.indexOf(channelName) === customNames.length - 1}
                           onClick={() => moveChannel(channelName, 1)}
                           title="Move down"
@@ -255,12 +255,12 @@ export default function BuildChannelPanel() {
                       </>
                     )}
                     {channelName === activeChannel ? (
-                      <button className="sl-build-channel-secondary" disabled type="button">
+                      <button className="ll-build-channel-secondary" disabled type="button">
                         Selected
                       </button>
                     ) : (
                       <button
-                        className="sl-build-channel-secondary"
+                        className="ll-build-channel-secondary"
                         onClick={() => {
                           persistBuildChannel(channelName);
                           window.location.reload();
@@ -272,7 +272,7 @@ export default function BuildChannelPanel() {
                     )}
                     {!isBuiltInChannel(channelName) && channelName !== activeChannel && (
                       <button
-                        className="sl-build-channel-danger"
+                        className="ll-build-channel-danger"
                         onClick={() => removeChannel(channelName)}
                         type="button"
                       >
@@ -286,7 +286,7 @@ export default function BuildChannelPanel() {
           )}
 
           {showAddForm && (
-            <div className="sl-build-channel-form">
+            <div className="ll-build-channel-form">
               <label>
                 <span>Branch Name</span>
                 <input value={name} onChange={(e) => setName(e.currentTarget.value)} placeholder="e.g. iPixel Dev" />
@@ -295,7 +295,7 @@ export default function BuildChannelPanel() {
                 <span>API Host</span>
                 <input value={apiHost} onChange={(e) => setApiHost(e.currentTarget.value)} placeholder={DEFAULT_API_HOST} />
               </label>
-              <label className="sl-build-channel-inline">
+              <label className="ll-build-channel-inline">
                 <input checked={sameHost} onChange={(e) => setSameHost(e.currentTarget.checked)} type="checkbox" />
                 <span>Use same host for storage</span>
               </label>
@@ -305,7 +305,7 @@ export default function BuildChannelPanel() {
                   <input value={storageHost} onChange={(e) => setStorageHost(e.currentTarget.value)} placeholder={DEFAULT_STORAGE_HOST} />
                 </label>
               )}
-              <label className="sl-build-channel-inline">
+              <label className="ll-build-channel-inline">
                 <input
                   checked={fixedVersionEnabled}
                   onChange={(e) => setFixedVersionEnabled(e.currentTarget.checked)}
@@ -319,9 +319,9 @@ export default function BuildChannelPanel() {
                   <input value={fixedVersion} onChange={(e) => setFixedVersion(e.currentTarget.value)} placeholder="100.10.x" />
                 </label>
               )}
-              <div className="sl-build-channel-actions">
+              <div className="ll-build-channel-actions">
                 <button
-                  className="sl-build-channel-secondary"
+                  className="ll-build-channel-secondary"
                   onClick={() => {
                     resetForm();
                     setShowAddForm(false);
@@ -330,7 +330,7 @@ export default function BuildChannelPanel() {
                 >
                   Cancel
                 </button>
-                <button className="sl-build-channel-primary" onClick={saveChannel} type="button">
+                <button className="ll-build-channel-primary" onClick={saveChannel} type="button">
                   Save Branch
                 </button>
               </div>
@@ -338,18 +338,18 @@ export default function BuildChannelPanel() {
           )}
 
           {!showAddForm && (
-            <button className="sl-build-channel-secondary" onClick={() => setShowAddForm(true)} type="button">
+            <button className="ll-build-channel-secondary" onClick={() => setShowAddForm(true)} type="button">
               Add Branch
             </button>
           )}
       </div>
 
-      <div className="sl-build-channel-actions">
-        <span className="sl-build-channel-current">
+      <div className="ll-build-channel-actions">
+        <span className="ll-build-channel-current">
           Current: {buildChannel}
           {selectedHosts ? ` · ${hostSummary(selectedHosts)}` : ""}
         </span>
-        <button className="sl-build-channel-primary" onClick={applyAndReload} type="button">
+        <button className="ll-build-channel-primary" onClick={applyAndReload} type="button">
           Apply & Reload
         </button>
       </div>

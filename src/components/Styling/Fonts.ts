@@ -53,7 +53,7 @@ export const ApplyFontPixel = (): HTMLSpanElement | undefined => {
   };
   const inlineStyles = GetInlineStyles(styleProperties);
   fontPixel.style.cssText = inlineStyles;
-  fontPixel.classList.add("SpicyLyricsFontPixel");
+  fontPixel.classList.add("LyssnaLyricsFontPixel");
   const fontPixelString = `Aაا"1١`;
   fontPixel.innerHTML = `
 <span style="font-weight: 900; ${inlineStyles}">${fontPixelString}</span>

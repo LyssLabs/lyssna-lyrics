@@ -16,7 +16,7 @@ type Direction = "forward" | "back";
 
 function renderPanel(targetDocument: Document, element: React.ReactElement, direction?: Direction) {
   const container = targetDocument.createElement("div");
-  container.className = direction ? `sl-sp-page sl-sp-page--${direction}` : "sl-sp-page";
+  container.className = direction ? `ll-sp-page ll-sp-page--${direction}` : "ll-sp-page";
   const root = ReactDOM.createRoot(container);
   flushSync(() => root.render(element));
   return { container, root };
@@ -36,8 +36,8 @@ export function openSettingsPanel(targetDocument: Document = document) {
     currentState = { ...state, scrollTop: currentState.scrollTop };
   };
   const captureScrollPosition = () => {
-    const mainSection = targetDocument.querySelector<HTMLElement>(".slmodal-settingsPanel .sl-modal-main-section");
-    const scrollElement = mainSection?.querySelector<HTMLElement>(".sl-sp-settings-scroll") ?? mainSection;
+    const mainSection = targetDocument.querySelector<HTMLElement>(".llmodal-settingsPanel .ll-modal-main-section");
+    const scrollElement = mainSection?.querySelector<HTMLElement>(".ll-sp-settings-scroll") ?? mainSection;
     if (scrollElement) currentState.scrollTop = scrollElement.scrollTop;
   };
   const saveLocation = () => {
@@ -76,8 +76,8 @@ export function openSettingsPanel(targetDocument: Document = document) {
     const { container, root } = renderPanel(targetDocument, React.createElement(AnimatorBehaviorPanel, { onBack: backToSettings, onClose: () => PopupModal.hide(), eventDocument: targetDocument }), "forward");
     PopupModal.transition({ title: "Animator Behavior", content: container, modalId: "animatorPreview", isLarge: false, onClose: () => { saveLocation(); root.unmount(); restorePreview(); } });
     const positionPreview = () => {
-      const modal = targetDocument.querySelector<HTMLElement>(".slmodal-animatorPreview");
-      const artwork = targetDocument.querySelector<HTMLElement>("#SpicyLyricsPage .NowBar .MediaImageContainer");
+      const modal = targetDocument.querySelector<HTMLElement>(".llmodal-animatorPreview");
+      const artwork = targetDocument.querySelector<HTMLElement>("#LyssnaLyricsPage .NowBar .MediaImageContainer");
       if (!modal || !artwork) return;
       const bounds = artwork.getBoundingClientRect();
       modal.style.setProperty("--animator-preview-center", `${bounds.left + bounds.width / 2}px`);
@@ -86,7 +86,7 @@ export function openSettingsPanel(targetDocument: Document = document) {
     const resizeObserver = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(positionPreview);
     let observedArtwork: HTMLElement | null = null;
     const observeArtwork = () => {
-      const artwork = targetDocument.querySelector<HTMLElement>("#SpicyLyricsPage .NowBar .MediaImageContainer");
+      const artwork = targetDocument.querySelector<HTMLElement>("#LyssnaLyricsPage .NowBar .MediaImageContainer");
       if (!artwork || artwork === observedArtwork) return;
       resizeObserver?.disconnect();
       resizeObserver?.observe(artwork);
@@ -143,7 +143,7 @@ export function registerSettingsMenu(icon: string) {
   if (settingsMenuRegistered) return;
   settingsMenuRegistered = true;
   const name = "Lyssna Lyrics Settings";
-  const itemId = "SpicyLyricsSettingsMenuItem";
+  const itemId = "LyssnaLyricsSettingsMenuItem";
   const profileSelector = '[data-testid="user-widget-link"]';
   const menuSelector = '#context-menu ul[role="menu"]';
 
