@@ -44,7 +44,7 @@ export function useLyricsDB(): UseLyricsDBResult {
         fetchLyrics(uri)
           .then((lyrics) => ApplyLyricsIfCurrent(uri, lyrics))
           .catch((error) => {
-            console.error("Spicy Lyrics: could not refresh lyrics after deleting local TTML", error);
+            console.error("Lyssna Lyrics: could not refresh lyrics after deleting local TTML", error);
           });
       }, 25);
     }

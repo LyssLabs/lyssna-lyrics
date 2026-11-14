@@ -1,7 +1,5 @@
-import { atom, computed, type ReadableAtom } from "nanostores";
+import { computed, type ReadableAtom } from "nanostores";
 import { persistAtom } from "./stores.ts";
-import { getRemoteConfig } from "./remoteConfig.ts";
-import { EdgeLookup } from "./API/EdgeService.ts";
 
 /**
  * ─── Experiments ──────────────────────────────────────────────────────────────
@@ -42,19 +40,6 @@ import { EdgeLookup } from "./API/EdgeService.ts";
  * `hidden` takes the experiment out of the settings panel (and its search) and
  * nothing else: the value still resolves exactly as it would if it were shown.
  *
- * REMOTE OVERRIDES: the edge serves `?lookup=experimentsState`, an array of
- * `{ id, ...fields }`. Any field but `id` is laid over the local entry, so the
- * server can flip a `default`, force a state, hide a row or reword a label without
- * a release. Ids that don't exist locally are ignored — the server can never add
- * an experiment. `null` for a field means "no override". Each successful response
- * replaces the previous one outright, so an entry with only an `id` (or an empty
- * or `null` response) drops whatever was overridden before. Failed fetches keep
- * the last good overrides. Refreshed every `experimentsSync.intervalMs` (remote
- * config, 60 s by default) and whenever the Experiments tab opens.
- *
- * The resolved value is `forceState ?? userChoice ?? default`, where `userChoice`
- * is only set once the user has toggled it themselves — so a remote `default`
- * reaches everyone who never touched the experiment, and no one who did.
  */
 
 /** The groups the Experiments tab lists experiments under, in this order. */
@@ -255,37 +240,19 @@ export const EXPERIMENTS = [
 /** A registry entry, narrowed to its literal `id`. */
 export type RegisteredExperiment = (typeof EXPERIMENTS)[number];
 export type ExperimentId = RegisteredExperiment["id"];
-/** A registry entry with any remote overrides applied — what everything should read. */
+/** A registered experiment with its stable id. */
 export type ResolvedExperiment = Experiment & { id: ExperimentId };
-
-// The category stays local: a value the client doesn't know would drop the row from
-// every heading in the Experiments tab.
-type ExperimentOverride = Partial<Omit<Experiment, "id" | "category">>;
 
 const REGISTRY = EXPERIMENTS as readonly ResolvedExperiment[];
 
-/** The overrides from the last good `experimentsState` response, keyed by id. */
-export const $experimentOverrides = atom<Partial<Record<ExperimentId, ExperimentOverride>>>({});
-
-function resolve(
-  exp: ResolvedExperiment,
-  overrides: Partial<Record<ExperimentId, ExperimentOverride>>
-): ResolvedExperiment {
-  const override = overrides[exp.id];
-  return override ? { ...exp, ...override } : exp;
-}
-
-/** One experiment, with remote overrides applied. */
 export function getExperiment(id: ExperimentId): ResolvedExperiment {
-  const exp = REGISTRY.find((e) => e.id === id);
+  const exp = REGISTRY.find(e => e.id === id);
   if (!exp) throw new Error(`Unknown experiment "${id}"`);
-  return resolve(exp, $experimentOverrides.get());
+  return exp;
 }
 
-/** Every experiment, with remote overrides applied, in registry order. */
 export function getExperiments(): ResolvedExperiment[] {
-  const overrides = $experimentOverrides.get();
-  return REGISTRY.map((exp) => resolve(exp, overrides));
+  return [...REGISTRY];
 }
 
 /** The ones the settings panel lists: everything not `hidden`. */
@@ -304,7 +271,7 @@ export function getAdvancedExperiments(): ResolvedExperiment[] {
   return getVisibleExperiments().filter((exp) => !INLINE_EXPERIMENTS.has(exp.id));
 }
 
-// `undefined` until the user toggles it, so a `default` (local or remote) keeps
+// `undefined` until the user toggles it, so a `default` from this build keeps
 // applying to everyone who never made a choice. Kept even while an experiment is
 // forced, so lifting the force hands back whatever they had picked.
 const userChoices = new Map(
@@ -317,10 +284,7 @@ const userChoices = new Map(
 const stores = new Map<ExperimentId, ReadableAtom<boolean>>(
   REGISTRY.map((exp) => [
     exp.id,
-    computed([userChoices.get(exp.id)!, $experimentOverrides], (choice, overrides) => {
-      const resolved = resolve(exp, overrides);
-      return resolved.forceState ?? choice ?? resolved.default;
-    }),
+    computed(userChoices.get(exp.id)!, choice => exp.forceState ?? choice ?? exp.default),
   ])
 );
 
@@ -349,8 +313,7 @@ export function setExperiment(id: ExperimentId, value: boolean): void {
   userChoices.get(id)?.set(value);
 }
 
-// Every class an experiment has ever owned here, so one renamed by an override
-// doesn't leave its old class stuck on the page.
+// Include inactive experiment classes so toggling one off removes its class.
 const knownPageClasses = new Set<string>(
   REGISTRY.flatMap((exp) => (exp.pageClass ? [exp.pageClass] : []))
 );
@@ -367,111 +330,10 @@ export function ApplyExperimentClasses(el: HTMLElement): void {
 }
 
 /**
- * Run `cb(experiment)` whenever an experiment's resolved value changes — from the
- * user's toggle or a remote override alike. `.listen` rather than `.subscribe`,
- * so this never fires on module load.
+ * Notify on user changes without firing during module initialization.
  */
 export function onExperimentChange(cb: (experiment: ResolvedExperiment) => void): void {
   for (const exp of REGISTRY) {
     stores.get(exp.id)?.listen(() => cb(getExperiment(exp.id)));
   }
-}
-
-/**
- * Run `cb()` whenever the remote overrides change at all. For things that read
- * the definition rather than the value — a `pageClass` renamed while the value
- * stayed put never reaches `onExperimentChange`.
- */
-export function onExperimentDefinitionChange(cb: () => void): void {
-  $experimentOverrides.listen(() => cb());
-}
-
-// ─── Remote overrides ────────────────────────────────────────────────────────
-
-// Timeout and interval come from the remote config's `experimentsSync` group.
-// The timeout is also the longest the Experiments panel can stay locked
-// waiting on a fetch.
-
-// Every overridable field and the type it has to arrive as. Typed against
-// `Experiment`, so adding a field there fails to compile until it's listed here.
-const OVERRIDABLE: Record<keyof ExperimentOverride, "string" | "boolean"> = {
-  label: "string",
-  description: "string",
-  default: "boolean",
-  pageClass: "string",
-  rebuildsNowBar: "boolean",
-  rebuildsLyrics: "boolean",
-  forceState: "boolean",
-  hidden: "boolean",
-};
-
-const KNOWN_IDS = new Set<string>(REGISTRY.map((exp) => exp.id));
-
-function parseOverrides(data: unknown): Partial<Record<ExperimentId, ExperimentOverride>> {
-  const result: Partial<Record<ExperimentId, ExperimentOverride>> = {};
-  if (!Array.isArray(data)) return result;
-
-  for (const entry of data) {
-    if (!entry || typeof entry !== "object") continue;
-    const id = (entry as { id?: unknown }).id;
-    if (typeof id !== "string" || !KNOWN_IDS.has(id)) continue;
-
-    const override: Record<string, unknown> = {};
-    for (const [key, type] of Object.entries(OVERRIDABLE)) {
-      if (!Object.hasOwn(entry, key)) continue;
-      const value = (entry as Record<string, unknown>)[key];
-      if (typeof value === type) override[key] = value;
-    }
-    if (Object.keys(override).length) result[id as ExperimentId] = override as ExperimentOverride;
-  }
-  return result;
-}
-
-let inFlight: Promise<void> | null = null;
-
-/** `true` while an `experimentsState` fetch is in flight. The panel locks on it. */
-export const $experimentsSyncing = atom(false);
-
-/**
- * Fetch and apply the remote overrides. Concurrent calls share one request. A
- * failure of any kind keeps the overrides already in place.
- */
-export function RefreshExperimentOverrides(): Promise<void> {
-  inFlight ??= (async () => {
-    $experimentsSyncing.set(true);
-    try {
-      const res = await EdgeLookup("experimentsState", {
-        timeoutMs: getRemoteConfig().experimentsSync.timeoutMs,
-      });
-      if (!res.ok) return;
-      const next = parseOverrides(await res.json());
-      // The server answers the same thing almost every time; skip the store
-      // write so the panel and listeners don't churn on a no-op.
-      if (JSON.stringify(next) !== JSON.stringify($experimentOverrides.get())) {
-        $experimentOverrides.set(next);
-      }
-    } catch (error) {
-      console.warn("Experiments state refresh failed", error);
-    } finally {
-      inFlight = null;
-      $experimentsSyncing.set(false);
-    }
-  })();
-  return inFlight;
-}
-
-let syncStarted = false;
-
-/** Fetch the overrides now, then every `experimentsSync.intervalMs` for the rest of the session. */
-export function StartExperimentOverridesSync(): void {
-  if (syncStarted) return;
-  syncStarted = true;
-  const tick = async () => {
-    try {
-      await RefreshExperimentOverrides();
-    } finally {
-      setTimeout(tick, getRemoteConfig().experimentsSync.intervalMs);
-    }
-  };
-  void tick();
 }

@@ -1,5 +1,5 @@
 export const SETTING_CATALOG = [
-  ["appearance-custom-font", "Use Custom Font", "Use a custom font instead of the bundled Spicy Lyrics font.", "Appearance"],
+  ["appearance-custom-font", "Use Custom Font", "Use a custom font instead of the default lyrics font.", "Appearance"],
   ["appearance-background-type", "Background Type", "Choose the dynamic, legacy, static image, or color background.", "Appearance"],
   ["appearance-background-blur", "Background Blur", "Soften the static background image.", "Appearance"],
   ["appearance-npv-background", "Display Dynamic Background in Now Playing View", "Show the animated background in the Now Playing panel.", "Appearance"],

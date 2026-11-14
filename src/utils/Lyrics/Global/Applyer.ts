@@ -19,7 +19,6 @@ import { BuildLyricsNotice, HasNotice, SetShownNotice, SyncNoLyricsLayout } from
 import { ClearLyricsContentArrays, isRomanized, LyricsObject, setRomanizedStatus } from "../lyrics.ts";
 import { HideLoaderContainer, PaintLyricsLoader, ShowQueueLoader } from "../LyricsLoader.ts";
 import { PageContainer } from "../../../components/Pages/PageView.ts";
-import { CleanUpIsByCommunity } from "../Applyer/Credits/ApplyIsByCommunity.tsx";
 import { SpotifyPlayer } from "../../../components/Global/SpotifyPlayer.ts";
 import { ApplyMemeFormat, NormalizeLyricsCommaSpacing } from "../ProcessLyrics.ts";
 import Defaults from "../../../components/Global/Defaults.ts";
@@ -289,7 +288,6 @@ export default async function ApplyLyrics(lyricsContent: [object | string, numbe
   ClearLyricsContentArrays();
   ClearScrollSimplebar();
   ClearLyricsPageContainer();
-  CleanUpIsByCommunity();
 
   if (isNotice) {
     $currentLyricsType.set("None");

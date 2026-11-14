@@ -103,6 +103,7 @@ export async function fetchLyricsFromProviders(
   const appleIsInOrder = order.includes("apple");
   let spicyRawPromise: Promise<ExternalLyricsResult | null> | null = null;
   const getSpicyRaw = () => {
+    if (!order.includes("spicy") && !order.includes("apple")) return Promise.resolve(null);
     spicyRawPromise ??= fetchSpicyLyricsRaw(trackInfo.id);
     return spicyRawPromise;
   };

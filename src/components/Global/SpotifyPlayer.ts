@@ -1,3 +1,4 @@
+import { LYSSNA_LOGO } from "../../brand.ts";
 // deno-lint-ignore-file no-explicit-any
 import { createTooltip } from "../../utils/tooltip.ts";
 import Global from "./Global.ts";
@@ -146,7 +147,7 @@ const hasFlacSignature = (value: unknown): boolean => {
   );
 };
 /** What GetCover/GetCoverFrom return when the item has no cover of that size. */
-export const COVER_PLACEHOLDER_URL = "https://images.spikerko.org/SongPlaceholderFull.png";
+export const COVER_PLACEHOLDER_URL = LYSSNA_LOGO;
 
 export type CoverSizes = "standard" | "small" | "large" | "xlarge";
 const COVER_PLACEHOLDER = COVER_PLACEHOLDER_URL;

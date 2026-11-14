@@ -141,7 +141,7 @@ let settingsMenuRegistered = false;
 export function registerSettingsMenu(icon: string) {
   if (settingsMenuRegistered) return;
   settingsMenuRegistered = true;
-  const name = "Spicy Lyrics Settings";
+  const name = "Lyssna Lyrics Settings";
   const itemId = "SpicyLyricsSettingsMenuItem";
   const profileSelector = '[data-testid="user-widget-link"]';
   const menuSelector = '#context-menu ul[role="menu"]';

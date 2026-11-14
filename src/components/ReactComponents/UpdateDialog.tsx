@@ -1,3 +1,4 @@
+import { DISCORD_URL, openExternal } from "../../brand.ts";
 import React, { useEffect, useState } from "react";
 import { coerce, gt, lt, lte } from "semver";
 import { NoticeLink, showNotice } from "./NoticeDialog.tsx";
@@ -6,7 +7,6 @@ const PATCH_NOTES_URL = "https://raw.githubusercontent.com/iPixelGalaxy/spicy-ly
 const PATCH_NOTES_PAGE_URL = "https://github.com/iPixelGalaxy/spicy-lyrics/blob/dev/.change-notes/PATCH_NOTES.md";
 const FEATURE_GUIDE_URL = "https://github.com/iPixelGalaxy/spicy-lyrics/blob/dev/.change-notes/FEATURE_CHANGES.md";
 const FETCH_TIMEOUT_MS = 10_000;
-const DISCORD_URL = "https://discord.com/invite/uqgXU5wh8j";
 
 type PatchNote = { text: string; version: string; };
 
@@ -111,9 +111,10 @@ export function showUpdatedDialog(fromVersion: string, toVersion: string) {
     content,
     wide: true,
     primary: { label: "See all patch notes", onClick: () => window.open(PATCH_NOTES_PAGE_URL, "_blank", "noopener,noreferrer") },
-    extraActions: needsWalkthrough(fromVersion)
-      ? [{ label: "New to Pixel Edition?", onClick: () => window.open(FEATURE_GUIDE_URL, "_blank", "noopener,noreferrer") }]
-      : undefined,
+    extraActions: [
+      { label: "Join our Discord", className: "sl-discord-shine", onClick: () => openExternal(DISCORD_URL) },
+      ...(needsWalkthrough(fromVersion) ? [{ label: "New to Lyssna Lyrics?", onClick: () => openExternal(FEATURE_GUIDE_URL) }] : []),
+    ],
     secondaryLabel: "Close",
   });
 }

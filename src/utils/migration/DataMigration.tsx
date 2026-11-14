@@ -172,7 +172,7 @@ export function showMigrationModal() {
 
           <h2 className="uc-title">Settings Migration Required</h2>
           <p className="uc-subtitle udc-desc">
-            Spicy Lyrics has updated its storage format. Your existing settings need to be migrated before you can continue. This only happens once.
+            Lyssna Lyrics has updated its storage format. Your existing settings need to be migrated before you can continue. This only happens once.
           </p>
 
           <div className="uc-divider" />
@@ -214,7 +214,7 @@ export function showMigrationModal() {
   renderMigrate();
 
   PopupModal.display({
-    title: "Spicy Lyrics",
+    title: "Lyssna Lyrics",
     content: div,
     onClose: () => reactRoot.unmount(),
     closeBtn: false,

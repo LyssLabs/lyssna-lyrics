@@ -1,33 +1,14 @@
 import { GetInstantStore } from "../../modules/Store.ts";
 import Logger from "../Logger.ts";
 import { jitter } from "../jitter.ts";
-import { getRemoteConfig, onRemoteConfigChange } from "../remoteConfig.ts";
+import { getRemoteConfig } from "../remoteConfig.ts";
 
-const breakerLogger = new Logger("Query Breaker");
+const breakerLogger = new Logger("Developer API Breaker");
 
-/**
- * A shared circuit breaker for every request the extension makes.
- *
- * All traffic funnels through `Query()`, so one breaker covers lyrics, session
- * ops and the version check. Its job is to make sure that when the API (or
- * Cloudflare in front of it) starts refusing us, the client gets *quieter*
- * rather than louder — a retry storm from the userbase is what turns a blocked
- * DDoS into an outage.
- *
- * Two things are deliberately true here:
- *
- * - Only **transport-level** signals are consulted: `res.status` and `fetch`
- *   rejections. The per-query `httpStatus` inside the response envelope is
- *   application-level and must never reach this file — the lyrics queue signals
- *   with an envelope 503 on an HTTP 200, and tripping on that would break it.
- * - State is **persisted**. Users restart Spotify precisely when lyrics look
- *   broken, so an in-memory-only breaker would be cleared by the very people
- *   experiencing the outage.
- */
+/** Persistent backoff for public developer API requests. */
 
 /**
- * Tuning, from the remote config's `breaker` group. Read at the point of use so
- * a pushed change applies without a restart.
+ * Tuning comes from the compiled local `breaker` defaults.
  *
  * - `tripStatuses` — transport statuses that mean the edge refused us, not that
  *   nothing is there.
@@ -48,7 +29,7 @@ const breakerLogger = new Logger("Query Breaker");
  * - `probeMinIntervalMs` — minimum spacing between user-initiated lyrics probes
  *   while open.
  * - `probeStaleAfterMs` — a probe still unsettled after this long is treated as
- *   abandoned. `Query` holds every request to its own deadline, so this is a
+ *   abandoned. The developer client holds requests to a deadline, so this is a
  *   backstop rather than the main defence — but it is the one that matters,
  *   because a probe slot left held forever would stop the breaker ever closing
  *   again for the rest of the session.
@@ -73,7 +54,7 @@ const DEFAULT_STATE: BreakerState = {
   lastProbeAt: 0,
 };
 
-const store = GetInstantStore<BreakerState>("SpicyLyrics_QueryBreaker_g1", 1, DEFAULT_STATE);
+const store = GetInstantStore<BreakerState>("LyssnaLyrics_DeveloperApiBreaker_g1", 1, DEFAULT_STATE);
 const state = store.Items;
 
 /**
@@ -229,16 +210,6 @@ function normalizeState(): void {
 
 normalizeState();
 
-// A tightened bound pushed mid-outage should reach clients already waiting out a
-// pause, not only their next trip. Capped rather than cleared: the window was
-// legitimate, it is just longer than the server now wants.
-onRemoteConfigChange(({ breaker }) => {
-  const now = Date.now();
-  if (state.openUntil - now <= breaker.openUntilSanityMs) return;
-  state.openUntil = now + breaker.openUntilSanityMs;
-  store.SaveChanges();
-  breakerLogger.info("Open window capped by a new sanity bound");
-});
 
 /** True when a response status means the edge refused us. */
 export function IsTripStatus(status: number): boolean {

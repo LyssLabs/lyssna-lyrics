@@ -72,11 +72,11 @@ const NOTICES: Record<string, NoticeCopy> = {
   },
   "episode-track": {
     title: "Podcast episodes don't have lyrics",
-    body: "Spicy Lyrics only shows lyrics for songs. Podcast episodes aren't supported.",
+    body: "Lyssna Lyrics only shows lyrics for songs. Podcast episodes aren't supported.",
   },
   "mixed-track": {
     title: "Video podcasts don't have lyrics",
-    body: "Spicy Lyrics only shows lyrics for songs. Video podcast episodes aren't supported.",
+    body: "Lyssna Lyrics only shows lyrics for songs. Video podcast episodes aren't supported.",
   },
   "local-track": {
     title: "No lyrics for local files",

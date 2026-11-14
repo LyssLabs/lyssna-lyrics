@@ -14,7 +14,7 @@ import type { SectionDef } from "./model.ts";
 
 const MODE_LABEL = "TTML Reviewer Mode";
 const MODE_DESCRIPTION =
-  "Saves your settings and strips Spicy Lyrics back to basics. Turn it off to get them back exactly as they were.";
+  "Saves your settings and strips Lyssna Lyrics back to basics. Turn it off to get them back exactly as they were.";
 
 function ModeToggle({ label }: { label: string }) {
   return <Toggle checked={useStore($ttmlReviewer)} onChange={setTtmlReviewer} />;

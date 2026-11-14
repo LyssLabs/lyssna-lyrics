@@ -3,14 +3,13 @@ import React from "react";
 import { $allowHidingSettings, $developerMode, $rememberSettingsMenuLocation } from "../../../utils/stores.ts";
 import { OpenBuildChannelManager } from "../../../utils/openBuildChannelPanel.tsx";
 import { BuildChannelSettingControl } from "../BuildChannelPanel.tsx";
-import { $experimentOverrides, getAdvancedExperiments } from "../../../utils/experiments.ts";
+import { getAdvancedExperiments } from "../../../utils/experiments.ts";
 import { OpenAdvancedExperiments } from "../../../utils/openAdvancedExperiments.tsx";
 import { matches, Row, SectionTitle, Toggle } from "./components.tsx";
 
 const SECTION_NAME = "Advanced";
 
 export default function DeveloperSection({ query, sectionFilter, onOpenHiddenSettings = () => {}, showHidden = false }: { query: string; sectionFilter: string; onOpenHiddenSettings?: () => void; showHidden?: boolean }) {
-  useStore($experimentOverrides);
   const developerMode = useStore($developerMode);
   const allowHidingSettings = useStore($allowHidingSettings);
   const rememberSettingsMenuLocation = useStore($rememberSettingsMenuLocation);

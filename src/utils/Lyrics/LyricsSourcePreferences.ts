@@ -27,7 +27,7 @@ export const LYRICS_SOURCE_PROVIDER_DEFINITIONS: Record<
   spicy: {
     label: "Spicy Lyrics",
     description:
-      "Community-contributed lyrics sourced directly from the Spicy Lyrics community.",
+      "Community-contributed lyrics through the public Spicy Lyrics developer API.",
   },
   musixmatch: {
     label: "Musixmatch",
@@ -37,7 +37,7 @@ export const LYRICS_SOURCE_PROVIDER_DEFINITIONS: Record<
   apple: {
     label: "Apple Music",
     description:
-      "Fetches Apple Music lyrics via the Spicy Lyrics backend when available.",
+      "Fetches Apple Music lyrics through the public developer API when available.",
   },
   spotify: {
     label: "Spotify",

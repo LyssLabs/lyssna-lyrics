@@ -34,10 +34,6 @@ export function PlaceLyricsFooter(
 
   if (spaceGravityMode) {
     footer.classList.remove("PinnedLyricsFooter");
-    if (cardMode) {
-      footer.remove();
-      return;
-    }
     const pinnedFooterLayer = lyricsContent?.parentElement?.querySelector<HTMLElement>(
       ".LyricsPinnedFooter"
     );

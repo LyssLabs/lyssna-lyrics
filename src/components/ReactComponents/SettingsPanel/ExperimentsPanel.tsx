@@ -1,6 +1,5 @@
 import { useStore } from "@nanostores/react";
-import { $experiment, $experimentOverrides, $experimentsSyncing, forcedExperimentState, getAdvancedExperiments, getVisibleExperiments, RefreshExperimentOverrides, setExperiment, type ExperimentId, type ResolvedExperiment } from "../../../utils/experiments.ts";
-import { useEffect } from "react";
+import { $experiment, forcedExperimentState, getAdvancedExperiments, getVisibleExperiments, setExperiment, type ExperimentId, type ResolvedExperiment } from "../../../utils/experiments.ts";
 import { $enableExperimentalWordSync, $externalCinemaLyricsAllowed } from "../../../utils/stores.ts";
 import { Row, SectionTitle, Toggle } from "./components.tsx";
 import { EXPERIMENT_CATEGORIES } from "../../../utils/experiments.ts";
@@ -24,8 +23,6 @@ export default function ExperimentsPanel({ experimentIds, advancedOnly = false, 
 }
 
 export function ExperimentSettings({ title = false, experimentIds, advancedOnly = false, showBuiltIn = true }: { title?: boolean; experimentIds?: readonly ExperimentId[]; advancedOnly?: boolean; showBuiltIn?: boolean }) {
-  useStore($experimentOverrides);
-  useEffect(() => { void RefreshExperimentOverrides(); }, []);
   const experimentalWordSync = useStore($enableExperimentalWordSync);
   const externalCinemaLyricsAllowed = useStore($externalCinemaLyricsAllowed);
   const experiments = advancedOnly ? getAdvancedExperiments() : getVisibleExperiments();
@@ -68,11 +65,10 @@ function ExperimentRow({ experiment }: { experiment: ResolvedExperiment }) {
   const store = $experiment(experiment.id);
   const enabled = useStore(store);
   const forced = forcedExperimentState(experiment.id);
-  const syncing = useStore($experimentsSyncing);
   const heldByReviewer = useStore($ttmlReviewer);
 
   return (
-    <Row settingId={experimentSettingIds[experiment.id]} label={experiment.label} description={experiment.description} disabled={heldByReviewer || syncing || forced !== undefined} disabledReason={heldByReviewer ? REVIEWER_LOCK_REASON : syncing ? "Refreshing experiments" : forced ? "Forced on" : "Forced off"}>
+    <Row settingId={experimentSettingIds[experiment.id]} label={experiment.label} description={experiment.description} disabled={heldByReviewer || forced !== undefined} disabledReason={heldByReviewer ? REVIEWER_LOCK_REASON : forced ? "Forced on" : "Forced off"}>
       <Toggle checked={enabled} onChange={(v) => setExperiment(experiment.id, v)} />
     </Row>
   );

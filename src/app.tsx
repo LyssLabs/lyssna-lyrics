@@ -113,11 +113,9 @@ import Logger from "./utils/Logger.ts";
 import Whentil from "./modules/Whentil.ts";
 import App from "./utils/app.ts";
 import { toCssFontFamily } from "./utils/cssFontFamily.ts";
-import { initSession } from "./utils/SessionManager/index.ts";
 import { CheckForUpdates } from "./utils/version/CheckForUpdates.tsx";
 import { jitter } from "./utils/jitter.ts";
-import { StartExperimentOverridesSync } from "./utils/experiments.ts";
-import { getRemoteConfig, StartRemoteConfigSync } from "./utils/remoteConfig.ts";
+import { getRemoteConfig } from "./utils/remoteConfig.ts";
 
 function bindDefault<T>(store: { get: () => T; listen: (listener: (value: T) => void) => () => void }, assign: (value: T) => void) {
   assign(store.get());
@@ -234,7 +232,6 @@ async function main() {
 
   // First thing: it needs nothing from Spotify, and the sooner it lands the
   // fewer boot-time requests run on last session's values.
-  StartRemoteConfigSync();
 
   if (App.isDev() || $developerMode.get()) {
     appLogger.debug("Boot sequence");
@@ -283,8 +280,6 @@ async function main() {
   if (updatedFromPreviousVersion) showUpdatedDialog(fromVersion, spicyLyricsVersion);
 
   $fromVersion.set(spicyLyricsVersion);
-  void initSession();
-  StartExperimentOverridesSync();
 
   LoadFonts();
   ApplyFontPixel();
@@ -292,7 +287,7 @@ async function main() {
   const skeletonStyle = document.createElement("style");
   skeletonStyle.innerHTML = `
         /* This style is here to prevent the @keyframes removal in the CSS. I still don't know why that's happening. */
-        /* This is a part of Spicy Lyrics */
+        /* Based on Spicy Lyrics */
         @keyframes skeleton {
             to {
                 background-position-x: 0;
@@ -506,7 +501,7 @@ async function main() {
       {
         Registered: false,
         Button: new SpotifyPlayer.Playbar.Button(
-          "Spicy Lyrics",
+          "Lyssna Lyrics",
           Icons.LyricsPage,
           (self) => {
             if (!self.active) {
@@ -1212,7 +1207,7 @@ async function main() {
     }
 
     if (button) {
-      button.Button.tippy.setContent("Spicy Lyrics");
+      button.Button.tippy.setContent("Lyssna Lyrics");
     }
 
     /*
@@ -1221,7 +1216,7 @@ async function main() {
     let wasPageViewTippyShown = false;
     button.Button.tippy.setProps({
       ...Spicetify.TippyProps,
-      content: `Spicy Lyrics`,
+      content: `Lyssna Lyrics`,
       allowHTML: true,
       onShow(instance: any) {
         // Spotify's Code
@@ -1252,7 +1247,7 @@ async function main() {
             TippyElementContent.style.borderRadius = "";
 
             TippyElementContent.innerHTML = ""
-            instance.setContent("Spicy Lyrics");
+            instance.setContent("Lyssna Lyrics");
 
             return;
           };

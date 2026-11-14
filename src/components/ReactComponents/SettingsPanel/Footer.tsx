@@ -1,12 +1,13 @@
+import { DISCORD_URL, WEBSITE_URL, STANDALONE_DOWNLOAD_URL, openExternal } from "../../../brand.ts";
 import { useStore } from "@nanostores/react";
 import React, { useEffect, useState } from "react";
 import Session from "../../Global/Session.ts";
 import { $spicyLyricsVersion } from "../../../utils/stores.ts";
 
 const LINKS = [
-  { label: "Website", url: "https://spicylyrics.org" },
-  { label: "Discord", url: "https://discord.com/invite/uqgXU5wh8j", brand: "88, 101, 242" },
-  { label: "Ko-fi", url: "https://ko-fi.com/spikerko", brand: "255, 94, 138" },
+  { label: "Lyssna", url: WEBSITE_URL },
+  { label: "Discord", url: DISCORD_URL, brand: "88, 101, 242" },
+  { label: "Standalone", url: STANDALONE_DOWNLOAD_URL },
 ];
 
 type UpdateStatus = "checking" | "latest" | "outdated" | "unknown";
@@ -38,16 +39,19 @@ export default function Footer() {
     return () => { cancelled = true; };
   }, []);
 
-  return <div className="sl-sp-footer">
+  return <><section className="sl-standalone-promo" aria-label="Lyssna Standalone">
+    <p>Want a break from the lag? Download Lyssna Standalone today!</p>
+    <a className="sl-sp-btn" href={STANDALONE_DOWNLOAD_URL} target="_blank" rel="noopener noreferrer" onClick={event => { event.preventDefault(); openExternal(STANDALONE_DOWNLOAD_URL); }}>Download Lyssna Standalone</a>
+  </section><div className="sl-sp-footer">
     <div className="sl-sp-footer-links">
-      {LINKS.map(({ label, url, brand }) => <button key={label} type="button" className={`sl-sp-footer-link${brand ? " sl-sp-footer-link--brand" : ""}`} style={brand ? ({ "--brand": brand } as React.CSSProperties) : undefined} onClick={() => window.open(url, "_blank")}><span>{label}</span><ExternalArrow /></button>)}
+      {LINKS.map(({ label, url, brand }) => <button key={label} type="button" className={`sl-sp-footer-link${brand ? " sl-sp-footer-link--brand" : ""}`} style={brand ? ({ "--brand": brand } as React.CSSProperties) : undefined} onClick={() => window.open(url, "_blank", "noopener,noreferrer")}><span>{label}</span><ExternalArrow /></button>)}
     </div>
     <div className="sl-sp-footer-meta">
-      <span className="sl-sp-footer-build">Build: <span className="sl-sp-footer-build-value">Pixel Edition</span></span>
-      <div className="sl-sp-footer-brand"><span className="sl-sp-footer-wordmark">Spicy Lyrics</span><div className="sl-sp-footer-status-row">
+      <span className="sl-sp-footer-build">Build: <span className="sl-sp-footer-build-value">Lyssna Lyrics</span></span>
+      <div className="sl-sp-footer-brand"><span className="sl-sp-footer-wordmark">Lyssna Lyrics</span><div className="sl-sp-footer-status-row">
         {(status === "latest" || status === "outdated") && <><span className={`sl-sp-footer-status sl-sp-footer-status--${status}`}>{status === "latest" ? "Latest" : "Outdated"}</span>{status === "outdated" && <button type="button" className="sl-sp-footer-update" onClick={() => Session.Navigate({ pathname: "/SpicyLyrics/Update" })}>Update</button>}<span className="sl-sp-footer-sep">·</span></>}
         <span className="sl-sp-footer-version">v{version}</span>
       </div></div>
     </div>
-  </div>;
+  </div></>;
 }

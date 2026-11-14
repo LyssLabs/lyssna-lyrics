@@ -1,16 +1,14 @@
-const CHANNEL_PREFIX = "SpicyLyrics-";
-const DEFAULT_API_HOST = "api.spicylyrics.org";
+import { CHANNEL_PREFIX, DEFAULT_BUILD_HOST, readCustomChannels } from "./Channels.ts";
+const DEFAULT_API_HOST = DEFAULT_BUILD_HOST;
 const VERSION_TIMEOUT_MS = 5000;
 
-type ChannelHosts = [string, string] | [string, string, string];
-
 function selectedChannel(): { apiHost: string; fixedVersion: string | null } {
+  const custom = readCustomChannels();
   const name = Spicetify.LocalStorage.get(`${CHANNEL_PREFIX}buildChannel`) ?? "Stable";
   if (name === "Stable" || name === "Beta") return { apiHost: DEFAULT_API_HOST, fixedVersion: null };
 
   try {
-    const custom = JSON.parse(Spicetify.LocalStorage.get(`${CHANNEL_PREFIX}customChannels`) ?? "{}");
-    const hosts = custom?.[name] as ChannelHosts | undefined;
+    const hosts = custom[name];
     if (Array.isArray(hosts) && typeof hosts[0] === "string") {
       return {
         apiHost: hosts[0],

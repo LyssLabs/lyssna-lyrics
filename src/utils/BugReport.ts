@@ -29,8 +29,8 @@ import { $npvLyricsExpanded, $npvLyricsOpen, $romanization } from "./uiState.ts"
  * one Discord message.
  */
 
-export const DISCORD_INVITE_URL = "https://discord.com/invite/uqgXU5wh8j";
-export const DISCORD_BUGS_URL = "https://discord.com/channels/1369992682214264993/1370023518313644193";
+export const DISCORD_INVITE_URL = "https://discord.gg/qfYAsFQawp";
+export const DISCORD_BUGS_URL = "https://discord.gg/qfYAsFQawp";
 
 // Discord's limit is 2,000 characters; the rest is headroom for the user's own text.
 const MAX_REPORT_LENGTH = 1900;
@@ -334,7 +334,7 @@ export function BuildBugReport(options: BugReportOptions = {}): string {
     ["Notice", notice ? `${notice.descriptor}${notice.status ? ` (${notice.status})` : ""}` : undefined],
     ["Answered by", failure?.source],
     ["Error", failure?.detail && RedactForReport(failure.detail)],
-    ["Spicy Lyrics", versionRow(latestVersion)],
+    ["Lyssna Lyrics", versionRow(latestVersion)],
     ["Spotify", Spicetify.Platform?.version],
     ["Spicetify", Spicetify.Config?.version],
     ["Theme", describeTheme()],
@@ -362,7 +362,7 @@ export function BuildBugReport(options: BugReportOptions = {}): string {
     .map(([label, value]) => `${`${label}:`.padEnd(LABEL_WIDTH)}${value}`);
 
   const errors = describeErrors();
-  const heading = notice ? "**Spicy Lyrics notice**" : "**Spicy Lyrics bug report**";
+  const heading = notice ? "**Lyssna Lyrics notice**" : "**Lyssna Lyrics bug report**";
   const footer = "Add a screenshot or clip if you can.";
   const assemble = (errorLines: string[]) =>
     [

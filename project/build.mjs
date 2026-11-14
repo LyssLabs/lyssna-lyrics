@@ -1,7 +1,8 @@
 import { spawnSync } from "node:child_process";
-import { copyFileSync, existsSync, mkdirSync, readdirSync, unlinkSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, unlinkSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { createRequire } from "node:module";
+import { Script } from "node:vm";
 
 const require = createRequire(import.meta.url);
 
@@ -70,7 +71,7 @@ function readProjectName() {
   const configPath = resolve("project/config.ts");
   const config = existsSync(configPath) ? String(require("node:fs").readFileSync(configPath)) : "";
   const match = config.match(/ProjectName\s*=\s*["']([^"']+)["']/);
-  return match?.[1] ?? "spicy-lyrics";
+  return match?.[1] ?? "lyssna-lyrics";
 }
 
 function getBuiltJsFile(distDir, projectName) {
@@ -139,6 +140,12 @@ try {
   const builtFile = getBuiltJsFile(defaultDist, projectName);
   const versionedOutput = join(defaultDist, outputFile);
   copyFileReplacing(builtFile, versionedOutput);
+  const bridgeName = "lyssna-lyrics-bridge.html";
+  const bridgeSource = readFileSync(resolve("website", bridgeName), "utf8");
+  for (const script of bridgeSource.matchAll(/<script>([\s\S]*?)<\/script>/g)) {
+    new Script(script[1], { filename: bridgeName });
+  }
+  copyFileReplacing(resolve("website", bridgeName), join(defaultDist, bridgeName));
   if (!parsedArgs.testBuild) {
     writeFileReplacing(join(defaultDist, "version"), version);
   }
@@ -147,6 +154,7 @@ try {
     const dest = resolve(targetDir);
     mkdirSync(dest, { recursive: true });
     copyFileReplacing(versionedOutput, join(dest, outputFile));
+    copyFileReplacing(resolve("website", bridgeName), join(dest, bridgeName));
     if (!parsedArgs.testBuild) {
       writeFileReplacing(join(dest, "version"), version);
     }

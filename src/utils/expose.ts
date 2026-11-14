@@ -6,7 +6,6 @@ import { OpenLyricsDBPanel } from "./openLyricsDBPanel";
 import { DeepFreeze } from "./utils";
 import { triggerSpicyLyricsFakeUpdate } from "./version/CheckForUpdates";
 import { BreakerDebug } from "./API/CircuitBreaker";
-import { RemoteConfigDebug } from "./remoteConfig";
 import { showUpdatedDialog } from "../components/ReactComponents/UpdateDialog.tsx";
 import GetProgress from "./Gets/GetProgress";
 import ApplyLyrics from "./Lyrics/Global/Applyer.ts";
@@ -56,9 +55,9 @@ export function exposeToWindow() {
             QueryAPI: {
                 breaker: BreakerDebug,
             },
-            remoteConfig: RemoteConfigDebug,
         }
     };
 
-    (window as any).SpicyLyrics = DeepFreeze(api);
+    (window as any).LyssnaLyrics = DeepFreeze(api);
+    (window as any).SpicyLyrics = (window as any).LyssnaLyrics;
 }

@@ -88,7 +88,6 @@ import { SeatRomanizationToggle, SyncViewSwitch } from "../Utils/QueueView.ts";
 import { IsPIP, _IsPIP_after, ClosePopupLyrics } from "../Utils/PopupLyrics.ts";
 import { IsExternalCinemaLyrics, CloseExternalCinemaLyrics } from "../Utils/ExternalCinemaLyrics.ts";
 import { NPVCardOwnsPage, DeRenderNPVCard } from "../Utils/NPVLyrics.ts";
-import { CleanUpIsByCommunity } from "../../utils/Lyrics/Applyer/Credits/ApplyIsByCommunity.tsx";
 import { OpenLyricsDBPanel } from "../../utils/openLyricsDBPanel.tsx";
 import { openSettingsPanel } from "../../utils/settings.ts";
 import Logger from "../../utils/Logger.ts";
@@ -98,7 +97,6 @@ import {
   ApplyExperimentClasses,
   isExperimentEnabled,
   onExperimentChange,
-  onExperimentDefinitionChange,
 } from "../../utils/experiments.ts";
 import { lyricsSizeChanged, romanizedRowsToggled, triggerRemeasureLV } from "../../utils/Lyrics/LyricsVirtualizer.ts";
 import { $animatorPreset } from "../../utils/Lyrics/Animator/Tuning.ts";
@@ -561,7 +559,6 @@ async function DestroyPage() {
   $lyricsContainerExists.set(false);
   $lyricsRendererPaused.set(false);
   DestroyAllLyricsContainers();
-  CleanUpIsByCommunity();
 
   const legacyPage = document.querySelector<HTMLElement>(
     ":is(.Root__main-view, :where(#main-view)) .main-view-container .os-host"
@@ -589,7 +586,6 @@ export let LyricsApplied = false;
 Global.Event.listen("lyrics:not-apply", () => {
   CleanupScrollEvents();
   LyricsApplied = false;
-  CleanUpIsByCommunity();
 });
 
 Global.Event.listen("lyrics:apply", ({ Type }: { Type: string }) => {
@@ -1056,7 +1052,7 @@ function AppendViewControls(ReAppend: boolean = false) {
         if (!IsPIP) {
           Tooltips.Settings = createTooltip(settingsButton, {
             ...tippyProps(settingsButton),
-            content: `Spicy Lyrics Settings`,
+            content: `Lyssna Lyrics Settings`,
           });
         }
         settingsButton.addEventListener("click", () => {
@@ -1262,9 +1258,6 @@ onExperimentChange((experiment) => {
   }
 });
 
-onExperimentDefinitionChange(() => {
-  if (PageContainer) ApplyExperimentClasses(PageContainer);
-});
 
 $pinnedFooterMode.listen(() => {
   if (!PageContainer) return;

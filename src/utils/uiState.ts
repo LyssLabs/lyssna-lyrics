@@ -19,7 +19,7 @@ function saveUiStateBlob(obj: Record<string, any>) {
   try {
     Spicetify.LocalStorage.set(UI_STATE_KEY, JSON.stringify(obj));
   } catch (error) {
-    console.warn("Spicy Lyrics: could not save interface state", error);
+    console.warn("Lyssna Lyrics: could not save interface state", error);
   }
 }
 

@@ -1,3 +1,4 @@
+import { CHANNEL_PREFIX, DEFAULT_BUILD_HOST, readCustomChannels, isAllowedBuildHost } from "../../utils/version/Channels.ts";
 import { useStore } from "@nanostores/react";
 import React, { useEffect, useMemo, useState } from "react";
 import { $buildChannel } from "../../utils/stores.ts";
@@ -5,11 +6,10 @@ import { $buildChannel } from "../../utils/stores.ts";
 type ChannelHosts = [string, string] | [string, string, string];
 type ChannelMap = Record<string, ChannelHosts>;
 
-const LEGACY_PREFIX = "SpicyLyrics-";
 const CUSTOM_CHANNELS_KEY = "customChannels";
 const CHANNELS_CHANGED_EVENT = "spicy-lyrics:channels-changed";
-const DEFAULT_API_HOST = "api.spicylyrics.org";
-const DEFAULT_STORAGE_HOST = "public.storage.spicylyrics.org";
+const DEFAULT_API_HOST = DEFAULT_BUILD_HOST;
+const DEFAULT_STORAGE_HOST = DEFAULT_BUILD_HOST;
 
 const BUILT_IN_CHANNELS: ChannelMap = {
   Stable: [DEFAULT_API_HOST, DEFAULT_STORAGE_HOST],
@@ -18,38 +18,17 @@ const BUILT_IN_CHANNELS: ChannelMap = {
 
 
 function legacyGet(key: string): string | null {
-  return Spicetify.LocalStorage.get(`${LEGACY_PREFIX}${key}`);
+  return Spicetify.LocalStorage.get(`${CHANNEL_PREFIX}${key}`);
 }
 
 function legacySet(key: string, value: string): void {
-  Spicetify.LocalStorage.set(`${LEGACY_PREFIX}${key}`, value);
+  Spicetify.LocalStorage.set(`${CHANNEL_PREFIX}${key}`, value);
 }
 
 function notify(message: string, isError = false): void {
   Spicetify.showNotification?.(message, isError);
 }
 
-function readCustomChannels(): ChannelMap {
-  try {
-    const raw = legacyGet(CUSTOM_CHANNELS_KEY);
-    if (!raw) return {};
-    const parsed = JSON.parse(raw);
-    const clean: ChannelMap = {};
-    for (const [name, hosts] of Object.entries(parsed)) {
-      if (
-        typeof name === "string" &&
-        Array.isArray(hosts) &&
-        (hosts.length === 2 || hosts.length === 3) &&
-        hosts.every((host) => typeof host === "string")
-      ) {
-        clean[name] = hosts as ChannelHosts;
-      }
-    }
-    return clean;
-  } catch {
-    return {};
-  }
-}
 
 function saveCustomChannels(channels: ChannelMap): void {
   legacySet(CUSTOM_CHANNELS_KEY, JSON.stringify(channels));
@@ -57,6 +36,7 @@ function saveCustomChannels(channels: ChannelMap): void {
 }
 
 function getInitialChannel(fallback: string): string {
+  readCustomChannels();
   return legacyGet("buildChannel") ?? fallback;
 }
 
@@ -159,6 +139,10 @@ export default function BuildChannelPanel() {
     const cleanStorageHost = (sameHost ? apiHost.trim() : storageHost.trim()) || DEFAULT_STORAGE_HOST;
     const cleanFixedVersion = fixedVersion.trim();
 
+    if (!isAllowedBuildHost(cleanApiHost) || !isAllowedBuildHost(cleanStorageHost)) {
+      notify("Choose a Lyssna build host. Official plugin services are unsupported.", true);
+      return;
+    }
     if (!cleanName) {
       notify("Channel name is required", true);
       return;

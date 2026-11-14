@@ -1,64 +1,33 @@
+# Lyssna Lyrics
 
+![Lyssna logo](src/assets/lyssna.png)
 
-# iPixel Spicy Lyrics Dev Channel
-
-> **This is an unofficial development build of Spicy Lyrics**, maintained by iPixelGalaxy (but imma be so fr, this is claude code doing all the heavy lifting, I'm just a guy with too many ideas).
-> It runs alongside the official version and gives you access to features before they ship to stable.
-
----
+Synchronized lyrics for Spotify through Spicetify. Maintained by iPixelGalaxy, based on the official [Spicy Lyrics plugin](https://github.com/Spikerko/spicy-lyrics) by Spikerko and its contributors. The Lyssna name and logo are used with permission from [Stormanzanii](https://github.com/Stormanzanii/Lyssna).
 
 ## Installation
 
-### Step 1 — Remove Spicy Lyrics from the Marketplace
+1. Install [Spicetify](https://spicetify.app). Disable any existing Spicy Lyrics extension first; both plugins use the same lyric page and shared settings.
+2. Download [lyssna-lyrics.mjs](https://raw.githubusercontent.com/iPixelGalaxy/spicy-lyrics/dev/builds/lyssna-lyrics.mjs) into your Spicetify Extensions directory. Run `spicetify config-dir` to find it.
+3. Enable the extension:
 
-> Skip this step if you haven't installed Spicy Lyrics before.
-
-If you have Spicy Lyrics installed from the **Spicetify Marketplace**, uninstall it first — running both at the same time will cause conflicts.
-
-1. Open Spicetify Marketplace
-2. Go to the **Extensions** tab and find Spicy Lyrics
-3. Click **Uninstall**
-
----
-
-### Step 2 — Install this build manually
-
-1. Make sure [Spicetify](https://spicetify.app) is installed
-2. Download the extension file: **[spicy-lyrics-pixel.mjs](https://ipixelgalaxy.com/TempFiles/spicy-lyrics-pixel.mjs)**
-3. Move the file into your Spicetify Extensions directory
-   - Find the correct path here: [spicetify.app — Manual Installation](https://spicetify.app/docs/customization/extensions#manual-installation)
-   - Or run `spicetify config-dir` to open the path
-4. Run the following commands in your terminal:
    ```
-   spicetify config extensions spicy-lyrics-pixel.mjs
+   spicetify config extensions lyssna-lyrics.mjs
    spicetify apply
    ```
 
----
+Existing installations using this fork's old loader continue through its compatibility entrypoint. Do not enable both loaders at once.
 
-### Step 3 — Connect to the iPixel Dev build channel
+## Settings and lyric sources
 
-Once the plugin is loaded, you need to point it at the dev server:
+Shared settings keep the existing `SL:settings` format and legacy `SpicyLyrics-` keys, so switching between Lyssna Lyrics and the official plugin preserves common choices. Build channels are stored separately, with existing custom fork channels copied over. Official build hosts are excluded. The default Lyssna build host remains `ipixelgalaxy.com`.
 
-1. In Spotify, go to **Settings** (the cog icon in the top-right)
-2. Open **Spicy Lyrics Settings**, then open **Advanced**
-3. Find **Build Channel** at the top of the section and click **Manage**
-4. Click **Add Branch**
-5. Name it **`Canary`** or **`iPixel Dev`**
-6. Enter `ipixelgalaxy.com` as the **API Host**
-7. Enable **Use the same host for both API and Storage**
-8. Click **Save Branch**
-9. Click **Switch** beside `iPixel Dev` — Spicy Lyrics reloads on the dev branch
+Community and Apple Music lyrics use the public developer API with Lyssna's publishable client key through a page hosted on this project's website. The key owner must allow `https://ipixelgalaxy.com`; see [integration setup](docs/lyssna-lyrics-migration.md). Both apps share its allowance. Provider, maker, and uploader credits appear with the lyrics. The private plugin API, sessions, embedded contributor profiles, remote configuration, and remote experiment controls are removed. Motion artwork falls back to static covers because its signing service belonged to the private integration; saved artwork preferences remain available for compatibility. Spotify Canvas still works.
 
----
+## Lyssna Standalone
 
-## Staying on the Official Version
+Want a break from the lag? Download Lyssna Standalone today!
 
-This build is designed to **coexist with the official Spicy Lyrics release**. If you run into a serious bug or just want to fall back, you can switch back to the Stable channel from within the Build Channel settings at any time — no reinstall needed.
-
----
-
-> Built on the `dev` branch. Features here may be unstable, incomplete, or subject to change before reaching the official release (if ever 💀, lowkey, this is just my playground).
+[Download for Windows](https://clypdat.xyz/lyssna-latest/lyssna-setup.exe) · [Join Discord](https://discord.gg/qfYAsFQawp)
 
 ## What's New
 

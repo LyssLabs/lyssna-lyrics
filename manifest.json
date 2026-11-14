@@ -1,15 +1,19 @@
 [
   {
-    "name": "Spicy Lyrics",
-    "description": "Spicy Lyrics is a better lyrics experience (compared to Spotify Lyrics) for Spotify. It brings word-by-word lyrics (karaoke style), beautiful animations, and more. Come and give it a try!",
-    "preview": "./previews/V3latest_smallcard_preview.webp",
-    "main": "./builds/spicy-lyrics.mjs",
+    "name": "Lyssna Lyrics",
+    "description": "Synchronized lyrics for Spotify, based on Spicy Lyrics, with custom animation presets, multiple lyric sources, and popout windows.",
+    "preview": "./src/assets/lyssna.png",
+    "main": "./builds/lyssna-lyrics.mjs",
     "readme": "README.md",
-    "branch": "main",
-    "authors": [{ "name": "Spikerko", "url": "https://github.com/Spikerko" }],
+    "branch": "dev",
+    "authors": [
+      {
+        "name": "iPixelGalaxy",
+        "url": "https://github.com/iPixelGalaxy"
+      }
+    ],
     "tags": [
       "lyrics",
-      "spicy-lyrics",
       "word-to-word-lyrics",
       "karaoke",
       "spicetify",
@@ -17,7 +21,6 @@
       "syllable",
       "smooth",
       "beautiful",
-      "spicy",
       "animated",
       "background",
       "backgrounds",
@@ -26,7 +29,8 @@
       "romanization",
       "romaji",
       "pinyin",
-      "customizable"
+      "customizable",
+      "lyssna"
     ]
   }
 ]

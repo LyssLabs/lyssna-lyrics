@@ -21,7 +21,7 @@ function saveSettingsBlob(obj: Record<string, any>) {
   try {
     Spicetify.LocalStorage.set(SETTINGS_KEY, JSON.stringify(obj));
   } catch (error) {
-    console.warn("Spicy Lyrics: could not save settings", error);
+    console.warn("Lyssna Lyrics: could not save settings", error);
   }
 }
 

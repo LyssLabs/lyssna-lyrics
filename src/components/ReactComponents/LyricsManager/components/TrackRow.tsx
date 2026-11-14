@@ -1,3 +1,4 @@
+import { LYSSNA_LOGO } from "../../../../brand.ts";
 import React, { useState } from "react";
 import type { ProcessedTrack } from "../utils/getTracks";
 import { IconButton } from "./IconButton";
@@ -18,7 +19,7 @@ function pickCoverUrl(track: ProcessedTrack): string {
     if (art) return spotifyImageUriToUrl(art.uri);
   }
   if (track.coverArt.length > 0) return spotifyImageUriToUrl(track.coverArt[0].uri);
-  return "https://images.spikerko.org/SongPlaceholderFull.png";
+  return LYSSNA_LOGO;
 }
 
 type TrackRowProps = {
@@ -59,7 +60,7 @@ export function TrackRow({ uri, track, loading, isCurrentlyPlaying, onPlay, onDo
 
   const title = track?.name ?? uri;
   const artists = track ? track.artists.map((a) => a.name).join(", ") : "";
-  const coverUrl = track ? pickCoverUrl(track) : "https://images.spikerko.org/SongPlaceholderFull.png";
+  const coverUrl = track ? pickCoverUrl(track) : LYSSNA_LOGO;
 
   return (
     <div className={`sl-ldb-row${isCurrentlyPlaying ? " sl-ldb-row--playing" : ""}`}>
@@ -71,7 +72,7 @@ export function TrackRow({ uri, track, loading, isCurrentlyPlaying, onPlay, onDo
         height={40}
         loading="lazy"
         onError={(e) => {
-          (e.currentTarget as HTMLImageElement).src = "https://images.spikerko.org/SongPlaceholderFull.png";
+          (e.currentTarget as HTMLImageElement).src = LYSSNA_LOGO;
         }}
       />
       <div className="sl-ldb-row__info">

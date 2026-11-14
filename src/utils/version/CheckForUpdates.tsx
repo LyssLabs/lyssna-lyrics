@@ -1,3 +1,4 @@
+import { DISCORD_URL, openExternal } from "../../brand.ts";
 import React from "react";
 import { isDev } from "../../components/Global/Defaults.ts";
 import Session from "../../components/Global/Session.ts";
@@ -42,7 +43,7 @@ function showUpdateDismissWarning(currentVersion: any) {
 function presentUpdateAvailable(currentVersion: any, latestVersion: any) {
   let viewClicked = false;
 
-  toast(latestVersion?.Text ? `Spicy Lyrics ${latestVersion.Text} is out` : "A Spicy Lyrics update is out", {
+  toast(latestVersion?.Text ? `Lyssna Lyrics ${latestVersion.Text} is out` : "A Lyssna Lyrics update is out", {
     className: "sl-update-toast",
     description: currentVersion?.Text ? `You're on ${currentVersion.Text}.` : undefined,
     duration: Infinity,
@@ -91,6 +92,7 @@ function showUpdateModal(currentVersion: any, latestVersion: any, origin?: DOMRe
     title: latest ? `Version ${latest} is out` : "An update is out",
     content,
     primary: { label: "Update and reload", onClick: startUpdate },
+    extraActions: [{ label: "Join our Discord", className: "sl-discord-shine", onClick: () => openExternal(DISCORD_URL) }],
     secondaryLabel: "Not now",
     onDismiss: () => showUpdateDismissWarning(currentVersion),
     origin,

@@ -7,7 +7,6 @@ import type { MotionVerdict } from "./ArtworkPlacement.ts";
 // Album id → UPC (album metadata) → a URL signed for 5 minutes, for the NowBar cover and the stage.
 // A missing file and an expired signature both fail with code 4; only a fresh URL failing means none.
 
-const SIGN_URL = "https://artworkapi.spicylyrics.org/client/enqueueRequest?path=gtin14/";
 const ALBUM_METADATA_URL = (gid: string) =>
   `https://spclient.wg.spotify.com/metadata/4/album/${gid}?market=from_token`;
 const SIGNED_URL_CACHE_SIZE = 64;
@@ -78,10 +77,6 @@ export function GetAlbumUpc(albumId: string): Promise<string | null> {
   return request;
 }
 
-type SignResponse = {
-  aw?: { sig?: unknown; delivery?: unknown };
-  cfg?: { base?: unknown; parcelValidation?: unknown };
-};
 
 export type ArtworkUrl = { url: string; reused: boolean };
 
@@ -113,22 +108,9 @@ export function ForgetArtworkUrl(upc: string, url: string) {
   if (signedUrls.get(upc) === url) signedUrls.delete(upc);
 }
 
-// A plain fetch with no custom headers.
-async function signArtworkUrl(upc: string): Promise<string | null> {
-  try {
-    const res = await fetch(SIGN_URL + upc, {
-      cache: "no-store",
-      signal: AbortSignal.timeout(getRemoteConfig().animatedArtwork.signTimeoutMs),
-    });
-    if (!res.ok) return null;
-    const { aw, cfg } = (await res.json()) as SignResponse;
-    const parts = [cfg?.base, aw?.delivery, cfg?.parcelValidation, aw?.sig];
-    if (!parts.every((part) => typeof part === "string" && part.length > 0)) return null;
-    // `sig` arrives percent-encoded already.
-    return `https${cfg!.base}${aw!.delivery}?${cfg!.parcelValidation}=${aw!.sig}`;
-  } catch {
-    return null;
-  }
+// No public motion-artwork endpoint is available. Keep saved preferences for compatibility.
+async function signArtworkUrl(_upc: string): Promise<string | null> {
+  return null;
 }
 
 export function IsMissed(upc: string): boolean {

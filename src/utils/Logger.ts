@@ -12,7 +12,7 @@ const recentErrors: RecentError[] = [];
 
 // Stack frames from our own bundle, whichever way it was loaded (the public build,
 // the Marketplace's copy, or the dev server).
-const OWN_SCRIPT = /spicy-lyrics/i;
+const OWN_SCRIPT = /(?:lyssna|spicy)-lyrics/i;
 
 /**
  * Takes out what could identify someone before an error is kept for a bug report:

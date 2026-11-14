@@ -8,6 +8,7 @@ import InterfaceSection from "./InterfaceSection.tsx";
 import LyricsSection from "./LyricsSection.tsx";
 import SourcesSection from "./SourcesSection.tsx";
 import Footer from "./Footer.tsx";
+import CreditsSection from "./CreditsSection.tsx";
 import { BugReportPane } from "./BugReportSection.tsx";
 import { ReviewerPane } from "./ReviewerSection.tsx";
 import { SearchBar, ShowHiddenSettingsInSearchContext } from "./components.tsx";
@@ -22,6 +23,7 @@ const TABS = [
   ["Advanced", "Advanced", AdvancedIcon],
   ["Got a Bug?", "Got a Bug?", BugIcon],
   ["TTML Reviewer", "TTML Reviewer", ReviewerIcon],
+  ["Credits", "Credits", SourcesIcon],
 ] as const;
 
 export type SettingsPanelState = { query: string; sectionFilter: string; scrollTop: number };
@@ -89,6 +91,7 @@ export default function SettingsPanel({ onOpenHiddenSettings, onManageAnimator, 
                 <SourcesSection query={query} sectionFilter={searching ? "All" : sectionFilter} />
                 <DeveloperSection query={query} sectionFilter={searching ? "All" : sectionFilter} onOpenHiddenSettings={onOpenHiddenSettings ?? (() => {})} />
                 {(sectionFilter === "Got a Bug?" || (searching && /bug|report|lag|slow|performance/i.test(query))) && <BugReportPane />}
+                {(sectionFilter === "Credits" || (searching && /credit|lyssna|spicy|standalone/i.test(query))) && <CreditsSection />}
                 {(sectionFilter === "TTML Reviewer" || (searching && /ttml|reviewer/i.test(query))) && <ReviewerPane labelOf={(id) => id.replace(/([a-z])([A-Z])/g, "$1 $2")} />}
               </div>
             </ShowHiddenSettingsInSearchContext.Provider>

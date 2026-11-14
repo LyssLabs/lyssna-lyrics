@@ -42,7 +42,7 @@ export default function AppearanceSection({ query, sectionFilter, showHidden = f
   if (sectionFilter !== "All" && sectionFilter !== SECTION_NAME) return null;
 
   const visible = (id: string) => showHidden ? hiddenSettingIds.includes(id) : !allowHidingSettings || !hiddenSettingIds.includes(id) || Boolean(query.trim());
-  const r1 = visible("appearance-custom-font") && matches(query, "Use Custom Font", "Use a custom font instead of the bundled Spicy Lyrics font.");
+  const r1 = visible("appearance-custom-font") && matches(query, "Use Custom Font", "Use a custom font instead of the default lyrics font.");
   const r2 = visible("appearance-custom-font") && customFontEnabled && matches(query, "Font Name", "Font family name to use for lyrics.");
   const r3 = visible("appearance-background-type") && matches(query, "Background Type", "Choose the dynamic, legacy, static image, or color background.");
   const r4 = visible("appearance-npv-background") && matches(query, "Display Dynamic Background in Now Playing View", "Show the animated background in the Now Playing panel.");
@@ -115,7 +115,7 @@ export default function AppearanceSection({ query, sectionFilter, showHidden = f
       )}
 
       {r1 && (
-        <Row settingId="appearance-custom-font" label="Use Custom Font" description="Use a custom font instead of the bundled Spicy Lyrics font.">
+        <Row settingId="appearance-custom-font" label="Use Custom Font" description="Use a custom font instead of the default lyrics font.">
           <Toggle checked={customFontEnabled} onChange={(v) => $customFontEnabled.set(v)} />
         </Row>
       )}

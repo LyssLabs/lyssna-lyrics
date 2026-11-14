@@ -1143,7 +1143,7 @@ function OpenNowBar(skipSaving: boolean = false) {
               if (readVolume() > 0) Spicetify.Player.setVolume(0);
             }
           } catch (err) {
-            console.error("Spicy Lyrics: couldn't toggle mute", err);
+            console.error("Lyssna Lyrics: couldn't toggle mute", err);
             return;
           }
 

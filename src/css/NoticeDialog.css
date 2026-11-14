@@ -362,3 +362,46 @@
     transform: none !important;
   }
 }
+.sl-notice .sl-discord-shine {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  color: #fff;
+  background: #30345d;
+  border: 1px solid #a5aaff;
+}
+
+.sl-discord-shine > span {
+  position: relative;
+  z-index: 1;
+}
+
+.sl-notice .sl-discord-shine:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+.sl-discord-shine::before {
+  content: "";
+  position: absolute;
+  inset: -90% auto -90% 0;
+  width: 70%;
+  pointer-events: none;
+  opacity: 0.55;
+  background: linear-gradient(110deg, transparent 5%, #ff4069 20%, #ffbd48 30%, #efff82 40%, #57e89c 50%, #51bdff 60%, #9d80ff 70%, #ed78da 80%, transparent 95%);
+  transform: translateX(-200%) skewX(-18deg);
+}
+
+.sl-notice-overlay.is-open .sl-discord-shine::before {
+  animation: lyssna-discord-shine 6s linear infinite;
+}
+
+@keyframes lyssna-discord-shine {
+  0% { transform: translateX(-200%) skewX(-18deg); }
+  24%, 100% { transform: translateX(330%) skewX(-18deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sl-notice-overlay.is-open .sl-discord-shine::before { animation: none; }
+  .sl-notice .sl-discord-shine { border-color: #c4b2ff; }
+}
