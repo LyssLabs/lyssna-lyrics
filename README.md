@@ -109,6 +109,20 @@ For a bug report, open **Settings → Report a bug** and copy the diagnostics. P
 
 You can also [open a GitHub issue](https://github.com/iPixelGalaxy/lyssna-lyrics/issues). Please include the song and the affected view when reporting a lyrics problem.
 
+## v0.1.1
+
+- **Upstream 6.5.10**
+  Added “Show Queue When a Song Has No Lyrics” under Layout. When enabled, Fullscreen and Cinema View open the queue for songs without lyrics and return to lyrics when they become available. This option defaults to Off.
+
+- **Scrolling defaults**
+  Smooth Scrolling and Early Scroll now default to On, including in TTML Reviewer mode. Early Scroll starts 250 ms before the next line by default. Existing saved choices stay unchanged outside Reviewer mode.
+
+- **Line hover and TTML Reviewer**
+  Line Hover Background now defaults to Off, including in Reviewer mode. Reviewer uses the plugin’s current defaults for its standard settings, while keeping exact seeking and still backgrounds for review.
+
+- **Rendering fixes**
+  Reduced rendering overhead after lyric animations settle and in Spotify’s older navigation layout. Fixed tiny leftover scroll offsets after lyric rows finish moving.
+
 ## v0.1.0
 
 - **Lyssna Lyrics**
