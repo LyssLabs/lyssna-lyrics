@@ -893,9 +893,8 @@
     visibility 0s;
 }
 
-/* The grouped skin (GroupedViewControls.css) styles the glyph and the disc; without it the toggle
-   swaps glyphs, sized like the others here. */
-#LyssnaLyricsPage:not(.Exp_GroupedViewControls) .ViewSwitch .ViewSwitchSeat_Romanize > .ViewControl > svg {
+/* Match the romanization glyph to the other switch controls. */
+#LyssnaLyricsPage .ViewSwitch .ViewSwitchSeat_Romanize > .ViewControl > svg {
   width: 50%;
   height: 50%;
 }
@@ -905,7 +904,7 @@
   outline-offset: 2px;
 }
 
-/* Over the reset above; a pressed toggle keeps its disc instead (GroupedViewControls.css). */
+/* Keep the pressed state distinct from a pointer hover. */
 @media (hover: hover) and (pointer: fine) {
   #LyssnaLyricsPage .ContentBox > .ViewSwitch .ViewSwitchSeat_Romanize > .ViewControl:not([aria-pressed="true"]):hover {
     background: rgba(255, 255, 255, 0.12);

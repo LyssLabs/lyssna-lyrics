@@ -11,9 +11,8 @@
   /* Over the lyrics (9) and the pinned credit rows (10), level with the switch. */
   z-index: 11;
   left: var(--LyricsLeftSidePadding);
-  /* Above the pinned credit rows when the setting holds them at the bottom (the top of the rows,
-     from NextUp.ts), half an inset clear of them. */
-  bottom: max(var(--ViewSwitchInset), calc(var(--NextUpCredits, 0px) + var(--ViewSwitchInset) * 0.5));
+  /* Bottom placement lifts pinned credits above the card in NextUp.ts. */
+  bottom: var(--ViewSwitchInset);
   display: grid;
   /* A long title shrinks the text column instead of widening the row past its cap. */
   grid-template-columns: minmax(0, 1fr);
@@ -40,6 +39,12 @@
     var(--NextUpSlide),
     opacity 280ms var(--lyssna-ease-out) 80ms,
     visibility 0s;
+}
+
+#LyssnaLyricsPage .ContentBox > .NextUp[data-placement="topLeft"] {
+  right: auto !important;
+  bottom: auto !important;
+  translate: none !important;
 }
 
 /* The NowBar on the right puts the lyrics, and the switch, on the left: at rest Up Next starts where

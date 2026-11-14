@@ -240,7 +240,7 @@ body.LyssnaLyrics_LegacyNav.LyssnaLyrics_LegacyNav #LyssnaLyricsPage .LyricsCont
   position: absolute;
   z-index: 10;
   right: var(--LyricsRightSidePadding);
-  bottom: 20px;
+  bottom: calc(20px + var(--LL-NextUpLift, 0px));
   left: var(--LyricsLeftSidePadding);
   padding: 0 0 1.25rem;
   display: block;

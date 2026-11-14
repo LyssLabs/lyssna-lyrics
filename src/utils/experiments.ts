@@ -94,15 +94,7 @@ export const EXPERIMENTS = [
     category: "background",
     label: "Canvas Stage",
     description:
-      "When a song has a Spotify Canvas, it fills the Now Bar side of the screen in place of the album cover, and its colors drive the page background. Only applies with the dynamic background. Disable to keep the cover and the animated cover background.",
-    default: true,
-  },
-  {
-    id: "npvCanvasBackground",
-    category: "background",
-    label: "Canvas NPV Background",
-    description:
-      "When a song has a Spotify Canvas, the Now Playing View's dynamic background is drawn from the Canvas video playing there, frame for frame, instead of the album cover. Disable to keep the cover.",
+      "Show the track’s Canvas beside the lyrics with the dynamic background.",
     default: true,
   },
   {
@@ -110,7 +102,7 @@ export const EXPERIMENTS = [
     category: "player",
     label: "Popup Player Dock",
     description:
-      "Popup lyrics fill the whole window, with the player docked along the bottom like the Canvas Stage: title and artist at rest, the timeline and controls rising in when you move the mouse. Disable to bring back the cover header and the controls over the enlarged cover.",
+      "Dock playback controls below popup lyrics. Move the mouse to reveal them.",
     default: true,
     pageClass: "Exp_PopupDock",
   },
@@ -119,7 +111,7 @@ export const EXPERIMENTS = [
     category: "background",
     label: "Refined Background",
     description:
-      "Background changes crossfade in place, including switching styles in Settings, and Cover Colors use the cover's deeper tones, changing with the song instead of a second later. Image backgrounds keep their edges instead of being cropped. Disable to bring back the sliding image transition and the brighter Cover Colors.",
+      "Crossfade background changes and use deeper cover colors.",
     default: true,
     pageClass: "Exp_RefinedBackground",
   },
@@ -128,7 +120,7 @@ export const EXPERIMENTS = [
     category: "background",
     label: "Music-Reactive Background",
     description:
-      "The Dynamic (Kawarp) background follows the song as it plays: it flows faster and swells slightly through loud parts, and slows through quiet ones. On the lyrics page, in Cinema View and in fullscreen it's also less blurred, so the movement shows. Disable to bring back the steadier, more blurred flow that only loosely follows the tempo.",
+      "Let the dynamic background move with the music.",
     default: true,
   },
   {
@@ -141,37 +133,20 @@ export const EXPERIMENTS = [
     pageClass: "Exp_LargerCinemaLyrics",
   },
   {
-    id: "springLineSpacing",
-    category: "lyrics",
-    label: "Increased Line Spacing (Spring style only)",
-    description:
-      "With the Spring renderer style, lyrics lines sit further apart, spaced by the text size like Bloom (a little tighter) instead of by a sliver of the window width. Disable to bring back Spring's tighter spacing.",
-    default: false,
-  },
-  {
     id: "refinedCredits",
     category: "lyrics",
     label: "Refined Credits",
     description:
-      "The credits under the lyrics become quiet type close under the last line, with no box: the songwriters, then the lyrics source beneath. Community lyrics say so on that second line, with the people who made and uploaded them linked by name. In synced lyrics the credits stay dim until the last line has been sung. Disable to bring back the previous credit lines.",
+      "Show compact source and contributor credits below the lyrics.",
     default: true,
     pageClass: "Exp_RefinedCredits",
-  },
-  {
-    id: "scrubPreview",
-    category: "player",
-    label: "Scrub Preview",
-    description:
-      "Hovering or dragging the progress bar shows the time a click would seek to, and the volume bar shows the level it would set. Disable to hide these previews.",
-    default: true,
-    pageClass: "Exp_ScrubPreview",
   },
   {
     id: "backgroundLinePop",
     category: "lyrics",
     label: "Background Vocal Pop-Out",
     description:
-      "Background vocal lines stay tucked away under their line until it's sung, then slide out from beneath it while the lines below make room, and tuck back in once both are done. Only applies with the Bloom renderer style. Disable to keep every background vocal line on screen at all times.",
+      "With Bloom, reveal backing vocals while their lead line plays. Requires backing-vocal tags.",
     default: true,
     pageClass: "Exp_BackgroundLinePop",
   },
@@ -180,7 +155,7 @@ export const EXPERIMENTS = [
     category: "lyrics",
     label: "Keep Overlapping Lines",
     description:
-      "With Fade Away Previous Lines on, a line that ends while one above it is still being sung (overlapping lines, background vocals) stays on screen, dimmed, instead of fading out early. Disable to fade every sung line out as soon as it ends.",
+      "Keep finished overlapping lines visible until the earlier line ends. Requires Minimal Lyrics Mode in a full-size view.",
     default: true,
     pageClass: "Exp_KeepOverlappingLines",
   },
@@ -189,7 +164,7 @@ export const EXPERIMENTS = [
     category: "player",
     label: "Portrait Fullscreen Layout",
     description:
-      "In compact fullscreen on a window taller than it is wide, the lyrics use nearly the full width, the cover header sits as far from the top as the lyrics are from the sides, the song title and artist sit beside the cover, level with its bottom edge, and are sized to the lyrics, and the cover grows on hover without covering them. Disable to bring back the regular compact layout.",
+      "Fit fullscreen lyrics and artwork to tall windows.",
     default: true,
     pageClass: "Exp_PortraitFullscreen",
   },
@@ -198,35 +173,17 @@ export const EXPERIMENTS = [
     category: "lyrics",
     label: "Romaji as Written",
     description:
-      "Japanese romaji is spelled the way romanized lyrics usually are: long vowels as written (kyou, toukyou, koohii), particles as said (wa, e, wo), endings kept on their word (yonde ita), gaps between words even where the syllables are joined, and a capital at the start of the line. Disable to bring back the previous spelling (kyō, tōkyō, o, one word per token).",
+      "Use familiar Japanese spellings such as kyou instead of kyō.",
     default: true,
-  },
-  {
-    id: "nextUpCard",
-    category: "player",
-    label: "Up Next",
-    description:
-      "In fullscreen and Cinema View, the last 30 seconds of a song show the next one in the queue (cover, title and artist) at the bottom of the lyrics. Disable to never show it.",
-    default: true,
-    pageClass: "Exp_NextUpCard",
   },
   {
     id: "playerBelowCover",
     category: "player",
     label: "Player Below the Cover",
     description:
-      "In Cinema View, when no Canvas is showing, the cover moves out toward the screen edge and the player sits under it, always on screen: the title and artist with the like button beside them, then the progress bar with its times, the playback controls and the volume bar. The view buttons line up in a column beside the cover instead of over it. Disable to keep the centered cover and title, with the controls that appear over the cover.",
+      "Keep playback controls under the artwork in wide views without Canvas.",
     default: false,
     pageClass: "Exp_PlayerBelowCover",
-  },
-  {
-    id: "groupedViewControls",
-    category: "player",
-    label: "Frosted Scroll Button",
-    description:
-      "Give the scroll-to-current-line button a frosted surface. The button stays at the lyrics' edge and points toward the current line.",
-    default: true,
-    pageClass: "Exp_GroupedViewControls",
   },
 ] as const satisfies readonly Experiment[];
 
@@ -257,6 +214,11 @@ export function getVisibleExperiments(): ResolvedExperiment[] {
 const INLINE_EXPERIMENTS: ReadonlySet<ExperimentId> = new Set([
   "newProgressBarStyling",
   "lyricsSkeleton",
+  "refinedCredits",
+  "romajiAsWritten",
+  "canvasImmersive",
+  "musicReactiveBackground",
+  "portraitFullscreen",
 ]);
 
 export function getAdvancedExperiments(): ResolvedExperiment[] {

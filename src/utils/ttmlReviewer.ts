@@ -48,13 +48,12 @@ export const REVIEWER_SETTINGS: readonly ReviewerSetting[] = [
   { key: "staticBackgroundMode", value: "color", shown: "Cover Colors" },
   defaultSetting("staticBackgroundBlur", value => `${value} px`),
   { key: "showNpvDynamicBg", value: false, shown: "Off" },
+  { key: "nextUpPlacement", value: "off", shown: "Off" },
 ];
 
 /** Switched off outright. Every other experiment follows its default. */
 export const REVIEWER_EXPERIMENTS_OFF: readonly ExperimentId[] = [
   "canvasImmersive",
-  "npvCanvasBackground",
-  "nextUpCard",
 ];
 
 export const REVIEWER_LOCK_REASON = "Locked while TTML Reviewer is on.";
@@ -78,7 +77,14 @@ function readBackup(): Record<string, unknown> | null {
       const raw = Spicetify.LocalStorage.get(key);
       if (!raw) continue;
       const parsed = JSON.parse(raw);
-      if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) return parsed;
+      if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+        if (!Object.hasOwn(parsed, "nextUpPlacement") &&
+            (Object.hasOwn(parsed, "experiment:nextUpCard") || !Object.hasOwn(parsed, BACKUP_FORMAT_KEY))) {
+          const previous = parsed["experiment:nextUpCard"];
+          parsed.nextUpPlacement = previous == null ? null : previous === false ? "off" : "topLeft";
+        }
+        return parsed;
+      }
     } catch { /* Keep unreadable records intact. */ }
   }
   return null;

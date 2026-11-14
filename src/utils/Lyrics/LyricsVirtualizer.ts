@@ -169,17 +169,9 @@ function stepCascadeRow(row: CascadeRow, dt: number, w: number): void {
 const isRefreshedSimpleLyrics = (): boolean =>
   isBloomRenderer();
 
-// Spring with Increased Line Spacing on: a quarter tighter than Bloom.
-const SPRING_WIDE_GAP_EM = REFRESHED_GAP_EM * 0.75;
-
-// The line gap as a share of the font size, or 0 for the 1cqw gap: Bloom always,
-// Spring with Increased Line Spacing on. Only the gap; the ripple stays Bloom's.
+// Bloom uses font-relative gaps; Spring keeps its compact window-relative gaps.
 const wideLineGapEm = (): number =>
-  isRefreshedSimpleLyrics()
-    ? REFRESHED_GAP_EM
-    : isExperimentEnabled("springLineSpacing")
-      ? SPRING_WIDE_GAP_EM
-      : 0;
+  isRefreshedSimpleLyrics() ? REFRESHED_GAP_EM : 0;
 
 // Background Vocal Pop-Out only applies to the refreshed layout. The animator
 // folds lines by the same gate, so the two agree on which rows collapse.
@@ -1347,7 +1339,6 @@ class LyricsVirtualizer {
     };
     this._maid!.Give($rendererVisualStyle.listen(syncLayout));
     this._maid!.Give($experiment("backgroundLinePop").listen(syncLayout));
-    this._maid!.Give($experiment("springLineSpacing").listen(syncLayout));
     this._blockLayoutGlide(LAYOUT_GLIDE_BLOCK_INIT_MS);
 
     if (viewportAnchor) {

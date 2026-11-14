@@ -44,13 +44,12 @@ export function ApplyLyricsProvider(data: any, LyricsContainer: HTMLElement): vo
   }
   const experimentalWordSplittingHelp =
     providerLabel === "Apple Music" && data.experimentalAppleWordSplitting;
-  const experimentalWordSyncHelp =
-    data.experimentalWordSync && data.experimentalWordSyncReason !== "SpaceGravity";
-  CreditsRow(ProviderElement, "Provided by", `${providerLabel}${
-    experimentalWordSplittingHelp
-      ? " (+ extra splits)"
-      : ""
-  }${experimentalWordSyncHelp ? " (+ automatic experimental splitting)" : ""}`);
+  const timingNote = data.experimentalWordSync
+    ? data.experimentalWordSyncSource === "Static"
+      ? " (+ estimated line and word timing)"
+      : " (+ estimated word timing)"
+    : experimentalWordSplittingHelp ? " (+ extra splits)" : "";
+  CreditsRow(ProviderElement, "Provided by", `${providerLabel}${timingNote}`);
 
   const via = typeof data.source_via === "string" && Object.hasOwn(ViaMap, data.source_via)
     ? ViaMap[data.source_via]

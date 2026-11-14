@@ -65,7 +65,7 @@ import { Icons } from "./components/Styling/Icons.ts";
 import Fullscreen, {
   EnterLyssnaLyricsFullscreen,
   IsFullscreenClosing,
-  ExitFullscreenElement,
+  ExitLyricsFullscreen,
   RefreshFullscreenControlsVisibility,
   RefreshFullscreenVolumeSlider,
 } from "./components/Utils/Fullscreen.ts";
@@ -93,7 +93,6 @@ import "./css/NPVLyrics.css";
 import "./css/PopupDock.css";
 import "./css/PortraitFullscreen.css";
 import "./css/PlayerBelowCover.css";
-import "./css/GroupedViewControls.css";
 import "./css/LyssnaToolbar.css";
 import "./css/lyssna-settings.css";
 import { showUpdatedDialog } from "./components/ReactComponents/UpdateDialog.tsx";
@@ -182,7 +181,10 @@ function reapplyCurrentLyrics() {
 
 function bindForkDefaults() {
   bindDefault($rightAlignLyrics, (value) => { Defaults.RightAlignLyrics = value; });
-  bindDefault($escapeKeyFunction, (value) => { Defaults.EscapeKeyFunction = value; });
+  bindDefault($escapeKeyFunction, (value) => {
+    Defaults.EscapeKeyFunction = value;
+    if (PageView.IsOpened) PageView.AppendViewControls(true);
+  });
   bindDefault($buildChannel, (value) => { Defaults.BuildChannel = value; });
   bindDefault($customFontEnabled, (value) => {
     Defaults.CustomFontEnabled = value;
@@ -612,34 +614,7 @@ async function main() {
 
     isHandlingEscape = true;
     try {
-      switch (Defaults.EscapeKeyFunction) {
-        case "Exit Fullscreen": {
-          if (Fullscreen.IsOpen || Fullscreen.CinemaViewOpen || IsFullscreenClosing()) {
-            await Fullscreen.Close();
-            return true;
-          }
-          return false;
-        }
-        case "Exit Fully": {
-          if (Fullscreen.IsOpen || Fullscreen.CinemaViewOpen || IsFullscreenClosing()) {
-            if (await Fullscreen.Close()) Session.GoBackFrom("/LyssnaLyrics");
-            return true;
-          }
-          Session.GoBackFrom("/LyssnaLyrics");
-          return true;
-        }
-        default: {
-          if (Fullscreen.IsOpen && !Fullscreen.CinemaViewOpen && document.fullscreenElement) {
-            return false;
-          }
-          if (Fullscreen.IsOpen || Fullscreen.CinemaViewOpen || IsFullscreenClosing()) {
-            if (await Fullscreen.Close()) Session.GoBackFrom("/LyssnaLyrics");
-            return true;
-          }
-          Session.GoBackFrom("/LyssnaLyrics");
-          return true;
-        }
-      }
+      return await ExitLyricsFullscreen();
     } finally {
       isHandlingEscape = false;
     }
@@ -663,9 +638,7 @@ async function main() {
       }
       if (!PageView.IsOpened || IsPIP || IsExternalCinemaLyrics || NPVCardOwnsPage()) return;
       const inFullscreen = Fullscreen.IsOpen || Fullscreen.CinemaViewOpen || IsFullscreenClosing();
-      if (Defaults.EscapeKeyFunction === "Exit Fullscreen" && !inFullscreen) return;
-      if (Defaults.EscapeKeyFunction !== "Exit Fullscreen" && Defaults.EscapeKeyFunction !== "Exit Fully" &&
-          Fullscreen.IsOpen && !Fullscreen.CinemaViewOpen && document.fullscreenElement) return;
+      if (!inFullscreen && Defaults.EscapeKeyFunction !== "Exit Fully") return;
       e.preventDefault();
       e.stopImmediatePropagation();
       const handled = await handleEscapeKey();
@@ -1497,29 +1470,9 @@ async function main() {
       if (PopupModal.isConnected && PopupModal.querySelector(".llmodal-animatorPreview")) {
         PopupModal.hide();
       }
-      if (Defaults.EscapeKeyFunction === "Exit Fullscreen") {
-        isHandlingDocumentFullscreenExit = true;
-        try {
-          await Fullscreen.Close();
-        } finally {
-          isHandlingDocumentFullscreenExit = false;
-        }
-        return;
-      }
-
-      if (Defaults.EscapeKeyFunction === "Exit Fully") {
-        isHandlingDocumentFullscreenExit = true;
-        try {
-          if (await Fullscreen.Close()) Session.GoBackFrom("/LyssnaLyrics");
-        } finally {
-          isHandlingDocumentFullscreenExit = false;
-        }
-        return;
-      }
-
-      Fullscreen.CinemaViewOpen = true;
-      await ExitFullscreenElement();
-      PageView.AppendViewControls(true);
+      isHandlingDocumentFullscreenExit = true;
+      try { await ExitLyricsFullscreen(); }
+      finally { isHandlingDocumentFullscreenExit = false; }
     }
   });
 
@@ -1529,9 +1482,7 @@ async function main() {
     event.stopImmediatePropagation();
     if (Fullscreen.IsOpen) {
       if (!Fullscreen.CinemaViewOpen) {
-        Fullscreen.CinemaViewOpen = true;
-        await ExitFullscreenElement();
-        PageView.AppendViewControls(true);
+        await ExitLyricsFullscreen();
       } else {
         Fullscreen.CinemaViewOpen = false;
         await EnterLyssnaLyricsFullscreen();

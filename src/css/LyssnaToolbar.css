@@ -38,7 +38,7 @@
   transform: none;
   transition: color 150ms, background 150ms, transform 150ms;
 }
-#LyssnaLyricsPage .ContentBox .ViewControls.LyssnaToolbar .ViewControl > svg:not(.LL_KnockoutDisc) { width: 18px !important; height: 18px !important; opacity: 1 !important; transform: none; filter: none; shape-rendering: geometricPrecision; }
+#LyssnaLyricsPage .ContentBox .ViewControls.LyssnaToolbar .ViewControl > svg { width: 18px !important; height: 18px !important; opacity: 1 !important; transform: none; filter: none; shape-rendering: geometricPrecision; }
 #LyssnaLyricsPage .ViewControls.LyssnaToolbar .ViewControl[aria-pressed="true"] { color: #fff; }
 #LyssnaLyricsPage .ViewControls.LyssnaToolbar .ViewControl[aria-pressed="true"]::after { content: ""; position: absolute; bottom: -1px; left: calc(50% - 1.5px); width: 3px; height: 3px; border-radius: 50%; background: currentColor; }
 #LyssnaLyricsPage .ViewControls.LyssnaToolbar .ViewControl:hover { color: #fff; background: #ffffff1f !important; transform: scale(1.1); scale: 1; }

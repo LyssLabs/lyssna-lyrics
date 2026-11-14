@@ -76,8 +76,9 @@ import {
 } from "../Utils/CompactMode.ts";
 import Fullscreen, {
   EnterLyssnaLyricsFullscreen,
-  ExitFullscreenElement,
   IsFullscreenClosing,
+  ExitLyricsFullscreen,
+  FullscreenActionLabel,
 } from "../Utils/Fullscreen.ts";
 import {
   NowBarObj,
@@ -680,7 +681,7 @@ function AppendViewControls(ReAppend: boolean = false) {
     ${!IsPIP ? button("LyricsManager", ToolbarIcons.upload, "Load TTML", "upload") : ""}
     ${showCacheActionButton ? button("CacheAction", ToolbarIcons.retry, getLyricsCacheActionLabel(cacheAction), "retry", undefined, cacheActionRunning) : ""}
     ${!IsPIP && !Fullscreen.IsOpen ? button("CinemaView", Icons.CinemaView, "Cinema View") : ""}
-    ${!IsPIP ? button("FullscreenToggle", ToolbarIcons.fullscreen, "Fullscreen", "fullscreen", Fullscreen.IsOpen && !Fullscreen.CinemaViewOpen) : ""}
+    ${!IsPIP ? button("FullscreenToggle", ToolbarIcons.fullscreen, FullscreenActionLabel(), "fullscreen", Fullscreen.IsOpen && !Fullscreen.CinemaViewOpen) : ""}
     ${!IsPIP ? button("SettingsToggle", Icons.Settings, "Lyssna Lyrics settings", "settings") : ""}
     ${button("Close", Icons.Close, "Close lyrics")}
   `;
@@ -875,9 +876,7 @@ function AppendViewControls(ReAppend: boolean = false) {
         if (!IsPIP) {
           Tooltips.FullscreenToggle = createTooltip(fullscreenBtn, {
             ...ViewControlTooltipProps(),
-            content: `${
-              Fullscreen.IsOpen ? (Fullscreen.CinemaViewOpen ? "Fullscreen" : "Cinema View") : "Fullscreen"
-            }`,
+            content: FullscreenActionLabel(),
           });
         }
         fullscreenBtn.addEventListener("click", async () => {
@@ -890,11 +889,7 @@ function AppendViewControls(ReAppend: boolean = false) {
             Fullscreen.CinemaViewOpen = false;
             await EnterLyssnaLyricsFullscreen();
             PageView.AppendViewControls(true);
-          } else {
-            Fullscreen.CinemaViewOpen = true;
-            await ExitFullscreenElement();
-            PageView.AppendViewControls(true);
-          }
+          } else await ExitLyricsFullscreen();
           setTimeout(Compactify, 250);
         });
       } catch (err) {

@@ -1,4 +1,26 @@
 /* Base styles for all dynamic backgrounds */
+.lyssna-npv-cover-art {
+  display: none;
+}
+
+.lyssna-npv-show-cover.lyssna-npv-show-cover {
+  margin-top: 0 !important;
+  height: auto !important;
+  aspect-ratio: 1;
+}
+
+.lyssna-npv-show-cover > :not(.lyssna-npv-cover-art) {
+  display: none !important;
+}
+
+.lyssna-npv-show-cover > .lyssna-npv-cover-art {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: var(--section-border-radius, 8px);
+}
+
 .lyssna-dynamic-bg {
   height: 100%;
   left: 0;

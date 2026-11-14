@@ -1,5 +1,5 @@
 import { partitionedStorage } from "./settingsStorage.ts";
-import { SHARED_SETTING_KEYS, MANAGED_SETTING_KEYS } from "./settingsSchema.ts";
+import { SHARED_SETTING_KEYS, MANAGED_SETTING_KEYS, LEGACY_EXPERIMENT_SETTING_KEYS } from "./settingsSchema.ts";
 import { DEFAULT_CHANNEL, getCurrentChannel } from "./version/Channels.ts";
 import { DEFAULT_DISCORD_LOOKUP_ENDPOINT } from "./discordLookup.ts";
 import { atom, computed, type WritableAtom } from "nanostores";
@@ -38,6 +38,14 @@ function migrateSettingsKeys(blob: Record<string, any>): Record<string, any> {
   if ("joinSplitWords" in blob) {
     blob.syllableMerge ??= blob.joinSplitWords ? "steady" : "off";
     delete blob.joinSplitWords;
+    changed = true;
+  }
+  if (blob.escapeKeyFunction === "Default") {
+    blob.escapeKeyFunction = "Exit Fullscreen";
+    changed = true;
+  }
+  if (blob.nextUpPlacement === undefined && typeof blob["experiment:nextUpCard"] === "boolean") {
+    blob.nextUpPlacement = blob["experiment:nextUpCard"] ? "topLeft" : "off";
     changed = true;
   }
   if (migrateRendererStyle(blob)) changed = true;
@@ -132,6 +140,9 @@ export function persistAtom<T>(key: string, defaultValue: T) {
   registerPersisted(key, store, defaultValue);
   return store;
 }
+
+// Old Reviewer backups restore these preferences without reviving the removed flags.
+for (const key of LEGACY_EXPERIMENT_SETTING_KEYS) persistAtom<boolean | undefined>(key, undefined);
 
 // Setting atoms (persisted)
 // Upstream shares this setting but cannot read Pixel Edition's "legacy" or
@@ -252,6 +263,18 @@ export const $duetLinePadding = persistAtom<boolean>("duetLinePadding", true);
 // When a song ends on a duet line sung from the right, the credits under it
 // (writers, provider, community info) move to the right with it.
 export const $creditsFollowLastLine = persistAtom<boolean>("creditsFollowLastLine", false);
+export type NextUpPlacement = "off" | "topLeft" | "bottom";
+export const $nextUpPlacement = persistAtom<NextUpPlacement>("nextUpPlacement", "topLeft");
+$nextUpPlacement.listen(value => {
+  _settings["experiment:nextUpCard"] = value !== "off";
+  saveSettingsBlob(_settings);
+});
+const unsetNextUp = PersistedSettings.get("nextUpPlacement")!.unset;
+PersistedSettings.get("nextUpPlacement")!.unset = () => {
+  unsetNextUp();
+  delete _settings["experiment:nextUpCard"];
+  saveSettingsBlob(_settings);
+};
 // Credits held at the bottom of the lyrics instead of scrolling after the last line:
 // the source and community line only, or the songwriters too.
 export type PinnedCredits = "off" | "noWriters" | "full";
@@ -311,7 +334,7 @@ export const $lyricsCacheAction = persistAtom<string>(
   "all-current"
 );
 export const $rightAlignLyrics = persistAtom<boolean>("rightAlignLyrics", false);
-export const $escapeKeyFunction = persistAtom<string>("escapeKeyFunction", "Default");
+export const $escapeKeyFunction = persistAtom<string>("escapeKeyFunction", "Exit Fullscreen");
 _settings.buildChannel = getCurrentChannel();
 export const $buildChannel = persistAtom<string>("buildChannel", DEFAULT_CHANNEL);
 export type PinnedFooterMode = "Off" | "No Writers" | "Full";

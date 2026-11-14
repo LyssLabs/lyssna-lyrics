@@ -55,8 +55,11 @@ export default function AppearanceSection({ query, sectionFilter, showHidden = f
   const r9 = visible("appearance-fps-limit") && matches(query, "Limit Animation Frame Rate", FPS_CAP_DESCRIPTION);
   const r10 = visible("appearance-fps-cap") && fpsCapEnabled && matches(query, "Animation Frame Rate", FPS_SLIDER_DESCRIPTION);
   const glass = visible("appearance-liquid-glass") && matches(query, "Liquid Glass", "Use translucent glass for Settings, Load TTML, Manage Sources, the TTML database, and other plugin dialogs.");
+  const canvasStage = visible("appearance-canvas-stage") && matches(query, "Canvas Stage", "Show the track’s Canvas beside the lyrics with the dynamic background.");
+  const reactive = visible("appearance-music-reactive") && matches(query, "Music-Reactive Background", "Let the dynamic background move with the music.");
+  const portrait = visible("appearance-portrait-fullscreen") && matches(query, "Portrait Fullscreen Layout", "Fit fullscreen lyrics and artwork to tall windows.");
 
-  if (!r1 && !r2 && !r3 && !r4 && !r6 && !r7 && !r8 && !r9 && !r10 && !glass) return null;
+  if (!r1 && !r2 && !r3 && !r4 && !r6 && !r7 && !r8 && !r9 && !r10 && !glass && !canvasStage && !reactive && !portrait) return null;
 
   return (
     <SettingsSection title="Appearance">
@@ -101,6 +104,9 @@ export default function AppearanceSection({ query, sectionFilter, showHidden = f
         </Row>
       )}
       {r8 && <ExperimentSettings experimentIds={["newProgressBarStyling"]} showBuiltIn={false} />}
+      {canvasStage && <ExperimentSettings experimentIds={["canvasImmersive"]} showBuiltIn={false} />}
+      {reactive && <ExperimentSettings experimentIds={["musicReactiveBackground"]} showBuiltIn={false} />}
+      {portrait && <ExperimentSettings experimentIds={["portraitFullscreen"]} showBuiltIn={false} />}
 
       {r9 && (
         <Row settingId="appearance-fps-limit" label="Limit Animation Frame Rate" description={FPS_CAP_DESCRIPTION}>

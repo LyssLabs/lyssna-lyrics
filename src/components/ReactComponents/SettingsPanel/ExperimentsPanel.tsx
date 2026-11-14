@@ -1,13 +1,18 @@
 import { useStore } from "@nanostores/react";
 import { $experiment, forcedExperimentState, getAdvancedExperiments, getVisibleExperiments, setExperiment, type ExperimentId, type ResolvedExperiment } from "../../../utils/experiments.ts";
-import { $enableExperimentalWordSync, $externalCinemaLyricsAllowed } from "../../../utils/stores.ts";
-import { Row, SectionTitle, Toggle } from "./components.tsx";
+import { $enableExperimentalWordSync, $externalCinemaLyricsAllowed, $nextUpPlacement, type NextUpPlacement } from "../../../utils/stores.ts";
+import { Row, SectionTitle, Toggle, Select } from "./components.tsx";
 import { EXPERIMENT_CATEGORIES } from "../../../utils/experiments.ts";
 import { $ttmlReviewer, REVIEWER_LOCK_REASON } from "../../../utils/ttmlReviewer.ts";
 
 const experimentSettingIds: Partial<Record<ExperimentId, string>> = {
   newProgressBarStyling: "appearance-sliderbar-styling",
   lyricsSkeleton: "lyrics-loading-skeleton",
+  refinedCredits: "lyrics-refined-credits",
+  romajiAsWritten: "lyrics-romaji-written",
+  canvasImmersive: "appearance-canvas-stage",
+  musicReactiveBackground: "appearance-music-reactive",
+  portraitFullscreen: "appearance-portrait-fullscreen",
 };
 
 /**
@@ -25,6 +30,7 @@ export function ExperimentSettings({ title = false, experimentIds, advancedOnly 
   const experimentalWordSync = useStore($enableExperimentalWordSync);
   const externalCinemaLyricsAllowed = useStore($externalCinemaLyricsAllowed);
   const reviewerOn = useStore($ttmlReviewer);
+  const nextUpPlacement = useStore($nextUpPlacement);
   const experiments = reviewerOn ? [] : (advancedOnly ? getAdvancedExperiments() : getVisibleExperiments()).filter(exp => forcedExperimentState(exp.id) === undefined);
 
   return (
@@ -32,9 +38,11 @@ export function ExperimentSettings({ title = false, experimentIds, advancedOnly 
       {title && <SectionTitle>Experiments</SectionTitle>}
       {EXPERIMENT_CATEGORIES.map((category) => {
         const entries = experiments.filter((exp) => exp.category === category.id && (!experimentIds || experimentIds.includes(exp.id)));
-        return entries.length > 0 && <div key={category.id}>
+        const nextUp = category.id === "player" && !experimentIds && !reviewerOn;
+        return (entries.length > 0 || nextUp) && <div key={category.id}>
           {!experimentIds && <SectionTitle>{category.title}</SectionTitle>}
           {entries.map((exp) => <ExperimentRow key={exp.id} experiment={exp} />)}
+          {nextUp && <Row settingId="nextUpPlacement" label="Up Next" description="Show the next track during the final 30 seconds. Hidden while Spotify’s queue is open."><Select value={nextUpPlacement} options={["off", "topLeft", "bottom"]} labels={["Off", "Top Left", "Bottom"]} onChange={value => $nextUpPlacement.set(value as NextUpPlacement)} /></Row>}
         </div>;
       })}
       {showBuiltIn && <><Row

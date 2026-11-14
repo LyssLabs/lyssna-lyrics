@@ -5,6 +5,7 @@ import { $currentLyricsData, $showVolumeSliderFullscreen } from "../../utils/sto
 import { $forceCompactMode, $isNowBarOpen } from "../../utils/uiState.ts";
 import Global from "../Global/Global.ts";
 import Defaults from "../Global/Defaults.ts";
+import Session from "../Global/Session.ts";
 import { SetKawarpSuspended } from "../DynamicBG/dynamicBackground.ts";
 import PageView, { Compactify, GetPageRoot, PageContainer, Tooltips } from "../Pages/PageView.ts";
 import { DisableCompactMode, EnableCompactMode, IsCompactMode } from "./CompactMode.ts";
@@ -28,6 +29,33 @@ const Fullscreen = {
   IsOpen: false,
   CinemaViewOpen: false,
 };
+
+let exitRequest: Promise<boolean> | null = null;
+
+export function FullscreenActionLabel(): string {
+  if (!Fullscreen.IsOpen || Fullscreen.CinemaViewOpen) return "Fullscreen";
+  if (Defaults.EscapeKeyFunction === "Exit Fully") return "Close lyrics";
+  return Defaults.EscapeKeyFunction === "Exit to Cinema" ? "Exit to Cinema" : "Exit Fullscreen";
+}
+
+export function ExitLyricsFullscreen(): Promise<boolean> {
+  if (exitRequest) return exitRequest;
+  exitRequest = (async () => {
+    const mode = Defaults.EscapeKeyFunction;
+    const open = Fullscreen.IsOpen || Fullscreen.CinemaViewOpen || IsFullscreenClosing();
+    if (mode === "Exit to Cinema" && Fullscreen.IsOpen && !Fullscreen.CinemaViewOpen && !IsFullscreenClosing()) {
+      Fullscreen.CinemaViewOpen = true;
+      await ExitFullscreenElement();
+      PageView.AppendViewControls(true);
+      setTimeout(Compactify, 250);
+      return true;
+    }
+    if (open && !(await Fullscreen.Close())) return true;
+    if (mode === "Exit Fully") Session.GoBackFrom("/LyssnaLyrics");
+    return open || mode === "Exit Fully";
+  })().finally(() => { exitRequest = null; });
+  return exitRequest;
+}
 
 const ControlsMaid = new Maid();
 

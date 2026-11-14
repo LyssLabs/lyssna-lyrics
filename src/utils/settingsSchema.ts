@@ -1,5 +1,13 @@
+// Data-only compatibility for old preferences and Reviewer backups. These no longer
+// enable features in Lyssna, but Spicy Lyrics can still use the saved choices.
+export const LEGACY_EXPERIMENT_SETTING_KEYS = [
+  "experiment:groupedViewControls", "experiment:npvCanvasBackground",
+  "experiment:scrubPreview", "experiment:springLineSpacing", "experiment:nextUpCard",
+] as const;
+
 // Shared fields from upstream. Add a field here only when its values are compatible.
 export const SHARED_SETTING_KEYS = new Set([
+  ...LEGACY_EXPERIMENT_SETTING_KEYS,
   "animationFpsCap",
   "animationFpsCapEnabled",
   "backgroundBlur",
@@ -10,22 +18,17 @@ export const SHARED_SETTING_KEYS = new Set([
   "duetLinePadding",
   "experiment:backgroundLinePop",
   "experiment:canvasImmersive",
-  "experiment:groupedViewControls",
   "experiment:keepOverlappingLines",
   "experiment:largerCinemaLyrics",
   "experiment:lyricsSkeleton",
   "experiment:musicReactiveBackground",
   "experiment:newProgressBarStyling",
-  "experiment:nextUpCard",
-  "experiment:npvCanvasBackground",
   "experiment:playerBelowCover",
   "experiment:popupDock",
   "experiment:portraitFullscreen",
   "experiment:refinedBackground",
   "experiment:refinedCredits",
   "experiment:romajiAsWritten",
-  "experiment:scrubPreview",
-  "experiment:springLineSpacing",
   "hideNpvLyricsWhenUnavailable",
   "lineHoverBackground",
   "lockedMediaBox",
@@ -61,7 +64,9 @@ export const SHARED_SETTING_KEYS = new Set([
 ]);
 
 export const MANAGED_SETTING_KEYS = new Set([
+  ...LEGACY_EXPERIMENT_SETTING_KEYS,
   "dontSyncSpicySettings",
+  "nextUpPlacement",
   "liquidGlassDialogs",
   "discordCreditUsernames",
   "discordLookupEndpoint",
@@ -90,7 +95,6 @@ export const MANAGED_SETTING_KEYS = new Set([
   "experiment:backgroundLinePop",
   "experiment:canvasImmersive",
   "experiment:duetLinePadding",
-  "experiment:groupedViewControls",
   "experiment:keepOverlappingLines",
   "experiment:largerCinemaLyrics",
   "experiment:lyricsSkeleton",
@@ -98,8 +102,6 @@ export const MANAGED_SETTING_KEYS = new Set([
   "experiment:newProgressBarStyling",
   "experiment:newSettingsDesign",
   "experiment:newUpdatePromptDesign",
-  "experiment:nextUpCard",
-  "experiment:npvCanvasBackground",
   "experiment:pinLyricsFooter",
   "experiment:playerBelowCover",
   "experiment:popupDock",
@@ -108,8 +110,6 @@ export const MANAGED_SETTING_KEYS = new Set([
   "experiment:refinedCredits",
   "experiment:refreshedSimpleLyrics",
   "experiment:romajiAsWritten",
-  "experiment:scrubPreview",
-  "experiment:springLineSpacing",
   "externalCinemaLyricsAllowed",
   "hiddenSettingIds",
   "hideHidingIcon",

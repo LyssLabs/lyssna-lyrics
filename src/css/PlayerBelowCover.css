@@ -122,7 +122,7 @@
   transition-duration: 0.55s !important;
 }
 
-#LyssnaLyricsPage.Fullscreen.Exp_PlayerBelowCover:where(:not(.Exp_GroupedViewControls)):not(.CompactMode, .ForcedCompactMode, .CanvasImmersive) .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent .ViewControls .ViewControl {
+#LyssnaLyricsPage.Fullscreen.Exp_PlayerBelowCover:not(.CompactMode, .ForcedCompactMode, .CanvasImmersive) .ContentBox .NowBar .CenteredView .Header .MediaBox .MediaContent .ViewControls .ViewControl {
   opacity: 0;
   transition:
     opacity 0.65s var(--lyssna-ease-out, cubic-bezier(0.23, 1, 0.32, 1)),
@@ -132,17 +132,17 @@
     box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-#LyssnaLyricsPage.Fullscreen.Exp_PlayerBelowCover:where(:not(.Exp_GroupedViewControls)):not(.CompactMode, .ForcedCompactMode, .CanvasImmersive) .ContentBox .NowBar .CenteredView .Header .MediaBox[data-controls="Dim"] .MediaContent .ViewControls .ViewControl {
+#LyssnaLyricsPage.Fullscreen.Exp_PlayerBelowCover:not(.CompactMode, .ForcedCompactMode, .CanvasImmersive) .ContentBox .NowBar .CenteredView .Header .MediaBox[data-controls="Dim"] .MediaContent .ViewControls .ViewControl {
   opacity: 0.65;
   transition-duration: 0.55s, 0.28s, 0.3s, 0.3s, 0.3s;
 }
 
-#LyssnaLyricsPage.Fullscreen.Exp_PlayerBelowCover:where(:not(.Exp_GroupedViewControls)):not(.CompactMode, .ForcedCompactMode, .CanvasImmersive) .ContentBox .NowBar .CenteredView .Header .MediaBox[data-controls="Full"] .MediaContent .ViewControls .ViewControl {
+#LyssnaLyricsPage.Fullscreen.Exp_PlayerBelowCover:not(.CompactMode, .ForcedCompactMode, .CanvasImmersive) .ContentBox .NowBar .CenteredView .Header .MediaBox[data-controls="Full"] .MediaContent .ViewControls .ViewControl {
   opacity: 1;
   transition-duration: 0.55s, 0.28s, 0.3s, 0.3s, 0.3s;
 }
 
-#LyssnaLyricsPage.Fullscreen.Exp_PlayerBelowCover:where(:not(.Exp_GroupedViewControls)):not(.CompactMode, .ForcedCompactMode, .CanvasImmersive) .ContentBox .NowBar .CenteredView .Header .MediaBox[data-controls="Full"] .MediaContent .ViewControls:has(.ViewControl:hover) > .ViewControl:not(:hover) {
+#LyssnaLyricsPage.Fullscreen.Exp_PlayerBelowCover:not(.CompactMode, .ForcedCompactMode, .CanvasImmersive) .ContentBox .NowBar .CenteredView .Header .MediaBox[data-controls="Full"] .MediaContent .ViewControls:hover > .ViewControl:not(:hover) {
   opacity: 0.78;
 }
 

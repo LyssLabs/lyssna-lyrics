@@ -1,6 +1,6 @@
 import type Kawarp from "@kawarp/core";
 import type { KawarpVideoOptions } from "@kawarp/core";
-import { isExperimentEnabled } from "../../utils/experiments.ts";
+import { IsNPVCoverSubstitutionActive } from "../Utils/NPVVisuals.ts";
 import { onAnimationFrame } from "../../utils/AnimationFrameLoop.ts";
 import Logger from "../../utils/Logger.ts";
 import ApplyDynamicBackground, { KawarpMap } from "./dynamicBackground.ts";
@@ -86,6 +86,13 @@ function optionsFor(source: HTMLVideoElement): KawarpVideoOptions {
 // background that follows it) is drawn. Only a video paused here is resumed, so a pause of
 // Spotify's own is left alone.
 let pausedWhileHidden: HTMLVideoElement | null = null;
+
+function resumeHiddenVideo(): void {
+  if (!pausedWhileHidden || document.hidden || IsNPVCoverSubstitutionActive()) return;
+  const paused = pausedWhileHidden;
+  pausedWhileHidden = null;
+  if (paused.isConnected && paused.paused && Spicetify.Player.isPlaying()) void paused.play().catch(() => undefined);
+}
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
     const playing = document.querySelector<HTMLVideoElement>(NPV_CANVAS_VIDEO);
@@ -94,21 +101,17 @@ document.addEventListener("visibilitychange", () => {
     pausedWhileHidden = playing;
     return;
   }
-  const paused = pausedWhileHidden;
-  pausedWhileHidden = null;
-  // Music paused meanwhile (media keys): Spotify would have stopped the canvas too.
-  if (paused?.isConnected && paused.paused && Spicetify.Player.isPlaying()) {
-    paused.play().catch(() => undefined);
-  }
+  resumeHiddenVideo();
 });
 
 onAnimationFrame((timestamp) => {
+  resumeHiddenVideo();
   const kawarp = KawarpMap.get(NPV_KAWARP_KEY);
   // While the lyrics card is expanded to full height the background shows the cover, and
   // follows the canvas again once it's collapsed.
   if (
     !kawarp ||
-    !isExperimentEnabled("npvCanvasBackground") ||
+    IsNPVCoverSubstitutionActive() ||
     document.body.classList.contains(NPV_CARD_EXPANDED_CLASS)
   ) {
     if (followedKawarp) stopFollowing();

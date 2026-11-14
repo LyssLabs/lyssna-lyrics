@@ -28,17 +28,6 @@ const TrackSkip = `
 	</div>
 `;
 
-/**
- * A grouped view toggle's "on" face (default.css, Exp_GroupedViewControls): a white disc with the
- * glyph cut out of it, so the capsule's frost shows through the strokes. The glyph's parts keep
- * their classes inside the mask, so the state and hover rules move them here as well. The glyph
- * spans half the disc, as the plain glyph does in that layout.
- */
-export function KnockoutDisc(icon: string, maskId: string) {
-  const body = icon.match(/<svg[^>]*>([\s\S]*)<\/svg>/)?.[1] ?? "";
-  return `<svg class="LL_KnockoutDisc" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" aria-hidden="true"><mask id="${maskId}" maskUnits="userSpaceOnUse" x="0" y="0" width="48" height="48"><rect width="48" height="48" fill="#fff"/><g transform="translate(12 12)" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${body}</g></mask><circle cx="24" cy="24" r="24" fill="#fff" mask="url(#${maskId})"/></svg>`;
-}
-
 export const Icons = {
   LyricsPage: `<svg class="Svg-sc-ytk21e-0" id="LyssnaLyricsPageSvg" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${LYSSNA_MICROPHONE_PATHS.map(d => `<path fill="none" d="${d}"/>`).join("")}<circle cx="16" cy="7" r="5" fill="none"/></svg>`,
   Close: Line(`<path d="m5.5 5.5 13 13"/><path d="m18.5 5.5-13 13"/>`),

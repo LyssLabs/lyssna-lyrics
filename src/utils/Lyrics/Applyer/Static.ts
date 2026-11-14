@@ -20,7 +20,6 @@ import { initLyricsVirtualizer, type LyricsViewportAnchor } from "../LyricsVirtu
 import { StripZeroWidth } from "./Utils/StripZeroWidth.ts";
 import { ApplyIsByCommunity } from "./Credits/ApplyIsByCommunity.tsx";
 import { ApplyLyricsCredits, MarkLastLineSide } from "./Credits/ApplyLyricsCredits.ts";
-import { ApplyExperimentalWordSyncNotice } from "./Credits/ApplyExperimentalWordSyncNotice.ts";
 import { EmitApply, EmitNotApplyed } from "./OnApply.ts";
 import { ApplyLyricsProvider } from "./Credits/ApplyProvider.ts";
 import { CreateLyricsFooter } from "./Credits/CreateLyricsFooter.ts";
@@ -146,7 +145,6 @@ export function ApplyStaticLyrics(
   const footer = CreateLyricsFooter(LyricsContainer, LyricsContainerParent);
   ApplyLyricsCredits(data, footer);
   ApplyLyricsProvider(data, footer);
-  ApplyExperimentalWordSyncNotice(data, footer);
   ApplyIsByCommunity(data, footer);
   if (LyricsContainerParent) {
     LyricsContainerInstance.Append(LyricsContainerParent);

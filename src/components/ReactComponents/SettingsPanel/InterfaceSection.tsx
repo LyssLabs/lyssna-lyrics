@@ -25,7 +25,7 @@ const vcPositionOptions = ["Top", "Bottom"];
 const fullscreenOptions = ["None", "Controls", "Time", "Both"];
 const volumeOptions = ["Off", "Left", "Right", "Below"];
 const releaseYearOptions = ["Off", "Left", "Right"];
-const escapeOptions = ["Default", "Exit Fullscreen", "Exit Fully"];
+const escapeOptions = ["Exit Fullscreen", "Exit to Cinema", "Exit Fully"];
 
 interface Props { query: string; sectionFilter: string; showHidden?: boolean; }
 
@@ -87,7 +87,7 @@ export default function InterfaceSection({ query, sectionFilter, showHidden = fa
     {rows[4] && <Row settingId="interface-fullscreen-volume" label="Fullscreen Volume Slider" description="Show a volume slider in fullscreen and Cinema View."><Select value={showVolumeSliderFullscreen} options={volumeOptions} onChange={(v) => $showVolumeSliderFullscreen.set(v)} /></Row>}
     {rows[5] && <Row settingId="interface-release-year" label="Release Year Position" description="Show release year near track metadata."><Select value={releaseYearPosition} options={releaseYearOptions} onChange={(v) => $releaseYearPosition.set(v)} /></Row>}
     {rows[6] && <Row settingId="interface-animate-close" label="Animate closing fullscreen" description="Slide the lyrics page away when closing fullscreen."><Toggle checked={animateFullscreenClose} onChange={(v) => $animateFullscreenClose.set(v)} /></Row>}
-    {rows[7] && <Row settingId="interface-escape-key" label="Escape Key Function" description="Choose how Escape behaves in lyrics fullscreen."><Select value={escapeKeyFunction} options={escapeOptions} onChange={(v) => $escapeKeyFunction.set(v)} /></Row>}
+    {rows[7] && <Row settingId="interface-escape-key" label="Escape Key Function" description="Choose where Escape and the fullscreen button take you."><Select value={escapeKeyFunction} options={escapeOptions} onChange={(v) => $escapeKeyFunction.set(v)} /></Row>}
     {rows[8] && <Row settingId="interface-disable-npv" label="Disable NPV Lyrics" description="Never show the lyrics card in the Now Playing sidebar."><Toggle checked={disableNpvLyrics} onChange={(v) => $disableNpvLyrics.set(v)} /></Row>}
     {rows[9] && <Row settingId="interface-hide-empty-npv" label="Hide NPV Lyrics When No Lyrics Are Available" description="Remove the lyrics card when the current song has no lyrics." disabled={disableNpvLyrics} disabledReason="The NPV lyrics card is disabled"><Toggle checked={hideNpvLyricsWhenUnavailable} onChange={(v) => $hideNpvLyricsWhenUnavailable.set(v)} /></Row>}
     {rows[10] && <Row settingId="interface-remove-spotify-lyrics" label="Remove Spotify's Lyrics Button" description="Hide Spotify's built-in lyrics button. The Lyssna Lyrics buttons stay visible."><Toggle checked={removeSpotifyLyricsButton} onChange={(v) => $removeSpotifyLyricsButton.set(v)} /></Row>}

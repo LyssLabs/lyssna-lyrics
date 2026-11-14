@@ -80,6 +80,8 @@ type Mount = {
 
 let mount: Mount | null = null;
 let active = false;
+export const IsCanvasStageVisible = (): boolean =>
+  active && !!mount?.page.isConnected && mount.layers[mount.current].key?.startsWith("canvas:") === true;
 // Bumped by every refresh; async work from an older one drops its result.
 let generation = 0;
 let suspendTimer: ReturnType<typeof setTimeout> | null = null;
@@ -746,6 +748,7 @@ async function Refresh(isRetry = false) {
   previous.box.classList.replace("Current", "Leaving");
   activate();
   syncPlayback();
+  notifyCoverClaim();
 
   if (previous.releaseTimer) clearTimeout(previous.releaseTimer);
   previous.releaseTimer = setTimeout(() => {

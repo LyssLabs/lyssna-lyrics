@@ -78,14 +78,17 @@ export default function LyricsSection({ query, sectionFilter, showHidden = false
   const wordSync = visible("lyrics-experimental-word-sync") && matches(query, "Experimental Word Sync", "Estimate word sync for line or static lyrics.");
   const size = matches(query, "Lyrics Size", "Make lyrics bigger or smaller in every view.");
   const romanization = matches(query, "Romanization", "Replace the line or show romanization under each line.");
+  const writtenRomaji = visible("lyrics-romaji-written") && matches(query, "Romaji as Written", "Use familiar Japanese spellings such as kyou instead of kyō.");
+  const refinedCredits = visible("lyrics-refined-credits") && matches(query, "Refined Credits", "Show compact source and contributor credits below the lyrics.");
   const pace = matches(query, "Keep Syllable Pace", "Keep each joined syllable's timing.");
   const unsynced = matches(query, "Unsynced Auto-scroll", "Scroll unsynced lyrics through the song using loudness or vocals.");
-  if (![r3, r4, r5, r8, r9, r10, seek, early, lead, smooth, skeleton, credits, joinSplit, wordSync, size, romanization, pace, unsynced].some(Boolean)) return null;
+  if (![r3, r4, r5, r8, r9, r10, seek, early, lead, smooth, skeleton, credits, joinSplit, wordSync, size, romanization, writtenRomaji, refinedCredits, pace, unsynced].some(Boolean)) return null;
 
   return <>
     <SettingsSection title="Lyrics display">
     {size && <Row label="Lyrics Size" description="Make lyrics bigger or smaller in every view." stacked><Slider value={lyricsSize} min={60} max={200} step={5} defaultValue={100} unit="%" onChange={(v) => $lyricsSize.set(v)} /></Row>}
     {romanization && <Row label="Romanization" description="Where romanization appears when enabled."><Select value={romanizationDisplay} options={["replace", "underLine"]} labels={["Replace the line", "Under each line"]} onChange={(v) => $romanizationDisplay.set(v as RomanizationDisplay)} /></Row>}
+    {writtenRomaji && <ExperimentSettings experimentIds={["romajiAsWritten"]} showBuiltIn={false} />}
     {r3 && <Row settingId="lyrics-minimal-mode" label="Minimal Lyrics Mode" description="Hides sung lyrics lines in Fullscreen and Cinema Mode"><Toggle checked={minimalLyricsMode} onChange={(v) => $minimalLyricsMode.set(v)} /></Row>}
     {r4 && <Row settingId="lyrics-right-align" label="Right Align Lyrics" description="Flip duet/opposite lyric alignment."><Toggle checked={rightAlignLyrics} onChange={(v) => $rightAlignLyrics.set(v)} /></Row>}
     {r5 && <Row settingId="lyrics-scroll-active" label="Show Scroll to Active Button" description="Show an arrow when the active lyric is outside the viewport."><Toggle checked={showScrollToActiveButton} onChange={(v) => $showScrollToActiveButton.set(v)} /></Row>}
@@ -106,6 +109,7 @@ export default function LyricsSection({ query, sectionFilter, showHidden = false
     {unsynced && <Row label="Unsynced Auto-scroll" description="Scroll unsynced lyrics through the song using loudness or vocals."><Select value={staticAutoScroll} options={["off", "basic", "advanced"]} labels={["Off", "Loudness", "Vocals"]} onChange={(v) => $staticAutoScroll.set(v as StaticAutoScroll)} /></Row>}
     {wordSync && <Row settingId="lyrics-experimental-word-sync" label="Experimental Word Sync" description="Estimate word sync for line or static lyrics."><Toggle checked={experimentalWordSync} onChange={(value) => $enableExperimentalWordSync.set(value)} /></Row>}
     {credits && <Row settingId="lyrics-credits-follow-singer" label="Credits Follow the Last Singer" description="Align credits with the last duet line."><Toggle checked={creditsFollowLastLine} onChange={(v) => $creditsFollowLastLine.set(v)} /></Row>}
+    {refinedCredits && <ExperimentSettings experimentIds={["refinedCredits"]} showBuiltIn={false} />}
     </SettingsSection>
   </>;
 }

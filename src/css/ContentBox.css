@@ -1079,41 +1079,6 @@
   height: 9cqh;
 }
 
-#LyssnaLyricsPage.Fullscreen:where(:not(.Exp_GroupedViewControls))
-  .ContentBox
-  .NowBar
-  .CenteredView
-  .Header
-  .MediaBox
-  .MediaContent
-  .ViewControls
-  .ViewControl {
-  background: color-mix(in srgb, var(--lyssna-material-regular-bg) 30%, transparent) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  -webkit-backdrop-filter: blur(4px) saturate(1.12) brightness(1.01) !important;
-  backdrop-filter: blur(4px) saturate(1.12) brightness(1.01) !important;
-  box-shadow: 0 10px 24px -8px rgba(8, 10, 18, 0.42) !important;
-  color: var(--lyssna-color-text-primary) !important;
-}
-
-/* Fullscreen :hover — re-apply the luminous halo (needs !important to
-   beat the base rule above that locks box-shadow with !important). */
-#LyssnaLyricsPage.Fullscreen:where(:not(.Exp_GroupedViewControls))
-  .ContentBox
-  .NowBar
-  .CenteredView
-  .Header
-  .MediaBox
-  .MediaContent
-  .ViewControls
-  .ViewControl:hover {
-  background: rgba(255, 255, 255, 0.045) !important;
-  -webkit-backdrop-filter: var(--lyssna-material-regular-blur) !important;
-  backdrop-filter: var(--lyssna-material-regular-blur) !important;
-  border-color: rgba(255, 255, 255, 0.28) !important;
-  box-shadow: 0 14px 32px -8px rgba(8, 10, 18, 0.5), 0 0 22px -4px rgba(255, 255, 255, 0.24) !important;
-}
-
 #LyssnaLyricsPage.Fullscreen
   .ContentBox
   .NowBar
@@ -1425,9 +1390,6 @@
   transition-duration: 120ms;
 }
 
-#LyssnaLyricsPage:not(.Exp_ScrubPreview) .ScrubPreview {
-  display: none;
-}
 
 /* Above a horizontal track, centered on the pointer and growing out of the track. */
 #LyssnaLyricsPage .ScrubPreview:not(.Vertical) {

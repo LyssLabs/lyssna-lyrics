@@ -36,7 +36,6 @@ import {
 } from "../../SpaceGravity.ts";
 import { ApplyIsByCommunity } from "../Credits/ApplyIsByCommunity.tsx";
 import { ApplyLyricsCredits, MarkLastLineSide } from "../Credits/ApplyLyricsCredits.ts";
-import { ApplyExperimentalWordSyncNotice } from "../Credits/ApplyExperimentalWordSyncNotice.ts";
 import { EmitApply, EmitNotApplyed } from "../OnApply.ts";
 import Emphasize, { createFlameGroup, type FlameGroup, type SyllablePart } from "../Utils/Emphasize.ts";
 import { PickDisplayText, PickPartOfWord } from "../Utils/PickDisplayText.ts";
@@ -958,7 +957,6 @@ export function ApplySyllableLyrics(
 
   ApplyLyricsCredits(data, footer);
   ApplyLyricsProvider(data, footer);
-  ApplyExperimentalWordSyncNotice(data, footer);
   ApplyIsByCommunity(data, footer);
 
   if (LyricsContainerParent) {

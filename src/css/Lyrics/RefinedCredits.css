@@ -1,5 +1,5 @@
 /* Label/value spans keep the original sentence when the experiment is off. */
-#LyssnaLyricsPage.SpicyRenderer:not(.Exp_RefinedCredits) .LyricsContainer :is(.LyricsContent, .LyricsPinnedFooter) .CreditsLabel::after {
+#LyssnaLyricsPage.SpicyRenderer .LyricsContainer .CreditsLabel::after {
   content: ":";
 }
 
@@ -82,15 +82,15 @@
 /* The footer remains the single block moved by the virtualizer. Pinned source
    rows share its tones without changing the fork's footer placement. */
 #LyssnaLyricsPage.SpicyRenderer.Exp_RefinedCredits .LyricsContainer :is(.SongCredits, .LyricsPinnedFooter) {
-  --CreditsText: color-mix(in srgb, currentColor 70%, transparent);
-  --CreditsMuted: color-mix(in srgb, currentColor 55%, transparent);
+  --CreditsText: white;
+  --CreditsMuted: white;
 }
 
 #LyssnaLyricsPage.SpicyRenderer.Exp_RefinedCredits .LyricsContainer :is(.LyricsContent, .LyricsPinnedFooter) .SongCredits {
   font-size: clamp(0.8rem, 3cqw, max(0.34em, 0.875rem)) !important;
-  display: flex;
-  flex-direction: column;
-  gap: 0.3em;
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+  gap: 0.3em 0.75em;
   max-width: min(100%, 46em);
   margin: max(1cqw, 0.75em) 0 0;
   line-height: 1.35;
@@ -98,8 +98,27 @@
   transition: opacity var(--lyssna-dur-slow) var(--lyssna-ease-out);
 }
 
-#LyssnaLyricsPage.SpicyRenderer.Exp_RefinedCredits .LyricsContainer .LyricsContent:not(.LinesAllSung) .LyssnaLyricsScrollContainer:not([data-lyrics-type="Static"]) > .SongCredits:not(.SpaceGravityFooter) {
-  opacity: 0.55;
+#LyssnaLyricsPage.SpicyRenderer.Exp_RefinedCredits .LyricsContainer .SongCredits > .LyricsProvider {
+  grid-column: 1 / -1;
+  grid-row: 1;
+}
+
+#LyssnaLyricsPage.SpicyRenderer.Exp_RefinedCredits .LyricsContainer .SongCredits > .Credits {
+  grid-column: 1 / -1;
+  grid-row: 2;
+}
+
+#LyssnaLyricsPage.SpicyRenderer.Exp_RefinedCredits .LyricsContainer .SongCredits:has(> .CommunityCredits) > .Credits {
+  grid-column: 1;
+}
+
+#LyssnaLyricsPage.SpicyRenderer.Exp_RefinedCredits .LyricsContainer .SongCredits > .CommunityCredits {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+#LyssnaLyricsPage.SpicyRenderer.Exp_RefinedCredits .LyricsContainer .SongCredits:not(:has(> .Credits)) > .CommunityCredits {
+  grid-column: 1 / -1;
 }
 
 #LyssnaLyricsPage.SpicyRenderer.Exp_RefinedCredits.CreditsFollowLastLine .LyricsContainer .LyricsContent .LyssnaLyricsScrollContainer.EndsOnOppositeLine > .SongCredits {
@@ -146,9 +165,7 @@
   margin-top: 0.3em !important;
 }
 
-#LyssnaLyricsPage.SpicyRenderer.Exp_RefinedCredits .LyricsContainer :is(.LyricsContent, .LyricsPinnedFooter) .SongCredits.FromCommunity > .LyricsProvider,
-#LyssnaLyricsPage.SpicyRenderer.Exp_RefinedCredits .LyricsContainer .LyricsPinnedFooter:has(> .CommunityCredits) > .LyricsProvider,
-#LyssnaLyricsPage.SpicyRenderer.Exp_RefinedCredits .LyricsContainer :is(.SongCredits, .LyricsPinnedFooter) .SongInfoNote {
+#LyssnaLyricsPage.SpicyRenderer.Exp_RefinedCredits .LyricsContainer :is(.SongCredits, .LyricsPinnedFooter) :is(.SongInfoNote, .SongInfoLead) {
   display: none;
 }
 
@@ -163,6 +180,10 @@
 }
 
 #LyssnaLyricsPage.SpicyRenderer.Exp_RefinedCredits .LyricsContainer :is(.SongCredits, .LyricsPinnedFooter) .CommunityCredits :is(.Maker, .Uploader)::before {
+  content: none;
+}
+
+#LyssnaLyricsPage.SpicyRenderer.Exp_RefinedCredits .LyricsContainer :is(.SongCredits, .LyricsPinnedFooter) .CommunityCredits .Maker + .Uploader::before {
   content: "\00b7";
   margin-inline: 0.45em;
 }
@@ -182,7 +203,7 @@
   height: 1.15em;
   margin: 0;
   top: 0;
-  opacity: 0.85;
+  opacity: 1;
 }
 
 #LyssnaLyricsPage.SpicyRenderer.Exp_RefinedCredits .LyricsContainer :is(.SongCredits, .LyricsPinnedFooter) :is(.SongInfoName, .LyricsProviderViaLink) {

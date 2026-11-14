@@ -5,7 +5,7 @@ const Defaults = {
   DeveloperMode: false,
   LyricsRenderer: "Spicy",
   RightAlignLyrics: false,
-  EscapeKeyFunction: "Default" as string,
+  EscapeKeyFunction: "Exit Fullscreen" as string,
   BuildChannel: "Stable" as string,
   CustomFontEnabled: false,
   CustomFont: "",
