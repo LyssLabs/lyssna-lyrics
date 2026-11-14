@@ -28,7 +28,7 @@ sl-generic-modal.SpicyLyricsModal.LyssnaLiquidGlass {
   --lyssna-dialog-shadow: inset 0 1px #ffffff14, 0 24px 64px -12px #0007;
 }
 
-sl-generic-modal.SpicyLyricsModal .sl-modal-overlay .sl-modal::before {
+sl-generic-modal.SpicyLyricsModal .sl-modal-overlay .sl-modal {
   border-radius: 20px;
   border: 1px solid var(--lyssna-dialog-edge);
   background-color: var(--lyssna-dialog-surface);

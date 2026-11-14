@@ -14,7 +14,7 @@ sl-generic-modal.SpicyLyricsModal .sl-modal-overlay .sl-modal.slmodal-settingsPa
   --sl-sp-ink-muted: #ffffffa6;
 
   &, button, input, select { font-family: Metropolis, "Segoe UI Variable Text", "Segoe UI", Arial, sans-serif; font-synthesis: none; }
-  > div { width: min(840px, calc(100vw - 48px)); height: min(720px, calc(100dvh - 64px)); max-height: none; border-radius: 20px; background: transparent; overflow: hidden; }
+  > div { width: min(840px, calc(100vw - 48px)); height: min(792px, calc(100dvh - 48px)); max-height: none; border-radius: 20px; background: transparent; overflow: hidden; }
   &:has(.sl-sp-panel--settings) .sl-modal-header { display: none; }
   .sl-modal-content, .sl-sp-panel--settings { padding: 0; background: none; }
   .sl-sp-panel--settings::before, .sl-sp-panel--settings::after { content: none; }
@@ -34,8 +34,8 @@ sl-generic-modal.SpicyLyricsModal .sl-modal-overlay .sl-modal.slmodal-settingsPa
   .sl-sp-tab.sl-sp-tab--active:not(.sl-sp-tab--action) { color: #fff; }
   .sl-sp-tab-icon { display: inline-flex; flex: 0 0 16px; width: 16px; height: 16px; }
   .sl-sp-settings-scroll { display: flex; flex-direction: column; padding: 4px 20px 20px; scrollbar-gutter: auto; scrollbar-width: thin; scrollbar-color: #ffffff26 transparent; }
-  .sl-sp-settings-content { min-height: 100%; }
-  .sl-sp-settings-content::after { content: none; }
+  .sl-sp-settings-content { min-height: 100%; flex: 0 0 auto; }
+  .sl-sp-settings-content::after { content: ""; flex: 0 0 32px; }
   .sl-sp-settings-main { padding-bottom: 24px; }
   .ll-settings-section { margin-top: 16px; }
   .ll-settings-section:not(:has(.sl-sp-row)) { display: none; }
@@ -77,8 +77,6 @@ sl-generic-modal.SpicyLyricsModal .sl-modal-overlay .sl-modal.slmodal-settingsPa
   :is(button, input, select):focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
   .sl-sp-toggle:has(input:focus-visible) { outline: 2px solid #fff; outline-offset: 3px; border-radius: 12px; }
 }
-
-sl-generic-modal.SpicyLyricsModal .sl-modal-overlay .sl-modal.slmodal-settingsPanel::before { border-radius: 20px; background: var(--lyssna-dialog-surface); backdrop-filter: var(--lyssna-dialog-blur); -webkit-backdrop-filter: var(--lyssna-dialog-blur); border: 1px solid var(--lyssna-dialog-edge); box-shadow: var(--lyssna-dialog-shadow); }
 
 @media (max-width: 620px) {
   sl-generic-modal.SpicyLyricsModal .sl-modal-overlay .sl-modal.slmodal-settingsPanel {

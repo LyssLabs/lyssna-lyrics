@@ -1113,31 +1113,7 @@ sl-generic-modal.SpicyLyricsModal .sl-modal .sl-modal-container {
   line-height: 0 !important;
 } */
 
-/* Modal enter/exit animation.
-
-   Why this is structured the way it is:
-   An ancestor with `opacity < 1` flattens its subtree into an off-screen
-   composited surface; any descendant `backdrop-filter` then has nothing to
-   sample and the blur only "snaps in" once opacity hits 1. So entry/exit
-   cannot ride on an opacity transition above the glass element.
-
-   Ownership split — every animated property lives on an element that no
-   other CSS file targets with `transition`, so feature-level rules
-   (settings-panel transitions container `width`, ttml-profile overrides
-   container `overflow`, etc.) cannot accidentally clobber the animation:
-     - overlay         : `background-color` — overlay tint fades.
-     - .sl-modal::before : `backdrop-filter` / `background-color` /
-                           `box-shadow` — the glass material itself fades,
-                           and it has no opacity-animated ancestors.
-     - .sl-modal-container > * : `opacity` on EVERY direct child — header,
-                                 main-section, and any future structural
-                                 child (footer, action bar, etc.) fade
-                                 together without per-element wiring.
-     - .sl-modal       : `scale` — does not flatten the subtree.            */
-
-/* Compound `.sl-modal-overlay.sl-modal-overlay-animated` to outrank the
-   polyfill rule on `.sl-modal-overlay` (loaded later, sets bg to the active
-   tint). Both selectors match the same element. */
+/* The backdrop fades separately; each dialog's surface and contents move as one. */
 sl-generic-modal.SpicyLyricsModal .sl-modal-overlay.sl-modal-overlay-animated {
   background-color: rgba(0, 0, 0, 0);
   transition: background-color 0.22s cubic-bezier(0.23, 1, 0.32, 1);
@@ -1147,59 +1123,27 @@ sl-generic-modal.SpicyLyricsModal .sl-modal-overlay.sl-modal-overlay-animated.Ac
   background-color: rgba(0, 0, 0, 0.45);
 }
 
-sl-generic-modal.SpicyLyricsModal .sl-modal-overlay-animated .sl-modal::before {
+sl-generic-modal.SpicyLyricsModal .sl-modal-overlay-animated .sl-modal {
   transition:
-    background-color 0.22s cubic-bezier(0.23, 1, 0.32, 1),
-    box-shadow 0.22s cubic-bezier(0.23, 1, 0.32, 1),
-    -webkit-backdrop-filter 0.22s cubic-bezier(0.23, 1, 0.32, 1),
-    backdrop-filter 0.22s cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-sl-generic-modal.SpicyLyricsModal .sl-modal-overlay-animated:not(.Active) .sl-modal::before {
-  background-color: rgba(22, 22, 22, 0);
-  -webkit-backdrop-filter: blur(0px) saturate(1);
-  backdrop-filter: blur(0px) saturate(1);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0),
-    inset 0 0 0 1px rgba(255, 255, 255, 0),
-    0 0 0 0 rgba(0, 0, 0, 0),
-    0 0 0 0 rgba(0, 0, 0, 0);
-  transform: scale(0.96);
-}
-
-sl-generic-modal.SpicyLyricsModal .sl-modal-overlay-animated .sl-modal-container > *,
-sl-generic-modal.SpicyLyricsModal .sl-modal-overlay-animated .sl-modal-container-large > * {
-  transition: opacity 0.22s cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-sl-generic-modal.SpicyLyricsModal .sl-modal-overlay-animated:not(.Active) .sl-modal-container > *,
-sl-generic-modal.SpicyLyricsModal .sl-modal-overlay-animated:not(.Active) .sl-modal-container-large > * {
+    opacity 0.22s cubic-bezier(0.23, 1, 0.32, 1),
+    transform 0.22s cubic-bezier(0.23, 1, 0.32, 1);
   opacity: 0;
-}
-
-/* Modal scale: 0.96 → 1 on enter (never from scale(0) — looks like it
-   appears from nowhere). Custom ease-out curve gives instant initial
-   movement, no overshoot.
-
-   The transform deliberately does NOT live on `.sl-modal`. Per the CSS
-   Filter Effects spec, an element with `transform` becomes a backdrop
-   root, which would prevent the `.sl-modal::before` backdrop-filter from
-   sampling anything below the modal — killing the visible blur. Instead,
-   transform is split across the two visible layers (::before glass plate
-   and the container holding the content). Both share the same layout box
-   and scale from the same center, so the modal still scales as a unit. */
-sl-generic-modal.SpicyLyricsModal .sl-modal-overlay-animated .sl-modal::before,
-sl-generic-modal.SpicyLyricsModal .sl-modal-overlay-animated .sl-modal-container,
-sl-generic-modal.SpicyLyricsModal .sl-modal-overlay-animated .sl-modal-container-large {
-  transition: transform 0.22s cubic-bezier(0.23, 1, 0.32, 1);
-  will-change: transform;
   transform: scale(0.96);
 }
 
-sl-generic-modal.SpicyLyricsModal .sl-modal-overlay-animated.Active .sl-modal::before,
-sl-generic-modal.SpicyLyricsModal .sl-modal-overlay-animated.Active .sl-modal-container,
-sl-generic-modal.SpicyLyricsModal .sl-modal-overlay-animated.Active .sl-modal-container-large {
+sl-generic-modal.SpicyLyricsModal .sl-modal-overlay-animated.Active .sl-modal {
+  opacity: 1;
   transform: scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  sl-generic-modal.SpicyLyricsModal .sl-modal-overlay.sl-modal-overlay-animated,
+  sl-generic-modal.SpicyLyricsModal .sl-modal-overlay-animated .sl-modal {
+    transition: none;
+  }
+  sl-generic-modal.SpicyLyricsModal .sl-modal-overlay-animated .sl-modal {
+    transform: none;
+  }
 }
 
 #SpicyLyricsPage .ContentBox.LyricsHidden .ViewControls #NowBarSideToggle {

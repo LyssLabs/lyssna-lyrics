@@ -12,42 +12,8 @@ sl-generic-modal.SpicyLyricsModal .sl-modal-overlay {
     overflow: hidden;
 }
 
-/* Surface lives on `.sl-modal::before`, NOT on `.sl-modal-container`.
-   `.sl-modal-container` is widely targeted by feature CSS (settings panel
-   transitions its `width`, ttml-profile overrides `overflow`, etc.). Putting
-   the surface + entrance transitions on a separately-owned ::before pseudo
-   isolates the modal chrome from feature-level overrides, and keeps any
-   blur outside the subtree of anything we fade with opacity.
-
-   IMPORTANT — backdrop-root rule: the modal's scale animation must NOT live
-   on `.sl-modal` itself. Per the CSS Filter Effects spec, an element with
-   `transform`/`scale` becomes a backdrop root, which makes any descendant
-   `backdrop-filter` blur nothing (it can only sample within its own
-   backdrop root). Scale is instead applied to `::before` + the container
-   together (see default.css). That keeps `.sl-modal` transform-free so
-   the ::before's blur samples the overlay + page below the modal.
-
-   Translucent dark glass plate. ~55% opaque + 40px blur means content
-   behind reads as soft color wash, not legible detail. */
 sl-generic-modal.SpicyLyricsModal .sl-modal {
     position: relative;
-}
-
-sl-generic-modal.SpicyLyricsModal .sl-modal::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: var(--radius-lg);
-    background-color: rgba(22, 22, 22, 0.55);
-    -webkit-backdrop-filter: blur(40px) saturate(1.5);
-    backdrop-filter: blur(40px) saturate(1.5);
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.08),
-        inset 0 0 0 1px var(--hairline-strong),
-        0 24px 64px -12px rgba(0, 0, 0, 0.45),
-        0 8px 16px -4px rgba(0, 0, 0, 0.28);
-    pointer-events: none;
-    z-index: 0;
 }
 
 sl-generic-modal.SpicyLyricsModal .sl-modal-container-large,

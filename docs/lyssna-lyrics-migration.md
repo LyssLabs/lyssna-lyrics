@@ -79,9 +79,11 @@ The settings footer has no divider below the Standalone promotion. Floating retu
 
 Plugin dialogs use the same solid dark surface by default, including Load TTML, Manage Sources, and the TTML database. Appearance's **Liquid Glass** option restores translucent surfaces across the shared modal, including when it moves to another document. This preference belongs to `LL:settings`; it is not synchronized to Spicy Lyrics. Reduced-transparency preferences keep the surface opaque.
 
+Each shared dialog paints its surface on the dialog itself. Its surface and contents fade and scale together, replacing the separately animated background pseudo-element that could remain visible after the contents closed. This applies to settings, source management, TTML dialogs, and other shared modal views. Reduced-motion users get an immediate state change.
+
 Permanently unavailable motion artwork and embedded-profile options are absent from settings and the hidden-settings catalog. Their stored values remain available for switching branches. Dependent or reviewer-locked settings appear only while editable; disabled upload and other action buttons still communicate temporary action states. Join Split Words defaults to **Off** for new Lyssna settings, while explicit existing choices and legacy boolean choices are preserved.
 
-The Standalone promotion and footer links share one bottom-anchored group, so sparse tabs cannot leave a gap between them. Lyssna's credit no longer describes the shared developer key.
+The Standalone promotion and footer links share one bottom-anchored group, so sparse tabs cannot leave a gap between them. A non-shrinking content column ends with a 32-pixel spacer so the footer can scroll clear of the window edge. The desktop settings window is 792 pixels tall (10% taller than before), capped by the viewport with 24-pixel outer margins; narrow windows retain their viewport-filling layout. Lyssna's credit no longer describes the shared developer key.
 
 Outside fullscreen, the lyrics toolbar sits at the artwork-side corner and follows artwork moved to the right. Without artwork it uses the right corner. The existing Bottom option uses the opposite corner, as in Lyssna. Views narrower than 640 pixels, or manually compacted views, use a scrollable vertical strip on the right with room reserved beside the lyrics. The breakpoint follows the lyrics pane's size rather than the entire Spotify window. Vertical tooltips open inward. Fullscreen and Cinema retain their existing layouts.
 
