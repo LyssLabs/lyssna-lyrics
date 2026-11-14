@@ -9,6 +9,7 @@ import Fullscreen from "../components/Utils/Fullscreen.ts";
 import type { SettingsPanelState } from "../components/ReactComponents/SettingsPanel/index.tsx";
 import { $settingsMenuLocation } from "./uiState.ts";
 import { $rememberSettingsMenuLocation } from "./stores.ts";
+import { OpenBuildChannelPanel } from "./openBuildChannelPanel.tsx";
 
 const MODAL_ID = "settingsPanel";
 type Direction = "forward" | "back";
@@ -61,6 +62,10 @@ export function openSettingsPanel(targetDocument: Document = document) {
   const createSettingsPanel = () => React.createElement(SettingsPanel, {
     onOpenHiddenSettings: openHiddenSettingsPanel,
     onManageAnimator: openAnimatorBehaviorPanel,
+    onManageBuildChannels: () => {
+      captureScrollPosition();
+      OpenBuildChannelPanel({ onBack: backToSettings, targetDocument });
+    },
     initialState: currentState,
     onStateChange: updateState,
   });
@@ -103,7 +108,7 @@ export function openSettingsPanel(targetDocument: Document = document) {
     PopupModal.transition({ title: "Hidden Settings", content: container, modalId: MODAL_ID, onClose: () => closePanel(root) });
   };
   const backToSettings = () => {
-    const state = (openAnimatorBehaviorPanel as any).state as SettingsPanelState | undefined;
+    const state = currentRoute === "animator" ? (openAnimatorBehaviorPanel as any).state as SettingsPanelState | undefined : undefined;
     currentState = state ?? currentState;
     currentRoute = "settings";
     restorePreview();

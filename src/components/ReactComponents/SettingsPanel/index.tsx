@@ -27,7 +27,7 @@ const TABS = [
 ] as const;
 
 export type SettingsPanelState = { query: string; sectionFilter: string; scrollTop: number };
-export default function SettingsPanel({ onOpenHiddenSettings, onManageAnimator, initialState, onStateChange }: { onOpenHiddenSettings?: () => void; onManageAnimator?: (state: SettingsPanelState) => void; initialState?: SettingsPanelState; onStateChange?: (state: SettingsPanelState) => void }) {
+export default function SettingsPanel({ onOpenHiddenSettings, onManageAnimator, onManageBuildChannels, initialState, onStateChange }: { onOpenHiddenSettings?: () => void; onManageAnimator?: (state: SettingsPanelState) => void; onManageBuildChannels?: () => void; initialState?: SettingsPanelState; onStateChange?: (state: SettingsPanelState) => void }) {
   const [query, setQuery] = useState(initialState?.query ?? "");
   const initialTab = initialState?.sectionFilter === "TTML Reviewer" ? "Sources" : initialState?.sectionFilter ?? "Appearance";
   const [sectionFilter, setSectionFilter] = useState<string>(TABS.some(([, tab]) => tab === initialTab) || initialTab === "Got a Bug?" ? initialTab : "Appearance");
@@ -120,7 +120,7 @@ export default function SettingsPanel({ onOpenHiddenSettings, onManageAnimator, 
                 <EffectsSection query={query} sectionFilter={searching ? "All" : sectionFilter} onManageAnimator={() => onManageAnimator?.({ query, sectionFilter, scrollTop: scrollRef.current?.scrollTop ?? 0 })} />
                 <InterfaceSection query={query} sectionFilter={searching ? "All" : sectionFilter} />
                 <SourcesSection query={query} sectionFilter={searching ? "All" : sectionFilter} />
-                <DeveloperSection query={query} sectionFilter={searching ? "All" : sectionFilter} onOpenHiddenSettings={onOpenHiddenSettings ?? (() => {})} />
+                <DeveloperSection query={query} sectionFilter={searching ? "All" : sectionFilter} onOpenHiddenSettings={onOpenHiddenSettings ?? (() => {})} onManageBuildChannels={onManageBuildChannels} />
                 {(sectionFilter === "Got a Bug?" || (searching && /bug|report|lag|slow|performance/i.test(query))) && <BugReportPane onBack={() => selectTab(previousTab.current)} />}
                 {(sectionFilter === "Credits" || (searching && /credit|lyssna|spicy|standalone/i.test(query))) && <CreditsSection />}
               </div>
