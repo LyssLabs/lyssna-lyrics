@@ -206,11 +206,13 @@ export default function UploadTTMLModal({ onOpenDB, onDone, onShowReviewerDetail
         <div className="sl-ldb-reviewer-copy">
           <label htmlFor="sl-ldb-reviewer-mode">TTML Reviewer</label>
           <p>Apply a consistent review profile, then restore your settings when it stops.</p>
-          <button type="button" className="sl-ldb-database-link" onClick={onShowReviewerDetails} disabled={uploading}>What does it change?</button>
         </div>
-        <select id="sl-ldb-reviewer-mode" value={reviewerMode} disabled={uploading} onChange={event => setTtmlReviewerMode(event.currentTarget.value as TtmlReviewerMode)}>
-          {REVIEWER_MODES.map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
-        </select>
+        <div className="sl-ldb-reviewer-actions">
+          <button type="button" className="sl-ldb-database-link" onClick={onShowReviewerDetails} disabled={uploading}>What does it change?</button>
+          <select id="sl-ldb-reviewer-mode" value={reviewerMode} disabled={uploading} onChange={event => setTtmlReviewerMode(event.currentTarget.value as TtmlReviewerMode)}>
+            {REVIEWER_MODES.map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
+          </select>
+        </div>
       </div>
 
       <div className="sl-ldb-upload-mode-section">
