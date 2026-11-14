@@ -40,7 +40,7 @@ export function KnockoutDisc(icon: string, maskId: string) {
 }
 
 export const Icons = {
-  LyricsPage: `<svg class="Svg-sc-ytk21e-0 Svg-img-16-icon" id="LyssnaLyricsPageSvg" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${LYSSNA_MICROPHONE_PATHS.map(d => `<path fill="none" d="${d}"/>`).join("")}<circle cx="16" cy="7" r="5" fill="none"/></svg>`,
+  LyricsPage: `<svg class="Svg-sc-ytk21e-0" id="LyssnaLyricsPageSvg" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${LYSSNA_MICROPHONE_PATHS.map(d => `<path fill="none" d="${d}"/>`).join("")}<circle cx="16" cy="7" r="5" fill="none"/></svg>`,
   Close: Line(`<path d="m5.5 5.5 13 13"/><path d="m18.5 5.5-13 13"/>`),
   // The page in miniature: cover on the NowBar's side, lyric lines on the other.
   NowBar: Line(

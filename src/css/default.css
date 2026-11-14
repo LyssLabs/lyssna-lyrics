@@ -760,9 +760,18 @@ aside.lyssna-dynamic-bg-in-this > [data-npv-root] [data-encore-id="listRowSubtit
   font-size: 14px !important;
 }
 
+#LyssnaLyrics_PageButton > .Wrapper-small-only {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* Compensate for the microphone's inset artwork in its 24-unit viewBox. */
 #LyssnaLyricsPageSvg {
-  width: 16px !important;
-  height: 16px !important;
+  width: 20px !important;
+  height: 20px !important;
   fill: none;
   stroke: currentColor;
 }
