@@ -128,7 +128,7 @@ const result = spawnSync(process.execPath, [creatorBin, "build", "--no-copy"], {
   cwd: resolve("."),
   env: {
     ...process.env,
-    SPICY_LYRICS_BUILD_VERSION: version,
+    LYSSNA_LYRICS_BUILD_VERSION: version,
   },
   stdio: "inherit",
 });

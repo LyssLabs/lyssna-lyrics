@@ -954,6 +954,11 @@
   transition: rotate 250ms var(--ease-in-out);
 }
 
+#SpicyLyricsPage .ViewSwitch .ViewSwitchScroll {
+  background: #0d0d0f6b;
+  border: 1px solid #ffffff13;
+}
+
 /* The line can cross from below to above while the button is up; the chevron turns to follow.
    Hidden, it takes its new side at once, so it never shows up pointing the old way. */
 #SpicyLyricsPage .ViewSwitch .ViewSwitchScroll.Above > svg {
@@ -971,7 +976,7 @@
 
 @media (hover: hover) and (pointer: fine) {
   #SpicyLyricsPage .ViewSwitch .ViewSwitchScroll:hover {
-    background: rgba(255, 255, 255, 0.12);
+    background: #0008;
     color: #fff;
   }
 }

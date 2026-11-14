@@ -2,7 +2,7 @@ import { DISCORD_URL, WEBSITE_URL, STANDALONE_DOWNLOAD_URL, openExternal } from 
 import { useStore } from "@nanostores/react";
 import React, { useEffect, useState } from "react";
 import Session from "../../Global/Session.ts";
-import { $spicyLyricsVersion } from "../../../utils/stores.ts";
+import { $lyssnaLyricsVersion } from "../../../utils/stores.ts";
 
 const LINKS = [
   { label: "Lyssna", url: WEBSITE_URL },
@@ -22,7 +22,7 @@ function ExternalArrow() {
 }
 
 export default function Footer({ onReportBug, reportBugActive = false }: { onReportBug?: () => void; reportBugActive?: boolean }) {
-  const version = useStore($spicyLyricsVersion);
+  const version = useStore($lyssnaLyricsVersion);
   const [status, setStatus] = useState<UpdateStatus>("checking");
 
   useEffect(() => {

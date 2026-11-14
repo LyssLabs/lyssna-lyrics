@@ -315,21 +315,20 @@
 .sl-discord-shine::before {
   content: "";
   position: absolute;
-  inset: -90% auto -90% 0;
-  width: 70%;
+  inset: 0 auto 0 0;
+  width: 200%;
   pointer-events: none;
-  opacity: 0.55;
-  background: linear-gradient(110deg, transparent 5%, #ff4069 20%, #ffbd48 30%, #efff82 40%, #57e89c 50%, #51bdff 60%, #9d80ff 70%, #ed78da 80%, transparent 95%);
-  transform: translateX(-200%) skewX(-18deg);
+  opacity: 0.3;
+  background: repeating-linear-gradient(90deg, #ff4069 0%, #ffbd48 7.14%, #efff82 14.28%, #57e89c 21.43%, #51bdff 28.57%, #9d80ff 35.71%, #ed78da 42.86%, #ff4069 50%);
+  transform: translateX(0);
 }
 
 .sl-notice-overlay.is-open .sl-discord-shine::before {
-  animation: lyssna-discord-shine 6s linear infinite;
+  animation: lyssna-discord-shine 4s linear infinite;
 }
 
 @keyframes lyssna-discord-shine {
-  0% { transform: translateX(-200%) skewX(-18deg); }
-  24%, 100% { transform: translateX(330%) skewX(-18deg); }
+  to { transform: translateX(-50%); }
 }
 
 @media (prefers-reduced-motion: reduce) {

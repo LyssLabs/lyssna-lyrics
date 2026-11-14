@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 // CSS Imports
 import "./css/tokens.css";
 import "./css/primitives.css";
@@ -48,7 +49,7 @@ import {
   $releaseYearPosition,
   $rightAlignLyrics,
   $showVolumeSliderFullscreen,
-  $spicyLyricsVersion,
+  $lyssnaLyricsVersion,
   $staticBackgroundMode,
   $developerMode,
 } from "./utils/stores.ts";
@@ -79,7 +80,7 @@ import ApplyLyrics, {
 import { ScrollingIntervalTime } from "./utils/Lyrics/lyrics.ts";
 import { ScrollToActiveLine } from "./utils/Scrolling/ScrollToActiveLine.ts";
 import { ScrollSimplebar } from "./utils/Scrolling/Simplebar/ScrollSimplebar.ts";
-import { $fromVersion, $lastFetchedUri, $previousVersion } from "./utils/uiState.ts";
+import { $lastFetchedUri } from "./utils/uiState.ts";
 import { needsMigration, showMigrationModal } from "./utils/migration/DataMigration.tsx";
 import { OpenBuildChannelPanel } from "./utils/openBuildChannelPanel.tsx";
 import "./css/settings-panel.css";
@@ -95,6 +96,7 @@ import "./css/GroupedViewControls.css";
 import "./css/LyssnaToolbar.css";
 import "./css/lyssna-settings.css";
 import { showUpdatedDialog } from "./components/ReactComponents/UpdateDialog.tsx";
+import { recordLyssnaStartup } from "./utils/version/VersionState.ts";
 import { IsPIP, OpenPopupLyrics, ClosePopupLyrics } from "./components/Utils/PopupLyrics.ts";
 import {
   IsExternalCinemaLyrics,
@@ -269,19 +271,15 @@ async function main() {
     return () => Global.Event.unListen(id);
   });
 
-  if ($previousVersion.get()) {
-    $previousVersion.set("");
+  const version = $lyssnaLyricsVersion.get();
+  const versionStartup = recordLyssnaStartup(version);
+  const updatedFromPreviousVersion = versionStartup.updated;
+  if (versionStartup.updated && versionStartup.fromVersion) {
+    showUpdatedDialog(versionStartup.fromVersion, version, versionStartup.switched);
+  } else if (versionStartup.switched) {
+    toast("Switched to Lyssna Lyrics", { description: `Running Lyssna Lyrics ${version}. Spicy Lyrics keeps its own version history.`, duration: 5000 });
   }
-
-  $spicyLyricsVersion.set(window._spicy_lyrics_metadata?.LoadedVersion ?? $spicyLyricsVersion.get());
-  window._spicy_lyrics_metadata = {};
-
-  const fromVersion = $fromVersion.get();
-  const spicyLyricsVersion = $spicyLyricsVersion.get();
-  const updatedFromPreviousVersion = Boolean(fromVersion && spicyLyricsVersion && fromVersion !== spicyLyricsVersion);
-  if (updatedFromPreviousVersion) showUpdatedDialog(fromVersion, spicyLyricsVersion);
-
-  $fromVersion.set(spicyLyricsVersion);
+  delete window._lyssna_lyrics_metadata;
 
   LoadFonts();
   ApplyFontPixel();

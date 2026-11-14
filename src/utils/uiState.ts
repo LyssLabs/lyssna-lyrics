@@ -5,7 +5,7 @@ export const UI_STATE_KEY = "SL:uiState";
 
 export const LYSSNA_UI_STATE_KEY = "LL:uiState";
 const SHARED_UI_KEYS = new Set(["isNowBarOpen", "nowBarSide", "forceCompactMode", "romanization", "npvLyricsOpen", "npvLyricsExpanded"]);
-const MANAGED_UI_KEYS = new Set([...SHARED_UI_KEYS, "fromVersion", "previousVersion", "lastFetchedUri", "settingsMenuLocation", "IsNowBarOpen", "NowBarSide", "ForceCompactMode", "previous-version"]);
+const MANAGED_UI_KEYS = new Set([...SHARED_UI_KEYS, "lastFetchedUri", "settingsMenuLocation", "IsNowBarOpen", "NowBarSide", "ForceCompactMode"]);
 const uiStorage = partitionedStorage(UI_STATE_KEY, LYSSNA_UI_STATE_KEY, SHARED_UI_KEYS, MANAGED_UI_KEYS);
 export const saveUiStateBlob = uiStorage.save;
 export function importUiStateBlob(values: Record<string, any>): void {
@@ -17,7 +17,6 @@ function migrateUiStateKeys(blob: Record<string, any>): Record<string, any> {
     "IsNowBarOpen": "isNowBarOpen",
     "NowBarSide": "nowBarSide",
     "ForceCompactMode": "forceCompactMode",
-    "previous-version": "previousVersion",
   };
   let changed = false;
   for (const [oldKey, newKey] of Object.entries(renames)) {
@@ -48,9 +47,7 @@ export const $isNowBarOpen = persistAtom<boolean>("isNowBarOpen", false);
 export const $nowBarSide = persistAtom<"left" | "right">("nowBarSide", "left");
 export const $forceCompactMode = persistAtom<boolean>("forceCompactMode", false);
 export const $romanization = persistAtom<boolean>("romanization", false);
-export const $fromVersion = persistAtom<string>("fromVersion", "");
 export const $lastFetchedUri = persistAtom<string | null>("lastFetchedUri", null);
-export const $previousVersion = persistAtom<string>("previousVersion", "");
 export const $npvLyricsOpen = persistAtom<boolean>("npvLyricsOpen", true);
 export const $npvLyricsExpanded = persistAtom<boolean>("npvLyricsExpanded", false);
 export const $settingsMenuLocation = persistAtom<{

@@ -1,4 +1,5 @@
 import { BUILT_IN_CHANNELS as CHANNEL_MAP, CHANNELS_CHANGED_EVENT, DEFAULT_CHANNEL, DEFAULT_BUILD_HOST, getChannelMap as getFullChannelMap, getCurrentChannel, isAllowedBuildHost, isReservedChannelName, readCustomChannels as getCustomChannels, saveCustomChannels, selectedChannel as selectChannel, setCurrentChannel } from "../shared/channels.mjs";
+import { readActiveLyricsApp, recordActiveLyricsApp } from "../shared/app-state.mjs";
 
 const BUILT_IN_CHANNELS = Object.keys(CHANNEL_MAP);
 const DEFAULT_API_HOST = DEFAULT_BUILD_HOST;
@@ -579,7 +580,10 @@ async function load() {
       version = (await response.text()).trim();
     }
     if (!VERSION_PATTERN.test(version)) throw new Error("Invalid build version");
-    window._spicy_lyrics_metadata = { LoadedVersion: version };
+    const app = channel.name === "Spicy Lyrics" || channel.storageHost === "public.storage.spicylyrics.org" ? "spicy" : "lyssna";
+    const previousApp = readActiveLyricsApp(Spicetify.LocalStorage)?.app;
+    if (app === "lyssna") window._lyssna_lyrics_metadata = { LoadedVersion: version, PreviousApp: previousApp ?? null };
+    else window._spicy_lyrics_metadata = { LoadedVersion: version };
     window._lyssna_lyrics_channel = { name: channel.name, fixedVersion: channel.fixedVersion };
     const url = "https://" + channel.storageHost + "/" + channel.bundleName + "@" + encodeURIComponent(version) + ".mjs?attempt=" + attempt++;
     try {
@@ -588,6 +592,14 @@ async function load() {
       // Retrying a bundle that already ran can duplicate its event listeners.
       initializationFailed = !(error instanceof TypeError && /dynamically imported module|importing a module script failed/i.test(error.message));
       throw error;
+    }
+    recordActiveLyricsApp(Spicetify.LocalStorage, app, version);
+    if (app === "spicy" && previousApp === "lyssna") {
+      try {
+        Spicetify.showNotification?.(`Switched to Spicy Lyrics ${version}. Lyssna Lyrics keeps its own version history.`);
+      } catch (error) {
+        console.warn("Could not show the app-switch notice:", error);
+      }
     }
   } catch (error) {
     showFailure(error);

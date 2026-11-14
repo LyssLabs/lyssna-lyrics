@@ -96,15 +96,16 @@ function PatchNotes({ fromVersion, toVersion, style }: { fromVersion: string; to
 
 export const releaseNotesUrl = (_version: string) => PATCH_NOTES_PAGE_URL;
 
-export function showUpdatedDialog(fromVersion: string, toVersion: string) {
+export function showUpdatedDialog(fromVersion: string, toVersion: string, switchedFromSpicy = false) {
   const downgraded = isDowngrade(fromVersion, toVersion);
   const content: React.ReactElement<{ style?: React.CSSProperties }>[] = [
     <p className="sl-notice-text">You were on <span className="sl-notice-version">{fromVersion}</span>. You are now on <span className="sl-notice-version">{toVersion}</span>.</p>,
   ];
+  if (switchedFromSpicy) content.push(<p className="sl-notice-text">You switched from Spicy Lyrics. This update compares only your Lyssna Lyrics versions.</p>);
   if (hasPixelEditionVersion(fromVersion) && !downgraded) {
     content.push(<PatchNotes fromVersion={fromVersion} toVersion={toVersion} />);
   }
-  content.push(<p className="sl-notice-text sl-notice-text--quiet">Need help? Visit our <NoticeLink href={DISCORD_URL}>Discord</NoticeLink>.</p>);
+  content.push(<p className="sl-notice-text sl-notice-text--quiet">Our Discord invite has changed. Join the <NoticeLink href={DISCORD_URL}>new Lyssna Discord server</NoticeLink> for fork updates and support.</p>);
 
   showNotice({
     title: downgraded ? `Changed to ${toVersion}` : `Updated to ${toVersion}`,
@@ -112,7 +113,7 @@ export function showUpdatedDialog(fromVersion: string, toVersion: string) {
     wide: true,
     primary: { label: "See all patch notes", onClick: () => window.open(PATCH_NOTES_PAGE_URL, "_blank", "noopener,noreferrer") },
     extraActions: [
-      { label: "Join our Discord", className: "sl-discord-shine", onClick: () => openExternal(DISCORD_URL) },
+      { label: "Join our new Discord", className: "sl-discord-shine", onClick: () => openExternal(DISCORD_URL) },
       ...(needsWalkthrough(fromVersion) ? [{ label: "New to Lyssna Lyrics?", onClick: () => openExternal(FEATURE_GUIDE_URL) }] : []),
     ],
     secondaryLabel: "Close",

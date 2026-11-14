@@ -3,7 +3,6 @@ import { SHARED_SETTING_KEYS, MANAGED_SETTING_KEYS } from "./settingsSchema.ts";
 import { DEFAULT_CHANNEL, getCurrentChannel } from "./version/Channels.ts";
 import { DEFAULT_DISCORD_LOOKUP_ENDPOINT } from "./discordLookup.ts";
 import { atom, computed, type WritableAtom } from "nanostores";
-import { ProjectVersion } from "../../project/config.ts";
 import { SETTING_IDS } from "../components/ReactComponents/SettingsPanel/hiddenSettings.ts";
 
 export const SETTINGS_KEY = "SL:settings";
@@ -377,9 +376,9 @@ export const $showScrollToActive = persistAtom<boolean>("showScrollToActive", tr
 export const $animationFpsCapEnabled = persistAtom<boolean>("animationFpsCapEnabled", false);
 export const $animationFpsCap = persistAtom<number>("animationFpsCap", 60);
 
-// Version atom — NOT persisted, set once at startup
-export const $spicyLyricsVersion = atom<string>(
-  (window as any)._spicy_lyrics_metadata?.LoadedVersion ?? ProjectVersion
+// The installed version is compiled into this Lyssna bundle, independent of upstream metadata.
+export const $lyssnaLyricsVersion = atom<string>(
+  __LYSSNA_BUILD_VERSION__
 );
 
 // Runtime (ephemeral) atoms

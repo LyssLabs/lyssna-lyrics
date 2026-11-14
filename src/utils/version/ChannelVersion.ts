@@ -1,8 +1,10 @@
 import { selectedChannel } from "./Channels.ts";
 const VERSION_TIMEOUT_MS = 5000;
+// A branch selection takes effect on reload; check updates for the app running now.
+const loadedChannel = selectedChannel();
 
 export async function fetchSelectedChannelVersion(): Promise<string | undefined> {
-  const channel = selectedChannel();
+  const channel = loadedChannel;
   if (channel.fixedVersion) return undefined;
 
   const controller = new AbortController();

@@ -65,3 +65,13 @@ The **What does it change?** button opens a separate explanation of every change
 
 Credits is a top-level settings tab. Report a Bug sits beside the Lyssna, Discord, and Standalone footer links. Its pane uses one visible copy-feedback label, a fresh diagnostic snapshot on copy, and an expandable preview. Reports identify Lyssna Lyrics and its reviewer policy, label the local Canary build, distinguish uploaded TTML from server lyrics, and omit credential settings and the configurable lookup endpoint. No report is sent automatically.
 
+## Independent app versions and switch detection
+
+Lyssna compiles its installed version into `__LYSSNA_BUILD_VERSION__` and exposes it internally through `$lyssnaLyricsVersion`. The build driver passes `LYSSNA_LYRICS_BUILD_VERSION`. The loader uses `_lyssna_lyrics_metadata` for this app and writes `_spicy_lyrics_metadata` only when booting official Spicy Lyrics. A legacy loader cannot override Lyssna's compiled version through Spicy's metadata.
+
+Installed-version history and prompt acknowledgement live in `LL:versionState`. Only recognizable prior fork versions from `LL:uiState` are adopted on first use. Spicy's `SL:uiState.fromVersion`, previous-version fields, and `SL:lastAnnouncedVersion` are neither moved nor changed by Lyssna. Unreadable Lyssna history is preserved instead of overwritten. Compatible UI preferences still synchronize as before.
+
+The shared loader records successful app loads in `LL:activeLyricsApp`, allowing both switch directions to be detected even when versions have not changed. Returning to Lyssna compares against its last Lyssna version; it never treats the Spicy version as an upgrade or downgrade. A changed upstream version record also detects a return from older loaders. Same-version switches through an unrelated, unmodified loader cannot be inferred reliably without that loader recording the active app. Update checks retain the channel loaded at startup, so selecting a different app does not compare its versions before reload.
+
+The settings footer has no divider below the Standalone promotion. Floating return-to-line controls swap edges: the up arrow appears at the bottom and the down arrow at the top, with their original actions and accessible labels. Their dark surfaces match the toolbar pills. The Discord action says **Join our new Discord** and explains the changed invite. Its rainbow scrolls continuously using a transform; reduced-motion users see the static rainbow.
+

@@ -80,6 +80,7 @@ function showUpdateModal(currentVersion: any, latestVersion: any, origin?: DOMRe
       Updating reloads Spotify, which takes a few seconds.
     </p>,
   ];
+  content.push(<p className="sl-notice-text sl-notice-text--quiet">Our invite has changed. Join the new Lyssna Discord server for fork updates and support.</p>);
   if (latest) {
     content.push(
       <p className="sl-notice-text sl-notice-text--quiet">
@@ -92,7 +93,7 @@ function showUpdateModal(currentVersion: any, latestVersion: any, origin?: DOMRe
     title: latest ? `Version ${latest} is out` : "An update is out",
     content,
     primary: { label: "Update and reload", onClick: startUpdate },
-    extraActions: [{ label: "Join our Discord", className: "sl-discord-shine", onClick: () => openExternal(DISCORD_URL) }],
+    extraActions: [{ label: "Join our new Discord", className: "sl-discord-shine", onClick: () => openExternal(DISCORD_URL) }],
     secondaryLabel: "Not now",
     onDismiss: () => showUpdateDismissWarning(currentVersion),
     origin,

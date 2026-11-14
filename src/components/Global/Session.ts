@@ -1,4 +1,4 @@
-import { $spicyLyricsVersion } from "../../utils/stores.ts";
+import { $lyssnaLyricsVersion } from "../../utils/stores.ts";
 import { fetchSelectedChannelVersion } from "../../utils/version/ChannelVersion.ts";
 import Global from "./Global.ts";
 
@@ -80,7 +80,7 @@ const Session = {
       };
     },
     GetCurrentVersion: (): VersionParsedData => {
-      return Session.SpicyLyrics.ParseVersion($spicyLyricsVersion.get());
+      return Session.SpicyLyrics.ParseVersion($lyssnaLyricsVersion.get());
     },
     GetLatestVersion: async (): Promise<VersionParsedData> => {
       const version = await fetchSelectedChannelVersion();
