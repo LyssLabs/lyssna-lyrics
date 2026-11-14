@@ -574,10 +574,6 @@ async function load() {
   try {
     const channel = selectChannel();
     let version = channel.fixedVersion;
-    if (!version && channel.name === DEFAULT_CHANNEL && typeof __LYSSNA_ENTRY_TEST_VERSION__ === "string") {
-      version = __LYSSNA_ENTRY_TEST_VERSION__;
-      channel.fixedVersion = version;
-    }
     if (!version) {
       const response = await fetch(channelVersionUrl(channel), { cache: "no-store", signal: AbortSignal.timeout(5000) });
       if (!response.ok) throw new Error("Version request failed: " + response.status);

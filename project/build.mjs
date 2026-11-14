@@ -142,7 +142,6 @@ const entrypointFile = join(defaultDist, "entrypoint.mjs");
 const entrypointBuild = spawnSync("bun", [
   "build", "builds/main/entrypoint.mjs", "--target", "browser", "--format", "esm",
   "--outfile", entrypointFile,
-  "--define", `__LYSSNA_ENTRY_TEST_VERSION__=${parsedArgs.testBuild ? JSON.stringify(version) : "null"}`,
 ], { stdio: "inherit", windowsHide: true });
 if (entrypointBuild.status !== 0) process.exit(entrypointBuild.status ?? 1);
 

@@ -92,13 +92,12 @@ export function setCurrentChannel(name) {
 export function selectedChannel() {
   const name = getCurrentChannel();
   const hosts = getChannelMap()[name];
-  const runtime = globalThis._lyssna_lyrics_channel;
   const app = channelApp({ name, storageHost: hosts[1] });
   return {
     name,
     apiHost: hosts[0],
     storageHost: hosts[1],
-    fixedVersion: typeof hosts[2] === "string" && hosts[2].trim() ? hosts[2].trim() : runtime?.name === name ? runtime.fixedVersion : null,
+    fixedVersion: typeof hosts[2] === "string" && hosts[2].trim() ? hosts[2].trim() : null,
     app,
     bundleName: app === "spicy" ? "spicy-lyrics" : "lyssna-lyrics",
   };
