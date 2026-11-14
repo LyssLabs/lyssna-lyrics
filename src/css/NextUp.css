@@ -106,9 +106,6 @@
     visibility 0s linear 220ms;
 }
 
-#LyssnaLyricsPage:not(.Exp_NextUpCard) .ContentBox > .NextUp {
-  display: none;
-}
 
 /* One body per track. A next track that changes while it shows crossfades over the old one, with
    a touch of blur so the two read as one line changing rather than two overlapping. */

@@ -3,6 +3,10 @@ import { persistAtom } from "../../stores.ts";
 import { UPSTREAM_ANIMATOR_VALUES } from "./Upstream.ts";
 
 export type AnimatorPreset = "Default" | "Pixel" | "Custom";
+export const ANIMATOR_PRESETS: readonly AnimatorPreset[] = ["Pixel", "Default", "Custom"];
+export const ANIMATOR_PRESET_LABELS: Record<AnimatorPreset, string> = {
+  Pixel: "Lyssna (Default)", Default: "Spicy", Custom: "Custom",
+};
 export type AnimatorDetail = "Basic" | "Advanced" | "Full" | "Full + Extras";
 export type AnimatorParameterId =
   | "wordPeakScale" | "letterPeakScale" | "verticalStrength" | "glowStrength" | "blurStrength"
@@ -43,7 +47,7 @@ const clean = (input: unknown): Partial<AnimatorValues> => {
   })) as Partial<AnimatorValues>;
 };
 
-export const $animatorPreset = persistAtom<AnimatorPreset>("animatorPreset", "Default");
+export const $animatorPreset = persistAtom<AnimatorPreset>("animatorPreset", "Pixel");
 export const $animatorDetail = persistAtom<AnimatorDetail>("animatorDetail", "Basic");
 export const $animatorCustom = persistAtom<Partial<AnimatorValues>>("animatorCustom", {});
 export const $savedAnimatorPresets = persistAtom<SavedAnimatorPreset[]>("savedAnimatorPresets", []);

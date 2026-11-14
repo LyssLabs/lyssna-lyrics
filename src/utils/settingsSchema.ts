@@ -2,7 +2,7 @@
 // enable features in Lyssna, but Spicy Lyrics can still use the saved choices.
 export const LEGACY_EXPERIMENT_SETTING_KEYS = [
   "experiment:groupedViewControls", "experiment:npvCanvasBackground",
-  "experiment:scrubPreview", "experiment:springLineSpacing", "experiment:nextUpCard",
+  "experiment:scrubPreview", "experiment:springLineSpacing", "experiment:nextUpCard", "experiment:playerBelowCover",
 ] as const;
 
 // Shared fields from upstream. Add a field here only when its values are compatible.
@@ -23,7 +23,6 @@ export const SHARED_SETTING_KEYS = new Set([
   "experiment:lyricsSkeleton",
   "experiment:musicReactiveBackground",
   "experiment:newProgressBarStyling",
-  "experiment:playerBelowCover",
   "experiment:popupDock",
   "experiment:portraitFullscreen",
   "experiment:refinedBackground",
@@ -103,7 +102,6 @@ export const MANAGED_SETTING_KEYS = new Set([
   "experiment:newSettingsDesign",
   "experiment:newUpdatePromptDesign",
   "experiment:pinLyricsFooter",
-  "experiment:playerBelowCover",
   "experiment:popupDock",
   "experiment:portraitFullscreen",
   "experiment:refinedBackground",

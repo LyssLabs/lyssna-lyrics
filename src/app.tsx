@@ -92,7 +92,6 @@ import "./css/polyfills/sonner-polyfill.css";
 import "./css/NPVLyrics.css";
 import "./css/PopupDock.css";
 import "./css/PortraitFullscreen.css";
-import "./css/PlayerBelowCover.css";
 import "./css/LyssnaToolbar.css";
 import "./css/lyssna-settings.css";
 import { showUpdatedDialog } from "./components/ReactComponents/UpdateDialog.tsx";
@@ -561,7 +560,7 @@ async function main() {
         Button: (
           ('documentPictureInPicture' in window)
             ? new SpotifyPlayer.Playbar.Button(
-              "Spicy Popup Lyrics",
+              "Lyssna Lyrics Popup",
               Icons.PiPMode,
               () => {
                 if (IsPIP) {

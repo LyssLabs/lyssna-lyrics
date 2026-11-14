@@ -31,7 +31,7 @@ export default function AnimatorBehaviorPanel({ onBack, onClose, eventDocument =
     {message && <p className="ll-sp-description ll-sp-preset-message">{message}</p>}
     <SectionTitle>Animator Behavior</SectionTitle>
     <Row label="Detail level" description="Levels add controls; changing level never changes saved values."><Select value={detail} options={levels} onChange={(value) => $animatorDetail.set(value as AnimatorDetail)} /></Row>
-    <Row label="Reset all to Default" description="Resets saved Custom tuning only."><button className="ll-sp-btn" type="button" onClick={resetAnimatorValues}>Reset all</button></Row>
+    <Row label="Reset Custom Tuning" description="Restore Lyssna animation values."><button className="ll-sp-btn" type="button" onClick={resetAnimatorValues}>Reset all</button></Row>
     {groups.map((group) => <React.Fragment key={group}><SectionTitle>{group}</SectionTitle>{visible.filter((parameter) => parameter.group === group).map((parameter) => <Row key={parameter.id} label={parameter.label} description={parameter.description} stacked><Slider value={values[parameter.id]} min={parameter.min} max={parameter.max} step={parameter.step} unit={parameter.unit} defaultValue={parameter.defaultValue} editable onChange={(value) => setAnimatorValue(parameter.id, value)} /></Row>)}</React.Fragment>)}
     {detail === "Full" || detail === "Full + Extras" ? <p className="ll-sp-description">More Full controls will appear as renderer options are made configurable.</p> : null}
   </div>;

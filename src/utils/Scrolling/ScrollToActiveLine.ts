@@ -542,14 +542,13 @@ const GetTopScrollOffset = (container: HTMLElement) =>
   IsPIP ? Math.min(50, Math.round(container.clientHeight * 0.2)) : 85;
 
 // Push on the active line in "Center" scrolling. In Fullscreen and Cinema View it
-// goes further for Bloom, and for any renderer style with Player Below the Cover
-// on (Exp_PlayerBelowCover).
+// goes further for Bloom.
 // Not while Canvas Stage shows a canvas (.CanvasImmersive): the lines keep the
 // usual offset there.
 const GetCenterScrollOffset = (container: HTMLElement) => {
   const page = container.closest("#LyssnaLyricsPage")?.classList;
   if (!page?.contains("Fullscreen") || page.contains("CanvasImmersive")) return 30;
-  return lyricsUseRefreshedLayout() || page.contains("Exp_PlayerBelowCover") ? 80 : 30;
+  return lyricsUseRefreshedLayout() ? 80 : 30;
 };
 
 const ScrollTo = (

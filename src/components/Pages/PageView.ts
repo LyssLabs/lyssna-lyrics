@@ -427,10 +427,8 @@ async function OpenPage(
   pageRoot.appendChild(elem);
 
   // After the append, so a page opened in the popup observes with the popup's window.
-  // TextSliding / TextSettling drive the start-edge fade in Player Below the Cover (PlayerBelowCover.css).
   MetadataScroller = CreateTextScroller(
-    [...elem.querySelectorAll<HTMLElement>(".NowBar .Header .Metadata :is(.SongName, .Artists)")],
-    { slidingClass: "TextSliding", settlingClass: "TextSettling" }
+    [...elem.querySelectorAll<HTMLElement>(".NowBar .Header .Metadata :is(.SongName, .Artists)")]
   );
 
   addLinesEvListener();

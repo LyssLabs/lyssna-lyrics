@@ -3,7 +3,6 @@ import { useStore } from "@nanostores/react";
 import { $allowHidingSettings, $hideHidingIcon } from "../../../utils/stores.ts";
 import AppearanceSection from "./AppearanceSection.tsx";
 import DeveloperSection from "./DeveloperSection.tsx";
-import EffectsSection from "./EffectsSection.tsx";
 import InterfaceSection from "./InterfaceSection.tsx";
 import LyricsSection from "./LyricsSection.tsx";
 import SourcesSection from "./SourcesSection.tsx";
@@ -19,7 +18,6 @@ import { PopupModal } from "../../Modal.ts";
 const TABS = [
   ["Appearance", "Appearance", SettingsIcons.Appearance],
   ["Lyrics", "Lyrics Display", SettingsIcons.Lyrics],
-  ["Effects", "Effects", SettingsIcons.Effects],
   ["Layout", "Interface", SettingsIcons.Layout],
   ["Sources", "Sources", SettingsIcons.Sources],
   ["Advanced", "Advanced", SettingsIcons.Advanced],
@@ -29,7 +27,7 @@ const TABS = [
 export type SettingsPanelState = { query: string; sectionFilter: string; scrollTop: number };
 export default function SettingsPanel({ onOpenHiddenSettings, onManageAnimator, onManageBuildChannels, initialState, onStateChange }: { onOpenHiddenSettings?: () => void; onManageAnimator?: (state: SettingsPanelState) => void; onManageBuildChannels?: () => void; initialState?: SettingsPanelState; onStateChange?: (state: SettingsPanelState) => void }) {
   const [query, setQuery] = useState(initialState?.query ?? "");
-  const initialTab = initialState?.sectionFilter === "TTML Reviewer" ? "Sources" : initialState?.sectionFilter ?? "Appearance";
+  const initialTab = initialState?.sectionFilter === "Effects" ? "Lyrics Display" : initialState?.sectionFilter === "TTML Reviewer" ? "Sources" : initialState?.sectionFilter ?? "Appearance";
   const [sectionFilter, setSectionFilter] = useState<string>(TABS.some(([, tab]) => tab === initialTab) || initialTab === "Got a Bug?" ? initialTab : "Appearance");
   const previousTab = useRef(sectionFilter === "Got a Bug?" ? "Appearance" : sectionFilter);
   const allowHidingSettings = useStore($allowHidingSettings);
@@ -54,7 +52,7 @@ export default function SettingsPanel({ onOpenHiddenSettings, onManageAnimator, 
   useLayoutEffect(() => {
     const targetWindow = scrollRef.current?.ownerDocument.defaultView ?? window;
     const frame = targetWindow.requestAnimationFrame(() => {
-      if (scrollRef.current) scrollRef.current.scrollTop = initialState?.scrollTop ?? 0;
+      if (scrollRef.current) scrollRef.current.scrollTop = initialState?.sectionFilter === "Effects" ? 0 : initialState?.scrollTop ?? 0;
     });
     return () => targetWindow.cancelAnimationFrame(frame);
   }, []);
@@ -115,9 +113,8 @@ export default function SettingsPanel({ onOpenHiddenSettings, onManageAnimator, 
             <ShowHiddenSettingsInSearchContext.Provider value={searching}>
               <div id="ll-settings-content" role={searching || !TABS.some(([, tab]) => tab === sectionFilter) ? "region" : "tabpanel"} aria-label={searching ? "Search results" : sectionFilter}>
                 <AppearanceSection query={query} sectionFilter={searching ? "All" : sectionFilter} />
-                <LyricsSection query={query} sectionFilter={searching ? "All" : sectionFilter} />
+                <LyricsSection query={query} sectionFilter={searching ? "All" : sectionFilter} onManageAnimator={() => onManageAnimator?.({ query, sectionFilter, scrollTop: scrollRef.current?.scrollTop ?? 0 })} />
                 <DiscordCreditsSettings query={query} sectionFilter={searching ? "All" : sectionFilter} />
-                <EffectsSection query={query} sectionFilter={searching ? "All" : sectionFilter} onManageAnimator={() => onManageAnimator?.({ query, sectionFilter, scrollTop: scrollRef.current?.scrollTop ?? 0 })} />
                 <InterfaceSection query={query} sectionFilter={searching ? "All" : sectionFilter} />
                 <SourcesSection query={query} sectionFilter={searching ? "All" : sectionFilter} />
                 <DeveloperSection query={query} sectionFilter={searching ? "All" : sectionFilter} onOpenHiddenSettings={onOpenHiddenSettings ?? (() => {})} onManageBuildChannels={onManageBuildChannels} />

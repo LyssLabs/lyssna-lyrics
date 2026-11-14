@@ -84,8 +84,8 @@ export function migrateRendererStyle(blob: Record<string, any>): boolean {
 export type RendererVisualStyle = "spring" | "bloom";
 export const RENDERER_VISUAL_STYLES: readonly RendererVisualStyle[] = ["spring", "bloom"];
 export const RENDERER_VISUAL_STYLE_LABELS: Record<RendererVisualStyle, string> = {
-  spring: "Spring (Default)",
-  bloom: "Bloom",
+  spring: "Lyssna",
+  bloom: "Apple Music",
 };
 
 const _settings: Record<string, any> = migrateSettingsKeys(settingsStorage.load());
@@ -302,13 +302,13 @@ export const $lockedMediaBox = persistAtom<boolean>("lockedMediaBox", false);
 // $popupLyricsAllowed: stored as actual boolean "popupLyricsAllowed" in the settings blob.
 export const $popupLyricsAllowed = (() => {
   const initial: boolean =
-    _settings["popupLyricsAllowed"] !== undefined ? _settings["popupLyricsAllowed"] : true;
+    _settings["popupLyricsAllowed"] !== undefined ? _settings["popupLyricsAllowed"] : false;
   const store = atom<boolean>(initial);
   store.listen((v) => {
     _settings["popupLyricsAllowed"] = v;
     saveSettingsBlob(_settings);
   });
-  registerPersisted("popupLyricsAllowed", store, true);
+  registerPersisted("popupLyricsAllowed", store, false);
   return store;
 })();
 export const $externalCinemaLyricsAllowed = persistAtom<boolean>("externalCinemaLyricsAllowed", false);

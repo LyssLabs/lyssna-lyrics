@@ -3,7 +3,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import { $hiddenSettingIds } from "../../../utils/stores.ts";
 import AppearanceSection from "./AppearanceSection.tsx";
 import DeveloperSection from "./DeveloperSection.tsx";
-import EffectsSection from "./EffectsSection.tsx";
 import InterfaceSection from "./InterfaceSection.tsx";
 import LyricsSection from "./LyricsSection.tsx";
 import SourcesSection from "./SourcesSection.tsx";
@@ -27,7 +26,6 @@ export default function HiddenSettingsPanel({ onBack }: { onBack: () => void }) 
     {hiddenSettings.length === 0 ? <p className="ll-sp-empty">No hidden settings.</p> : <HiddenSettingsContext.Provider value>
       <AppearanceSection query={query} sectionFilter={sectionFilter} showHidden />
       <LyricsSection query={query} sectionFilter={sectionFilter} showHidden />
-      <EffectsSection query={query} sectionFilter={sectionFilter} showHidden />
       <InterfaceSection query={query} sectionFilter={sectionFilter} showHidden />
       <SourcesSection query={query} sectionFilter={sectionFilter} showHidden />
       <DeveloperSection query={query} sectionFilter={sectionFilter} showHidden />

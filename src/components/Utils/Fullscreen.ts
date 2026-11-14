@@ -196,7 +196,7 @@ export const SetControlsDragLock = (locked: boolean) => {
 };
 
 // The spring's goal as a state on the MediaBox, for layouts that fade their controls with a short CSS
-// transition instead of following the spring (the view controls beside the cover, PlayerBelowCover.css).
+// transition instead of following the spring.
 // Written only when it changes, so it costs one style change per hover change, not one per frame.
 const SetControlsState = (goal: number) => {
   const mediaBox = PageContainer?.querySelector<HTMLElement>(".ContentBox .NowBar .Header .MediaBox");

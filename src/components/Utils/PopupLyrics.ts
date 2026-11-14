@@ -244,6 +244,7 @@ const OpenPopupLyricsFlow = async () => {
     docPiP.removeEventListener("enter", startGuardOnEnter);
   }
   if (!pipGrowthGuard) StartPipGrowthGuard(currentPipWindow);
+  currentPipWindow.document.title = "Lyssna Lyrics Popup";
 
   // Copy style sheets over from the initial document
   // so that the player looks the same.

@@ -158,7 +158,7 @@ function clearCreditsOffset(): void {
 }
 
 function syncCreditsOffset(box: HTMLElement): void {
-  if (!root?.classList.contains("Shown") || $nextUpPlacement.get() !== "bottom") {
+  if (!root?.classList.contains("Shown") || root.offsetHeight === 0 || $nextUpPlacement.get() !== "bottom") {
     clearCreditsOffset();
     return;
   }
@@ -219,7 +219,7 @@ function liftLyrics(box: HTMLElement, lift: boolean) {
   const container = box.querySelector<HTMLElement>(".LyricsContainer");
   const content = container?.querySelector<HTMLElement>(".LyricsContent");
   if (!container || !content) return;
-  if (!lift || !root || $nextUpPlacement.get() !== "bottom") {
+  if (!lift || !root || root.offsetHeight === 0 || $nextUpPlacement.get() !== "bottom") {
     container.classList.remove("NextUpRoom");
     liftedTop = null;
     return;
@@ -297,7 +297,7 @@ function tick() {
   if (root.classList.contains("Shown")) {
     syncPlacement(box);
     syncCreditsOffset(box);
-    if (liftedTop !== null && Math.abs(clearanceTop(box) - liftedTop) > 1) liftLyrics(box, true);
+    if ($nextUpPlacement.get() === "bottom" && (liftedTop === null || Math.abs(clearanceTop(box) - liftedTop) > 1)) liftLyrics(box, true);
   }
 
   const next = forced ?? readNextTrack();

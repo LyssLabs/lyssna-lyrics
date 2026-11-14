@@ -109,9 +109,9 @@ export const EXPERIMENTS = [
   {
     id: "refinedBackground",
     category: "background",
-    label: "Refined Background",
+    label: "Muted Background",
     description:
-      "Crossfade background changes and use deeper cover colors.",
+      "Deeper artwork colors and crossfades in lyrics, Cinema View and fullscreen.",
     default: true,
     pageClass: "Exp_RefinedBackground",
   },
@@ -126,9 +126,9 @@ export const EXPERIMENTS = [
   {
     id: "largerCinemaLyrics",
     category: "lyrics",
-    label: "Larger Cinema View Lyrics (Bloom style only)",
+    label: "Larger Cinema Lyrics",
     description:
-      "In Cinema View and fullscreen, Bloom lyrics grow with the screen instead of stopping at their usual size, so they read well from a distance on a big display. Small windows, the popup and compact mode keep the usual size. Disable to keep the usual size everywhere.",
+      "Scale Apple Music lyrics for Cinema View and fullscreen.",
     default: false,
     pageClass: "Exp_LargerCinemaLyrics",
   },
@@ -146,7 +146,7 @@ export const EXPERIMENTS = [
     category: "lyrics",
     label: "Background Vocal Pop-Out",
     description:
-      "With Bloom, reveal backing vocals while their lead line plays. Requires backing-vocal tags.",
+      "Reveal tagged backing vocals while their group plays.",
     default: true,
     pageClass: "Exp_BackgroundLinePop",
   },
@@ -155,7 +155,7 @@ export const EXPERIMENTS = [
     category: "lyrics",
     label: "Keep Overlapping Lines",
     description:
-      "Keep finished overlapping lines visible until the earlier line ends. Requires Minimal Lyrics Mode in a full-size view.",
+      "Keep finished overlaps visible in wide Cinema View and fullscreen with Minimal Lyrics Mode.",
     default: true,
     pageClass: "Exp_KeepOverlappingLines",
   },
@@ -175,15 +175,6 @@ export const EXPERIMENTS = [
     description:
       "Use familiar Japanese spellings such as kyou instead of kyō.",
     default: true,
-  },
-  {
-    id: "playerBelowCover",
-    category: "player",
-    label: "Player Below the Cover",
-    description:
-      "Keep playback controls under the artwork in wide views without Canvas.",
-    default: false,
-    pageClass: "Exp_PlayerBelowCover",
   },
 ] as const satisfies readonly Experiment[];
 
@@ -219,6 +210,11 @@ const INLINE_EXPERIMENTS: ReadonlySet<ExperimentId> = new Set([
   "canvasImmersive",
   "musicReactiveBackground",
   "portraitFullscreen",
+  "largerCinemaLyrics",
+  "backgroundLinePop",
+  "keepOverlappingLines",
+  "refinedBackground",
+  "popupDock",
 ]);
 
 export function getAdvancedExperiments(): ResolvedExperiment[] {

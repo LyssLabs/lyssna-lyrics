@@ -1,9 +1,9 @@
 import { atom } from "nanostores";
 import { toast } from "sonner";
 import { type ExperimentId, EXPERIMENTS } from "./experiments.ts";
-import { $currentLyricsData, $ttmlReviewerMode, PersistedSettings, type TtmlReviewerMode } from "./stores.ts";
+import { $currentLyricsData, $ttmlReviewerMode, PersistedSettings, RENDERER_VISUAL_STYLE_LABELS, type RendererVisualStyle, type TtmlReviewerMode } from "./stores.ts";
 import Global from "../components/Global/Global.ts";
-import "./Lyrics/Animator/Tuning.ts";
+import { ANIMATOR_PRESET_LABELS, type AnimatorPreset } from "./Lyrics/Animator/Tuning.ts";
 
 // The backup stays separate from preferences so a crash cannot discard the original values.
 const BACKUP_KEY = "LL:ttmlReviewer";
@@ -33,7 +33,7 @@ export const REVIEWER_SETTINGS: readonly ReviewerSetting[] = [
   defaultSetting("smoothScrolling"),
   defaultSetting("animationFpsCapEnabled"),
   // Lyrics: anything that hides lines or changes how they're split or animated.
-  defaultSetting("rendererVisualStyle"),
+  defaultSetting("rendererVisualStyle", value => RENDERER_VISUAL_STYLE_LABELS[value as RendererVisualStyle] ?? String(value)),
   defaultSetting("minimalLyricsMode"),
   defaultSetting("syllableMerge"),
   defaultSetting("lineHoverBackground"),
@@ -42,7 +42,7 @@ export const REVIEWER_SETTINGS: readonly ReviewerSetting[] = [
   defaultSetting("customFontEnabled"),
   defaultSetting("spaceGravityMode"),
   defaultSetting("memeFormat"),
-  defaultSetting("animatorPreset"),
+  defaultSetting("animatorPreset", value => ANIMATOR_PRESET_LABELS[value as AnimatorPreset] ?? String(value)),
   defaultSetting("enableExperimentalWordSync"),
   // Background: still, so nothing competes with the lyrics for attention or frames.
   { key: "staticBackgroundMode", value: "color", shown: "Cover Colors" },
