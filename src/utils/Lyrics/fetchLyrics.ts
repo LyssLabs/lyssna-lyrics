@@ -2,7 +2,8 @@ import Defaults, { isDev } from "../../components/Global/Defaults.ts";
 import { $currentLyricsData, $currentLyricsType, $currentlyFetching } from "../stores.ts";
 import { SpotifyPlayer } from "../../components/Global/SpotifyPlayer.ts";
 import PageView, { PageContainer } from "../../components/Pages/PageView.ts";
-import { ProcessLyrics } from "./ProcessLyrics.ts";
+import { JapaneseRomajiIsCurrent, ProcessLyrics } from "./ProcessLyrics.ts";
+import { ParseTTML } from "./manager/parseTTML.ts";
 import { IsEmptyLyrics } from "./EmptyLines.ts";
 import Logger from "../Logger.ts";
 import { LocalLyricsManager } from "./manager/index.ts";
@@ -42,6 +43,20 @@ export function GetLastLyricsFailure(uri: string | undefined): LyricsFetchFailur
   return uri && lastFailure?.uri === uri ? lastFailure : null;
 }
 let lastNetworkStageAt = -Infinity;
+let lastAnswer: { uri: string; from: string } | null = null;
+export function GetLyricsAnsweredFrom(uri: string | undefined): string | null {
+  return uri && lastAnswer?.uri === uri ? lastAnswer.from : null;
+}
+
+export function HoldsTemporaryUpload(uri: string | undefined): boolean {
+  if (!uri) return false;
+  try {
+    const data = JSON.parse($currentLyricsData.get());
+    return data?.temporaryUpload === true && data.uri === uri;
+  } catch {
+    return false;
+  }
+}
 let cancelPendingBackoff: (() => void) | null = null;
 function backOffIfSwitchingFast(): Promise<boolean> {
   const { rapidSwitchWindowMs, rapidSwitchBackoffMs } = getRemoteConfig().lyricsFetch;
@@ -107,6 +122,7 @@ function attachLyricsSourceCacheMetadata(lyrics: any): any {
 }
 
 function isLyricsCacheCompatible(data: any): boolean {
+  if (!JapaneseRomajiIsCurrent(data)) return false;
   if (!isProviderFetchedLyricsCache(data)) return true;
   return data.LyricsSourceCacheSignature === getLyricsSourceCacheSignature();
 }
@@ -186,6 +202,12 @@ async function fetchLyricsInternal(
     return ["dj", 400];
   }
 
+  // Ads (music ads, podcast pre-rolls) can be audio or video, so this goes before the media checks.
+  if (SpotifyPlayer.GetContentType() === "ad") {
+    $currentlyFetching.set(false);
+    return ["ad", 400];
+  }
+
   const mediaType = SpotifyPlayer.GetMediaType();
 
   if (mediaType && mediaType !== "audio") {
@@ -222,7 +244,8 @@ async function fetchLyricsInternal(
   // Check if there's already data in localStorage
   const savedLyricsData = $currentLyricsData.get();
 
-  if (savedLyricsData && !isDev) {
+  // Dev builds always refetch, except for an upload that nothing could refetch.
+  if (savedLyricsData && (!isDev || HoldsTemporaryUpload(uri))) {
     try {
       if (savedLyricsData.startsWith("NO_LYRICS:")) {
         const savedUri = savedLyricsData.slice("NO_LYRICS:".length);
@@ -233,10 +256,23 @@ async function fetchLyricsInternal(
           return ["lyrics-not-found", 404];
         }
       } else {
-        const lyricsData = JSON.parse(savedLyricsData);
+        let lyricsData = JSON.parse(savedLyricsData);
+        if (lyricsData.temporaryUpload === true && lyricsData.uri === uri &&
+          typeof lyricsData.uploadedTTML === "string" && !JapaneseRomajiIsCurrent(lyricsData)) {
+          const reparsed = await ParseTTML(lyricsData.uploadedTTML);
+          if (reparsed?.Result) {
+            const refreshed = { ...reparsed.Result, uri, temporaryUpload: true, userUploaded: true, uploadedTTML: lyricsData.uploadedTTML };
+            await ProcessLyrics(refreshed);
+            if (!isCurrentTrack(uri)) return null;
+            if ($currentLyricsData.get() !== savedLyricsData) return fetchLyricsInternal(uri, options);
+            lyricsData = refreshed;
+            $currentLyricsData.set(JSON.stringify(refreshed));
+          }
+        }
         // Return the stored lyrics if the ID matches the track ID
         if ((lyricsData?.id === trackId || lyricsData?.uri === uri) && isLyricsCacheCompatible(lyricsData)) {
           const preparedLyrics = await prepareLyricsForPresentation(lyricsData);
+          if (isCurrentTrack(uri) && lastAnswer?.uri !== uri) lastAnswer = { uri, from: "already loaded" };
           await presentLyrics(uri, preparedLyrics);
           return [preparedLyrics, 200];
         }
@@ -250,11 +286,13 @@ async function fetchLyricsInternal(
 
   const sessionLyric = songKey ? SessionTTMLStore.get(songKey) : undefined;
   if (sessionLyric) {
+    if (isCurrentTrack(uri)) lastAnswer = { uri, from: "Local DB" };
     return presentStoredLyrics(uri, { ...sessionLyric, id: trackId, fromCache: true });
   }
 
   const localLyric = await LocalLyricsManager.get(uri);
   if (localLyric) {
+    if (isCurrentTrack(uri)) lastAnswer = { uri, from: "Local DB" };
     return presentStoredLyrics(uri, { ...localLyric, id: trackId });
   }
 
@@ -279,6 +317,7 @@ async function fetchLyricsInternal(
           return ["lyrics-not-found", 404];
         }
         if (isLyricsCacheCompatible(lyricsFromCache)) {
+          if (isCurrentTrack(uri)) lastAnswer = { uri, from: "cache" };
           return await presentStoredLyrics(uri, { ...lyricsFromCache, fromCache: true });
         }
         void LyricsStore.RemoveItem(trackId).catch(() => {});
@@ -321,7 +360,7 @@ async function fetchLyricsInternal(
       return ["lyrics-not-found", 404];
     }
 
-    await ProcessLyrics(lyrics);
+    const romanizedInFull = await ProcessLyrics(lyrics);
 
     if (IsEmptyLyrics(lyrics)) {
       lyricsLogger.warn("Lyrics payload had no renderable lines after pruning");
@@ -331,10 +370,10 @@ async function fetchLyricsInternal(
       return ["lyrics-not-found", 404];
     }
 
-    const lyricsWithId = attachLyricsSourceCacheMetadata({ ...lyrics, id: trackId });
+    const lyricsWithId = attachLyricsSourceCacheMetadata({ ...lyrics, id: trackId, uri });
     if (isCurrentTrack(uri)) $currentLyricsData.set(JSON.stringify(lyricsWithId));
 
-    if (LyricsStore) {
+    if (LyricsStore && romanizedInFull) {
       try {
         await LyricsStore.SetItem(trackId, lyricsWithId);
       } catch (error) {
@@ -342,6 +381,7 @@ async function fetchLyricsInternal(
       }
     }
 
+    if (isCurrentTrack(uri)) lastAnswer = { uri, from: "API" };
     await presentLyrics(uri, lyricsWithId);
     return [{ ...lyricsWithId, fromCache: false }, 200];
   } catch (error) {

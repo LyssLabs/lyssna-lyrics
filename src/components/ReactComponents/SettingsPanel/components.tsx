@@ -2,6 +2,7 @@ import React, { useCallback, useContext, useEffect, useRef, useState } from "rea
 import { createPortal } from "react-dom";
 import { useStore } from "@nanostores/react";
 import { $allowHidingSettings, $hiddenSettingIds, $hideHidingIcon } from "../../../utils/stores.ts";
+import { $ttmlReviewer, isHeldByReviewer, REVIEWER_LOCK_REASON } from "../../../utils/ttmlReviewer.ts";
 
 export const HiddenSettingsContext = React.createContext(false);
 export const ShowHiddenSettingsInSearchContext = React.createContext(false);
@@ -36,6 +37,12 @@ export function Row({
   const allowHidingSettings = useStore($allowHidingSettings);
   const hideHidingIcon = useStore($hideHidingIcon);
   const hiddenSettingIds = useStore($hiddenSettingIds);
+  const reviewerOn = useStore($ttmlReviewer);
+  const heldByReviewer = reviewerOn && !!settingId && isHeldByReviewer(settingId);
+  if (heldByReviewer) {
+    disabled = true;
+    disabledReason = REVIEWER_LOCK_REASON;
+  }
   const isHidden = settingId && hiddenSettingIds.includes(settingId);
   if (settingId && isHidden && allowHidingSettings && !showHidden && !showHiddenInSearch) return null;
   const toggleVisibility = () => {
@@ -61,7 +68,9 @@ export function Row({
         </div>
       </div>
       <div className="sl-sp-control">
-        {children}
+        <fieldset disabled={disabled} style={{ display: "contents", padding: 0, margin: 0, border: 0 }}>
+          {children}
+        </fieldset>
       </div>
       {disabled && disabledReason && <div className="sl-sp-row-tooltip">{disabledReason}</div>}
     </div>

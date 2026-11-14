@@ -10,7 +10,7 @@ export const SETTING_CATALOG = [
   ["appearance-cover-art-animation", "Cover Art Animation", "Animate cover art changes in the NowBar.", "Effects"],
   ["lyrics-space-gravity", "Space Gravity Mode", "Let word-synced lyrics drift and tumble freely while their timing animations continue.", "Effects"],
   ["lyrics-word-filters", "Unique Word Filters", "Transform every lyric word.", "Effects"],
-  ["lyrics-simple-mode", "Simple Lyrics Mode", "Off disables Simple Lyrics Mode. Calculate and Animate choose how simple lyric transitions render.", "Effects"],
+  ["lyrics-simple-mode", "Renderer Visual Style", "Choose Spring or Bloom lyric effects.", "Effects"],
   ["effects-animator-presets", "Animator Presets", "Choose Default, Pixel, or Custom animator behavior.", "Effects"],
   ["lyrics-minimal-mode", "Minimal Lyrics Mode", "Hides sung lyrics lines in Fullscreen and Cinema Mode", "Lyrics Display"],
   ["lyrics-right-align", "Right Align Lyrics", "Flip duet/opposite lyric alignment.", "Lyrics Display"],

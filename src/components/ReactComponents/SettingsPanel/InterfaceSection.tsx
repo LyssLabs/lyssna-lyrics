@@ -16,6 +16,10 @@ import {
   $removeSpotifyLyricsButton,
   $viewControlsPosition,
   $showNoLyricsNotice,
+  $motionArtwork,
+  $motionArtworkOnStage,
+  $motionArtworkPriority,
+  type MotionArtworkPriority,
 } from "../../../utils/stores.ts";
 import { $isGlobalNav } from "../../../utils/uiState.ts";
 import { matches, Row, Select, SectionTitle, Toggle } from "./components.tsx";
@@ -47,6 +51,9 @@ export default function InterfaceSection({ query, sectionFilter, showHidden = fa
   const showNoLyricsNotice = useStore($showNoLyricsNotice);
   const isGlobalNav = useStore($isGlobalNav);
   const hiddenSettingIds = useStore($hiddenSettingIds);
+  const motionArtwork = useStore($motionArtwork);
+  const motionArtworkOnStage = useStore($motionArtworkOnStage);
+  const motionArtworkPriority = useStore($motionArtworkPriority);
   if (sectionFilter !== "All" && sectionFilter !== SECTION_NAME) return null;
 
   const ids = ["interface-lock-media-box", "interface-disable-popup", "interface-view-controls", "interface-always-fullscreen", "interface-fullscreen-volume", "interface-release-year", "interface-animate-close", "interface-escape-key", "interface-disable-npv", "interface-hide-empty-npv", "interface-open-profiles-browser", "interface-remove-spotify-lyrics"];
@@ -56,11 +63,17 @@ export default function InterfaceSection({ query, sectionFilter, showHidden = fa
   ].map((matched, index) => matched && (showHidden ? hiddenSettingIds.includes(ids[index]) : !allowHidingSettings || !hiddenSettingIds.includes(ids[index]) || Boolean(query.trim())));
   const notice = matches(query, "No Lyrics Notice", "Explain why a song has no lyrics. Errors always show their notice.") && (showHidden ? hiddenSettingIds.includes("interface-no-lyrics-notice") : !allowHidingSettings || !hiddenSettingIds.includes("interface-no-lyrics-notice") || Boolean(query.trim()));
   const cinema = matches(query, "Enable Cinema Lyrics Window", "Show or hide the Cinema Lyrics button in the playback bar. Requires Spotify DevTools.") && (showHidden ? hiddenSettingIds.includes("interface-cinema-window") : !allowHidingSettings || !hiddenSettingIds.includes("interface-cinema-window") || Boolean(query.trim()));
-  if (!rows.some(Boolean) && !notice && !cinema) return null;
+  const motion = matches(query, "Motion Artwork", "Play the album's animated cover on the artwork or Canvas Stage.");
+  if (!rows.some(Boolean) && !notice && !cinema && !motion) return null;
   const normalizedAlwaysShow = alwaysShowInFullscreen === "All" ? "Both" : alwaysShowInFullscreen;
 
   return <>
     <SectionTitle>Interface</SectionTitle>
+    {motion && <>
+      <Row settingId="motionArtwork" label="Motion Artwork" description="Play the album's animated cover when available."><Toggle checked={motionArtwork} onChange={(v) => $motionArtwork.set(v)} /></Row>
+      <Row settingId="motionArtworkPriority" label="Motion Artwork or Canvas" description="Which video plays when a song has both." disabled={!motionArtwork}><Select value={motionArtworkPriority} options={["motion", "canvas"]} labels={["Motion", "Canvas"]} onChange={(v) => $motionArtworkPriority.set(v as MotionArtworkPriority)} /></Row>
+      <Row settingId="motionArtworkOnStage" label="Motion Artwork on Canvas Stage" description="Allow animated artwork to fill the Canvas Stage." disabled={!motionArtwork}><Toggle checked={motionArtworkOnStage} onChange={(v) => $motionArtworkOnStage.set(v)} /></Row>
+    </>}
     {notice && <Row settingId="interface-no-lyrics-notice" label="No Lyrics Notice" description="Explain why a song has no lyrics. Errors always show their notice."><Toggle checked={showNoLyricsNotice} onChange={(v) => $showNoLyricsNotice.set(v)} /></Row>}
     {rows[0] && <Row settingId="interface-lock-media-box" label="Lock Media Box Size in Compact Mode" description="Prevent the media box from resizing when Forced Compact Mode is active."><Toggle checked={lockedMediaBox} onChange={(v) => $lockedMediaBox.set(v)} /></Row>}
     {rows[1] && <Row settingId="interface-disable-popup" label="Disable Popup Lyrics Window" description="Show or hide the Popup Lyrics button in the playback bar."><Toggle checked={!popupLyricsAllowed} onChange={(v) => $popupLyricsAllowed.set(!v)} /></Row>}

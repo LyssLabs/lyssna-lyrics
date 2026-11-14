@@ -3,6 +3,8 @@ import { $experiment, $experimentOverrides, $experimentsSyncing, forcedExperimen
 import { useEffect } from "react";
 import { $enableExperimentalWordSync, $externalCinemaLyricsAllowed } from "../../../utils/stores.ts";
 import { Row, SectionTitle, Toggle } from "./components.tsx";
+import { EXPERIMENT_CATEGORIES } from "../../../utils/experiments.ts";
+import { $ttmlReviewer, REVIEWER_LOCK_REASON } from "../../../utils/ttmlReviewer.ts";
 
 const experimentSettingIds: Partial<Record<ExperimentId, string>> = {
   newSettingsDesign: "appearance-settings-design",
@@ -31,9 +33,13 @@ export function ExperimentSettings({ title = false, experimentIds, advancedOnly 
   return (
     <>
       {title && <SectionTitle>Experiments</SectionTitle>}
-      {experiments.filter((exp) => !experimentIds || experimentIds.includes(exp.id)).map((exp) => (
-        <ExperimentRow key={exp.id} experiment={exp} />
-      ))}
+      {EXPERIMENT_CATEGORIES.map((category) => {
+        const entries = experiments.filter((exp) => exp.category === category.id && (!experimentIds || experimentIds.includes(exp.id)));
+        return entries.length > 0 && <div key={category.id}>
+          {!experimentIds && <SectionTitle>{category.title}</SectionTitle>}
+          {entries.map((exp) => <ExperimentRow key={exp.id} experiment={exp} />)}
+        </div>;
+      })}
       {showBuiltIn && <><Row
         label="Enable Cinema Lyrics Window"
         description="Show or hide the Cinema Lyrics button in the playback bar."
@@ -51,7 +57,7 @@ export function ExperimentSettings({ title = false, experimentIds, advancedOnly 
       >
         <Toggle checked={externalCinemaLyricsAllowed} onChange={(v) => $externalCinemaLyricsAllowed.set(v)} />
       </Row>
-      <Row label="Experimental Word Sync" description="Estimate word sync for line or static lyrics.">
+      <Row settingId="lyrics-experimental-word-sync" label="Experimental Word Sync" description="Estimate word sync for line or static lyrics.">
         <Toggle checked={experimentalWordSync} onChange={(v) => $enableExperimentalWordSync.set(v)} />
       </Row></>}
     </>
@@ -63,9 +69,10 @@ function ExperimentRow({ experiment }: { experiment: ResolvedExperiment }) {
   const enabled = useStore(store);
   const forced = forcedExperimentState(experiment.id);
   const syncing = useStore($experimentsSyncing);
+  const heldByReviewer = useStore($ttmlReviewer);
 
   return (
-    <Row settingId={experimentSettingIds[experiment.id]} label={experiment.label} description={experiment.description} disabled={syncing || forced !== undefined} disabledReason={syncing ? "Refreshing experiments" : forced ? "Forced on" : "Forced off"}>
+    <Row settingId={experimentSettingIds[experiment.id]} label={experiment.label} description={experiment.description} disabled={heldByReviewer || syncing || forced !== undefined} disabledReason={heldByReviewer ? REVIEWER_LOCK_REASON : syncing ? "Refreshing experiments" : forced ? "Forced on" : "Forced off"}>
       <Toggle checked={enabled} onChange={(v) => setExperiment(experiment.id, v)} />
     </Row>
   );

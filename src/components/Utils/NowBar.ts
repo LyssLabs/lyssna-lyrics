@@ -25,6 +25,9 @@ import { IsCompactMode } from "./CompactMode.ts";
 import { Maid } from "../../modules/Maid.ts";
 import Scheduler from "../../modules/Scheduler.ts";
 import Whentil from "../../modules/Whentil.ts";
+import Logger from "../../utils/Logger.ts";
+
+const nowBarLogger = new Logger("Now Bar");
 
 // Spicetify's wrapper rescans every element's computed style on each childList
 // mutation, and textContent always replaces the text node. Editing it in place doesn't.
@@ -613,7 +616,7 @@ function OpenNowBar(skipSaving: boolean = false) {
 
         const SliderBar = TimelineElem.querySelector<HTMLElement>(".SliderBar");
         if (!SliderBar) {
-          console.error("Could not find SliderBar element");
+          nowBarLogger.error("Could not find SliderBar element");
           return null;
         }
         SliderBar.style.touchAction = "none";
@@ -659,7 +662,7 @@ function OpenNowBar(skipSaving: boolean = false) {
           const DurationElem = TimelineElem.querySelector<HTMLElement>(".Time.Duration");
 
           if (!PositionElem || !DurationElem || !SliderBar) {
-            console.error("Missing required elements for timeline update");
+            nowBarLogger.error("Missing required elements for timeline update");
             return;
           }
 
@@ -929,6 +932,7 @@ function OpenNowBar(skipSaving: boolean = false) {
                     <div class="VolumeFill"></div>
                     <div class="Handle"></div>
                     <div class="VolumeIcon">${Icons.Volume}</div>
+                    <div class="VolumeMaxIcon">${Icons.VolumeFull}</div>
                 `;
 
         // Same trick the Heart uses — the SVG would otherwise swallow the clicks
@@ -943,7 +947,7 @@ function OpenNowBar(skipSaving: boolean = false) {
 
         const IconElement = VolumeElement.querySelector<HTMLElement>(".VolumeIcon");
         if (!IconElement) {
-          console.error("Could not find VolumeControl elements");
+          nowBarLogger.error("Could not find VolumeControl elements");
           return null;
         }
 
@@ -1000,7 +1004,7 @@ function OpenNowBar(skipSaving: boolean = false) {
             Spicetify.Player.setMute?.(level <= 0);
             Spicetify.Player.setVolume(level);
           } catch (err) {
-            console.error("Spicy Lyrics: couldn't set the volume", err);
+            nowBarLogger.error("Couldn't set the volume", err);
           }
         };
 
@@ -1568,7 +1572,7 @@ async function getAVCStreamUrl(manifestUrl: string) {
                 }
 
             }).catch(err => {
-                console.error("Error while getting EditorialArtwork", err);
+                nowBarLogger.error("Error while getting EditorialArtwork", err);
             })
     }
 
@@ -2019,8 +2023,12 @@ function NowBar_SwapSides() {
 }
 
 function ApplySideSwap() {
+  // Listeners measure before and after, so what sits on the lyrics side (the queue, QueueView.ts)
+  // can slide across with the lyrics instead of jumping.
+  Global.Event.evoke("nowbar:side-swap:before", null);
   $nowBarSide.set($nowBarSide.get() === "right" ? "left" : "right");
   Session_NowBar_SetSide();
+  Global.Event.evoke("nowbar:side-swap:after", null);
 }
 
 // The side the page shows: the stored one, except that compact mode and the centred
@@ -2190,6 +2198,7 @@ $releaseYearPosition.subscribe(() => {
 // The band is built inside OpenNowBar's fullscreen block, so toggling the setting
 // has to rebuild the overlay components rather than just show/hide an element.
 // `.listen` (not `.subscribe`) — this must not fire on module load.
+
 $showVolumeSlider.listen(() => {
   if (!Fullscreen.IsOpen) return;
   CleanUpActiveComponents();

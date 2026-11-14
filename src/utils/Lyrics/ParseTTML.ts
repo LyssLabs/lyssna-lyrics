@@ -4,6 +4,7 @@ type SyllableEntry = {
   StartTime: number;
   EndTime: number;
   IsPartOfWord: boolean;
+  TransliteratedIsPartOfWord?: boolean;
 };
 
 type BackgroundEntry = {
@@ -16,6 +17,7 @@ type RomanizedPiece = {
   Text: string;
   StartTime: number | null;
   EndTime: number | null;
+  EndsWord?: boolean;
 };
 
 type RomanizationMetadata = {
@@ -154,7 +156,7 @@ function hasExplicitSpaceBeforeNextMeaningfulNode(
     const node = nodes[i];
     if (node.nodeType === Node.TEXT_NODE) {
       const text = node.textContent ?? "";
-      if (/[ ]/.test(text)) return true;
+      if (/[ \u00a0]/.test(text)) return true;
       if (isSkippableWhitespace(node)) continue;
     }
 
@@ -176,9 +178,30 @@ function isPartOfWord(nodes: ChildNode[], index: number): boolean {
 
   if (!currentText || !nextText) return false;
   if (/\s$/.test(getNodeText(current))) return false;
+  if (/^\s/.test(getNodeText(next))) return false;
   if (hasExplicitSpaceBeforeNextMeaningfulNode(nodes, index)) return false;
 
   return true;
+}
+
+function romanizedPiece(span: Element): RomanizedPiece {
+  const nodes = Array.from(span.parentNode?.childNodes ?? []);
+  return {
+    Text: span.textContent?.trim() ?? "",
+    StartTime: parseTimestamp(getAttr(span, "begin")),
+    EndTime: parseTimestamp(getAttr(span, "end")),
+    EndsWord: !isPartOfWord(nodes, nodes.indexOf(span)),
+  };
+}
+
+function normalizeSyllableEnds(syllables: SyllableEntry[], lineEnd: number): void {
+  for (let index = 0; index < syllables.length; index++) {
+    const syllable = syllables[index];
+    if (syllable.EndTime > syllable.StartTime) continue;
+    const nextStart = syllables[index + 1]?.StartTime;
+    syllable.EndTime = nextStart > syllable.StartTime ? nextStart
+      : lineEnd > syllable.StartTime ? lineEnd : syllable.StartTime + 0.1;
+  }
 }
 
 function getLeadTransliterationText(node: Node): string {
@@ -212,11 +235,7 @@ function readITunesMetadata(root: Element) {
           .map((child) => child as Element);
         const leadPieces = spans
           .filter((span) => getAttr(span, "ttm:role", "role") !== "x-bg")
-          .map((span) => ({
-            Text: span.textContent?.trim() ?? "",
-            StartTime: parseTimestamp(getAttr(span, "begin")),
-            EndTime: parseTimestamp(getAttr(span, "end")),
-          }))
+          .map(romanizedPiece)
           .filter((piece) => piece.Text);
         const backgroundPieces = spans
           .filter((span) => getAttr(span, "ttm:role", "role") === "x-bg")
@@ -225,11 +244,7 @@ function readITunesMetadata(root: Element) {
               .filter((child) => child.localName.toLowerCase() === "span")
               .map((child) => child as Element)
               .filter((span) => getAttr(span, "ttm:role", "role") !== "x-roman")
-              .map((span) => ({
-                Text: span.textContent?.trim() ?? "",
-                StartTime: parseTimestamp(getAttr(span, "begin")),
-                EndTime: parseTimestamp(getAttr(span, "end")),
-              }))
+              .map(romanizedPiece)
               .filter((piece) => piece.Text)
           )
           .filter((pieces) => pieces.length > 0);
@@ -344,6 +359,7 @@ function applyRomanizedPieces(
     if (pieceIndex === -1) continue;
 
     syllable.TransliteratedText = pieces[pieceIndex].Text;
+    if (pieces[pieceIndex].EndsWord) syllable.TransliteratedIsPartOfWord = false;
     usedPieces.add(pieceIndex);
   }
 
@@ -358,6 +374,7 @@ function applyRomanizedPieces(
 
   remainingSyllables.forEach((syllable, index) => {
     syllable.TransliteratedText = untimedPieces[index].Text;
+    if (untimedPieces[index].EndsWord) syllable.TransliteratedIsPartOfWord = false;
   });
 }
 
@@ -445,6 +462,7 @@ function parseBackground(element: Element, lineStart: number, lineEnd: number): 
   const childNodes = Array.from(element.childNodes).filter((node) => !isSkippableWhitespace(node));
   const syllables = parseSyllableNodes(childNodes, lineStart, lineEnd);
   if (syllables.length === 0) return null;
+  normalizeSyllableEnds(syllables, lineEnd);
 
   syllables[0].Text = syllables[0].Text.replace(LEADING_BG_BRACKET, "");
   const lastSyllable = syllables[syllables.length - 1];
@@ -537,6 +555,7 @@ function parseParagraph(
   const romanization = lineKey ? transliterationPieces.get(lineKey) : undefined;
   applyRomanizedPieces(leadSyllables, romanization?.leadPieces);
   applyBackgroundRomanizations(background, romanization?.backgroundPieces);
+  normalizeSyllableEnds(leadSyllables, paragraphEnd);
 
   const leadText = leadSyllables.length > 0
     ? buildTextFromSyllables(leadSyllables)
@@ -639,7 +658,7 @@ function buildSyllableLyrics(lines: ParsedLine[], songwriters: string[]) {
 }
 
 export default function parseTTMLToLyrics(ttml: string) {
-  const document = new DOMParser().parseFromString(ttml, "text/xml");
+  const document = new DOMParser().parseFromString(ttml.replace(/&nbsp;/g, "&#160;"), "text/xml");
   const parserError = document.querySelector("parsererror");
   if (parserError) {
     throw new Error(parserError.textContent?.trim() || "Invalid TTML");

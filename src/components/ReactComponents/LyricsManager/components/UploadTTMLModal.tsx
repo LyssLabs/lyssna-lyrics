@@ -121,6 +121,9 @@ export default function UploadTTMLModal({ onOpenDB, onDone }: UploadTTMLModalPro
           const dataToSave = {
             ...result?.Result,
             id: lyricsId,
+            uri,
+            temporaryUpload: mode === "temporary",
+            uploadedTTML: ttml,
             userUploaded: true,
           };
           await ProcessLyrics(dataToSave);

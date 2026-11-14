@@ -70,7 +70,19 @@ export interface SyllableLead {
   }>;
   BGWord?: boolean;
   Dot?: boolean;
+  // Keep Syllable Pace: the letters are timed by the joined word's own syllables.
+  Paced?: boolean;
   AnimatorStore?: SyllableAnimatorStore;
+  // Bloom: letters in the whole word this syllable belongs to.
+  WordLetters?: number;
+  // Bloom: a split syllable of a word sung in several. The whole word's
+  // letters swell as one; this syllable's start at FlameOffset among them.
+  FlameGroup?: {
+    Letters: NonNullable<SyllableLead["Letters"]>;
+    StartTime: number;
+    EndTime: number;
+  };
+  FlameOffset?: number;
 }
 
 export interface LyricsSyllable {
@@ -84,11 +96,17 @@ export interface LyricsSyllable {
   };
   DotLine?: boolean;
   BGLine?: boolean;
+  ActivationStartTime?: number;
+  ActivationEndTime?: number;
   SpaceGravityParentLineIndex?: number;
   AnimatorStore?: LineAnimatorStore;
   // State the animator last processed this line in, and whether its words are
   // still springing to their sung values after it ended.
   AnimatedState?: "NotSung" | "Active" | "Sung";
+  // When the animator saw the line turn Sung (Bloom settles its words from then).
+  SungAt?: number;
+  // When the lead line's own singing ends; EndTime may run on to the next line.
+  LeadEndTime?: number;
   Settling?: boolean;
 }
 
@@ -103,6 +121,7 @@ export interface LyricsLine {
     Lead: SyllableLead[];
   };
   AnimatorStore?: LineAnimatorStore;
+  LeadEndTime?: number;
 }
 
 export interface LyricsStatic {
@@ -438,3 +457,10 @@ export const setRomanizedStatus = (val: boolean) => {
 
 export const preHiddenDotLineMs = 500;
 export const getInterludeTimePadding = () => (preHiddenDotLineMs + 50) * -1;
+// Bloom in Popup Lyrics and the Now Playing card scrolls to a line early.
+// From then on, lines above it that have finished singing show as sung, even
+// where their time runs on to the next line. -1 when nothing scrolled early.
+export let EarlySungBefore = -1;
+export const setEarlySungBefore = (index: number) => {
+  EarlySungBefore = index;
+};

@@ -2,7 +2,14 @@ import { useStore } from "@nanostores/react";
 import React from "react";
 import {
   $lineHoverBackground,
-  $joinSplitWords,
+  $syllableMerge,
+  $syllablePace,
+  $lyricsSize,
+  $romanizationDisplay,
+  $staticAutoScroll,
+  type SyllableMerge,
+  type RomanizationDisplay,
+  type StaticAutoScroll,
   $enableExperimentalWordSync,
   $duetLinePadding,
   $creditsFollowLastLine,
@@ -17,8 +24,10 @@ import {
   $rightAlignLyrics,
   $showScrollToActiveButton,
 } from "../../../utils/stores.ts";
-import { matches, Row, SectionTitle, Slider, Toggle } from "./components.tsx";
+import { matches, Row, SectionTitle, Slider, Toggle, Select } from "./components.tsx";
 import { ExperimentSettings } from "./ExperimentsPanel.tsx";
+import { $offsetScope, $songOffsets, getSongOffset, setSongOffset } from "../../../utils/songOffsets.ts";
+import { useCurrentUri } from "../LyricsManager/hooks/useCurrentUri.ts";
 
 const SECTION_NAME = "Lyrics Display";
 const simpleLyricsOptions = ["Off", "calculate", "animate"];
@@ -36,7 +45,15 @@ export default function LyricsSection({ query, sectionFilter, showHidden = false
   const scrollLeadMs = useStore($scrollLeadMs);
   const smoothScrolling = useStore($smoothScrolling);
   const lineHoverBackground = useStore($lineHoverBackground);
-  const joinSplitWords = useStore($joinSplitWords);
+  const syllableMerge = useStore($syllableMerge);
+  const syllablePace = useStore($syllablePace);
+  const lyricsSize = useStore($lyricsSize);
+  const romanizationDisplay = useStore($romanizationDisplay);
+  const staticAutoScroll = useStore($staticAutoScroll);
+  const uri = useCurrentUri();
+  const offsetScope = useStore($offsetScope);
+  useStore($songOffsets);
+  const offset = offsetScope === "song" ? getSongOffset(uri) : playbackOffset;
   const experimentalWordSync = useStore($enableExperimentalWordSync);
   const duetLinePadding = useStore($duetLinePadding);
   const creditsFollowLastLine = useStore($creditsFollowLastLine);
@@ -59,14 +76,20 @@ export default function LyricsSection({ query, sectionFilter, showHidden = false
   const credits = visible("lyrics-credits-follow-singer") && matches(query, "Credits Follow the Last Singer", "Align credits with the last duet line.");
   const joinSplit = matches(query, "Join Split Words", "Show a word that's sung in syllables as one word, when its parts line up evenly.");
   const wordSync = visible("lyrics-experimental-word-sync") && matches(query, "Experimental Word Sync", "Estimate word sync for line or static lyrics.");
-  if (![r3, r4, r5, r8, r9, r10, seek, early, lead, smooth, skeleton, credits, joinSplit, wordSync].some(Boolean)) return null;
+  const size = matches(query, "Lyrics Size", "Make lyrics bigger or smaller in every view.");
+  const romanization = matches(query, "Romanization", "Replace the line or show romanization under each line.");
+  const pace = matches(query, "Keep Syllable Pace", "Keep each joined syllable's timing.");
+  const unsynced = matches(query, "Unsynced Auto-scroll", "Scroll unsynced lyrics through the song using loudness or vocals.");
+  if (![r3, r4, r5, r8, r9, r10, seek, early, lead, smooth, skeleton, credits, joinSplit, wordSync, size, romanization, pace, unsynced].some(Boolean)) return null;
 
   return <>
     <SectionTitle>Lyrics Display</SectionTitle>
+    {size && <Row label="Lyrics Size" description="Make lyrics bigger or smaller in every view." stacked><Slider value={lyricsSize} min={60} max={200} step={5} defaultValue={100} unit="%" onChange={(v) => $lyricsSize.set(v)} /></Row>}
+    {romanization && <Row label="Romanization" description="Where romanization appears when enabled."><Select value={romanizationDisplay} options={["replace", "underLine"]} labels={["Replace the line", "Under each line"]} onChange={(v) => $romanizationDisplay.set(v as RomanizationDisplay)} /></Row>}
     {r3 && <Row settingId="lyrics-minimal-mode" label="Minimal Lyrics Mode" description="Hides sung lyrics lines in Fullscreen and Cinema Mode"><Toggle checked={minimalLyricsMode} onChange={(v) => $minimalLyricsMode.set(v)} /></Row>}
     {r4 && <Row settingId="lyrics-right-align" label="Right Align Lyrics" description="Flip duet/opposite lyric alignment."><Toggle checked={rightAlignLyrics} onChange={(v) => $rightAlignLyrics.set(v)} /></Row>}
     {r5 && <Row settingId="lyrics-scroll-active" label="Show Scroll to Active Button" description="Show an arrow when the active lyric is outside the viewport."><Toggle checked={showScrollToActiveButton} onChange={(v) => $showScrollToActiveButton.set(v)} /></Row>}
-    {r8 && <Row settingId="lyrics-playback-offset" label="Playback Offset" description="Shift lyrics timing earlier or later, in milliseconds." stacked><Slider value={playbackOffset} min={-5000} max={5000} step={10} defaultValue={0} unit="ms" onChange={(v) => $playbackOffset.set(v)} /></Row>}
+    {r8 && <Row settingId="lyrics-playback-offset" label="Playback Offset" description="Shift lyrics timing earlier or later, in milliseconds." stacked><Select value={offsetScope} options={["all", "song"]} labels={["All songs", "This song"]} onChange={(v) => $offsetScope.set(v as "all" | "song")} /><Slider value={offset} min={-5000} max={5000} step={10} defaultValue={0} unit="ms" disabled={offsetScope === "song" && !uri} onChange={(v) => { if (offsetScope === "song") { if (uri) setSongOffset(uri, v); } else $playbackOffset.set(v); }} /></Row>}
     {seek && <Row settingId="lyrics-seek-compensation" label="Seek Fade-in Compensation" description="Clicking a lyric seeks 300ms before it, so Spotify's fade-in does not cut off the start."><Toggle checked={seekFadeCompensation} onChange={(v) => $seekFadeCompensation.set(v)} /></Row>}
     {(early || lead || smooth) && <SectionTitle>Scrolling</SectionTitle>}
     {early && <Row settingId="lyrics-early-scroll" label="Early Scroll" description="Start scrolling to the next line before it becomes active."><Toggle checked={scrollLeadEnabled} onChange={(v) => $scrollLeadEnabled.set(v)} /></Row>}
@@ -75,7 +98,9 @@ export default function LyricsSection({ query, sectionFilter, showHidden = false
     {skeleton && <ExperimentSettings experimentIds={["lyricsSkeleton"]} showBuiltIn={false} />}
     {r9 && <Row settingId="lyrics-line-hover" label="Line Hover Background" description="Shows a highlight box behind a lyrics line when you hover over it"><Toggle checked={lineHoverBackground} onChange={(v) => $lineHoverBackground.set(v)} /></Row>}
     {r10 && <Row settingId="lyrics-wide-duet-padding" label="Wide duet line padding" description="Separate duet voices into wider columns. Disable for compact padding."><Toggle checked={duetLinePadding} onChange={(v) => $duetLinePadding.set(v)} /></Row>}
-    {joinSplit && <Row label="Join Split Words" description="Show a word that's sung in syllables as one word, when its parts line up evenly."><Toggle checked={joinSplitWords} onChange={(value) => $joinSplitWords.set(value)} /></Row>}
+    {joinSplit && <Row label="Join Split Words" description="Choose which words sung in syllables should join together."><Select value={syllableMerge} options={["off", "full", "steady", "held"]} labels={["Off", "All Words", "Steadily Sung", "Held Words"]} onChange={(v) => $syllableMerge.set(v as SyllableMerge)} /></Row>}
+    {pace && <Row label="Keep Syllable Pace" description="Joined words follow each syllable's timing." disabled={syllableMerge === "off"}><Toggle checked={syllablePace} onChange={(v) => $syllablePace.set(v)} /></Row>}
+    {unsynced && <Row label="Unsynced Auto-scroll" description="Scroll unsynced lyrics through the song using loudness or vocals."><Select value={staticAutoScroll} options={["off", "basic", "advanced"]} labels={["Off", "Loudness", "Vocals"]} onChange={(v) => $staticAutoScroll.set(v as StaticAutoScroll)} /></Row>}
     {wordSync && <Row settingId="lyrics-experimental-word-sync" label="Experimental Word Sync" description="Estimate word sync for line or static lyrics."><Toggle checked={experimentalWordSync} onChange={(value) => $enableExperimentalWordSync.set(value)} /></Row>}
     {credits && <Row settingId="lyrics-credits-follow-singer" label="Credits Follow the Last Singer" description="Align credits with the last duet line."><Toggle checked={creditsFollowLastLine} onChange={(v) => $creditsFollowLastLine.set(v)} /></Row>}
   </>;
