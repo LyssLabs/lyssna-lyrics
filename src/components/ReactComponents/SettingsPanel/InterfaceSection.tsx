@@ -4,7 +4,7 @@ import {
   $alwaysShowInFullscreen, $allowHidingSettings, $animateFullscreenClose,
   $disableNpvLyrics, $escapeKeyFunction, $externalCinemaLyricsAllowed,
   $hideNpvLyricsWhenUnavailable, $hiddenSettingIds, $lockedMediaBox,
-  $releaseYearPosition, $showVolumeSliderFullscreen, $removeSpotifyLyricsButton,
+  $releaseYearPosition, $showVolumeSliderFullscreen,
   $viewControlsPosition, $showNoLyricsNotice, $showQueueWhenNoLyrics,
 } from "../../../utils/stores.ts";
 import { $isGlobalNav } from "../../../utils/uiState.ts";
@@ -24,7 +24,6 @@ export default function InterfaceSection({ query, sectionFilter, showHidden = fa
   const animateFullscreenClose = useStore($animateFullscreenClose);
   const hideNpvLyricsWhenUnavailable = useStore($hideNpvLyricsWhenUnavailable);
   const disableNpvLyrics = useStore($disableNpvLyrics);
-  const removeSpotifyLyricsButton = useStore($removeSpotifyLyricsButton);
   const showNoLyricsNotice = useStore($showNoLyricsNotice);
   const showQueueWhenNoLyrics = useStore($showQueueWhenNoLyrics);
   const isGlobalNav = useStore($isGlobalNav);
@@ -44,7 +43,6 @@ export default function InterfaceSection({ query, sectionFilter, showHidden = fa
     { id: "interface-escape-key", label: "Escape Key Function", description: "Choose where Escape and the fullscreen button take you.", control: <Select value={escapeKeyFunction} options={["Exit Fullscreen", "Exit to Cinema", "Exit Fully"]} onChange={value => $escapeKeyFunction.set(value)} /> },
     { id: "interface-disable-npv", label: "Disable NPV Lyrics", description: "Hide the lyrics card in the Now Playing sidebar.", control: <Toggle checked={disableNpvLyrics} onChange={value => $disableNpvLyrics.set(value)} /> },
     { id: "interface-hide-empty-npv", label: "Hide NPV Lyrics When No Lyrics Are Available", description: "Remove the sidebar lyrics card while lyrics are unavailable.", hidden: disableNpvLyrics, control: <Toggle checked={hideNpvLyricsWhenUnavailable} onChange={value => $hideNpvLyricsWhenUnavailable.set(value)} /> },
-    { id: "interface-remove-spotify-lyrics", label: "Remove Spotify's Lyrics Button", description: "Hide Spotify’s lyrics button. Lyssna buttons stay visible.", control: <Toggle checked={removeSpotifyLyricsButton} onChange={value => $removeSpotifyLyricsButton.set(value)} /> },
   ];
   const visible = settings.filter(setting => !setting.hidden && matches(query, setting.label, setting.description) &&
     (showHidden ? hiddenIds.includes(setting.id) : !allowHidingSettings || !hiddenIds.includes(setting.id) || Boolean(query.trim())));

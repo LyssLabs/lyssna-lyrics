@@ -13,5 +13,8 @@ export default function CreditsSection() {
     <Row label="Lyssna · Arashii" description="Lyssna's creator provided the microphone icon, settings and toolbar designs.">
       <a className="ll-sp-btn" href={WEBSITE_URL} target="_blank" rel="noopener noreferrer">Lyssna project</a>
     </Row>
+    <Row label="Spotify+ · iPixelGalaxy" description="Spotify interface cleanup, classic menus and playlist enhancements.">
+      <a className="ll-sp-btn" href="https://github.com/iPixelGalaxy/spotify-plus" target="_blank" rel="noopener noreferrer">Spotify+ project</a>
+    </Row>
   </section>;
 }

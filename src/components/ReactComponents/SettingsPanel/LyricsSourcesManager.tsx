@@ -15,7 +15,6 @@ import {
   $ignoreMusixmatchWordSync,
   $lyricsSourceOrder,
   $musixmatchToken,
-  $prioritizeAppleMusicQuality,
 } from "../../../utils/stores.ts";
 import { refreshMusixmatchToken } from "../../../utils/Lyrics/ExternalSources.ts";
 import { Toggle } from "./components.tsx";
@@ -26,7 +25,6 @@ export default function LyricsSourcesManager() {
   const storedOrder = useStore($lyricsSourceOrder);
   const storedDisabled = useStore($disabledLyricsSources);
   const ignoreMusixmatchWordSync = useStore($ignoreMusixmatchWordSync);
-  const prioritizeAppleMusicQuality = useStore($prioritizeAppleMusicQuality);
   const musixmatchToken = useStore($musixmatchToken);
   const order = normalizeLyricsSourceOrder(storedOrder);
   const disabledIds = new Set(normalizeDisabledLyricsSourceIds(storedDisabled));
@@ -73,7 +71,6 @@ export default function LyricsSourcesManager() {
 
   const optionCounts: Partial<Record<LyricsSourceProviderId, number>> = {
     musixmatch: 2,
-    apple: 1,
   };
 
   const toggleOptions = (id: LyricsSourceProviderId) => {
@@ -207,19 +204,6 @@ export default function LyricsSourcesManager() {
                 </div>
               )}
 
-              {id === "apple" && optionsExpanded && (
-                <div className="ll-sp-source-settings-group ll-sp-source-settings-group--inline ll-sp-source-settings-group--opening">
-                  <div className="ll-sp-source-settings-inner">
-                    <div className="ll-sp-source-option-row">
-                      <div className="ll-sp-source-copy">
-                        <span className="ll-sp-source-label">Prefer Apple Music / lrc.red</span>
-                        <span className="ll-sp-source-description">Check lrc.red independently and prefer these sources at equal sync quality. Word sync always beats line sync. Disabled sources stay skipped.</span>
-                      </div>
-                      <Toggle checked={prioritizeAppleMusicQuality} onChange={(v) => $prioritizeAppleMusicQuality.set(v)} />
-                    </div>
-                  </div>
-                </div>
-              )}
             </React.Fragment>
           );
         })}

@@ -4,6 +4,7 @@ import { $allowHidingSettings, $hideHidingIcon } from "../../../utils/stores.ts"
 import AppearanceSection from "./AppearanceSection.tsx";
 import DeveloperSection from "./DeveloperSection.tsx";
 import InterfaceSection from "./InterfaceSection.tsx";
+import EnhancementsSection from "./EnhancementsSection.tsx";
 import LyricsSection from "./LyricsSection.tsx";
 import SourcesSection from "./SourcesSection.tsx";
 import Footer from "./Footer.tsx";
@@ -19,6 +20,7 @@ const TABS = [
   ["Appearance", "Appearance", SettingsIcons.Appearance],
   ["Lyrics", "Lyrics Display", SettingsIcons.Lyrics],
   ["Layout", "Interface", SettingsIcons.Layout],
+  ["Enhancements", "Enhancements", SettingsIcons.General],
   ["Sources", "Sources", SettingsIcons.Sources],
   ["Advanced", "Advanced", SettingsIcons.Advanced],
   ["Credits", "Credits", AboutIcon],
@@ -116,6 +118,7 @@ export default function SettingsPanel({ onOpenHiddenSettings, onManageAnimator, 
                 <LyricsSection query={query} sectionFilter={searching ? "All" : sectionFilter} onManageAnimator={() => onManageAnimator?.({ query, sectionFilter, scrollTop: scrollRef.current?.scrollTop ?? 0 })} />
                 <DiscordCreditsSettings query={query} sectionFilter={searching ? "All" : sectionFilter} />
                 <InterfaceSection query={query} sectionFilter={searching ? "All" : sectionFilter} />
+                <EnhancementsSection query={query} sectionFilter={searching ? "All" : sectionFilter} />
                 <SourcesSection query={query} sectionFilter={searching ? "All" : sectionFilter} />
                 <DeveloperSection query={query} sectionFilter={searching ? "All" : sectionFilter} onOpenHiddenSettings={onOpenHiddenSettings ?? (() => {})} onManageBuildChannels={onManageBuildChannels} />
                 {(sectionFilter === "Got a Bug?" || (searching && /bug|report|lag|slow|performance/i.test(query))) && <BugReportPane onBack={() => selectTab(previousTab.current)} />}

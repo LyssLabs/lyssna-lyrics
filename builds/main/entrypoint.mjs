@@ -1,5 +1,5 @@
 import { BUILT_IN_CHANNELS as CHANNEL_MAP, CHANNELS_CHANGED_EVENT, DEFAULT_CHANNEL, DEFAULT_BUILD_HOST, getChannelMap as getFullChannelMap, getCurrentChannel, isAllowedBuildHost, isReservedChannelName, readCustomChannels as getCustomChannels, saveCustomChannels, selectedChannel as selectChannel, setCurrentChannel } from "../shared/channels.mjs";
-import { readActiveLyricsApp, recordActiveLyricsApp } from "../shared/app-state.mjs";
+import { readActiveLyricsApp, recordActiveLyricsApp, rememberLyricsAppSwitch, restoreLyricsAppView, finishLyricsAppSwitch } from "../shared/app-state.mjs";
 import { channelApp, channelBundleUrl, channelVersionUrl, readChannelVersion } from "../shared/build-paths.mjs";
 
 const ownsEntrypoint = !globalThis.__LYSSNA_LYRICS_ENTRYPOINT__;
@@ -556,6 +556,7 @@ const registerChannelSettings = () => {
   channelSettingsObserver.observe(document.body, { childList: true });
   Spicetify.Platform.History.listen(scheduleRender);
   window.addEventListener(CHANNELS_CHANGED_EVENT, () => {
+    rememberLyricsAppSwitch(Spicetify.LocalStorage, Spicetify.Platform.History, channelApp(selectChannel()));
     document.querySelectorAll(`#${CHANNEL_SETTING_GROUP_ID}, #${SPOTIFY_CHANNEL_GROUP_ID}`).forEach(element => element.remove());
     scheduleRender();
   });
@@ -628,11 +629,7 @@ async function load() {
       throw new Error("Pixel Edition versions predate coexistence support. Select a current Lyssna version to run alongside Spicy Lyrics.");
     }
     const previousApp = readActiveLyricsApp(Spicetify.LocalStorage)?.app;
-    const history = Spicetify.Platform.History;
-    const lyricsRoutes = { lyssna: "/LyssnaLyrics", spicy: "/SpicyLyrics" };
-    if (previousApp && previousApp !== app && history.location?.pathname === lyricsRoutes[previousApp]) {
-      history.replace({ pathname: lyricsRoutes[app] });
-    }
+    restoreLyricsAppView(Spicetify.LocalStorage, Spicetify.Platform.History, app);
     if (app === "lyssna") window._lyssna_lyrics_metadata = { LoadedVersion: version, PreviousApp: previousApp ?? null };
     else window._spicy_lyrics_metadata = { LoadedVersion: version };
     window._lyssna_lyrics_channel = { name: channel.name, fixedVersion: channel.fixedVersion };
@@ -645,18 +642,73 @@ async function load() {
       throw error;
     }
     recordActiveLyricsApp(Spicetify.LocalStorage, app, version);
+    finishLyricsAppSwitch(Spicetify.LocalStorage);
     if (app === "spicy" && previousApp === "lyssna") {
-      try {
-        Spicetify.showNotification?.(`Switched to Spicy Lyrics ${version}. Lyssna Lyrics keeps its own version history.`);
-      } catch (error) {
-        console.warn("Could not show the app-switch notice:", error);
-      }
+      void showSpicyStartupDialog(version).catch(error => console.warn("Could not show the Spicy Lyrics startup dialog:", error));
     }
   } catch (error) {
     showFailure(error);
   } finally {
     loading = false;
   }
+}
+
+async function showSpicyStartupDialog(version) {
+  // Wait for upstream startup so a genuine update notice takes priority over the switch notice.
+  const deadline = Date.now() + 8000;
+  while (Date.now() < deadline) {
+    if (document.querySelector(".sltoaster")) {
+      if (!document.querySelector(".sl-notice-host")) renderSpicySwitchDialog(version);
+      return;
+    }
+    await sleep(100);
+  }
+}
+
+function renderSpicySwitchDialog(version) {
+  // Reuse the loaded upstream notice styles; its exported helper is developer-only.
+  const host = document.createElement("div");
+  host.className = "sl-notice-host";
+  host.innerHTML = `<div class="sl-notice-overlay"><div class="sl-notice" role="dialog" aria-modal="true" aria-labelledby="lyssna-spicy-switch-title" tabindex="-1"><div class="sl-notice-heading"><p class="sl-notice-brand">Spicy Lyrics</p><h2 class="sl-notice-title" id="lyssna-spicy-switch-title">Switched to Spicy Lyrics</h2></div><p class="sl-notice-text"></p><div class="sl-notice-actions"><button type="button" class="sl-notice-button sl-notice-button--quiet">Release notes</button><button type="button" class="sl-notice-button sl-notice-button--primary">Continue</button></div></div></div>`;
+  host.querySelector(".sl-notice-text").textContent = `Now running Spicy Lyrics ${version}.`;
+  const overlay = host.firstElementChild;
+  const buttons = host.querySelectorAll("button");
+  const previousFocus = document.activeElement;
+  let closed = false;
+  const close = () => {
+    if (closed) return;
+    closed = true;
+    document.removeEventListener("keydown", onKeyDown, true);
+    overlay.classList.add("is-closing");
+    overlay.classList.remove("is-open");
+    setTimeout(() => host.remove(), 200);
+    if (previousFocus instanceof HTMLElement && previousFocus.isConnected) previousFocus.focus({ preventScroll: true });
+  };
+  const onKeyDown = event => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      close();
+    } else if (event.key === "Tab") {
+      event.preventDefault();
+      buttons[document.activeElement === buttons[0] ? 1 : 0].focus({ preventScroll: true });
+    }
+  };
+  buttons[0].addEventListener("click", () => {
+    window.open(`https://github.com/Spikerko/spicy-lyrics/releases/tag/${encodeURIComponent(version)}`, "_blank", "noopener,noreferrer");
+    close();
+  });
+  buttons[1].addEventListener("click", close);
+  let pressedBackdrop = false;
+  overlay.addEventListener("pointerdown", event => { pressedBackdrop = event.target === overlay; });
+  overlay.addEventListener("click", event => { if (pressedBackdrop && event.target === overlay) close(); });
+  document.body.append(host);
+  document.addEventListener("keydown", onKeyDown, true);
+  requestAnimationFrame(() => {
+    if (closed) return;
+    overlay.classList.add("is-open");
+    buttons[1].focus({ preventScroll: true });
+  });
 }
 
 async function run() {

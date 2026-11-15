@@ -2,6 +2,7 @@ import { partitionedStorage } from "./settingsStorage.ts";
 import { SHARED_SETTING_KEYS, MANAGED_SETTING_KEYS, LEGACY_EXPERIMENT_SETTING_KEYS } from "./settingsSchema.ts";
 import { DEFAULT_CHANNEL, getCurrentChannel } from "./version/Channels.ts";
 import { DEFAULT_DISCORD_LOOKUP_ENDPOINT } from "./discordLookup.ts";
+import { DEFAULT_LYRICS_SOURCE_ORDER } from "./Lyrics/LyricsSourcePreferences.ts";
 import { atom, computed, type WritableAtom } from "nanostores";
 import { SETTING_IDS } from "../components/ReactComponents/SettingsPanel/hiddenSettings.ts";
 
@@ -360,14 +361,13 @@ export const $animateFullscreenClose = persistAtom<boolean>("animateFullscreenCl
 export const $enableExperimentalWordSync = persistAtom<boolean>("enableExperimentalWordSync", false);
 export const $lyricsSourceOrder = persistAtom<string>(
   "lyricsSourceOrder",
-  JSON.stringify(["spicy", "musixmatch", "apple", "spotify", "lrclib", "netease"])
+  JSON.stringify(DEFAULT_LYRICS_SOURCE_ORDER)
 );
 export const $disabledLyricsSources = persistAtom<string>(
   "disabledLyricsSources",
   JSON.stringify(["lrclib", "netease"])
 );
 export const $ignoreMusixmatchWordSync = persistAtom<boolean>("ignoreMusixmatchWordSync", true);
-export const $prioritizeAppleMusicQuality = persistAtom<boolean>("prioritizeAppleMusicQuality", true);
 export const $musixmatchToken = persistAtom<string>("musixmatchToken", "");
 // Reserved for upstream's in-artwork volume controller. This fork keeps its
 // own placement selector, so the controller stays disabled.

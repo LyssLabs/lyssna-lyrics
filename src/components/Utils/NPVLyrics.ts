@@ -11,7 +11,7 @@ import { IsPIP, _IsPIP_after, IsPIPOpening } from "./PopupLyrics.ts";
 import { IsExternalCinemaLyrics, IsExternalCinemaOpening } from "./ExternalCinemaLyrics.ts";
 import Session from "../Global/Session.ts";
 import Global from "../Global/Global.ts";
-import { Icons } from "../Styling/Icons.ts";
+import { NPVIcons } from "../Styling/NPVIcons.ts";
 import { Maid } from "../../modules/Maid.ts";
 import Whentil from "../../modules/Whentil.ts";
 import { $npvLyricsExpanded, $npvLyricsOpen } from "../../utils/uiState.ts";
@@ -462,9 +462,9 @@ function renderCardShell(npv: HTMLElement): boolean {
         <div class="CardHeader">
             <span class="CardTitle">Lyrics</span>
             <div class="CardControls">
-                <button id="NPVCardExpand" class="CardControl">${Icons.OpenPage}</button>
-                <button id="NPVCardMaximize" class="CardControl">${Icons.CardExpand}</button>
-                <button id="NPVCardToggle" class="CardControl">${Icons.CardToggle}</button>
+                <button id="NPVCardExpand" class="CardControl">${NPVIcons.Open}</button>
+                <button id="NPVCardMaximize" class="CardControl">${NPVIcons.Expand}</button>
+                <button id="NPVCardToggle" class="CardControl">${NPVIcons.Toggle}</button>
             </div>
         </div>
         <div class="CardBody"></div>

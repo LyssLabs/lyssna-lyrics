@@ -1,3 +1,5 @@
+import { DEFAULT_LYRICS_SOURCE_ORDER } from "../../utils/Lyrics/LyricsSourcePreferences.ts";
+
 export const isDev = false;
 
 const Defaults = {
@@ -17,10 +19,9 @@ const Defaults = {
   DisplayLyricsHoverPill: false,
   AnimateFullscreenClose: false,
   EnableExperimentalWordSync: false,
-  LyricsSourceOrder: ["spicy", "musixmatch", "apple", "spotify", "lrclib", "netease"],
+  LyricsSourceOrder: [...DEFAULT_LYRICS_SOURCE_ORDER],
   DisabledLyricsSourceIds: ["lrclib", "netease"] as string[],
   IgnoreMusixmatchWordSync: true,
-  PrioritizeAppleMusicQuality: true,
 };
 
 export default Defaults;

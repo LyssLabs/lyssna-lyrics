@@ -13,10 +13,10 @@ type LyricsSourceDefinition = {
 };
 
 export const DEFAULT_LYRICS_SOURCE_ORDER: LyricsSourceProviderId[] = [
-  "spicy",
-  "musixmatch",
   "apple",
   "lrcred",
+  "spicy",
+  "musixmatch",
   "spotify",
   "lrclib",
   "netease",
@@ -39,7 +39,7 @@ export const LYRICS_SOURCE_PROVIDER_DEFINITIONS: Record<
   apple: {
     label: "Apple Music",
     description:
-      "Apple Music through the developer API. When preferred, enabled lrc.red provides an independent catalog lookup.",
+      "Apple Music lyrics through the developer API.",
   },
   lrcred: {
     label: "lrc.red",
@@ -101,20 +101,6 @@ export function normalizeLyricsSourceOrder(
   value: unknown
 ): LyricsSourceProviderId[] {
   const deduped = normalizeProviderIds(value);
-
-  if (!deduped.includes("musixmatch")) {
-    const spicyIndex = deduped.indexOf("spicy");
-    if (spicyIndex >= 0) {
-      deduped.splice(spicyIndex + 1, 0, "musixmatch");
-    } else {
-      deduped.unshift("musixmatch");
-    }
-  }
-
-  if (!deduped.includes("apple")) {
-    const musixmatchIndex = deduped.indexOf("musixmatch");
-    deduped.splice(musixmatchIndex + 1, 0, "apple");
-  }
 
   DEFAULT_LYRICS_SOURCE_ORDER.forEach((id) => {
     if (!deduped.includes(id)) {
