@@ -44,6 +44,18 @@
   translate: none !important;
 }
 
+/* The corner sits behind artwork controls; it yields only when the pill covers its slot. */
+#LyssnaLyricsPage .ContentBox > .NextUp[data-placement="topLeft"] {
+  z-index: 9;
+}
+
+#LyssnaLyricsPage:not(.Fullscreen):hover .ContentBox > .NextUp[data-placement="topLeft"][data-toolbar-overlap],
+#LyssnaLyricsPage .ContentBox:has(.ViewControls.LyssnaToolbar:focus-within) > .NextUp[data-placement="topLeft"][data-toolbar-overlap],
+#LyssnaLyricsPage.Fullscreen .ContentBox:has(.MediaBox:is([data-controls="Dim"], [data-controls="Full"])) > .NextUp[data-placement="topLeft"][data-toolbar-overlap] {
+  opacity: 0;
+  pointer-events: none;
+}
+
 /* The NowBar on the right puts the lyrics, and the switch, on the left: at rest Up Next starts where
    the lines start, on the switch's row. While the switch is awake it would sit under the capsule,
    so it slides aside to just past the capsule's end (ViewSwitchAwake and --LL-ViewSwitchEnd, from
@@ -227,6 +239,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  #LyssnaLyricsPage .ContentBox > .NextUp[data-toolbar-overlap] {
+    transition: none;
+  }
+
   #LyssnaLyricsPage .NextUp :is(.NextUpArt, .NextUpText) {
     translate: none;
   }

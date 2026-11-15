@@ -29,6 +29,7 @@ let root: HTMLElement | null = null;
 let body: Body | null = null;
 let shownUri: string | null = null;
 let ticker: ReturnType<typeof setInterval> | null = null;
+let layoutObserver: ResizeObserver | null = null;
 let hiddenAt = 0;
 // The top edge the lyrics last made room for, so a move (pinned credits, a resize) lifts them again.
 let liftedTop: number | null = null;
@@ -229,30 +230,30 @@ function syncPlacement(box: HTMLElement): void {
     if (root!.style.left !== x) root!.style.left = x;
     if (top === undefined) root!.style.removeProperty("top");
     else {
-      const y = `${Math.round(Math.max(16, Math.min(top - parent.top, parent.height - height - 16)))}px`;
+      const offset = Math.round(Math.max(16, Math.min(top - parent.top, parent.height - height - 16)));
+      const y = `${offset}px`;
       if (root!.style.top !== y) root!.style.top = y;
+      return parent.top + offset;
     }
   };
 
   if (placement === "topLeft") {
     delete root.dataset.footerLayout;
-    const fullscreen = PageContainer?.classList.contains("Fullscreen");
     const canvas = PageContainer?.matches(".CanvasImmersive:not(.CompactMode, .ForcedCompactMode)");
-    const cover = fullscreen && !canvas ? nowBar?.querySelector<HTMLElement>(".MediaBox") : null;
+    const cover = !canvas ? nowBar?.querySelector<HTMLElement>(".MediaBox") : null;
     const coverRect = cover?.offsetWidth ? cover.getBoundingClientRect() : null;
     const left = clampLeft(coverRect?.left ?? artColumn?.left ?? parent.left + PLACEMENT_GAP_PX);
-    // The fullscreen toolbar is inside the cover; Up Next belongs above the cover instead.
-    if (coverRect) {
-      setPosition(left, Math.max(parent.top + 16, coverRect.top - height - 16));
-      return;
-    }
-    // Canvas moves its hidden MediaBox into the bottom dock. Keep using the artwork column there.
+    // Keep the corner fixed while controls appear, rather than pushing the card into the artwork.
     const toolbar = box.querySelector<HTMLElement>(".ViewControls.LyssnaToolbar")?.getBoundingClientRect();
-    const overlapsToolbar = toolbar && left < toolbar.right + 12 && left + width > toolbar.left - 12;
-    const top = Math.max(parent.top + PLACEMENT_GAP_PX, overlapsToolbar ? toolbar.bottom + 12 : 0);
-    setPosition(left, top);
+    const top = setPosition(left, coverRect ? coverRect.top - height - 16 : parent.top + PLACEMENT_GAP_PX)!;
+    const overlapsToolbar = !!toolbar && toolbar.width > 0 && toolbar.height > 0 &&
+      left < toolbar.right + 8 && left + width > toolbar.left - 8 &&
+      top < toolbar.bottom + 8 && top + height > toolbar.top - 8;
+    root.toggleAttribute("data-toolbar-overlap", overlapsToolbar);
     return;
   }
+
+  root.removeAttribute("data-toolbar-overlap");
 
   if (positions.length) {
     const right = Math.min(...positions.map(({ rect }) => rect.right));
@@ -274,6 +275,21 @@ function syncPlacement(box: HTMLElement): void {
 
 function clearanceTop(box: HTMLElement): number {
   return Math.min(root!.getBoundingClientRect().top, ...pinnedRows(box).map(row => row.getBoundingClientRect().top));
+}
+
+function syncShownLayout(box: HTMLElement) {
+  if (!root?.classList.contains("Shown")) return;
+  syncPlacement(box);
+  syncCreditsOffset(box);
+  if ($nextUpPlacement.get() === "bottom" && (liftedTop === null || Math.abs(clearanceTop(box) - liftedTop) > 1)) liftLyrics(box, true);
+}
+
+function observeLayout(box: HTMLElement) {
+  layoutObserver?.disconnect();
+  layoutObserver = new ResizeObserver(() => { if (host() === box) syncShownLayout(box); });
+  for (const element of [box, root, ...box.querySelectorAll<HTMLElement>(".NowBar.Active, .MediaBox, .ViewControls.LyssnaToolbar")]) {
+    if (element) layoutObserver.observe(element);
+  }
 }
 
 /**
@@ -310,11 +326,14 @@ function show(box: HTMLElement) {
   syncPlacement(box);
   syncCreditsOffset(box);
   liftLyrics(box, true);
+  observeLayout(box);
 }
 
 function hide() {
   if (!root?.classList.contains("Shown")) return;
   root.classList.remove("Shown");
+  layoutObserver?.disconnect();
+  layoutObserver = null;
   clearCreditsOffset();
   hiddenAt = performance.now();
   // Hidden, the title's scroll would still restyle it every frame. It stops once the exit has
@@ -328,6 +347,8 @@ function hide() {
 }
 
 function unmount() {
+  layoutObserver?.disconnect();
+  layoutObserver = null;
   clearCreditsOffset();
   if (ticker) clearInterval(ticker);
   ticker = null;
@@ -347,6 +368,8 @@ function tick() {
     return;
   }
   if (!root || root.parentElement !== box) {
+    layoutObserver?.disconnect();
+    layoutObserver = null;
     // A rebuilt view: start over in the new box, and keep the ticker running.
     if (body) dropBody(body, false);
     body = null;
@@ -359,11 +382,7 @@ function tick() {
     box.append(root);
   }
   // Hidden cards need no geometry reads during the rest of the song.
-  if (root.classList.contains("Shown")) {
-    syncPlacement(box);
-    syncCreditsOffset(box);
-    if ($nextUpPlacement.get() === "bottom" && (liftedTop === null || Math.abs(clearanceTop(box) - liftedTop) > 1)) liftLyrics(box, true);
-  }
+  syncShownLayout(box);
 
   const next = forced ?? readNextTrack();
   const duration = SpotifyPlayer.GetDuration();
