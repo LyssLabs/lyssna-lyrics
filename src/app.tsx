@@ -515,8 +515,8 @@ async function main() {
         Button: new SpotifyPlayer.Playbar.Button(
           "Lyssna Lyrics",
           Icons.LyricsPage,
-          (self) => {
-            if (!self.active) {
+          () => {
+            if (Spicetify.Platform.History.location?.pathname !== "/LyssnaLyrics") {
               /* const isNewFullscreen = document.querySelector<HTMLElement>(".QdB2YtfEq0ks5O4QbtwX .WRGTOibB8qNEkgPNtMxq");
                 if (isNewFullscreen) {
                   PageView.Open();

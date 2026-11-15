@@ -20,15 +20,43 @@ type VersionParsedData =
   | undefined;
 
 let sessionHistory: Location[] = [];
+const LYRICS_PATH = "/LyssnaLyrics";
+let lyricsReturnLocation: Location | null = null;
+
+function sameLocation(a: Location, b: Location): boolean {
+  return a.pathname === b.pathname && (a.search ?? "") === (b.search ?? "") && (a.hash ?? "") === (b.hash ?? "");
+}
 
 const Session = {
   Navigate: (data: Location) => {
-    Spicetify.Platform.History.push(data);
-    //Session.PushToHistory(data);
+    const history = Spicetify.Platform.History;
+    const current = history.location;
+    if (current && sameLocation(current, data)) return;
+    if (data.pathname === LYRICS_PATH && current && current.pathname !== LYRICS_PATH) {
+      lyricsReturnLocation = { ...current };
+    }
+    history.push(data);
   },
   GoBack: () => {
-    if (sessionHistory.length > 1) {
-      Spicetify.Platform.History.goBack();
+    const history = Spicetify.Platform.History;
+    if (history.location?.pathname === LYRICS_PATH) {
+      // Fullscreen used to push this route again. Skip those entries when closing lyrics.
+      if (Array.isArray(history.entries) && Number.isInteger(history.index)) {
+        for (let index = history.index - 1; index >= 0; index--) {
+          if (history.entries[index].pathname === LYRICS_PATH) continue;
+          history.go(index - history.index);
+          return;
+        }
+      }
+      // If no earlier entry survives, restore the saved view instead of a no-op Back at index 0.
+      history.replace(lyricsReturnLocation ?? { pathname: "/" });
+      return;
+    }
+    const canGoBack = typeof history.canGo === "function"
+      ? history.canGo(-1)
+      : Number.isInteger(history.index) ? history.index > 0 : sessionHistory.length > 1;
+    if (canGoBack) {
+      history.goBack();
     } else {
       Session.Navigate({ pathname: "/" });
     }
@@ -49,6 +77,7 @@ const Session = {
     return null;
   },
   RecordNavigation: (data: Location) => {
+    if (data.pathname !== LYRICS_PATH) lyricsReturnLocation = { ...data };
     Session.PushToHistory(data);
     Global.Event.evoke("session:navigation", data);
   },
