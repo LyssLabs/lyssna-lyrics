@@ -84,6 +84,7 @@
 #LyssnaLyricsPage.SpicyRenderer.Exp_RefinedCredits .LyricsContainer :is(.SongCredits, .LyricsPinnedFooter) {
   --CreditsText: white;
   --CreditsMuted: white;
+  --CreditsPerson: rgb(255 255 255 / 0.55);
 }
 
 #LyssnaLyricsPage.SpicyRenderer.Exp_RefinedCredits .LyricsContainer :is(.LyricsContent, .LyricsPinnedFooter) .SongCredits {
@@ -165,17 +166,30 @@
   margin-top: 0.3em !important;
 }
 
+#LyssnaLyricsPage.SpicyRenderer.Exp_RefinedCredits .LyricsContainer :is(.LyricsContent, .LyricsPinnedFooter, .LyricsPinnedCredits) .SongCredits > .LyricsProvider,
+#LyssnaLyricsPage.SpicyRenderer.Exp_RefinedCredits .LyricsContainer .LyricsPinnedFooter > .LyricsProvider.PinnedFooterDetail {
+  --CreditsMuted: white;
+  --CreditsPerson: white;
+  color: white;
+  opacity: 0.5;
+}
+
 #LyssnaLyricsPage.SpicyRenderer.Exp_RefinedCredits .LyricsContainer :is(.SongCredits, .LyricsPinnedFooter) :is(.SongInfoNote, .SongInfoLead) {
   display: none;
 }
 
-#LyssnaLyricsPage.SpicyRenderer.Exp_RefinedCredits .LyricsContainer :is(.LyricsContent, .LyricsPinnedFooter) .SongCredits .CommunityCredits,
+#LyssnaLyricsPage.SpicyRenderer.Exp_RefinedCredits .LyricsContainer :is(.LyricsContent, .LyricsPinnedFooter, .LyricsPinnedCredits) .SongCredits .CommunityCredits,
 #LyssnaLyricsPage.SpicyRenderer.Exp_RefinedCredits .LyricsContainer .LyricsPinnedFooter > .CommunityCredits {
-  display: block;
+  display: flex;
+  --CreditsMuted: rgb(255 255 255 / 0.5);
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3em 1.1em;
 }
 
 #LyssnaLyricsPage.SpicyRenderer.Exp_RefinedCredits .LyricsContainer :is(.SongCredits, .LyricsPinnedFooter) .CommunityCredits :is(.Maker, .Uploader) {
-  display: inline;
+  display: inline-flex;
+  position: relative;
   white-space: nowrap;
 }
 
@@ -183,12 +197,19 @@
   content: none;
 }
 
-#LyssnaLyricsPage.SpicyRenderer.Exp_RefinedCredits .LyricsContainer :is(.SongCredits, .LyricsPinnedFooter) .CommunityCredits .Maker + .Uploader::before {
+#LyssnaLyricsPage.SpicyRenderer.Exp_RefinedCredits .LyricsContainer :is(.SongCredits, .LyricsPinnedFooter) .CommunityCredits[data-contributors-inline] .Maker + .Uploader::before {
   content: "\00b7";
-  margin-inline: 0.45em;
+  position: absolute;
+  inset-inline-end: calc(100% + 0.4em);
+  top: 50%;
+  transform: translateY(-50%);
 }
 
-#LyssnaLyricsPage.SpicyRenderer.Exp_RefinedCredits .LyricsContainer :is(.LyricsContent, .LyricsPinnedFooter) .SongInfo .song-info-profile-section {
+#LyssnaLyricsPage.SpicyRenderer.Exp_RefinedCredits.CreditsFollowLastLine .LyricsContainer :is(.EndsOnOppositeLine > .SongCredits, .LyricsPinnedCredits.EndsOnOppositeLine) .CommunityCredits {
+  justify-content: flex-end;
+}
+
+#LyssnaLyricsPage.SpicyRenderer.Exp_RefinedCredits .LyricsContainer :is(.LyricsContent, .LyricsPinnedFooter, .LyricsPinnedCredits) .SongInfo .song-info-profile-section {
   display: inline-flex;
   align-items: center;
   gap: 0.3em;
@@ -197,7 +218,7 @@
   border-radius: 0.25em;
 }
 
-#LyssnaLyricsPage.SpicyRenderer.Exp_RefinedCredits .LyricsContainer :is(.LyricsContent, .LyricsPinnedFooter) .SongInfo .song-info-profile-section img {
+#LyssnaLyricsPage.SpicyRenderer.Exp_RefinedCredits .LyricsContainer :is(.LyricsContent, .LyricsPinnedFooter, .LyricsPinnedCredits) .SongInfo .song-info-profile-section img {
   order: 1;
   width: 1.15em;
   height: 1.15em;
@@ -208,7 +229,7 @@
 
 #LyssnaLyricsPage.SpicyRenderer.Exp_RefinedCredits .LyricsContainer :is(.SongCredits, .LyricsPinnedFooter) :is(.SongInfoName, .LyricsProviderViaLink) {
   order: 2;
-  color: var(--CreditsText);
+  color: var(--CreditsPerson);
   font-weight: 600 !important;
   text-decoration: underline;
   text-decoration-thickness: 1px;

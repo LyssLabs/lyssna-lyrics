@@ -2,6 +2,23 @@ import { PinFooterDetailWithoutWriters } from "./CreateLyricsFooter.ts";
 import { CREDIT_NAME_OVERRIDES, DISCORD_ID, lookupDiscordUser, safeAvatarUrl } from "../../../discordLookup.ts";
 import { $discordCreditUsernames, $discordLookupEndpoint } from "../../../stores.ts";
 
+function watchContributorRows(credits: HTMLElement): void {
+  const maker = credits.querySelector<HTMLElement>(".Maker");
+  const uploader = credits.querySelector<HTMLElement>(".Uploader");
+  if (!maker || !uploader) return;
+  const view = credits.ownerDocument.defaultView ?? window;
+  const observer = new view.ResizeObserver(() => {
+    if (!credits.isConnected) { observer.disconnect(); return; }
+    const first = maker.getBoundingClientRect();
+    const second = uploader.getBoundingClientRect();
+    const inline = first.width > 0 && second.width > 0 &&
+      Math.abs(first.top + first.height / 2 - second.top - second.height / 2) < 1;
+    // The separator is positioned in the flex gap, so hiding it cannot change the wrap decision.
+    credits.toggleAttribute("data-contributors-inline", inline);
+  });
+  for (const element of [credits, maker, uploader]) observer.observe(element);
+}
+
 export function ApplyIsByCommunity(data: any, lyricsContainer: HTMLElement): void {
   if (!lyricsContainer || (data.source !== "spl" && data.source !== "spicy_lyrics")) return;
   const attribution = data.UploadAttribution ?? data.TTMLUploadMetadata;
@@ -80,4 +97,5 @@ export function ApplyIsByCommunity(data: any, lyricsContainer: HTMLElement): voi
   }
   lyricsContainer.append(credits);
   PinFooterDetailWithoutWriters(credits, lyricsContainer);
+  watchContributorRows(credits);
 }
