@@ -48,6 +48,18 @@ export function ApplyLyricsProvider(data: any, LyricsContainer: HTMLElement): vo
       : " (+ estimated word timing)"
     : providerLabel === "Apple Music" && data.experimentalAppleWordSplitting ? " (+ extra splits)" : "";
   CreditsRow(ProviderElement, "Provided by", `${providerLabel}${timingNote}`);
+  if (data.fetchProvider === "lrcred") {
+    const value = ProviderElement.querySelector(".CreditsValue");
+    if (value) {
+      const link = LyricsContainer.ownerDocument.createElement("a");
+      link.href = "https://lrc.red/";
+      link.textContent = value.textContent;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.className = "LyricsProviderViaLink";
+      value.replaceChildren(link);
+    }
+  }
 
   const via = typeof data.source_via === "string" && Object.hasOwn(ViaMap, data.source_via)
     ? ViaMap[data.source_via]

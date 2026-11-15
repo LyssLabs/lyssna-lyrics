@@ -2,6 +2,7 @@ export type LyricsSourceProviderId =
   | "spicy"
   | "musixmatch"
   | "apple"
+  | "lrcred"
   | "spotify"
   | "lrclib"
   | "netease";
@@ -15,6 +16,7 @@ export const DEFAULT_LYRICS_SOURCE_ORDER: LyricsSourceProviderId[] = [
   "spicy",
   "musixmatch",
   "apple",
+  "lrcred",
   "spotify",
   "lrclib",
   "netease",
@@ -39,6 +41,10 @@ export const LYRICS_SOURCE_PROVIDER_DEFINITIONS: Record<
     description:
       "Fetches Apple Music lyrics through the public developer API when available.",
   },
+  lrcred: {
+    label: "lrc.red",
+    description: "Fetch timed lyrics directly from lrc.red, including word sync when available.",
+  },
   spotify: {
     label: "Spotify",
     description:
@@ -60,6 +66,7 @@ const LYRICS_SOURCE_LABELS: Record<string, string> = {
   spl: "Spicy Lyrics Community",
   spt: "Spotify",
   aml: "Apple Music",
+  lrcred: "lrc.red",
   spicy: "Spicy Lyrics",
   spotify: "Spotify",
   lrclib: "LRCLIB",

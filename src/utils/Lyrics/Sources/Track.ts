@@ -24,6 +24,7 @@ function buildTrackLyricsInfo(
     title,
     artist,
     album,
+    isrc: Spicetify.Player.data?.item?.metadata?.isrc,
   };
 }
 

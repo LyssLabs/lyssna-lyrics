@@ -33,7 +33,7 @@ export const LyricsStore = GetExpireStore<any>("LyssnaLyrics_LyricsStore_g1", 6,
 
 export const SessionTTMLStore = new Map<string, any>();
 // Retry cached fallbacks written while the website bridge could not start.
-const LYRICS_SOURCE_CACHE_VERSION = 5;
+const LYRICS_SOURCE_CACHE_VERSION = 6;
 const inFlightLyricsFetches = new Map<string, Promise<[object | string, number] | null>>();
 export type FetchLyricsResult = [object | string, number] | null;
 export type LyricsFetchFailure = { uri: string; source: string; detail?: string };
@@ -313,13 +313,13 @@ async function fetchLyricsInternal(
     try {
       const lyricsFromCache = await LyricsStore.GetItem(trackId);
       if (lyricsFromCache) {
-        if (lyricsFromCache.Value === "NO_LYRICS") {
+        if (lyricsFromCache.Value === "NO_LYRICS" && lyricsFromCache.LyricsSourceCacheSignature === getLyricsSourceCacheSignature()) {
           finishFetching(uri);
           HideLoaderContainer(uri);
           noteFailure(uri, "lyrics cache");
           return ["lyrics-not-found", 404];
         }
-        if (isLyricsCacheCompatible(lyricsFromCache)) {
+        if (lyricsFromCache.Value !== "NO_LYRICS" && isLyricsCacheCompatible(lyricsFromCache)) {
           if (isCurrentTrack(uri)) lastAnswer = { uri, from: "cache" };
           return await presentStoredLyrics(uri, { ...lyricsFromCache, fromCache: true });
         }

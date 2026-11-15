@@ -5,6 +5,7 @@ export type TrackLyricsInfo = {
   title: string;
   artist: string;
   album: string;
+  isrc?: string;
 };
 
 export type TimedLine = {
