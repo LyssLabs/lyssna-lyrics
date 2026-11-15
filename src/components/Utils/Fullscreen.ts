@@ -453,6 +453,11 @@ function CleanupMediaBox() {
   mediaBoxHover = false;
   pageHover = false;
   controlsDragLock = false;
+  artworkBrightnessSpring.SetGoal(1, true);
+  for (const mediaBox of PageContainer?.querySelectorAll<HTMLElement>(".ContentBox .NowBar .Header .MediaBox") ?? []) {
+    mediaBox.style.removeProperty("--ArtworkBrightness");
+  }
+  getCanvasStage()?.style.removeProperty("--StageBrightness");
 }
 
 // Bumped by every Open and Close. The deferred work either one schedules checks

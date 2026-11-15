@@ -236,8 +236,17 @@ function syncPlacement(box: HTMLElement): void {
 
   if (placement === "topLeft") {
     delete root.dataset.footerLayout;
-    // Canvas moves its hidden MediaBox into the bottom dock. The artwork column stays in place.
-    const left = clampLeft(artColumn?.left ?? parent.left + PLACEMENT_GAP_PX);
+    const fullscreen = PageContainer?.classList.contains("Fullscreen");
+    const canvas = PageContainer?.matches(".CanvasImmersive:not(.CompactMode, .ForcedCompactMode)");
+    const cover = fullscreen && !canvas ? nowBar?.querySelector<HTMLElement>(".MediaBox") : null;
+    const coverRect = cover?.offsetWidth ? cover.getBoundingClientRect() : null;
+    const left = clampLeft(coverRect?.left ?? artColumn?.left ?? parent.left + PLACEMENT_GAP_PX);
+    // The fullscreen toolbar is inside the cover; Up Next belongs above the cover instead.
+    if (coverRect) {
+      setPosition(left, Math.max(parent.top + 16, coverRect.top - height - 16));
+      return;
+    }
+    // Canvas moves its hidden MediaBox into the bottom dock. Keep using the artwork column there.
     const toolbar = box.querySelector<HTMLElement>(".ViewControls.LyssnaToolbar")?.getBoundingClientRect();
     const overlapsToolbar = toolbar && left < toolbar.right + 12 && left + width > toolbar.left - 12;
     const top = Math.max(parent.top + PLACEMENT_GAP_PX, overlapsToolbar ? toolbar.bottom + 12 : 0);

@@ -193,9 +193,12 @@
   height: 100cqh;
   box-shadow: 0 9px 20px 0 rgba(0, 0, 0, 0.271);
   opacity: 0.95;
-  filter: brightness(var(--ArtworkBrightness));
   background-size: cover;
   background-repeat: no-repeat;
+}
+
+#LyssnaLyricsPage.Fullscreen .ContentBox .NowBar .Header .MediaBox .MediaImageContainer {
+  filter: brightness(var(--ArtworkBrightness));
   will-change: filter;
 }
 
@@ -1074,7 +1077,10 @@
   .ViewControls {
   opacity: 1 !important;
   position: absolute;
-  width: 100%;
+  width: max-content;
+  left: 12px;
+  right: auto;
+  justify-content: flex-start;
   top: 7cqh;
   height: 9cqh;
 }
