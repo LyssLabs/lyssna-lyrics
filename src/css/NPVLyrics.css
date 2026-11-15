@@ -496,6 +496,8 @@ html.LyssnaLyrics_NPVMorph::view-transition-new(lyssna-npv-card) {
 
 #LyssnaLyricsNPVCard #LyssnaLyricsPage.CardMode .LyricsContainer .LyricsContent {
   height: calc(100% - var(--LL-NPVFooterSpace, 0px));
+  --LL-LyricsContent_MaskBottomFadeStart: 28px;
+  --LL-LyricsContent_MaskBottomFadeEnd: 8px;
   --DefaultLyricsSize: calc(clamp(1.85rem, calc(1cqw * 6), 2.8rem) * var(--LL-LyricsScale, 1));
   /* Tighter fade than the default mask (solid only from 64px down), so the
      small top padding below still leaves the first line readable. */
@@ -504,10 +506,19 @@ html.LyssnaLyrics_NPVMorph::view-transition-new(lyssna-npv-card) {
     transparent 0,
     transparent 8px,
     var(--spice-sidebar) calc(28px + var(--LL-LyricsContent_MaskTopPadding, 0px)),
-    var(--spice-sidebar) calc(100% - 28px),
-    transparent calc(100% - 8px),
+    var(--spice-sidebar) calc(100% - var(--LL-LyricsContent_MaskBottomFadeStart)),
+    transparent calc(100% - var(--LL-LyricsContent_MaskBottomFadeEnd)),
     transparent
   );
+}
+
+#LyssnaLyricsNPVCard #LyssnaLyricsPage.CardMode.PinnedFooterMode_NoWriters:not(.SpaceGravityMode) .LyricsContainer .LyricsContent .LyssnaLyricsScrollContainer {
+  margin-bottom: 0;
+}
+
+#LyssnaLyricsNPVCard #LyssnaLyricsPage.CardMode.PinnedFooterMode_NoWriters:not(.SpaceGravityMode) .LyricsContainer .LyricsContent.LyricsScrollAtBottom {
+  --LL-LyricsContent_MaskBottomFadeStart: 0px;
+  --LL-LyricsContent_MaskBottomFadeEnd: 0px;
 }
 
 #LyssnaLyricsNPVCard #LyssnaLyricsPage.CardMode .LyricsContent > .simplebar-track.simplebar-vertical {

@@ -539,7 +539,7 @@ function watchPinnedFooter(): void {
     const entry = entries.find(item => item.target === footer);
     if (!entry) return;
     const height = entry.borderBoxSize[0]?.blockSize ?? footer.offsetHeight;
-    const space = `${height > 0 ? Math.ceil(height) + 32 : 0}px`;
+    const space = `${height > 0 ? Math.ceil(height) + 16 : 0}px`;
     if (card.style.getPropertyValue("--LL-NPVFooterSpace") !== space) {
       card.style.setProperty("--LL-NPVFooterSpace", space);
     }
