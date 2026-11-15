@@ -95,7 +95,7 @@
   flex-shrink: 0;
   margin: 2px 0;
 }
-#LyssnaLyricsPage:not(.Fullscreen):is(.CompactMode, .ForcedCompactMode) .ContentBox {
+#LyssnaLyricsPage:not(.Fullscreen, .CardMode):is(.CompactMode, .ForcedCompactMode) .ContentBox {
   box-sizing: border-box;
   padding-right: 64px;
 }
@@ -124,7 +124,7 @@
     flex-shrink: 0;
     margin: 2px 0;
   }
-  #LyssnaLyricsPage:not(.Fullscreen) .ContentBox {
+  #LyssnaLyricsPage:not(.Fullscreen, .CardMode) .ContentBox {
     box-sizing: border-box;
     padding-right: 64px;
   }
