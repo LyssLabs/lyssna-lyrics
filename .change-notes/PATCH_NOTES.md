@@ -1,3 +1,29 @@
+## v0.1.2
+
+- **Settings cleanup**
+  Effects now live at the top of Lyrics instead of in a separate tab. Moved lyric options into Lyrics and background options into Appearance. Descriptions are shorter, and dependent settings appear only when relevant. Refined Background is now called Muted Background. Removed Increased Line Spacing, Player Below Cover and Frosted Scroll Button; seek and volume previews are always available.
+
+- **Lyric styles and animation presets**
+  Renderer styles are now named Lyssna and Apple Music. The former Pixel animator preset is now Lyssna (Default), and the former Default preset is called Spicy. New installs use Lyssna (Default); existing saved preset choices stay unchanged. Animator presets appear for Lyssna, while Background Vocal Pop-Out appears for Apple Music.
+
+- **Up Next placement**
+  Added Off, Top Left and Bottom choices under Lyrics, with Top Left as the default. Up Next appears during the final 30 seconds in the lyrics page, Cinema View and fullscreen, including Canvas. Top placement sits above the cover or in the Canvas corner; Bottom fits beside pinned credits when there is room and stacks below them otherwise. Fixed hidden cards and footer overlap. Up Next stays hidden while the queue is open.
+
+- **Credits and Now Playing lyrics**
+  Refined credits use white text, with the lyrics source above writers or contributors when unpinned. Estimated line and word timing is identified alongside the source. Now Playing lyrics use the card’s available width and respect Off, No Writers and Full pinned-footer modes. The compact card grows to fit pinned credits without reducing the lyrics area, with tighter spacing when scrolled to the end and a scrollbar inset from the bottom.
+
+- **Canvas in Now Playing**
+  Canvas display follows Spotify’s own setting instead of a separate plugin option. When a Canvas is already playing in the lyrics view, Now Playing shows cover art to avoid displaying the same video twice.
+
+- **Popup player**
+  Renamed the window to Lyssna Lyrics Popup and moved Enable Popup Player into Lyrics. It defaults to Off for new installs, with existing saved choices retained; Popup Player Dock appears only while the player is enabled. Fixed the title overlapping lyrics, oversized space between credits, and compact-layout offsets. Lyric and credit sizes now follow the popup’s dimensions.
+
+- **Fullscreen and return navigation**
+  Escape and the fullscreen button now follow the same exit action. Exit Fullscreen returns to the lyrics page, while Exit to Cinema keeps Cinema View open. Fixed artwork remaining dim after leaving fullscreen and kept cover-art controls centered inside a background that fits the buttons. Fixed the lyrics button getting stuck instead of returning to the previous Spotify view.
+
+- **Experimental Word Sync**
+  Toggling the feature no longer rebuilds songs that need no timing corrections. Apple Music extra splits and backing-vocal repairs remain available, with a fix for backing vocals accumulating across repeated conversions. Static lyrics can use track-duration estimates when audio analysis is unavailable. Reduced repeated work during analysis-based conversion and shared simultaneous analysis requests.
+
 ## v0.1.1
 
 - **Upstream 6.5.10**
