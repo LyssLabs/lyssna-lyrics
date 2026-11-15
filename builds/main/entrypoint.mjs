@@ -28,55 +28,89 @@ const injectStyles = () => {
   const style = document.createElement("style");
   style.id = "lyssna-lyrics-entry-styles";
   style.textContent = `
-    .lyssna-entry-channel-control{display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap;}
-    .lyssna-entry-channel-control select{min-width:0;max-width:100%;flex:1;}
+
+    .lyssna-entry-channel-row{align-items:center!important;flex-direction:row!important;gap:16px!important;}
+    .lyssna-entry-channel-row>.sl-sp-label-wrap,.lyssna-entry-channel-row>.ll-sp-label-wrap{flex:1;min-width:0;}
+    .lyssna-entry-channel-control{display:flex;align-items:center;gap:8px;min-width:0;flex:0 1 auto!important;width:auto!important;justify-content:flex-end;}
+    .lyssna-channel-select-wrap{position:relative;display:inline-flex;align-items:center;min-width:0;max-width:240px;flex:0 1 auto;color:inherit;}
+    select.lyssna-entry-select{appearance:none;-webkit-appearance:none;background-image:none!important;display:block;min-width:128px;max-width:240px;width:100%;height:30px;padding:0 30px 0 12px;text-overflow:ellipsis;}
+    .lyssna-channel-select-chevron{position:absolute;right:11px;top:50%;transform:translateY(-50%);width:10px;height:10px;pointer-events:none;opacity:.8;}
+    .lyssna-entry-channel-control :is(select,button):focus-visible{outline:2px solid currentColor;outline-offset:3px;}
     #lyssna-lyrics-spotify-channel-group{margin-bottom:24px;}
     #lyssna-lyrics-spotify-channel-group .x-settings-row{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:12px 0;}
-    #lyssna-lyrics-spotify-channel-group .x-settings-firstColumn{flex:1;min-width:180px;}
+    #lyssna-lyrics-spotify-channel-group .x-settings-firstColumn{flex:1;min-width:160px;}
     #lyssna-lyrics-spotify-channel-group label{display:block;color:var(--text-base,#fff);}
     #lyssna-lyrics-spotify-channel-group p{margin:4px 0 0;color:var(--text-subdued,#b3b3b3);font-size:13px;}
-    #lyssna-lyrics-spotify-channel-group select,#lyssna-lyrics-spotify-channel-group button{background:var(--background-tinted-base,#292929);color:var(--text-base,#fff);border:1px solid var(--essential-subdued,#727272);border-radius:6px;padding:7px 12px;font:inherit;}
-    .lyssna-entry-channel-control :is(select,button):focus-visible{outline:2px solid currentColor;outline-offset:3px;}
-    .LyssnaLyricsSettingsOverlay{position:fixed;inset:0;z-index:9998;background:transparent;}
-    .LyssnaLyricsSettingsContainer{position:fixed;z-index:9999;background:rgba(46,46,46,.72);border:1px solid var(--lyssna-hairline,rgba(255,255,255,.16));border-radius:var(--lyssna-radius-md,12px);display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--lyssna-liquid-cast-soft,0 18px 52px rgba(0,0,0,.42)),inset 0 1px 0 rgba(255,255,255,.08);-webkit-backdrop-filter:var(--lyssna-material-regular-blur,blur(24px));backdrop-filter:var(--lyssna-material-regular-blur,blur(24px));}
-    .LyssnaLyricsSettingsHeader{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--lyssna-hairline,rgba(255,255,255,.1));flex-shrink:0;}
-    .LyssnaLyricsSettingsHeader span{font-size:var(--lyssna-text-headline-size,.95rem)!important;font-weight:var(--lyssna-w-semibold,600);color:var(--lyssna-color-text-primary,#fff);letter-spacing:0;}
-    .LyssnaLyricsSettingsHeaderClose{background:transparent;border:none;color:var(--lyssna-color-text-secondary,rgba(255,255,255,.58));cursor:pointer;padding:6px;display:flex;align-items:center;justify-content:center;border-radius:var(--lyssna-radius-sm,8px);transition:color .15s,background .15s,transform .12s;}
-    .LyssnaLyricsSettingsHeaderClose:hover{color:var(--lyssna-color-text-primary,#fff);background:var(--lyssna-accent-tint-bg,rgba(255,255,255,.1));}
-    .LyssnaLyricsSettingsHeaderClose:active{transform:scale(.96);}
-    .LyssnaLyricsSettingsScroll{flex:1;overflow-y:auto;padding:10px 16px 16px;}
-    .LyssnaLyricsSettingsScroll::-webkit-scrollbar{width:4px;}
-    .LyssnaLyricsSettingsScroll::-webkit-scrollbar-track{background:transparent;}
-    .LyssnaLyricsSettingsScroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:4px;}
-    .ll-settings-group{font-size:var(--lyssna-text-caption-size,.78rem)!important;font-weight:var(--lyssna-w-semibold,600);color:var(--lyssna-color-text-primary,#fff);letter-spacing:0;margin-top:18px;margin-bottom:4px;padding:12px 2px 8px;border-top:1px solid var(--lyssna-hairline,rgba(255,255,255,.1));}
-    .ll-settings-group:first-child{margin-top:8px;}
-    .ll-settings-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 8px;border-radius:var(--lyssna-radius-md,10px);transition:background .15s;}
-    .ll-settings-row:hover{background:var(--lyssna-accent-tint-bg,rgba(255,255,255,.09));}
-    .ll-settings-label{font-size:var(--lyssna-text-body-size,.875rem)!important;font-weight:var(--lyssna-w-medium,500);color:var(--lyssna-color-text-primary,rgba(255,255,255,.9));flex:1;line-height:1.35;}
-    .ll-toggle{position:relative;display:inline-flex;width:40px;height:22px;flex-shrink:0;cursor:pointer;}
-    .ll-toggle input{opacity:0;width:0;height:0;position:absolute;}
-    .ll-toggle span{position:absolute;inset:0;background:rgba(0,0,0,.42);border-radius:100px;box-shadow:inset 0 1px 2px rgba(0,0,0,.45),inset 0 0 0 1px rgba(255,255,255,.06);transition:background .2s,box-shadow .2s;}
-    .ll-toggle span::after{content:"";position:absolute;width:16px;height:16px;left:3px;top:3px;background:rgba(245,245,245,.86);box-shadow:0 2px 5px rgba(0,0,0,.5),0 0 0 .5px rgba(0,0,0,.28);border-radius:50%;transition:transform .2s,background .2s;}
-    .ll-toggle input:checked+span{background:rgba(255,255,255,.42);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),inset 0 0 0 1px rgba(255,255,255,.24);}
-    .ll-toggle input:checked+span::after{transform:translateX(18px);}
-    .ll-select-wrap{position:relative;display:inline-flex;align-items:center;flex-shrink:0;max-width:220px;}
-    .ll-select-wrap::after{content:"";position:absolute;right:9px;top:50%;width:12px;height:12px;transform:translateY(-50%);pointer-events:none;background:currentColor;opacity:.62;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") center/12px 12px no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") center/12px 12px no-repeat;}
-    .ll-select{-webkit-appearance:none;appearance:none;background-color:var(--lyssna-accent-tint-bg,rgba(255,255,255,.09));background-image:none!important;color:var(--lyssna-color-text-primary,rgba(255,255,255,.9));border:0;box-shadow:inset 0 0 0 1px var(--lyssna-hairline,rgba(255,255,255,.12));border-radius:var(--lyssna-radius-sm,8px);padding:7px 28px 7px 10px;font-size:var(--lyssna-text-caption-size,.8rem)!important;font-weight:var(--lyssna-w-medium,500);cursor:pointer;width:100%;max-width:220px;}
-    .LyssnaLyricsSettingsContainer .ll-select:hover{background-color:var(--lyssna-accent-tint-bg-hover,rgba(255,255,255,.14));background-image:none!important;box-shadow:inset 0 0 0 1px var(--lyssna-hairline-strong,rgba(255,255,255,.25));}
-    .ll-select option{background:#1a1a1a;color:rgba(255,255,255,.85);}
-    .ll-select:focus{outline:none;box-shadow:inset 0 0 0 1px var(--lyssna-hairline-strong,rgba(255,255,255,.28));}
-    .ll-input{background:var(--lyssna-accent-tint-bg,rgba(255,255,255,.09));border:0;box-shadow:inset 0 0 0 1px var(--lyssna-hairline,rgba(255,255,255,.12));border-radius:var(--lyssna-radius-sm,8px);color:var(--lyssna-color-text-primary,rgba(255,255,255,.9));padding:7px 10px;font-size:var(--lyssna-text-caption-size,.8rem)!important;flex-shrink:0;width:220px;outline:none;transition:box-shadow .15s,background .15s;}
-    .ll-input::placeholder{color:var(--lyssna-color-text-tertiary,rgba(255,255,255,.38));}
-    .ll-input:focus{background:var(--lyssna-accent-tint-bg-hover,rgba(255,255,255,.14));box-shadow:inset 0 0 0 1px var(--lyssna-hairline-strong,rgba(255,255,255,.28));}
-    .ll-btn{background:var(--lyssna-accent-tint-bg,rgba(255,255,255,.09));color:var(--lyssna-color-text-primary,rgba(255,255,255,.9));border:0;box-shadow:inset 0 0 0 1px var(--lyssna-hairline,rgba(255,255,255,.12));border-radius:var(--lyssna-radius-sm,8px);padding:7px 14px;font-size:var(--lyssna-text-caption-size,.8rem)!important;font-weight:var(--lyssna-w-semibold,600);cursor:pointer;flex-shrink:0;transition:background .15s,box-shadow .15s,transform .12s;}
-    .ll-btn:hover{background:var(--lyssna-accent-tint-bg-hover,rgba(255,255,255,.14));box-shadow:inset 0 0 0 1px var(--lyssna-hairline-strong,rgba(255,255,255,.25));}
-    .ll-btn:active{transform:scale(.97);}
-    .ll-btn.ll-btn-primary{background:var(--lyssna-accent,#fff);color:var(--lyssna-accent-on-fill,#111);box-shadow:none;}
-    .ll-btn.ll-btn-primary:hover{background:var(--lyssna-accent-hover,#fff);box-shadow:none;}
-    .ll-btn.ll-btn-danger{color:rgba(255,132,112,.95);box-shadow:inset 0 0 0 1px rgba(255,132,112,.28);}
-    .ll-btn.ll-btn-danger:hover{background:rgba(255,132,112,.1);box-shadow:inset 0 0 0 1px rgba(255,132,112,.45);}
-    .GenericModal:has(.llm),.GenericModal:has(.llm) .main-trackCreditsModal-container{border-radius:16px;}
-    .main-trackCreditsModal-mainSection:has(.llm.scroll-x-hidden){overflow-x:hidden;}
+    #lyssna-lyrics-spotify-channel-group select,#lyssna-lyrics-spotify-channel-group button{background:var(--background-tinted-base,#292929);color:var(--text-base,#fff);border:1px solid var(--essential-subdued,#727272);border-radius:6px;font:inherit;}
+    #lyssna-lyrics-spotify-channel-group button{padding:7px 12px;}
+    .LyssnaLyricsChannelOverlay{
+      --channel-panel:#191919;--channel-surface:#222;--channel-text:#f4f4f4;--channel-muted:#aaa;
+      --channel-border:rgba(255,255,255,.12);--channel-button:#303030;--channel-button-hover:#3a3a3a;
+      --channel-primary:#f2f2f2;--channel-primary-text:#151515;
+      position:fixed;inset:0;z-index:99998;display:grid;place-items:center;box-sizing:border-box;padding:24px;background:rgba(0,0,0,.56);
+      font-family:var(--encore-body-font-stack,var(--fallback-fonts,sans-serif));color:var(--channel-text);color-scheme:dark;
+    }
+    .LyssnaLyricsChannelOverlay[data-app="spicy"]{
+      --channel-panel:linear-gradient(125deg,#34202f,#241b32 58%,#1b1528);
+      --channel-surface:rgba(226,205,255,.065);--channel-text:#e5d8fb;--channel-muted:#bfb0cf;
+      --channel-border:rgba(224,203,255,.17);--channel-button:rgba(219,193,255,.12);--channel-button-hover:rgba(219,193,255,.2);
+      --channel-primary:#dfd0fc;--channel-primary-text:#25172f;
+    }
+    .LyssnaLyricsChannelOverlay .LyssnaLyricsSettingsContainer{position:relative;display:flex;flex-direction:column;width:min(760px,100%);max-height:calc(100dvh - 48px);min-width:0;overflow:hidden;background:var(--channel-panel);border:1px solid var(--channel-border);border-radius:20px;box-shadow:0 24px 80px #0008;}
+    .LyssnaLyricsChannelOverlay .LyssnaLyricsSettingsHeader{display:flex;align-items:center;gap:16px;padding:18px 20px;flex-shrink:0;}
+    .LyssnaLyricsChannelOverlay .LyssnaLyricsSettingsHeaderTitle{margin:0;flex:1;min-width:0;color:var(--channel-text);font-size:18px;font-weight:650;line-height:1.3;}
+    .LyssnaLyricsChannelOverlay .LyssnaLyricsSettingsHeaderClose{display:flex;align-items:center;justify-content:center;width:32px;height:32px;padding:0;border:0;border-radius:8px;background:transparent;color:var(--channel-muted);cursor:pointer;}
+    .LyssnaLyricsChannelOverlay .LyssnaLyricsSettingsHeaderClose:hover{background:var(--channel-button);color:var(--channel-text);}
+    .LyssnaLyricsChannelOverlay .LyssnaLyricsSettingsScroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:0 20px 24px;scrollbar-width:thin;scrollbar-color:var(--channel-border) transparent;}
+    .LyssnaLyricsChannelOverlay .ll-channel-intro{margin:0 0 16px;color:var(--channel-muted);font-size:13px;line-height:1.5;}
+    .LyssnaLyricsChannelOverlay .ll-channel-list{display:flex;flex-direction:column;gap:8px;}
+    .LyssnaLyricsChannelOverlay .ll-channel-card{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:16px;padding:14px 16px;background:var(--channel-surface);border:1px solid var(--channel-border);border-radius:12px;}
+    .LyssnaLyricsChannelOverlay .ll-channel-card[data-selected="true"]{border-color:color-mix(in srgb,var(--channel-text) 28%,transparent);}
+    .LyssnaLyricsChannelOverlay .ll-channel-copy{min-width:0;}
+    .LyssnaLyricsChannelOverlay .ll-channel-name{color:var(--channel-text);font-size:14px;font-weight:600;line-height:1.4;}
+    .LyssnaLyricsChannelOverlay .ll-channel-hosts{margin-top:4px;overflow-wrap:anywhere;color:var(--channel-muted);font-size:12px;line-height:1.5;}
+    .LyssnaLyricsChannelOverlay .ll-channel-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap;}
+    .LyssnaLyricsChannelOverlay .ll-channel-selected{font-size:12px;font-weight:600;color:var(--channel-muted);padding:7px 10px;}
+    .LyssnaLyricsChannelOverlay .ll-channel-footer{display:flex;justify-content:flex-end;margin-top:16px;}
+    .LyssnaLyricsChannelOverlay .ll-settings-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 0;}
+    .LyssnaLyricsChannelOverlay .ll-settings-label{min-width:0;flex:1;color:var(--channel-text);font-size:14px;font-weight:500;line-height:1.4;}
+    .LyssnaLyricsChannelOverlay .ll-settings-group{margin:12px 0 4px;padding:0;color:var(--channel-muted);font-size:12px;font-weight:600;line-height:1.5;}
+    .LyssnaLyricsChannelOverlay .ll-channel-hint{margin:8px 0 16px;color:var(--channel-muted);font-size:12px;line-height:1.6;overflow-wrap:anywhere;}
+    .LyssnaLyricsChannelOverlay .ll-channel-hint strong{color:var(--channel-text);}
+    .LyssnaLyricsChannelOverlay .ll-input{box-sizing:border-box;width:240px;max-width:55%;height:34px;padding:0 10px;border:1px solid var(--channel-border);border-radius:8px;background:var(--channel-button);color:var(--channel-text);font:inherit;font-size:13px;}
+    .LyssnaLyricsChannelOverlay .ll-input::placeholder{color:var(--channel-muted);}
+    .LyssnaLyricsChannelOverlay .ll-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:32px;padding:6px 12px;flex-shrink:0;border:1px solid var(--channel-border);border-radius:8px;background:var(--channel-button);color:var(--channel-text);font:inherit;font-size:13px;font-weight:600;line-height:1.35;cursor:pointer;transition:background-color .15s ease,transform .12s ease;}
+    .LyssnaLyricsChannelOverlay .ll-btn:hover:not(:disabled){background:var(--channel-button-hover);}
+    .LyssnaLyricsChannelOverlay .ll-btn:active:not(:disabled){transform:scale(.97);}
+    .LyssnaLyricsChannelOverlay .ll-btn:disabled{opacity:.35;cursor:default;}
+    .LyssnaLyricsChannelOverlay .ll-btn-primary{background:var(--channel-primary);color:var(--channel-primary-text);border-color:transparent;}
+    .LyssnaLyricsChannelOverlay .ll-btn-primary:hover:not(:disabled){background:color-mix(in srgb,var(--channel-primary) 88%,#aaa);}
+    .LyssnaLyricsChannelOverlay .ll-btn-danger{color:#ff9b8d;border-color:#ff9b8d42;background:transparent;}
+    .LyssnaLyricsChannelOverlay .ll-btn-danger:hover:not(:disabled){background:#ff9b8d12;}
+    .LyssnaLyricsChannelOverlay .ll-channel-move{width:30px;min-height:30px;padding:0;}
+    .LyssnaLyricsChannelOverlay .ll-select-wrap{position:relative;display:inline-flex;align-items:center;min-width:0;max-width:240px;color:var(--channel-text);}
+    .LyssnaLyricsChannelOverlay .ll-select{appearance:none;-webkit-appearance:none;box-sizing:border-box;width:100%;min-width:140px;max-width:240px;height:34px;padding:0 30px 0 12px;border:1px solid var(--channel-border);border-radius:8px;background:var(--channel-button);color:var(--channel-text);font:inherit;font-size:13px;}
+    .LyssnaLyricsChannelOverlay .ll-select option{background:#242124;color:var(--channel-text);}
+    .LyssnaLyricsChannelOverlay .ll-toggle{position:relative;display:inline-flex;align-items:center;width:40px;height:22px;flex-shrink:0;cursor:pointer;}
+    .LyssnaLyricsChannelOverlay .ll-toggle input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer;}
+    .LyssnaLyricsChannelOverlay .ll-toggle span{pointer-events:none;position:absolute;inset:0;border-radius:99px;background:#777;transition:background .15s ease;}
+    .LyssnaLyricsChannelOverlay .ll-toggle span:after{content:"";position:absolute;left:3px;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .15s ease;}
+    .LyssnaLyricsChannelOverlay .ll-toggle input:checked+span{background:#1ed760;}
+    .LyssnaLyricsChannelOverlay[data-app="spicy"] .ll-toggle input:checked+span{background:#977dc6;}
+    .LyssnaLyricsChannelOverlay .ll-toggle input:checked+span:after{transform:translateX(18px);}
+    .LyssnaLyricsChannelOverlay :is(button,select,input):focus-visible{outline:2px solid var(--channel-text);outline-offset:3px;}
+    .LyssnaLyricsChannelOverlay .ll-toggle:has(input:focus-visible){outline:2px solid var(--channel-text);outline-offset:3px;border-radius:99px;}
+    @media(max-width:620px){
+      .lyssna-entry-channel-row{flex-wrap:wrap;}
+      .lyssna-entry-channel-row>.lyssna-entry-channel-control{margin-left:auto;}
+      .LyssnaLyricsChannelOverlay{padding:12px;}
+      .LyssnaLyricsChannelOverlay .LyssnaLyricsSettingsContainer{max-height:calc(100dvh - 24px);}
+      .LyssnaLyricsChannelOverlay .ll-channel-card{grid-template-columns:minmax(0,1fr);gap:12px;}
+      .LyssnaLyricsChannelOverlay .ll-channel-actions{justify-self:end;}
+      .LyssnaLyricsChannelOverlay .ll-settings-row{flex-wrap:wrap;}
+      .LyssnaLyricsChannelOverlay .ll-input{max-width:100%;flex:1 1 200px;}
+    }
+    @media(prefers-reduced-motion:reduce){.LyssnaLyricsChannelOverlay *{transition:none!important;}}
   `;
   document.head.appendChild(style);
 };
@@ -85,55 +119,69 @@ const injectStyles = () => {
 // Creates an overlay matching the LyssnaLyricsSettingsContainer style,
 // centered within the Spotify viewport.
 
-const showPanel = (title, buildContent) => {
-  const existing = document.querySelector(".LyssnaLyricsChannelOverlay");
-  if (existing) existing.remove();
+let closeChannelPanel;
+const showPanel = (title, buildContent, { onBack } = {}) => {
+  closeChannelPanel?.();
+  const previousFocus = document.activeElement;
 
   const backdrop = document.createElement("div");
   backdrop.className = "LyssnaLyricsSettingsOverlay LyssnaLyricsChannelOverlay";
+  backdrop.dataset.app = document.querySelector("sl-generic-modal.SpicyLyricsModal .slmodal-settingsPanel")
+    ? "spicy" : readActiveLyricsApp(Spicetify.LocalStorage)?.app ?? channelApp(selectChannel());
 
   const container = document.createElement("div");
   container.className = "LyssnaLyricsSettingsContainer";
-
-  const panelWidth = 540;
-
-  function updatePosition() {
-    const safeInset = 24;
-    const availW = window.innerWidth;
-    const availH = window.innerHeight;
-    const w = Math.min(panelWidth, Math.max(320, availW - safeInset * 2));
-    container.style.width     = `${w}px`;
-    container.style.left      = `${(availW - w) / 2}px`;
-    container.style.top       = `${availH / 2}px`;
-    container.style.transform = "translateY(-50%)";
-    container.style.maxHeight = `${Math.max(280, availH - safeInset * 2)}px`;
-  }
-
-  updatePosition();
-  window.addEventListener("resize", updatePosition);
-
-  const removalObserver = new MutationObserver(() => {
-    if (!document.contains(backdrop)) {
-      window.removeEventListener("resize", updatePosition);
-      removalObserver.disconnect();
-    }
-  });
-  removalObserver.observe(document.body, { childList: true });
+  container.setAttribute("role", "dialog");
+  container.setAttribute("aria-modal", "true");
+  container.setAttribute("aria-labelledby", "lyssna-channel-dialog-title");
+  container.tabIndex = -1;
 
   const header = document.createElement("div");
   header.className = "LyssnaLyricsSettingsHeader";
-  const titleEl = document.createElement("span");
+  const titleEl = document.createElement("h2");
+  titleEl.id = "lyssna-channel-dialog-title";
+  titleEl.className = "LyssnaLyricsSettingsHeaderTitle";
   titleEl.textContent = title;
   const closeBtn = document.createElement("button");
   closeBtn.className = "LyssnaLyricsSettingsHeaderClose";
+  closeBtn.type = "button";
+  closeBtn.setAttribute("aria-label", "Close build channels");
   closeBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
 
-  const close = () => backdrop.remove();
+  const close = () => {
+    window.removeEventListener("keydown", onKeyDown, true);
+    backdrop.remove();
+    if (closeChannelPanel === close) closeChannelPanel = undefined;
+    if (previousFocus instanceof HTMLElement && previousFocus.isConnected) previousFocus.focus({ preventScroll: true });
+  };
+  closeChannelPanel = close;
+  const onKeyDown = event => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      close();
+    } else if (event.key === "Tab") {
+      event.stopImmediatePropagation();
+      const controls = [...container.querySelectorAll("button:not(:disabled),input:not(:disabled),select:not(:disabled),a[href]")]
+        .filter(element => element.getClientRects().length);
+      if (!controls.length) { event.preventDefault(); container.focus(); return; }
+      const first = controls[0], last = controls.at(-1);
+      if (event.shiftKey && (document.activeElement === first || !controls.includes(document.activeElement))) {
+        event.preventDefault(); last.focus();
+      } else if (!event.shiftKey && (document.activeElement === last || !controls.includes(document.activeElement))) {
+        event.preventDefault(); first.focus();
+      }
+    }
+  };
+  const backBtn = makeBtn("← Back");
+  backBtn.addEventListener("click", () => onBack ? reopenPanel(close, onBack) : close());
   closeBtn.addEventListener("click", close);
-  backdrop.addEventListener("click", close);
+  let pressedBackdrop = false;
+  backdrop.addEventListener("pointerdown", event => { pressedBackdrop = event.target === backdrop; });
+  backdrop.addEventListener("click", event => { if (pressedBackdrop && event.target === backdrop) close(); });
   container.addEventListener("click", (e) => e.stopPropagation());
 
-  header.appendChild(titleEl);
+  header.append(backBtn, titleEl);
   header.appendChild(closeBtn);
 
   const scroll = document.createElement("div");
@@ -145,6 +193,8 @@ const showPanel = (title, buildContent) => {
   container.appendChild(scroll);
   backdrop.appendChild(container);
   document.body.appendChild(backdrop);
+  window.addEventListener("keydown", onKeyDown, true);
+  requestAnimationFrame(() => { if (backdrop.isConnected) container.focus({ preventScroll: true }); });
 
   return close;
 };
@@ -159,6 +209,8 @@ const makeRow = (labelText, control) => {
   lbl.textContent = labelText;
   row.appendChild(lbl);
   row.appendChild(control);
+  const field = control.matches("input,select") ? control : control.querySelector("input,select");
+  field?.setAttribute("aria-label", labelText);
   return row;
 };
 
@@ -198,13 +250,27 @@ const makeGroup = (text) => {
 
 const makeBtnRow = () => {
   const row = document.createElement("div");
-  row.style.cssText = "display:flex;gap:8px;justify-content:flex-end;padding:8px 6px 2px;";
+  row.className = "ll-channel-footer ll-channel-actions";
   return row;
 };
 
+const wrapChannelSelect = (select, className = "lyssna-channel-select-wrap") => {
+  const wrap = document.createElement("span");
+  wrap.className = className;
+  const arrow = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  arrow.classList.add("lyssna-channel-select-chevron");
+  arrow.setAttribute("viewBox", "0 0 10 10");
+  arrow.setAttribute("aria-hidden", "true");
+  arrow.innerHTML = '<path d="M2 3.75 5 6.75 8 3.75" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>';
+  wrap.append(select, arrow);
+  return wrap;
+};
+
+const channelHostSummary = hosts => `${hosts[0] === hosts[1] ? hosts[0] : `${hosts[0]} / ${hosts[1]}`}${hosts[2] ? ` · v${hosts[2]}` : ""}`;
+
 const reopenPanel = (close, next) => {
   close();
-  setTimeout(next, 100);
+  next();
 };
 
 // ─── Channel Management UI ───
@@ -224,9 +290,7 @@ const showChannelSwitcher = () => {
       select.appendChild(opt);
     }
 
-    const selectWrap = document.createElement("span");
-    selectWrap.className = "ll-select-wrap";
-    selectWrap.appendChild(select);
+    const selectWrap = wrapChannelSelect(select, "ll-select-wrap");
 
     const channelControl = document.createElement("span");
     channelControl.style.cssText = "display:inline-flex;align-items:center;gap:8px;";
@@ -237,7 +301,7 @@ const showChannelSwitcher = () => {
     scroll.appendChild(buildChannelRow);
 
     const info = document.createElement("p");
-    info.style.cssText = "margin:2px 8px 10px;font-size:0.72rem;color:rgba(255,255,255,0.35);line-height:1.5;";
+    info.className = "ll-channel-hint";
     const updateInfo = () => {
       const hosts = map[select.value];
       if (!hosts) return (info.textContent = "");
@@ -265,7 +329,7 @@ const showChannelSwitcher = () => {
 };
 
 const showAddCustomChannel = () => {
-  showPanel("Add Channel", (scroll, close) => {
+  showPanel("Add branch", (scroll, close) => {
     scroll.appendChild(makeGroup("Channel Details"));
 
     const nameInput = makeInput("e.g. My-Test-Server");
@@ -279,15 +343,15 @@ const showAddCustomChannel = () => {
     scroll.appendChild(storageRow);
 
     const { wrap: sameWrap, input: sameCb } = makeToggle();
-    scroll.appendChild(makeRow("Use the same host for both API and Storage", sameWrap));
+    scroll.appendChild(makeRow("Same host for API and storage", sameWrap));
     sameCb.addEventListener("change", () => {
       storageRow.style.display = sameCb.checked ? "none" : "";
     });
 
     const { wrap: fixedToggleWrap, input: fixedCb } = makeToggle();
-    scroll.appendChild(makeRow("Use a fixed version instead of fetching the latest version", fixedToggleWrap));
+    scroll.appendChild(makeRow("Use a fixed version", fixedToggleWrap));
 
-    const fixedInput = makeInput("e.g. 5.19.11");
+    const fixedInput = makeInput("e.g. 0.1.2");
     const fixedRow = makeRow("Fixed Version", fixedInput);
     fixedRow.style.display = "none";
     scroll.appendChild(fixedRow);
@@ -296,7 +360,7 @@ const showAddCustomChannel = () => {
     });
 
     const note = document.createElement("p");
-    note.style.cssText = "margin:4px 8px 10px;font-size:0.7rem;color:rgba(255,255,255,0.35);line-height:1.5;";
+    note.className = "ll-channel-hint";
     note.innerHTML = `Leave API Host and Storage Host empty to use the defaults. To pull an older version, set a channel name, enable fixed version, and enter the version number.<br><br>The API host must serve <strong>/lyssna-plugin/version</strong> as plain text. The Storage host must serve the bundle at <strong>/lyssna-plugin/builds/lyssna-lyrics@{version}.mjs</strong> with CORS and <code>application/javascript</code>.`;
     scroll.appendChild(note);
 
@@ -326,12 +390,12 @@ const showAddCustomChannel = () => {
 
       close();
       Spicetify.showNotification(`Branch "${name}" added`);
-      setTimeout(showChannelManager, 100);
+      showChannelManager();
     });
     btnRow.appendChild(saveBtn);
 
     scroll.appendChild(btnRow);
-  });
+  }, { onBack: showChannelManager });
 };
 
 const showChannelManager = () => {
@@ -340,51 +404,59 @@ const showChannelManager = () => {
   const customNames = Object.keys(getCustomChannels());
   const selected = getCurrentChannel();
 
-  showPanel("Manage Branches", (scroll, close) => {
+  showPanel("Build channels", (scroll, close) => {
+    const intro = document.createElement("p");
+    intro.className = "ll-channel-intro";
+    intro.textContent = "Switching channels reloads Spotify.";
+    const list = document.createElement("div");
+    list.className = "ll-channel-list";
+    scroll.append(intro, list);
     for (const name of names) {
       const row = document.createElement("div");
-      row.className = "ll-settings-row";
+      row.className = "ll-channel-card";
+      row.dataset.selected = String(name === selected);
 
       const info = document.createElement("div");
+      info.className = "ll-channel-copy";
       const nameEl = document.createElement("div");
-      nameEl.style.cssText = "font-weight:600;font-size:0.875rem;color:rgba(255,255,255,0.85);";
+      nameEl.className = "ll-channel-name";
       nameEl.textContent = name;
       const hostEl = document.createElement("div");
-      hostEl.style.cssText = "font-size:0.72rem;color:rgba(255,255,255,0.4);margin-top:2px;";
-      hostEl.textContent = `${channels[name][0]} / ${channels[name][1]}${channels[name][2] ? ` \u00b7 fixed: ${channels[name][2]}` : ""}`;
+      hostEl.className = "ll-channel-hosts";
+      hostEl.textContent = channelHostSummary(channels[name]);
       info.appendChild(nameEl);
       info.appendChild(hostEl);
 
       const actions = document.createElement("div");
-      actions.style.cssText = "display:flex;gap:8px;align-items:center;";
+      actions.className = "ll-channel-actions";
       const customIndex = customNames.indexOf(name);
       if (customNames.length > 1 && customIndex >= 0) {
         const upBtn = makeBtn("↑");
-        upBtn.style.cssText = "padding:7px 9px;";
+        upBtn.classList.add("ll-channel-move");
         upBtn.disabled = customIndex === 0;
         upBtn.title = "Move up";
         upBtn.setAttribute("aria-label", `Move ${name} up`);
         upBtn.addEventListener("click", () => {
           moveCustomChannel(name, -1);
           close();
-          setTimeout(showChannelManager, 100);
+          showChannelManager();
         });
         const downBtn = makeBtn("↓");
-        downBtn.style.cssText = "padding:7px 9px;";
+        downBtn.classList.add("ll-channel-move");
         downBtn.disabled = customIndex === customNames.length - 1;
         downBtn.title = "Move down";
         downBtn.setAttribute("aria-label", `Move ${name} down`);
         downBtn.addEventListener("click", () => {
           moveCustomChannel(name, 1);
           close();
-          setTimeout(showChannelManager, 100);
+          showChannelManager();
         });
         actions.append(upBtn, downBtn);
       }
       if (name === selected) {
-        const selectedBtn = makeBtn("Selected");
-        selectedBtn.disabled = true;
-        selectedBtn.style.cssText = "opacity:.45;cursor:default;";
+        const selectedBtn = document.createElement("span");
+        selectedBtn.className = "ll-channel-selected";
+        selectedBtn.textContent = "Selected";
         actions.appendChild(selectedBtn);
       } else {
         const switchBtn = makeBtn("Switch");
@@ -403,7 +475,7 @@ const showChannelManager = () => {
             saveCustomChannels(customChannels);
             close();
             Spicetify.showNotification(`Branch "${name}" removed`);
-            setTimeout(showChannelManager, 100);
+            showChannelManager();
           });
           actions.appendChild(removeBtn);
         }
@@ -411,7 +483,7 @@ const showChannelManager = () => {
 
       row.appendChild(info);
       row.appendChild(actions);
-      scroll.appendChild(row);
+      list.appendChild(row);
     }
 
     const btnRow = makeBtnRow();
@@ -445,7 +517,7 @@ const createChannelSettingsRow = (prefix, rowId) => {
   const current = channels[getCurrentChannel()] ? getCurrentChannel() : DEFAULT_CHANNEL;
   const row = document.createElement("div");
   row.id = rowId;
-  row.className = spotify ? "x-settings-row" : `${prefix}-sp-row ${prefix}-sp-row--stacked`;
+  row.className = spotify ? "x-settings-row" : `${prefix}-sp-row lyssna-entry-channel-row`;
 
   const labelWrap = document.createElement("div");
   labelWrap.className = spotify ? "x-settings-firstColumn" : `${prefix}-sp-label-wrap`;
@@ -455,7 +527,7 @@ const createChannelSettingsRow = (prefix, rowId) => {
   label.textContent = "Build Channel";
   const description = document.createElement(spotify ? "p" : "span");
   description.className = spotify ? "encore-text-body-small" : `${prefix}-sp-description`;
-  description.textContent = "Switch between Lyssna Lyrics, Spicy Lyrics and saved branches. Reloads Spotify.";
+  description.textContent = "Reloads Spotify.";
   labelWrap.append(label, description);
 
   const control = document.createElement("div");
@@ -467,7 +539,7 @@ const createChannelSettingsRow = (prefix, rowId) => {
   manage.addEventListener("click", showChannelManager);
   const select = document.createElement("select");
   select.id = label.htmlFor;
-  select.className = spotify ? "x-settings-dropdown" : `${prefix}-sp-select`;
+  select.className = `lyssna-entry-select ${spotify ? "x-settings-dropdown" : `${prefix}-sp-select`}`;
   select.setAttribute("aria-label", "Build Channel");
   for (const name of Object.keys(channels)) {
     const option = document.createElement("option");
@@ -480,7 +552,7 @@ const createChannelSettingsRow = (prefix, rowId) => {
     setCurrentChannel(select.value);
     window.location.reload();
   });
-  control.append(select, manage);
+  control.append(wrapChannelSelect(select), manage);
   row.append(labelWrap, control);
   return row;
 };

@@ -24,7 +24,7 @@ function persistBuildChannel(channel: string): void {
 }
 
 function hostSummary(hosts: ChannelHosts): string {
-  return `${hosts[0]} / ${hosts[1]}${hosts[2] ? ` · fixed: ${hosts[2]}` : ""}`;
+  return `${hosts[0] === hosts[1] ? hosts[0] : `${hosts[0]} / ${hosts[1]}`}${hosts[2] ? ` · v${hosts[2]}` : ""}`;
 }
 
 function isBuiltInChannel(name: string): boolean {
@@ -188,7 +188,7 @@ export default function BuildChannelPanel() {
       <div className="ll-build-channel-copy">
         <span className="ll-build-channel-title">Build Channel</span>
         <span className="ll-build-channel-description">
-          Choose which release stream this install should follow.
+          Switching channels reloads Spotify.
         </span>
       </div>
 
