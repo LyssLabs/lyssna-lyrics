@@ -1,5 +1,5 @@
 export const SETTING_CATALOG = [
-  ["nextUpPlacement", "Up Next", "Show the next track above artwork or below lyrics.", "Lyrics Display"],
+  ["nextUpPlacement", "Up Next", "Show the next track in a page corner alongside pinned credits.", "Lyrics Display"],
   ["lyrics-larger-cinema", "Larger Cinema Lyrics", "Scale Apple Music lyrics for Cinema View and fullscreen.", "Lyrics Display"],
   ["lyrics-background-vocals", "Background Vocal Pop-Out", "Reveal tagged backing vocals while their group plays.", "Lyrics Display"],
   ["lyrics-keep-overlaps", "Keep Overlapping Lines", "Keep finished overlaps visible in wide Cinema View and fullscreen with Minimal Lyrics Mode.", "Lyrics Display"],

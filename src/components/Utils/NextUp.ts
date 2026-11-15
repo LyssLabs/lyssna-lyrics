@@ -5,9 +5,8 @@ import { PageContainer } from "../Pages/PageView.ts";
 import { IsPIP } from "./PopupLyrics.ts";
 import { $nextUpPlacement } from "../../utils/stores.ts";
 import { CreateTextScroller, type TextScroller } from "../../utils/TextScroller.ts";
-import { ClaimSwitchClearance } from "../../utils/ViewSwitchClearance.ts";
 
-/** The next track appears in the artwork corner or beside/below pinned credits for the last 30 seconds. */
+/** The next track appears in a page corner for the last 30 seconds, sharing the footer when needed. */
 
 // Shown once this little of the song is left.
 const SHOW_WITHIN_MS = 30_000;
@@ -20,7 +19,8 @@ const SWAP_MS = 180;
 // Space between the lyrics' fade and the top of the element.
 const LYRICS_CLEARANCE_PX = 24;
 const PLACEMENT_GAP_PX = 24;
-const movedCredits = new Set<HTMLElement>();
+const FOOTER_GAP_PX = 16;
+const reservedCredits = new Set<HTMLElement>();
 
 type NextTrack = { uri: string; title: string; artist: string; image: string | null };
 type Body = { el: HTMLElement; scroller: TextScroller | null };
@@ -30,9 +30,8 @@ let body: Body | null = null;
 let shownUri: string | null = null;
 let ticker: ReturnType<typeof setInterval> | null = null;
 let layoutObserver: ResizeObserver | null = null;
+let controlsObserver: MutationObserver | null = null;
 let hiddenAt = 0;
-// The top edge the lyrics last made room for, so a move (pinned credits, a resize) lifts them again.
-let liftedTop: number | null = null;
 // A track forced in from the console, shown regardless of time left.
 let forced: NextTrack | null = null;
 
@@ -151,56 +150,49 @@ function pinnedRows(box: HTMLElement): HTMLElement[] {
     .filter(row => row.childElementCount > 0 && row.getClientRects().length > 0);
 }
 
-function clearCreditsOffset(): void {
-  for (const row of movedCredits) row.style.removeProperty("--LL-NextUpLift");
-  movedCredits.clear();
+function clearCreditsSpace(): void {
+  for (const row of reservedCredits) {
+    row.classList.remove("NextUpBeside");
+    row.style.removeProperty("--LL-NextUpReserveLeft");
+    row.style.removeProperty("--LL-NextUpReserveRight");
+  }
+  reservedCredits.clear();
 }
 
-function syncCreditsOffset(box: HTMLElement): void {
-  if (!root?.classList.contains("Shown") || root.offsetHeight === 0 || $nextUpPlacement.get() !== "bottom" || root.dataset.footerLayout === "beside") {
-    clearCreditsOffset();
-    return;
-  }
-  const rows = pinnedRows(box);
-  const content = box.querySelector<HTMLElement>(".LyricsContent");
-  if (!content) return;
-  const positions = rows.map(row => {
+function footerPositions(box: HTMLElement) {
+  return pinnedRows(box).map(row => {
     const rect = row.getBoundingClientRect();
-    const lift = parseFloat(row.style.getPropertyValue("--LL-NextUpLift")) || 0;
-    return { row, bottom: rect.bottom + lift };
+    // Recover the full footer width so successive layouts do not keep shrinking it.
+    const left = rect.left - (parseFloat(row.style.getPropertyValue("--LL-NextUpReserveLeft")) || 0);
+    const right = rect.right + (parseFloat(row.style.getPropertyValue("--LL-NextUpReserveRight")) || 0);
+    return { row, rect, left, right, bottom: rect.bottom - (parseFloat(getComputedStyle(row).paddingBottom) || 0) };
   });
-  const top = root.getBoundingClientRect().top;
-  const current = new Set(rows);
-  for (const row of movedCredits) {
-    if (current.has(row)) continue;
-    row.style.removeProperty("--LL-NextUpLift");
-    movedCredits.delete(row);
-  }
-  for (const { row, bottom } of positions) {
-    const lift = Math.max(0, Math.ceil(bottom - top + 16));
-    const value = `${lift}px`;
-    if (row.style.getPropertyValue("--LL-NextUpLift") !== value) row.style.setProperty("--LL-NextUpLift", value);
-    movedCredits.add(row);
-  }
 }
 
-/** Block credit rows fill the footer; text and images tell us whether its right side is actually free. */
-function creditsRightEdge(rows: HTMLElement[]): number {
-  let right = -Infinity;
-  for (const row of rows) {
-    const walker = row.ownerDocument.createTreeWalker(row, NodeFilter.SHOW_TEXT);
-    const range = row.ownerDocument.createRange();
-    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
-      if (!node.textContent?.trim()) continue;
-      range.selectNodeContents(node);
-      for (const rect of range.getClientRects()) if (rect.width > 0) right = Math.max(right, rect.right);
-    }
-    for (const image of row.querySelectorAll("img, svg")) {
-      const rect = image.getBoundingClientRect();
-      if (rect.width > 0) right = Math.max(right, rect.right);
-    }
+function syncCreditsSpace(positions: ReturnType<typeof footerPositions>, left: number, top: number, width: number, height: number): void {
+  const current = new Set(positions.map(({ row }) => row));
+  for (const row of reservedCredits) {
+    if (current.has(row)) continue;
+    row.classList.remove("NextUpBeside");
+    row.style.removeProperty("--LL-NextUpReserveLeft");
+    row.style.removeProperty("--LL-NextUpReserveRight");
+    reservedCredits.delete(row);
   }
-  return right;
+  for (const { row, rect, left: footerLeft, right: footerRight } of positions) {
+    const overlaps = left < footerRight + FOOTER_GAP_PX && left + width > footerLeft - FOOTER_GAP_PX && top < rect.bottom && top + height > rect.top;
+    const reserveLeft = overlaps && $nextUpPlacement.get() === "bottomLeft" ? Math.max(0, Math.ceil(left + width + FOOTER_GAP_PX - footerLeft)) : 0;
+    const reserveRight = overlaps && $nextUpPlacement.get() === "bottomRight" ? Math.max(0, Math.ceil(footerRight - left + FOOTER_GAP_PX)) : 0;
+    for (const [property, reserve] of [["--LL-NextUpReserveLeft", reserveLeft], ["--LL-NextUpReserveRight", reserveRight]] as const) {
+      const value = reserve ? `${reserve}px` : "";
+      if (row.style.getPropertyValue(property) !== value) {
+        if (value) row.style.setProperty(property, value);
+        else row.style.removeProperty(property);
+      }
+    }
+    row.classList.toggle("NextUpBeside", !!(reserveLeft || reserveRight));
+    if (reserveLeft || reserveRight) reservedCredits.add(row);
+    else reservedCredits.delete(row);
+  }
 }
 
 function syncPlacement(box: HTMLElement): void {
@@ -208,44 +200,40 @@ function syncPlacement(box: HTMLElement): void {
   const placement = $nextUpPlacement.get();
   if (root.dataset.placement !== placement) root.dataset.placement = placement;
   const parent = (root.offsetParent as HTMLElement | null)?.getBoundingClientRect() ?? box.getBoundingClientRect();
-  const rows = placement === "bottom" ? pinnedRows(box) : [];
-  const positions = rows.map(row => {
-    const rect = row.getBoundingClientRect();
-    const lift = parseFloat(row.style.getPropertyValue("--LL-NextUpLift")) || 0;
-    return { row, rect, bottom: rect.bottom + lift };
-  });
-  const nowBar = box.querySelector<HTMLElement>(".NowBar.Active");
-  const artColumn = placement === "topLeft" && nowBar?.offsetWidth ? nowBar.getBoundingClientRect() : null;
-  const widthLimit = positions.length
-    ? Math.min(...positions.map(({ rect }) => rect.width))
-    : artColumn ? artColumn.width : parent.width - 32;
-  const limit = `${Math.max(0, Math.floor(Math.min(widthLimit, parent.width - 32)))}px`;
+  const positions = placement === "topLeft" ? [] : footerPositions(box);
+  const cornerLeft = parent.left + PLACEMENT_GAP_PX;
+  const cornerRight = parent.right - PLACEMENT_GAP_PX;
+  let widthLimit = cornerRight - cornerLeft;
+  for (const { left, right } of positions) {
+    const minimumCredits = Math.min(right - left, Math.max(64, Math.min(160, (right - left) / 2)));
+    widthLimit = Math.min(widthLimit, placement === "bottomLeft"
+      ? right - minimumCredits - FOOTER_GAP_PX - cornerLeft
+      : cornerRight - left - minimumCredits - FOOTER_GAP_PX);
+  }
+  const limit = `${Math.max(0, Math.floor(widthLimit))}px`;
   if (root.style.maxWidth !== limit) root.style.maxWidth = limit;
+  root.toggleAttribute("data-compact", widthLimit < 144);
   const width = root.offsetWidth;
   const height = root.offsetHeight;
-  if (width === 0 || height === 0) return;
-  const clampLeft = (left: number) => Math.max(parent.left + 16, Math.min(left, parent.right - width - 16));
-  const setPosition = (left: number, top?: number) => {
+  const noRoom = widthLimit < 56 || parent.height < height + PLACEMENT_GAP_PX * 2;
+  root.toggleAttribute("data-no-room", noRoom);
+  if (width === 0 || height === 0 || noRoom) { clearCreditsSpace(); return; }
+  const clampLeft = (left: number) => Math.max(cornerLeft, Math.min(left, cornerRight - width));
+  const setPosition = (left: number, top: number) => {
     const x = `${Math.round(clampLeft(left) - parent.left)}px`;
     if (root!.style.left !== x) root!.style.left = x;
-    if (top === undefined) root!.style.removeProperty("top");
-    else {
-      const offset = Math.round(Math.max(16, Math.min(top - parent.top, parent.height - height - 16)));
-      const y = `${offset}px`;
-      if (root!.style.top !== y) root!.style.top = y;
-      return parent.top + offset;
-    }
+    const offset = Math.round(Math.max(PLACEMENT_GAP_PX, Math.min(top - parent.top, parent.height - height - PLACEMENT_GAP_PX)));
+    const y = `${offset}px`;
+    if (root!.style.top !== y) root!.style.top = y;
+    return parent.top + offset;
   };
 
   if (placement === "topLeft") {
-    delete root.dataset.footerLayout;
-    const canvas = PageContainer?.matches(".CanvasImmersive:not(.CompactMode, .ForcedCompactMode)");
-    const cover = !canvas ? nowBar?.querySelector<HTMLElement>(".MediaBox") : null;
-    const coverRect = cover?.offsetWidth ? cover.getBoundingClientRect() : null;
-    const left = clampLeft(coverRect?.left ?? artColumn?.left ?? parent.left + PLACEMENT_GAP_PX);
+    clearCreditsSpace();
+    const left = cornerLeft;
     // Keep the corner fixed while controls appear, rather than pushing the card into the artwork.
     const toolbar = box.querySelector<HTMLElement>(".ViewControls.LyssnaToolbar")?.getBoundingClientRect();
-    const top = setPosition(left, coverRect ? coverRect.top - height - 16 : parent.top + PLACEMENT_GAP_PX)!;
+    const top = setPosition(left, parent.top + PLACEMENT_GAP_PX);
     const overlapsToolbar = !!toolbar && toolbar.width > 0 && toolbar.height > 0 &&
       left < toolbar.right + 8 && left + width > toolbar.left - 8 &&
       top < toolbar.bottom + 8 && top + height > toolbar.top - 8;
@@ -255,22 +243,14 @@ function syncPlacement(box: HTMLElement): void {
 
   root.removeAttribute("data-toolbar-overlap");
 
-  if (positions.length) {
-    const right = Math.min(...positions.map(({ rect }) => rect.right));
-    const left = clampLeft(right - width);
-    if (creditsRightEdge(rows) + PLACEMENT_GAP_PX <= left) {
-      if (root.dataset.footerLayout !== "beside") root.dataset.footerLayout = "beside";
-      const bottom = Math.max(...positions.map(({ row, bottom }) => bottom - (parseFloat(getComputedStyle(row).paddingBottom) || 0)));
-      setPosition(left, bottom - height);
-      return;
-    }
-    if (root.dataset.footerLayout !== "below") root.dataset.footerLayout = "below";
-    setPosition(Math.max(...positions.map(({ rect }) => rect.left)));
-  } else {
-    delete root.dataset.footerLayout;
-    root.style.removeProperty("left");
-    root.style.removeProperty("top");
+  const left = placement === "bottomLeft" ? cornerLeft : clampLeft(cornerRight - width);
+  let bottom = Math.min(parent.bottom - PLACEMENT_GAP_PX, ...positions.map(position => position.bottom));
+  const viewSwitch = box.classList.contains("ViewSwitchAwake") ? box.querySelector<HTMLElement>(".ViewSwitch")?.getBoundingClientRect() : null;
+  if (viewSwitch && left < viewSwitch.right + FOOTER_GAP_PX && left + width > viewSwitch.left - FOOTER_GAP_PX && bottom > viewSwitch.top) {
+    bottom = Math.min(bottom, viewSwitch.top - FOOTER_GAP_PX);
   }
+  const top = setPosition(left, bottom - height);
+  syncCreditsSpace(positions, left, top, width, height);
 }
 
 function clearanceTop(box: HTMLElement): number {
@@ -280,41 +260,50 @@ function clearanceTop(box: HTMLElement): number {
 function syncShownLayout(box: HTMLElement) {
   if (!root?.classList.contains("Shown")) return;
   syncPlacement(box);
-  syncCreditsOffset(box);
-  if ($nextUpPlacement.get() === "bottom" && (liftedTop === null || Math.abs(clearanceTop(box) - liftedTop) > 1)) liftLyrics(box, true);
+  if ($nextUpPlacement.get() !== "topLeft") liftLyrics(box, true);
+}
+
+function stopLayoutObservers() {
+  layoutObserver?.disconnect();
+  controlsObserver?.disconnect();
+  layoutObserver = null;
+  controlsObserver = null;
 }
 
 function observeLayout(box: HTMLElement) {
-  layoutObserver?.disconnect();
+  stopLayoutObservers();
   layoutObserver = new ResizeObserver(() => { if (host() === box) syncShownLayout(box); });
-  for (const element of [box, root, ...box.querySelectorAll<HTMLElement>(".NowBar.Active, .MediaBox, .ViewControls.LyssnaToolbar")]) {
+  for (const element of [box, root, ...box.querySelectorAll<HTMLElement>(".NowBar.Active, .MediaBox, .ViewControls.LyssnaToolbar, .ViewSwitch, .LyricsPinnedFooter, .LyricsPinnedCredits")]) {
     if (element) layoutObserver.observe(element);
   }
+  controlsObserver = new MutationObserver(() => { if (host() === box) syncShownLayout(box); });
+  controlsObserver.observe(box, { attributes: true, attributeFilter: ["class"] });
 }
 
 /**
  * The lyrics fade out a little higher while Up Next shows, so no line runs under it. The lift is
- * how far the fade has to move to end just above the element, measured once per reveal.
+ * how far the fade has to move to end just above the element when its layout changes.
  */
 function liftLyrics(box: HTMLElement, lift: boolean) {
   const container = box.querySelector<HTMLElement>(".LyricsContainer");
   const content = container?.querySelector<HTMLElement>(".LyricsContent");
   if (!container || !content) return;
-  if (!lift || !root || root.offsetHeight === 0 || $nextUpPlacement.get() !== "bottom") {
+  const card = root?.getBoundingClientRect();
+  const contentRect = content.getBoundingClientRect();
+  if (!lift || !root || !card || root.offsetHeight === 0 || root.hasAttribute("data-no-room") || $nextUpPlacement.get() === "topLeft" || card.right <= contentRect.left || card.left >= contentRect.right) {
     container.classList.remove("NextUpRoom");
-    liftedTop = null;
     return;
   }
-  const contentBottom = content.getBoundingClientRect().bottom;
+  const contentBottom = contentRect.bottom;
   const top = clearanceTop(box);
-  liftedTop = top;
   // Where the fade reaches transparent without the lift, measured from the bottom of the lyrics
   // (main.css; PinnedCredits.css moves it above the pinned rows).
   const fadeEnd = parseFloat(content.style.getPropertyValue("--LL-PinnedFooterTrackBottom")) || (container.classList.contains("HasPinnedCredits")
     ? (parseFloat(container.style.getPropertyValue("--LL-PinnedCreditsHeight")) || 0) + 24 + 8
     : 16);
   const room = Math.max(0, Math.round(contentBottom - top + LYRICS_CLEARANCE_PX - fadeEnd));
-  container.style.setProperty("--LL-NextUpRoom", `${room}px`);
+  const value = `${room}px`;
+  if (container.style.getPropertyValue("--LL-NextUpRoom") !== value) container.style.setProperty("--LL-NextUpRoom", value);
   container.classList.add("NextUpRoom");
 }
 
@@ -324,7 +313,6 @@ function show(box: HTMLElement) {
   body?.scroller?.resume();
   root.classList.add("Shown");
   syncPlacement(box);
-  syncCreditsOffset(box);
   liftLyrics(box, true);
   observeLayout(box);
 }
@@ -332,9 +320,8 @@ function show(box: HTMLElement) {
 function hide() {
   if (!root?.classList.contains("Shown")) return;
   root.classList.remove("Shown");
-  layoutObserver?.disconnect();
-  layoutObserver = null;
-  clearCreditsOffset();
+  stopLayoutObservers();
+  clearCreditsSpace();
   hiddenAt = performance.now();
   // Hidden, the title's scroll would still restyle it every frame. It stops once the exit has
   // played, so it doesn't jump back to its start while still fading.
@@ -347,9 +334,8 @@ function hide() {
 }
 
 function unmount() {
-  layoutObserver?.disconnect();
-  layoutObserver = null;
-  clearCreditsOffset();
+  stopLayoutObservers();
+  clearCreditsSpace();
   if (ticker) clearInterval(ticker);
   ticker = null;
   const box = PageContainer?.querySelector<HTMLElement>(".ContentBox");
@@ -368,8 +354,8 @@ function tick() {
     return;
   }
   if (!root || root.parentElement !== box) {
-    layoutObserver?.disconnect();
-    layoutObserver = null;
+    stopLayoutObservers();
+    clearCreditsSpace();
     // A rebuilt view: start over in the new box, and keep the ticker running.
     if (body) dropBody(body, false);
     body = null;
@@ -377,8 +363,6 @@ function tick() {
     shownUri = null;
     root = box.ownerDocument.createElement("div");
     root.className = "NextUp";
-    // Steps past the Lyrics / Queue switch while it shows (ViewSwitchClearance.ts, NextUp.css).
-    ClaimSwitchClearance(root);
     box.append(root);
   }
   // Hidden cards need no geometry reads during the rest of the song.
@@ -440,11 +424,10 @@ Global.Event.listen("playback:songchange", () => {
   hide();
   sync();
 });
-// A side swap moves it to the other end of the column; it fades in there instead of jumping.
+// The corner stays fixed; swapping artwork changes the footer space available beside it.
 Global.Event.listen("nowbar:side-swap:after", () => {
   if (!root?.classList.contains("Shown")) return;
-  root.animate([{ opacity: 0, offset: 0 }], { duration: 240, easing: "ease-out" });
   const box = host();
-  if (box) requestAnimationFrame(() => liftLyrics(box, true));
+  if (box) requestAnimationFrame(() => syncShownLayout(box));
 });
 $nextUpPlacement.listen(() => { unmount(); sync(); });

@@ -239,9 +239,9 @@ body.LyssnaLyrics_LegacyNav.LyssnaLyrics_LegacyNav #LyssnaLyricsPage .LyricsCont
   --DefaultLyricsSize: clamp(1.85rem, calc(1cqw * 7), 3.5rem);
   position: absolute;
   z-index: 10;
-  right: var(--LyricsRightSidePadding);
-  bottom: calc(20px + var(--LL-NextUpLift, 0px));
-  left: var(--LyricsLeftSidePadding);
+  right: calc(var(--LyricsRightSidePadding) + var(--LL-NextUpReserveRight, 0px));
+  bottom: 20px;
+  left: calc(var(--LyricsLeftSidePadding) + var(--LL-NextUpReserveLeft, 0px));
   padding: 0 0 1.25rem;
   display: block;
   font-size: var(--DefaultLyricsSize);
@@ -276,8 +276,8 @@ body.LyssnaLyrics_LegacyNav.LyssnaLyrics_LegacyNav #LyssnaLyricsPage .LyricsCont
 }
 
 #LyssnaLyricsPage .ContentBox .NowBar.Active:is(.RightSide) + .LyricsContainer .LyricsPinnedFooter {
-  right: var(--LyricsLeftSidePadding);
-  left: calc(var(--LyricsRightSidePadding) * 1.45);
+  right: calc(var(--LyricsLeftSidePadding) + var(--LL-NextUpReserveRight, 0px));
+  left: calc(var(--LyricsRightSidePadding) * 1.45 + var(--LL-NextUpReserveLeft, 0px));
 }
 
 .lyssna-pip-wrapper #LyssnaLyricsPage:is(.PinnedFooterMode_NoWriters, .PinnedFooterMode_Full):not(.SpaceGravityMode):not(.CardMode) .LyricsContainer .LyricsPinnedFooter {

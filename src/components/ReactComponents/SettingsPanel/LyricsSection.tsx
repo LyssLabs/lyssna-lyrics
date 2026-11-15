@@ -115,7 +115,7 @@ export default function LyricsSection({ query, sectionFilter, showHidden = false
   const popupDock = popupAllowed && visible("lyrics-popup-dock") && matches(query, "Popup Player Dock", "Dock playback controls below popup lyrics.");
   const floating = visible("lyrics-space-gravity") && matches(query, "Space Gravity Mode", "Let lyric words float as they’re sung.");
   const words = visible("lyrics-word-filters") && matches(query, "Unique Word Filters", "Change the spelling or case of lyric words.");
-  const nextTrack = visible("nextUpPlacement") && matches(query, "Up Next", "Show the next track in the artwork corner or beside pinned credits in the final 30 seconds.");
+  const nextTrack = visible("nextUpPlacement") && matches(query, "Up Next", "Show the next track in a page corner beside pinned credits in the final 30 seconds.");
   const effects = renderer === "spring"
     ? visible("effects-animator-presets") && matches(query, "Animator Presets", "Choose Lyssna, Spicy, or Custom animation.")
     : visible("lyrics-background-vocals") && matches(query, "Background Vocal Pop-Out", "Reveal tagged backing vocals while their group plays.");
@@ -160,7 +160,7 @@ export default function LyricsSection({ query, sectionFilter, showHidden = false
     {refinedCredits && <ExperimentSettings experimentIds={["refinedCredits"]} showBuiltIn={false} />}
     {popup && <Row settingId="interface-disable-popup" label="Enable Popup Player" description="Open lyrics in a separate window."><Toggle checked={popupAllowed} onChange={value => $popupLyricsAllowed.set(value)} /></Row>}
     {popupDock && <ExperimentSettings experimentIds={["popupDock"]} showBuiltIn={false} />}
-    {nextTrack && <Row settingId="nextUpPlacement" label="Up Next" description="Show the next track in the final 30 seconds. Hidden while Spotify’s queue is open."><Select value={nextUp} options={["off", "topLeft", "bottom"]} labels={["Off", "Top Left", "Bottom"]} onChange={value => $nextUpPlacement.set(value as NextUpPlacement)} /></Row>}
+    {nextTrack && <Row settingId="nextUpPlacement" label="Up Next" description="Show the next track in a page corner during the final 30 seconds. Bottom corners share space with pinned credits. Hidden while Spotify’s queue is open."><Select value={nextUp} options={["off", "topLeft", "bottomLeft", "bottomRight"]} labels={["Off", "Top Left", "Bottom Left", "Bottom Right"]} onChange={value => $nextUpPlacement.set(value as NextUpPlacement)} /></Row>}
     </SettingsSection>}
   </>;
 }

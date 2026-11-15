@@ -83,6 +83,7 @@ function readBackup(): Record<string, unknown> | null {
           const previous = parsed["experiment:nextUpCard"];
           parsed.nextUpPlacement = previous == null ? null : previous === false ? "off" : "topLeft";
         }
+        if (parsed.nextUpPlacement === "bottom") parsed.nextUpPlacement = "bottomRight";
         return parsed;
       }
     } catch { /* Keep unreadable records intact. */ }

@@ -9,9 +9,9 @@
   position: absolute;
   z-index: 10;
   position-anchor: --LL-LyricsContent;
-  left: anchor(left);
-  right: anchor(right);
-  bottom: calc(anchor(bottom) + 24px + var(--LL-NextUpLift, 0px));
+  left: calc(anchor(left) + var(--LL-NextUpReserveLeft, 0px));
+  right: calc(anchor(right) + var(--LL-NextUpReserveRight, 0px));
+  bottom: calc(anchor(bottom) + 24px);
   container-type: inline-size;
   /* Only the links take the pointer, so scrolling over the rows still moves the lyrics. */
   pointer-events: none;

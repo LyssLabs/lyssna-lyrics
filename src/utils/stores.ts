@@ -49,6 +49,10 @@ function migrateSettingsKeys(blob: Record<string, any>): Record<string, any> {
     blob.nextUpPlacement = blob["experiment:nextUpCard"] ? "topLeft" : "off";
     changed = true;
   }
+  if (blob.nextUpPlacement === "bottom") {
+    blob.nextUpPlacement = "bottomRight";
+    changed = true;
+  }
   if (migrateRendererStyle(blob)) changed = true;
   if (typeof blob.releaseYearPosition === "string" && ["off", "left", "right"].includes(blob.releaseYearPosition.toLowerCase()) && blob.releaseYearPosition !== blob.releaseYearPosition.toLowerCase()) {
     blob.releaseYearPosition = blob.releaseYearPosition.toLowerCase();
@@ -264,7 +268,7 @@ export const $duetLinePadding = persistAtom<boolean>("duetLinePadding", true);
 // When a song ends on a duet line sung from the right, the credits under it
 // (writers, provider, community info) move to the right with it.
 export const $creditsFollowLastLine = persistAtom<boolean>("creditsFollowLastLine", false);
-export type NextUpPlacement = "off" | "topLeft" | "bottom";
+export type NextUpPlacement = "off" | "topLeft" | "bottomLeft" | "bottomRight";
 export const $nextUpPlacement = persistAtom<NextUpPlacement>("nextUpPlacement", "topLeft");
 $nextUpPlacement.listen(value => {
   _settings["experiment:nextUpCard"] = value !== "off";

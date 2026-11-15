@@ -1,14 +1,14 @@
-/* Shared by the page, Cinema, and fullscreen, including Canvas. NextUp.ts places the card in the
-   artwork corner, beside pinned credits when they fit, or below them with extra lyric clearance. */
+/* Page, Cinema, and fullscreen corners. Bottom placements reserve a column beside pinned credits. */
 
 #LyssnaLyricsPage .ContentBox > .NextUp {
   --NextUpArt: calc(var(--ViewSwitchSize) * 1.22);
   position: absolute;
   /* Over the lyrics (9) and the pinned credit rows (10), level with the switch. */
   z-index: 11;
-  left: var(--LyricsLeftSidePadding);
-  /* NextUp.ts lifts pinned credits when the bottom row needs to stack. */
-  bottom: var(--ViewSwitchInset);
+  left: 24px;
+  top: 24px;
+  right: auto;
+  bottom: auto;
   display: grid;
   /* A long title shrinks the text column instead of widening the row past its cap. */
   grid-template-columns: minmax(0, 1fr);
@@ -21,10 +21,7 @@
   text-shadow: 0 1px 12px rgba(0, 0, 0, 0.28);
   pointer-events: none;
   visibility: hidden;
-  /* How it slides between its two places beside the switch (NowBar on the right, below). */
-  --NextUpSlide: translate 0s;
   transition:
-    var(--NextUpSlide),
     opacity 160ms var(--lyssna-ease-out),
     visibility 0s linear 220ms;
 }
@@ -33,15 +30,24 @@
   visibility: visible;
   pointer-events: auto;
   transition:
-    var(--NextUpSlide),
     opacity 280ms var(--lyssna-ease-out) 80ms,
     visibility 0s;
 }
 
-#LyssnaLyricsPage .ContentBox > .NextUp:is([data-placement="topLeft"], [data-footer-layout="beside"]) {
-  right: auto !important;
-  bottom: auto !important;
-  translate: none !important;
+#LyssnaLyricsPage .ContentBox > .NextUp[data-no-room] {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+#LyssnaLyricsPage .NextUp[data-compact] .NextUpArt {
+  display: none;
+}
+
+#LyssnaLyricsPage .LyricsContainer > :is(.LyricsPinnedFooter, .LyricsPinnedCredits).NextUpBeside {
+  min-width: 0;
+  overflow: hidden;
+  overflow-wrap: anywhere;
 }
 
 /* The corner sits behind artwork controls; it yields only when the pill covers its slot. */
@@ -56,61 +62,11 @@
   pointer-events: none;
 }
 
-/* The NowBar on the right puts the lyrics, and the switch, on the left: at rest Up Next starts where
-   the lines start, on the switch's row. While the switch is awake it would sit under the capsule,
-   so it slides aside to just past the capsule's end (ViewSwitchAwake and --LL-ViewSwitchEnd, from
-   ViewSwitchClearance.ts) and the corner reads as one row; the pinned credit rows do the same. It
-   clears quickly as the switch appears, and comes back only once the switch has mostly faded, so
-   the two never overlap. Its place itself never animates, so a resize or a side swap doesn't make
-   it glide. Above pinned credit rows it moves with them, so the two stay one column. */
-#LyssnaLyricsPage.NowBarSide__Right:not(.CompactMode, .ForcedCompactMode) .ContentBox > .NextUp {
-  left: calc(var(--LyricsRightSidePadding) * 1.45);
-  /* Back to the lines' start: on-screen movement, after the switch has mostly faded. */
-  --NextUpSlide: translate 420ms var(--lyssna-ease-in-out) 300ms;
-}
-
-#LyssnaLyricsPage.NowBarSide__Right:not(.CompactMode, .ForcedCompactMode)
-  .ContentBox.ViewSwitchAwake:not(.LyricsHidden)
-  > .NextUp:not([data-placement="topLeft"], [data-footer-layout="beside"]) {
-  translate: max(
-      0px,
-      calc(
-        var(--LL-ViewSwitchEnd, 0px) + var(--ViewSwitchInset) * 0.5 - var(--LyricsRightSidePadding) * 1.45
-      )
-    )
-    0;
-  /* Out of the switch's way: a response to the pointer, so fast and ease-out. */
-  --NextUpSlide: translate 300ms var(--lyssna-ease-out);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  #LyssnaLyricsPage.NowBarSide__Right:not(.CompactMode, .ForcedCompactMode) .ContentBox > .NextUp,
-  #LyssnaLyricsPage.NowBarSide__Right:not(.CompactMode, .ForcedCompactMode)
-    .ContentBox.ViewSwitchAwake:not(.LyricsHidden)
-    > .NextUp {
-    --NextUpSlide: translate 0s;
-  }
-}
-
-/* A song with no lyrics centres the Now Bar, so there is no column: Up Next takes the bottom corner
-   the switch leaves free, on the switch's centerline. */
-#LyssnaLyricsPage .ContentBox.LyricsHidden > .NextUp {
-  left: var(--ViewSwitchInset);
-  bottom: var(--ViewSwitchInset);
-}
-
-#LyssnaLyricsPage.NowBarSide__Right:not(.CompactMode, .ForcedCompactMode) .ContentBox.LyricsHidden > .NextUp {
-  left: auto;
-  right: var(--ViewSwitchInset);
-  bottom: var(--ViewSwitchInset);
-}
-
 /* The open queue already starts with this track, so it steps aside with the lyrics. */
 #LyssnaLyricsPage.QueueOpen .ContentBox > .NextUp {
   opacity: 0;
   visibility: hidden;
   transition:
-    var(--NextUpSlide),
     opacity 160ms var(--lyssna-ease-out),
     visibility 0s linear 220ms;
 }
