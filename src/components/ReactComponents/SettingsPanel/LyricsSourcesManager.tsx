@@ -201,8 +201,8 @@ export default function LyricsSourcesManager() {
                   <div className="ll-sp-source-settings-inner">
                     <div className="ll-sp-source-option-row">
                       <div className="ll-sp-source-copy">
-                        <span className="ll-sp-source-label">Prioritize Apple Music Quality</span>
-                        <span className="ll-sp-source-description">Prefer available Apple Music lyrics at equal sync quality. Word sync always beats line sync. The developer API chooses which catalog source it returns.</span>
+                        <span className="ll-sp-source-label">Prefer Apple Music / lrc.red</span>
+                        <span className="ll-sp-source-description">Check lrc.red independently and prefer these sources at equal sync quality. Word sync always beats line sync. Disabled sources stay skipped.</span>
                       </div>
                       <Toggle checked={prioritizeAppleMusicQuality} onChange={(v) => $prioritizeAppleMusicQuality.set(v)} />
                     </div>

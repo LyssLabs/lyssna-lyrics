@@ -39,7 +39,7 @@ export const LYRICS_SOURCE_PROVIDER_DEFINITIONS: Record<
   apple: {
     label: "Apple Music",
     description:
-      "Fetches Apple Music lyrics through the public developer API when available.",
+      "Apple Music through the developer API. When preferred, enabled lrc.red provides an independent catalog lookup.",
   },
   lrcred: {
     label: "lrc.red",

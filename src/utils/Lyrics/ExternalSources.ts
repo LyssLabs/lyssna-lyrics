@@ -58,7 +58,18 @@ export async function fetchLyricsFromProviders(
   }
 
   const prioritizeApple = Defaults.PrioritizeAppleMusicQuality;
-  const appleIsInOrder = order.includes("apple");
+  order = [...order];
+  const appleIndex = order.indexOf("apple");
+  const spicyIndex = order.indexOf("spicy");
+  const lrcRedIndex = order.indexOf("lrcred");
+  if (appleIndex >= 0 && spicyIndex > appleIndex && lrcRedIndex > spicyIndex) {
+    order.splice(lrcRedIndex, 1);
+    order.splice(appleIndex + 1, 0, "lrcred");
+  }
+  const preferredProviders = new Set<LyricsSourceProviderId>(
+    prioritizeApple ? order.filter(provider => provider === "apple" || provider === "lrcred") : []
+  );
+  const pendingPreferred = new Set(preferredProviders);
   let spicyRawPromise: Promise<ExternalLyricsResult | null> | null = null;
   const getSpicyRaw = () => {
     if (!order.includes("spicy") && !order.includes("apple")) return Promise.resolve(null);
@@ -101,20 +112,22 @@ export async function fetchLyricsFromProviders(
   let bestResult: ExternalLyricsResult | null = null;
   let queuedResult: ExternalLyricsResult | null = null;
   let bestScore = 0;
-  let appleTried = false;
+  let bestProvider: LyricsSourceProviderId | null = null;
   for (const provider of order) {
     const result = await (providerRequests.get(provider) ?? startProviderRequest(provider));
-    if (provider === "apple") appleTried = true;
+    pendingPreferred.delete(provider);
     if (result?.status === 503) queuedResult = result;
     if (result?.lyrics) {
       const score = getLyricsTypeScore(result.lyrics);
-      if (score > bestScore || (score > 0 && score === bestScore && prioritizeApple && provider === "apple")) {
+      const preferredTie = preferredProviders.has(provider) && (!bestProvider || !preferredProviders.has(bestProvider));
+      if (score > bestScore || (score > 0 && score === bestScore && preferredTie)) {
         bestResult = result;
         bestScore = score;
+        bestProvider = provider;
       }
     }
     // Quality wins first; configured order breaks ties unless Apple preference is enabled.
-    if (bestScore === 3 && (!prioritizeApple || !appleIsInOrder || appleTried)) return bestResult;
+    if (bestScore === 3 && (pendingPreferred.size === 0 || (bestProvider !== null && preferredProviders.has(bestProvider)))) return bestResult;
   }
   return bestResult ?? queuedResult;
 }
