@@ -1,5 +1,13 @@
 #LyssnaLyricsPage { container-name: lyssna-lyrics-page; }
 
+#LyssnaLyricsPage .ContentBox .ViewControls.LyssnaToolbar {
+  --LL-ToolbarOpacity: 0;
+  opacity: var(--LL-ToolbarOpacity);
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity var(--lyssna-dur-base) var(--lyssna-ease-out), visibility 0s linear var(--lyssna-dur-base);
+}
+
 #LyssnaLyricsPage .ViewControls.LyssnaToolbar {
   --ViewControlSize: 28px;
   container-type: normal;
@@ -129,7 +137,14 @@
     padding-right: 64px;
   }
 }
-#LyssnaLyricsPage:not(.Fullscreen) .ViewControls.LyssnaToolbar:focus-within { visibility: visible; pointer-events: auto; }
+#LyssnaLyricsPage:not(.Fullscreen):hover .ViewControls.LyssnaToolbar,
+#LyssnaLyricsPage .ViewControls.LyssnaToolbar:has(:focus-visible),
+#LyssnaLyricsPage.Fullscreen .MediaBox:is([data-controls="Dim"], [data-controls="Full"]) .ViewControls.LyssnaToolbar {
+  --LL-ToolbarOpacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: opacity var(--lyssna-dur-fast) var(--lyssna-ease-out), visibility 0s;
+}
 #LyssnaLyricsPage.SpicyRenderer .LyricsContainer .CommunityCredits img { object-fit: cover; flex-shrink: 0; }
 #LyssnaLyricsPage .ViewControls.LyssnaToolbar .toolbar-icon :is(g, path, rect) { transform-box: fill-box; transform-origin: center; }
 #LyssnaLyricsPage .LyssnaToolbar .toolbar-icon-translate g { transition: opacity 300ms, scale 300ms ease; }
@@ -163,6 +178,7 @@
 @keyframes lyssna-ll-icon-spin { to { rotate: 360deg; } }
 @keyframes lyssna-ll-icon-corner { from { translate: -1px 1px; } to { translate: 1.5px -1.5px; } }
 @media (prefers-reduced-motion: reduce) {
+  #LyssnaLyricsPage .ViewControls.LyssnaToolbar { transition: none !important; }
   #LyssnaLyricsPage .ViewControls.LyssnaToolbar .ViewControl, #LyssnaLyricsPage .LyssnaToolbar .toolbar-icon * { transition: none !important; animation: none !important; }
   #LyssnaLyricsPage .ViewControls.LyssnaToolbar .ViewControl:is(:hover, :active) { transform: none; }
 }

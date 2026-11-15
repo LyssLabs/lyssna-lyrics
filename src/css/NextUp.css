@@ -55,11 +55,17 @@
   z-index: 9;
 }
 
+/* The pill finishes fading before the next-track card returns to its shared corner. */
+#LyssnaLyricsPage:not(.QueueOpen) .ContentBox > .NextUp.Shown[data-placement="topLeft"][data-toolbar-overlap] {
+  transition: opacity var(--lyssna-dur-base) var(--lyssna-ease-out) var(--lyssna-dur-base), visibility 0s;
+}
+
 #LyssnaLyricsPage:not(.Fullscreen):hover .ContentBox > .NextUp[data-placement="topLeft"][data-toolbar-overlap],
-#LyssnaLyricsPage .ContentBox:has(.ViewControls.LyssnaToolbar:focus-within) > .NextUp[data-placement="topLeft"][data-toolbar-overlap],
+#LyssnaLyricsPage .ContentBox:has(.ViewControls.LyssnaToolbar :focus-visible) > .NextUp[data-placement="topLeft"][data-toolbar-overlap],
 #LyssnaLyricsPage.Fullscreen .ContentBox:has(.MediaBox:is([data-controls="Dim"], [data-controls="Full"])) > .NextUp[data-placement="topLeft"][data-toolbar-overlap] {
   opacity: 0;
   pointer-events: none;
+  transition: opacity var(--lyssna-dur-fast) var(--lyssna-ease-out), visibility 0s;
 }
 
 /* The open queue already starts with this track, so it steps aside with the lyrics. */
@@ -196,7 +202,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   #LyssnaLyricsPage .ContentBox > .NextUp[data-toolbar-overlap] {
-    transition: none;
+    transition: none !important;
   }
 
   #LyssnaLyricsPage .NextUp :is(.NextUpArt, .NextUpText) {
