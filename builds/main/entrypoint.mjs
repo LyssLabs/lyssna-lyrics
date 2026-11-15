@@ -3,6 +3,7 @@ import { readActiveLyricsApp, recordActiveLyricsApp, rememberLyricsAppSwitch, re
 import { channelApp, channelBundleUrl, channelVersionUrl, readChannelVersion } from "../shared/build-paths.mjs";
 import { beginLyricsLoad, finishLyricsLoad } from "../shared/integration.mjs";
 import { getGitHubBundle, importGitHubBundle } from "../shared/github-release.mjs";
+import { CHANNEL_PICKER_STYLES, createChannelPicker } from "../shared/channel-picker.mjs";
 
 const ownsEntrypoint = !globalThis.__LYSSNA_LYRICS_ENTRYPOINT__;
 if (ownsEntrypoint) globalThis.__LYSSNA_LYRICS_ENTRYPOINT__ = true;
@@ -35,17 +36,23 @@ const injectStyles = () => {
     .lyssna-entry-channel-row{align-items:center!important;flex-direction:row!important;gap:16px!important;}
     .lyssna-entry-channel-row>.sl-sp-label-wrap,.lyssna-entry-channel-row>.ll-sp-label-wrap{flex:1;min-width:0;}
     .lyssna-entry-channel-control{display:flex;align-items:center;gap:8px;min-width:0;flex:0 1 auto!important;width:auto!important;justify-content:flex-end;}
-    .lyssna-channel-select-wrap{position:relative;display:inline-flex;align-items:center;min-width:0;max-width:240px;flex:0 1 auto;color:inherit;}
-    select.lyssna-entry-select{appearance:none;-webkit-appearance:none;background-image:none!important;display:block;min-width:128px;max-width:240px;width:100%;height:30px;padding:0 30px 0 12px;text-overflow:ellipsis;}
     .lyssna-channel-select-chevron{position:absolute;right:11px;top:50%;transform:translateY(-50%);width:10px;height:10px;pointer-events:none;opacity:.8;}
     .lyssna-entry-channel-control :is(select,button):focus-visible{outline:2px solid currentColor;outline-offset:3px;}
     #lyssna-lyrics-spotify-channel-group{margin-bottom:24px;}
     #lyssna-lyrics-spotify-channel-group .x-settings-row{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:12px 0;}
     #lyssna-lyrics-spotify-channel-group .x-settings-firstColumn{flex:1;min-width:160px;}
-    #lyssna-lyrics-spotify-channel-group label{display:block;color:var(--text-base,#fff);}
+    #lyssna-lyrics-spotify-channel-group label{display:block;color:var(--text-subdued,#b3b3b3);font-size:14px;}
     #lyssna-lyrics-spotify-channel-group p{margin:4px 0 0;color:var(--text-subdued,#b3b3b3);font-size:13px;}
-    #lyssna-lyrics-spotify-channel-group select,#lyssna-lyrics-spotify-channel-group button{background:var(--background-tinted-base,#292929);color:var(--text-base,#fff);border:1px solid var(--essential-subdued,#727272);border-radius:6px;font:inherit;}
-    #lyssna-lyrics-spotify-channel-group button{padding:7px 12px;}
+    #lyssna-lyrics-spotify-channel-group .x-settings-button{min-height:32px;padding:6px 16px;background:transparent;color:var(--text-base,#fff);border:1px solid var(--essential-subdued,#727272);border-radius:999px;font:inherit;font-size:14px;font-weight:700;line-height:1.3;cursor:pointer;}
+    #lyssna-lyrics-spotify-channel-group .x-settings-button:hover{border-color:var(--essential-base,#fff);}
+    #lyssna-lyrics-spotify-channel-group h2{margin:0 0 8px;color:var(--text-base,#fff);font-size:24px;font-weight:700;}
+    ${CHANNEL_PICKER_STYLES}
+    .lyssna-loader-status{position:fixed;right:24px;bottom:96px;z-index:999999;display:flex;align-items:center;gap:12px;max-width:calc(100vw - 48px);padding:12px 16px;border:1px solid #ffffff26;border-radius:10px;background:#202020;color:#f1f1f1;box-shadow:0 8px 28px #0005;font:13px/1.4 var(--encore-body-font-stack,var(--fallback-fonts,sans-serif));pointer-events:none;}
+    .lyssna-loader-status strong{display:block;font-size:13px;font-weight:600;}
+    .lyssna-loader-status p{margin:2px 0 0;color:#b3b3b3;}
+    .lyssna-loader-spinner{width:18px;height:18px;flex:0 0 auto;border:2px solid #ffffff26;border-top-color:#f1f1f1;border-radius:50%;animation:lyssna-loader-spin .9s linear infinite;}
+    @keyframes lyssna-loader-spin{to{transform:rotate(360deg);}}
+    @media(prefers-reduced-motion:reduce){.lyssna-loader-spinner{animation:none;}}
     .LyssnaLyricsChannelOverlay{
       --channel-panel:#191919;--channel-surface:#222;--channel-text:#f4f4f4;--channel-muted:#aaa;
       --channel-border:rgba(255,255,255,.12);--channel-button:#303030;--channel-button-hover:#3a3a3a;
@@ -257,7 +264,7 @@ const makeBtnRow = () => {
   return row;
 };
 
-const wrapChannelSelect = (select, className = "lyssna-channel-select-wrap") => {
+const wrapChannelSelect = (select, className = "ll-select-wrap") => {
   const wrap = document.createElement("span");
   wrap.className = className;
   const arrow = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -530,6 +537,7 @@ const createChannelSettingsRow = (prefix, rowId) => {
   label.textContent = "Build Channel";
   const description = document.createElement(spotify ? "p" : "span");
   description.className = spotify ? "encore-text-body-small" : `${prefix}-sp-description`;
+  description.id = `${rowId}-description`;
   description.textContent = "Reloads Spotify.";
   labelWrap.append(label, description);
 
@@ -540,22 +548,15 @@ const createChannelSettingsRow = (prefix, rowId) => {
   manage.className = spotify ? "x-settings-button" : `${prefix}-sp-btn`;
   manage.textContent = "Manage";
   manage.addEventListener("click", showChannelManager);
-  const select = document.createElement("select");
-  select.id = label.htmlFor;
-  select.className = `lyssna-entry-select ${spotify ? "x-settings-dropdown" : `${prefix}-sp-select`}`;
-  select.setAttribute("aria-label", "Build Channel");
-  for (const name of Object.keys(channels)) {
-    const option = document.createElement("option");
-    option.value = name;
-    option.textContent = name;
-    option.selected = name === current;
-    select.appendChild(option);
-  }
-  select.addEventListener("change", () => {
-    setCurrentChannel(select.value);
-    window.location.reload();
+  const picker = createChannelPicker({
+    id: label.htmlFor, theme: prefix, options: Object.keys(channels), value: current,
+    onSelect: name => {
+      setCurrentChannel(name);
+      window.location.reload();
+    },
   });
-  control.append(wrapChannelSelect(select), manage);
+  picker.querySelector("button").setAttribute("aria-describedby", description.id);
+  control.append(picker, manage);
   row.append(labelWrap, control);
   return row;
 };
@@ -647,6 +648,45 @@ let loading = false;
 let initializationFailed = false;
 let attempt = 0;
 let notice;
+let startupStatus;
+
+function createLoadingStatus() {
+  const element = document.createElement("div");
+  element.className = "lyssna-loader-status";
+  element.setAttribute("role", "status");
+  element.setAttribute("aria-live", "polite");
+  element.setAttribute("aria-atomic", "true");
+  const spinner = document.createElement("span");
+  spinner.className = "lyssna-loader-spinner";
+  spinner.setAttribute("aria-hidden", "true");
+  const copy = document.createElement("div");
+  const title = document.createElement("strong");
+  title.textContent = "Lyssna Lyrics";
+  const message = document.createElement("p");
+  message.textContent = "Checking for updates…";
+  copy.append(title, message);
+  element.append(spinner, copy);
+  let observer, readyTimeout;
+  const showTimeout = setTimeout(() => document.body.append(element), 400);
+  function stop() {
+    clearTimeout(showTimeout);
+    clearTimeout(readyTimeout);
+    observer?.disconnect();
+    element.remove();
+  }
+  return {
+    stop,
+    setApp(app) { title.textContent = app === "spicy" ? "Spicy Lyrics" : "Lyssna Lyrics"; },
+    update(text) { if (message.textContent !== text) message.textContent = text; },
+    finish(app) {
+      const selector = app === "spicy" ? "#SpicyLyrics_PageButton, #SpicyLyricsPageSvg" : "#LyssnaLyrics_PageButton, #LyssnaLyricsPageSvg";
+      if (document.querySelector(selector)) { stop(); return; }
+      observer = new MutationObserver(() => { if (document.querySelector(selector)) stop(); });
+      observer.observe(document.body, { childList: true, subtree: true });
+      readyTimeout = setTimeout(stop, 12000);
+    },
+  };
+}
 
 function showFailure(error) {
   console.error("[Lyssna Lyrics] Could not load:", error);
@@ -681,9 +721,13 @@ async function load() {
   loading = true;
   beginLyricsLoad();
   notice?.remove();
+  startupStatus?.stop();
+  const status = startupStatus = createLoadingStatus();
+  let loadedApp;
   try {
     const channel = selectChannel();
     const app = channelApp(channel);
+    status.setApp(app);
     if (app !== "lyssna") finishLyricsLoad(false);
     if (app === "spicy" && channel.fixedVersion) {
       throw new Error("Spicy Lyrics serves its current public build through the official loader. Choose the built-in Spicy Lyrics channel without a fixed version.");
@@ -692,11 +736,12 @@ async function load() {
     let githubBundle;
     if (channel.name === "Lyssna" && !version) {
       try {
-        githubBundle = await getGitHubBundle("lyssna-lyrics", value => `lyssna-lyrics@${value}.mjs`);
+        githubBundle = await getGitHubBundle("lyssna-lyrics", value => `lyssna-lyrics@${value}.mjs`, status.update);
         version = githubBundle.version;
       } catch (error) { console.warn("GitHub release unavailable; checking the Lyssna website:", error); }
     }
     if (!version) {
+      status.update("Checking the build version…");
       const response = await fetch(channelVersionUrl(channel), { cache: "no-store", signal: AbortSignal.timeout(5000) });
       if (!response.ok) throw new Error("Version request failed: " + response.status);
       version = await readChannelVersion(channel, response);
@@ -718,6 +763,7 @@ async function load() {
     else window._spicy_lyrics_metadata = { LoadedVersion: version };
     window._lyssna_lyrics_channel = { name: channel.name, fixedVersion: channel.fixedVersion };
     const url = channelBundleUrl(channel, version) + "?attempt=" + attempt++;
+    status.update(githubBundle ? "Starting the plugin…" : "Loading the plugin…");
     try {
       if (githubBundle) await importGitHubBundle(githubBundle);
       else await import(url);
@@ -729,6 +775,7 @@ async function load() {
     recordActiveLyricsApp(Spicetify.LocalStorage, app, version);
     finishLyricsLoad(app === "lyssna");
     finishLyricsAppSwitch(Spicetify.LocalStorage);
+    loadedApp = app;
     if (app === "spicy" && previousApp === "lyssna") {
       void showSpicyStartupDialog(version).catch(error => console.warn("Could not show the Spicy Lyrics startup dialog:", error));
     }
@@ -737,6 +784,8 @@ async function load() {
     showFailure(error);
   } finally {
     loading = false;
+    if (loadedApp) status.finish(loadedApp);
+    else status.stop();
   }
 }
 

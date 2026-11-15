@@ -20,7 +20,7 @@ const TABS = [
   ["Appearance", "Appearance", SettingsIcons.Appearance],
   ["Lyrics", "Lyrics Display", SettingsIcons.Lyrics],
   ["Layout", "Interface", SettingsIcons.Layout],
-  ["Enhancements", "Enhancements", SettingsIcons.General],
+  ["Enhancements", "Enhancements", SettingsIcons.Enhancements],
   ["Sources", "Sources", SettingsIcons.Sources],
   ["Advanced", "Advanced", SettingsIcons.Advanced],
   ["Credits", "Credits", AboutIcon],

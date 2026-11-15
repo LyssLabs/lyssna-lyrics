@@ -3,6 +3,8 @@ const VERSION = /^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/;
 const CACHE_NAME = "lyrics-release-runtimes-v1";
 const manifestKey = repo => `release-loader:${OWNER}/${repo}`;
 const runtimeKey = repo => `https://api.github.com/repos/${OWNER}/${repo}/cached-runtime`;
+const releaseRequests = new Map();
+const refreshRequests = new Map();
 
 function validRelease(repo, release, assetName) {
   if (!release || !VERSION.test(release.version) || release.assetName !== assetName(release.version)) return false;
@@ -14,10 +16,22 @@ function validRelease(repo, release, assetName) {
   } catch { return false; }
 }
 
-export async function fetchGitHubRelease(repo, assetName) {
+function readRelease(repo, assetName) {
   let cached;
   try { cached = JSON.parse(globalThis.Spicetify.LocalStorage.get(manifestKey(repo)) ?? "null"); } catch { /* Fetch a fresh manifest. */ }
-  if (validRelease(repo, cached, assetName) && Date.now() - cached.checkedAt >= 0 && Date.now() - cached.checkedAt < 60_000) return cached;
+  return validRelease(repo, cached, assetName) ? cached : undefined;
+}
+
+export function fetchGitHubRelease(repo, assetName) {
+  const cached = readRelease(repo, assetName);
+  if (cached && Date.now() - cached.checkedAt >= 0 && Date.now() - cached.checkedAt < 60_000) return Promise.resolve(cached);
+  if (releaseRequests.has(repo)) return releaseRequests.get(repo);
+  const request = requestRelease(repo, assetName, cached).finally(() => releaseRequests.delete(repo));
+  releaseRequests.set(repo, request);
+  return request;
+}
+
+async function requestRelease(repo, assetName, cached) {
   try {
     const response = await fetch(`https://api.github.com/repos/${OWNER}/${repo}/releases/latest`, {
       credentials: "omit", cache: "no-store", headers: { Accept: "application/vnd.github+json" }, signal: AbortSignal.timeout(5000),
@@ -32,7 +46,7 @@ export async function fetchGitHubRelease(repo, assetName) {
     try { globalThis.Spicetify.LocalStorage.set(manifestKey(repo), JSON.stringify(release)); } catch { /* Cache storage is optional. */ }
     return release;
   } catch (error) {
-    if (validRelease(repo, cached, assetName)) return cached;
+    if (cached) return cached;
     throw error;
   }
 }
@@ -45,34 +59,79 @@ async function verify(bytes, digest) {
   if (`sha256:${hex}` !== digest.toLowerCase()) throw new Error("Runtime checksum does not match the published release");
 }
 
-export async function getGitHubBundle(repo, assetName) {
+function matchesRelease(cached, release) {
+  return release && cached?.headers.get("x-release-version") === release.version &&
+    cached.headers.get("x-release-digest") === (release.digest ?? "");
+}
+
+async function downloadBundle(repo, release, cache, onProgress) {
+  const urls = [];
+  // Only use the faster mirror when GitHub provides a checksum to authenticate its bytes.
+  if (repo === "lyssna-lyrics" && release.digest) {
+    urls.push(`https://ipixelgalaxy.com/lyssna-plugin/builds/${encodeURIComponent(release.assetName)}`);
+  }
+  // GitHub release assets lack browser CORS headers.
+  urls.push(`https://cors-proxy.spicetify.app/${release.url}`);
+  let failure;
+  for (const [index, url] of urls.entries()) {
+    try {
+      onProgress?.("Downloading the plugin…");
+      const response = await fetch(url, {
+        credentials: "omit", cache: "no-store", signal: AbortSignal.timeout(index < urls.length - 1 ? 4000 : 15000),
+      });
+      if (!response.ok) throw new Error(`Runtime download failed: ${response.status}`);
+      const bytes = await response.arrayBuffer();
+      onProgress?.("Verifying the download…");
+      await verify(bytes, release.digest);
+      try {
+        await cache?.put(runtimeKey(repo), new Response(bytes, { headers: {
+          "content-type": "text/javascript", "x-release-version": release.version, "x-release-digest": release.digest ?? "",
+        } }));
+      } catch { /* A cache write failure must not prevent startup. */ }
+      return { version: release.version, bytes };
+    } catch (error) { failure = error; }
+  }
+  throw failure;
+}
+
+function refreshBundle(repo, assetName, cache, cached) {
+  if (refreshRequests.has(repo)) return;
+  const request = (async () => {
+    const release = await fetchGitHubRelease(repo, assetName);
+    if (!matchesRelease(cached, release)) await downloadBundle(repo, release, cache);
+  })().catch(error => console.warn(`[Lyssna Lyrics] Background update unavailable:`, error))
+    .finally(() => refreshRequests.delete(repo));
+  refreshRequests.set(repo, request);
+}
+
+export async function getGitHubBundle(repo, assetName, onProgress) {
   let cache, cached;
   try {
     cache = await caches.open(CACHE_NAME);
     cached = await cache.match(runtimeKey(repo));
   } catch { /* The loader can run without an offline cache. */ }
   try {
+    const saved = readRelease(repo, assetName);
+    // A newer saved manifest means Update and reload must fetch the advertised version first.
+    if (saved?.digest && matchesRelease(cached, saved)) {
+      try {
+        onProgress?.("Loading the saved plugin…");
+        const bytes = await cached.clone().arrayBuffer();
+        await verify(bytes, saved.digest);
+        refreshBundle(repo, assetName, cache, cached);
+        return { version: saved.version, bytes };
+      } catch { cached = undefined; }
+    }
+    onProgress?.("Checking for updates…");
     const release = await fetchGitHubRelease(repo, assetName);
-    if (cached?.headers.get("x-release-version") === release.version && cached.headers.get("x-release-digest") === (release.digest ?? "")) {
+    if (matchesRelease(cached, release)) {
       try {
         const bytes = await cached.clone().arrayBuffer();
         await verify(bytes, release.digest);
         return { version: release.version, bytes };
       } catch { cached = undefined; }
     }
-    // Release downloads lack browser CORS headers; use Spicetify's existing public proxy.
-    const response = await fetch(`https://cors-proxy.spicetify.app/${release.url}`, {
-      credentials: "omit", cache: "no-store", signal: AbortSignal.timeout(15000),
-    });
-    if (!response.ok) throw new Error(`Runtime download failed: ${response.status}`);
-    const bytes = await response.arrayBuffer();
-    await verify(bytes, release.digest);
-    try {
-      await cache?.put(runtimeKey(repo), new Response(bytes, { headers: {
-        "content-type": "text/javascript", "x-release-version": release.version, "x-release-digest": release.digest ?? "",
-      } }));
-    } catch { /* A cache write failure must not prevent startup. */ }
-    return { version: release.version, bytes };
+    return await downloadBundle(repo, release, cache, onProgress);
   } catch (error) {
     if (!cached || cached.bodyUsed) throw error;
     const version = cached.headers.get("x-release-version");
