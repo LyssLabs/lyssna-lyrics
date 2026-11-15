@@ -47,10 +47,8 @@ const injectStyles = () => {
     #lyssna-lyrics-spotify-channel-group .x-settings-button:hover{border-color:var(--essential-base,#fff);}
     #lyssna-lyrics-spotify-channel-group h2{margin:0 0 8px;color:var(--text-base,#fff);font-size:24px;font-weight:700;}
     ${CHANNEL_PICKER_STYLES}
-    .lyssna-loader-status{position:fixed;right:24px;bottom:96px;z-index:999999;display:flex;align-items:center;gap:12px;max-width:calc(100vw - 48px);padding:12px 16px;border:1px solid #ffffff26;border-radius:10px;background:#202020;color:#f1f1f1;box-shadow:0 8px 28px #0005;font:13px/1.4 var(--encore-body-font-stack,var(--fallback-fonts,sans-serif));pointer-events:none;}
-    .lyssna-loader-status strong{display:block;font-size:13px;font-weight:600;}
-    .lyssna-loader-status p{margin:2px 0 0;color:#b3b3b3;}
-    .lyssna-loader-spinner{width:18px;height:18px;flex:0 0 auto;border:2px solid #ffffff26;border-top-color:#f1f1f1;border-radius:50%;animation:lyssna-loader-spin .9s linear infinite;}
+    .lyssna-loader-button{display:inline-flex!important;align-items:center;justify-content:center;opacity:1!important;cursor:progress;}
+    .lyssna-loader-spinner{width:20px;height:20px;flex:0 0 auto;animation:lyssna-loader-spin .9s linear infinite;}
     @keyframes lyssna-loader-spin{to{transform:rotate(360deg);}}
     @media(prefers-reduced-motion:reduce){.lyssna-loader-spinner{animation:none;}}
     .LyssnaLyricsChannelOverlay{
@@ -651,33 +649,33 @@ let notice;
 let startupStatus;
 
 function createLoadingStatus() {
-  const element = document.createElement("div");
-  element.className = "lyssna-loader-status";
-  element.setAttribute("role", "status");
-  element.setAttribute("aria-live", "polite");
-  element.setAttribute("aria-atomic", "true");
-  const spinner = document.createElement("span");
-  spinner.className = "lyssna-loader-spinner";
-  spinner.setAttribute("aria-hidden", "true");
-  const copy = document.createElement("div");
-  const title = document.createElement("strong");
-  title.textContent = "Lyssna Lyrics";
-  const message = document.createElement("p");
-  message.textContent = "Checking for updates…";
-  copy.append(title, message);
-  element.append(spinner, copy);
-  let observer, readyTimeout;
-  const showTimeout = setTimeout(() => document.body.append(element), 400);
+  let button, observer, readyTimeout;
+  let appName = "Lyssna Lyrics";
+  const showTimeout = setTimeout(() => {
+    if (!Spicetify.Playbar?.Button) return;
+    const icon = '<svg class="lyssna-loader-spinner" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9" opacity=".25"/><path d="M12 3a9 9 0 0 1 9 9" stroke-linecap="round"/></svg>';
+    button = new Spicetify.Playbar.Button(`Loading ${appName}`, icon, undefined, true, false, false);
+    button.element.id = "LyssnaLyrics_LoadingButton";
+    button.element.classList.add("lyssna-loader-button");
+    button.element.setAttribute("aria-label", `Loading ${appName}`);
+    button.element.setAttribute("aria-busy", "true");
+    button.register();
+  }, 400);
   function stop() {
     clearTimeout(showTimeout);
     clearTimeout(readyTimeout);
     observer?.disconnect();
-    element.remove();
+    button?.deregister();
   }
   return {
     stop,
-    setApp(app) { title.textContent = app === "spicy" ? "Spicy Lyrics" : "Lyssna Lyrics"; },
-    update(text) { if (message.textContent !== text) message.textContent = text; },
+    setApp(app) {
+      appName = app === "spicy" ? "Spicy Lyrics" : "Lyssna Lyrics";
+      if (button) {
+        button.label = `Loading ${appName}`;
+        button.element.setAttribute("aria-label", button.label);
+      }
+    },
     finish(app) {
       const selector = app === "spicy" ? "#SpicyLyrics_PageButton, #SpicyLyricsPageSvg" : "#LyssnaLyrics_PageButton, #LyssnaLyricsPageSvg";
       if (document.querySelector(selector)) { stop(); return; }
@@ -736,12 +734,11 @@ async function load() {
     let githubBundle;
     if (channel.name === "Lyssna" && !version) {
       try {
-        githubBundle = await getGitHubBundle("lyssna-lyrics", value => `lyssna-lyrics@${value}.mjs`, status.update);
+        githubBundle = await getGitHubBundle("lyssna-lyrics", value => `lyssna-lyrics@${value}.mjs`);
         version = githubBundle.version;
       } catch (error) { console.warn("GitHub release unavailable; checking the Lyssna website:", error); }
     }
     if (!version) {
-      status.update("Checking the build version…");
       const response = await fetch(channelVersionUrl(channel), { cache: "no-store", signal: AbortSignal.timeout(5000) });
       if (!response.ok) throw new Error("Version request failed: " + response.status);
       version = await readChannelVersion(channel, response);
@@ -763,7 +760,6 @@ async function load() {
     else window._spicy_lyrics_metadata = { LoadedVersion: version };
     window._lyssna_lyrics_channel = { name: channel.name, fixedVersion: channel.fixedVersion };
     const url = channelBundleUrl(channel, version) + "?attempt=" + attempt++;
-    status.update(githubBundle ? "Starting the plugin…" : "Loading the plugin…");
     try {
       if (githubBundle) await importGitHubBundle(githubBundle);
       else await import(url);
