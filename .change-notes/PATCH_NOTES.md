@@ -1,3 +1,40 @@
+## v0.1.3
+
+- **Spotify+ enhancements**
+  Added an Enhancements tab with profile-menu hiding, Friend Activity, Spotify lyrics and Miniplayer button hiding, classic device and share menus, Disable Peek, playlist-folder selection and playlist cover art. F5 refresh is built in. Existing Spotify+ preferences and folder choices are imported, and Spotify+ is credited in Credits.
+
+- **Keep Spotify+ installed**
+  Spotify+ 0.3.6 automatically stands down with integrated Lyssna builds, leaving its menu, tools, styles and feature handlers unloaded. It resumes with Spicy Lyrics or builds without Enhancements. Lyssna shows one integration notice. Existing Spotify+ users need to update to 0.3.6 once to receive this support and its automatic launcher.
+
+- **Automatic stable updates**
+  The Lyssna channel now loads the latest published GitHub release when Spotify starts. Spotify+ also follows its published releases after the launcher update. Downloaded builds are checked against GitHub's checksum when available, with a cached runtime fallback if a later download fails. Custom branches and pinned versions keep their selected source.
+
+- **Faster startup**
+  Saved, verified builds start without waiting for GitHub, while update checks and downloads run in the background. New downloads try the faster Lyssna mirror first and must match GitHub's checksum. During slower starts, a spinner appears in the lyrics button's place until the plugin is ready.
+
+- **lrc.red lyrics**
+  Added lrc.red to Manage Sources, with an independent catalog lookup for timed lyrics, including word sync when available. Missing songwriter credits are filled from enabled sources in priority order without replacing the selected lyrics. Word-synced lrc.red results are labelled Apple Music (via lrc.red), with a clickable credit and an Open lrc.red link in Manage Sources.
+
+- **Source priority**
+  Word sync wins over line sync, then plain lyrics; your source order decides ties. Putting Spicy Lyrics first now keeps its community word sync instead of being overridden by the Apple Music preference. Removed that conflicting preference toggle. The new default order is Apple Music, lrc.red, Spicy Lyrics, Musixmatch, Spotify, LRCLIB and Netease. Saved custom orders are retained.
+
+- **Build channels and switching**
+  Fixed loading the official Spicy Lyrics build. Its Advanced tab now includes the channel selector, with a fallback at the top of Spotify settings instead of an extra profile-menu entry. Switching plugins while viewing lyrics opens the destination plugin's lyrics page. Saved routes are updated before switching so Spotify+ does not restore the wrong view when it resumes. The Spicy switch toast is now a dialog.
+
+- **Branch manager and UI polish**
+  Reworked the fallback branch manager with wider cards, compact host details, Back navigation and a dimmed backdrop. It uses neutral Lyssna styling, or a logo-free purple tint on the Spicy side. Channel controls and dropdown menus match Spotify settings or Spicy's Advanced tab. The settings close button has a larger click area, and Enhancements has a magic wand icon. Now Playing lyric controls use Lyssna's icons, and the Discord username setting has shorter wording.
+
+### Additional changes
+
+- **Startup loading indicator**
+  Replaced the separate loading text box with a spinner in the playback bar's lyrics-button position. The normal lyrics button takes its place once the plugin is ready. Fast starts skip the indicator, and reduced-motion preferences are respected.
+
+- **Build-channel dropdowns**
+  Replaced the white native menu in Spicy Lyrics with a purple dropdown matching its other settings, including a checkmark for the selected channel. The fallback channel controls in Spotify settings use Spotify's colors and button styling. Dropdowns support keyboard navigation and Escape to close.
+
+- **Settings buttons**
+  Enlarged the settings close button's click area to 44 × 44 pixels without changing the icon or layout. The Enhancements tab now uses a magic wand icon.
+
 ## v0.1.2
 
 - **Settings cleanup**
