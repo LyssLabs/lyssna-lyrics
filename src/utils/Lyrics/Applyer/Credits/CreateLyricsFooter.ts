@@ -30,9 +30,8 @@ export function PlaceLyricsFooter(
 ): void {
   footer.classList.toggle("SpaceGravityFooter", spaceGravityMode);
   const page = lyricsContent?.closest<HTMLElement>("#LyssnaLyricsPage");
-  const cardMode = page?.classList.contains("CardMode") ?? false;
 
-  if (spaceGravityMode || cardMode) {
+  if (spaceGravityMode) {
     footer.classList.remove("PinnedLyricsFooter");
     footer.dataset.pinnedFooterMode = "Off";
     getFooterState(footer).pinnedFooterLayer = null;
@@ -58,7 +57,7 @@ export function PlaceLyricsFooter(
     : page?.classList.contains("PinnedFooterMode_NoWriters")
       ? "NoWriters"
       : "Off";
-  const pinned = Boolean(!cardMode && mode === "Full" && pinnedFooterLayer);
+  const pinned = Boolean(mode === "Full" && pinnedFooterLayer);
   footer.dataset.pinnedFooterMode = mode;
   if (mode === "NoWriters" && pinnedFooterLayer) {
     noWriterPinnedLayers.set(footer, pinnedFooterLayer);

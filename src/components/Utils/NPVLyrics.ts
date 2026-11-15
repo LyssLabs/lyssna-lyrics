@@ -530,6 +530,25 @@ function renderCardShell(npv: HTMLElement): boolean {
   return true;
 }
 
+function watchPinnedFooter(): void {
+  const card = cardEl;
+  const footer = cardBodyEl?.querySelector<HTMLElement>(".LyricsPinnedFooter");
+  if (!card || !footer || !cardMaid) return;
+  const observer = new ResizeObserver(entries => {
+    if (!card.isConnected) return;
+    const entry = entries.find(item => item.target === footer);
+    if (!entry) return;
+    const height = entry.borderBoxSize[0]?.blockSize ?? footer.offsetHeight;
+    const space = `${height > 0 ? Math.ceil(height) + 32 : 0}px`;
+    if (card.style.getPropertyValue("--LL-NPVFooterSpace") !== space) {
+      card.style.setProperty("--LL-NPVFooterSpace", space);
+    }
+  });
+  observer.observe(footer, { box: "border-box" });
+  cardMaid.Give(observer, "pinned-footer-size");
+  cardMaid.Give(() => card.style.removeProperty("--LL-NPVFooterSpace"), "pinned-footer-space");
+}
+
 async function reconcile(): Promise<void> {
   // Health check: Spotify's React may wipe the injected card at any time.
   // Never leave PageView.IsOpened pointing at a detached PageContainer.
@@ -587,6 +606,8 @@ async function reconcile(): Promise<void> {
     // would let a later teardown destroy that other page.
     if (!PageView.IsOpened || !body.contains(PageContainer)) {
       cardOwnsPage = false;
+    } else {
+      watchPinnedFooter();
     }
   } else if (desired === "SHELL" && cardOwnsPage) {
     // Keep the global page, SimpleBar, and virtualizer mounted while the

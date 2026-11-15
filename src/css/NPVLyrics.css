@@ -15,7 +15,7 @@
   /* Same recipe as the other NPV sections (default.css): white tint + blur. */
   background-color: var(--background-tinted-base, rgba(255, 255, 255, 0.07));
   backdrop-filter: blur(12px);
-  max-height: 350px;
+  max-height: calc(350px + var(--LL-NPVFooterSpace, 0px));
 }
 
 #LyssnaLyricsNPVCard .CardHeader {
@@ -148,7 +148,7 @@
    where the body is meant to flex.) */
 #LyssnaLyricsNPVCard .CardBody {
   position: relative;
-  height: 255px;
+  height: calc(255px + var(--LL-NPVFooterSpace, 0px));
   flex-shrink: 0;
 }
 
@@ -495,6 +495,7 @@ html.LyssnaLyrics_NPVMorph::view-transition-new(lyssna-npv-card) {
 }
 
 #LyssnaLyricsNPVCard #LyssnaLyricsPage.CardMode .LyricsContainer .LyricsContent {
+  height: calc(100% - var(--LL-NPVFooterSpace, 0px));
   --DefaultLyricsSize: calc(clamp(1.85rem, calc(1cqw * 6), 2.8rem) * var(--LL-LyricsScale, 1));
   /* Tighter fade than the default mask (solid only from 64px down), so the
      small top padding below still leaves the first line readable. */
@@ -511,6 +512,22 @@ html.LyssnaLyrics_NPVMorph::view-transition-new(lyssna-npv-card) {
 
 #LyssnaLyricsNPVCard #LyssnaLyricsPage.CardMode .LyricsContent > .simplebar-track.simplebar-vertical {
   bottom: 16px;
+}
+
+#LyssnaLyricsNPVCard #LyssnaLyricsPage.CardMode .LyricsContainer {
+  justify-content: flex-start;
+}
+
+#LyssnaLyricsNPVCard #LyssnaLyricsPage.CardMode:is(.PinnedFooterMode_NoWriters, .PinnedFooterMode_Full):not(.SpaceGravityMode) .LyricsPinnedFooter {
+  position: absolute;
+  z-index: 10;
+  left: var(--LyricsLeftSidePadding);
+  right: var(--LyricsRightSidePadding);
+  bottom: 16px;
+  padding: 0;
+  display: block;
+  font-size: calc(clamp(1.85rem, 6cqw, 2.8rem) * var(--LL-LyricsScale, 1));
+  font-weight: 700;
 }
 
 /* Pull the lyrics up to the top of the card (default is margin-top: 25cqh);
