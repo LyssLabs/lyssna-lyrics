@@ -22,14 +22,15 @@ export function recordActiveLyricsApp(storage, app, version) {
 export function rememberLyricsAppSwitch(storage, history, nextApp) {
   const previousApp = readActiveLyricsApp(storage)?.app;
   try {
-    if (!previousApp || previousApp === nextApp || history.location?.pathname !== LYRICS_ROUTES[previousApp]) {
-      storage.set(LYRICS_HANDOFF_KEY, "null");
-      return;
-    }
-    storage.set(LYRICS_HANDOFF_KEY, JSON.stringify({ fromApp: previousApp, app: nextApp, createdAt: Date.now() }));
+    const location = history.location;
+    const switchingLyrics = previousApp && previousApp !== nextApp && location?.pathname === LYRICS_ROUTES[previousApp];
+    storage.set(LYRICS_HANDOFF_KEY, switchingLyrics
+      ? JSON.stringify({ fromApp: previousApp, app: nextApp, createdAt: Date.now() }) : "null");
     // Spotify+ reads this before our network-loaded bundle starts. Give it the destination route before reload.
-    if (storage.get("spotify-plus.last-location") != null) {
-      storage.set("spotify-plus.last-location", JSON.stringify({ pathname: LYRICS_ROUTES[nextApp], search: "", hash: "" }));
+    if (location?.pathname && storage.get("spotify-plus.last-location") != null) {
+      storage.set("spotify-plus.last-location", JSON.stringify(switchingLyrics
+        ? { pathname: LYRICS_ROUTES[nextApp], search: "", hash: "" }
+        : { pathname: location.pathname, search: location.search ?? "", hash: location.hash ?? "" }));
     }
   } catch (error) {
     console.warn("Lyssna Lyrics could not preserve the lyrics view:", error);
