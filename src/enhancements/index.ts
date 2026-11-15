@@ -6,6 +6,10 @@ import { startPlaylistMenuController } from "./features/playlistMenu";
 import { startDisablePeekController } from "./features/disablePeek";
 import { startDevicePickerController } from "./features/devicePicker";
 import { startShareMenuController } from "./features/shareMenu";
+import { declareLyssnaEnhancements, standaloneOwnsEnhancements, SPOTIFY_PLUS_RUNTIME_EVENT } from "../../builds/shared/integration.mjs";
+import { offerEnhancementsIntegrationNotice } from "./IntegrationNotice.tsx";
+
+declareLyssnaEnhancements();
 
 let started = false;
 export function startEnhancements() {
@@ -25,8 +29,19 @@ export function startEnhancements() {
   $removeSpotifyLyricsButton.listen(hidden => {
     if (getSettings().hideLyricsButton !== hidden) setSetting("hideLyricsButton", hidden);
   });
-  // The standalone extension owns these handlers while installed; changes are forwarded by config.ts.
-  if (hasStandaloneSpotifyPlus()) return;
+  let active = false;
+  const activate = () => {
+    if (active || (hasStandaloneSpotifyPlus() && standaloneOwnsEnhancements())) return;
+    active = true;
+    window.removeEventListener(SPOTIFY_PLUS_RUNTIME_EVENT, activate);
+    startIntegratedFeatures();
+    offerEnhancementsIntegrationNotice();
+  };
+  window.addEventListener(SPOTIFY_PLUS_RUNTIME_EVENT, activate);
+  activate();
+}
+
+function startIntegratedFeatures() {
   const updateHiding = () => {
     const settings = getSettings();
     for (const key of ["hideFriendActivityButton", "hideLyricsButton", "hideMiniplayerButton"] as const) {

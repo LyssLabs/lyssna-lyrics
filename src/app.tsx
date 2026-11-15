@@ -94,7 +94,6 @@ import "./css/PortraitFullscreen.css";
 import "./css/LyssnaToolbar.css";
 import "./css/lyssna-settings.css";
 import { startEnhancements } from "./enhancements";
-import { offerSpotifyPlusMigration } from "./enhancements/SpotifyPlusMigrationPrompt.tsx";
 import { showUpdatedDialog } from "./components/ReactComponents/UpdateDialog.tsx";
 import { recordLyssnaStartup } from "./utils/version/VersionState.ts";
 import { initDialogAppearance } from "./utils/dialogAppearance.ts";
@@ -293,7 +292,6 @@ async function main() {
     toast("Switched to Lyssna Lyrics", { description: `Running Lyssna Lyrics ${version}. Spicy Lyrics keeps its own version history.`, duration: 5000 });
   }
   delete window._lyssna_lyrics_metadata;
-  offerSpotifyPlusMigration();
 
   LoadFonts();
   ApplyFontPixel();

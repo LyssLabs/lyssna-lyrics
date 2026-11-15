@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useStore } from "@nanostores/react";
 import { toast } from "sonner";
-import { $enhancements, getCachedPlaylistFolders, setSetting, standaloneSpotifyPlusFiles, type EnhancementKey, type PlaylistFolderEntry } from "../../../enhancements/config";
+import { $enhancements, getCachedPlaylistFolders, setSetting, type EnhancementKey, type PlaylistFolderEntry } from "../../../enhancements/config";
 import { refreshPlaylistFolderCache } from "../../../enhancements/playlistFolders";
 import { matches, Row, SettingsSection, Toggle } from "./components.tsx";
 
@@ -47,22 +47,7 @@ export default function EnhancementsSection({ query, sectionFilter }: { query: s
     finally { setScanning(false); }
   };
   const showFolders = matches(query, "Playlist folders", "Scan library folders Add to playlist");
-  const standalone = standaloneSpotifyPlusFiles();
   return <>
-    {!!standalone.length && matches(query, "Standalone Spotify+", "Uninstall integrated enhancements") && <SettingsSection title="Standalone Spotify+">
-      <Row label="Remove standalone Spotify+" description="Run this command in a terminal. Your imported enhancement settings stay in Lyssna Lyrics.">
-        <button className="ll-sp-btn" type="button" onClick={() => {
-          const command = `spicetify config extensions ${standalone.map(file => `${file}-`).join(" ")}\nspicetify apply`;
-          void (async () => {
-            try {
-              if (Spicetify.Platform.ClipboardAPI?.copy) await Spicetify.Platform.ClipboardAPI.copy(command);
-              else await navigator.clipboard.writeText(command);
-              toast.success("Uninstall command copied.");
-            } catch { toast.error("Could not copy the command."); }
-          })();
-        }}>Copy uninstall command</button>
-      </Row>
-    </SettingsSection>}
     {groups.map(group => {
       const visible = group.settings.filter(setting => matches(query, setting.label, setting.description ?? ""));
       const playlistGroup = group.title === "Playlists";

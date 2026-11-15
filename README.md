@@ -28,7 +28,7 @@ This is iPixelGalaxy's fork of [Spicy Lyrics](https://github.com/Spikerko/spicy-
 | **Work with TTML** | Load lyrics temporarily, for the session, or persistently. Browse your local TTML database and apply a reviewer profile while checking a file. |
 | **Choose your sources** | Reorder and enable lyric sources, choose the toolbar's cache action, and keep provider and contributor credits beside the lyrics. |
 
-Open the gear in the lyrics toolbar for **Appearance, Lyrics, Effects, Layout, Sources, Advanced, and Credits**. The toolbar moves into a vertical strip when the lyrics pane gets narrow.
+Open the gear in the lyrics toolbar for **Appearance, Lyrics, Layout, Enhancements, Sources, Advanced, and Credits**. The toolbar moves into a vertical strip when the lyrics pane gets narrow.
 
 ## Install
 
@@ -90,6 +90,8 @@ The new installer handles the old Pixel extension entry. Lyssna and Spicy Lyrics
 Compatible preferences remain shared by default. Enable **Don't sync settings to Spicy Lyrics counterparts** under **Advanced** to keep your Lyssna setup independent. Turning it off resumes sharing compatible preferences.
 
 In **Settings → Advanced → Build Channel**, **Lyssna** is the default. **Spicy Lyrics** loads the official plugin when it isn't already enabled separately. You can also manage custom branches or pin a version. The entrypoint and the in-plugin picker use the same Lyssna channel selection.
+
+The Lyssna channel follows the latest published GitHub release automatically when Spotify starts. Custom branches and pinned versions keep their selected source. Integrated builds include Spotify+ enhancements and let the updated standalone Spotify+ stay installed without loading duplicate menus or handlers.
 
 Lyssna's release series begins at **0.1.0**. Historical **100.10.x** Pixel Edition versions come before the new series in update checks and patch notes.
 

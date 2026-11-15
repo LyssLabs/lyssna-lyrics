@@ -1,9 +1,12 @@
 import { BUILT_IN_CHANNELS as CHANNEL_MAP, CHANNELS_CHANGED_EVENT, DEFAULT_CHANNEL, DEFAULT_BUILD_HOST, getChannelMap as getFullChannelMap, getCurrentChannel, isAllowedBuildHost, isReservedChannelName, readCustomChannels as getCustomChannels, saveCustomChannels, selectedChannel as selectChannel, setCurrentChannel } from "../shared/channels.mjs";
 import { readActiveLyricsApp, recordActiveLyricsApp, rememberLyricsAppSwitch, restoreLyricsAppView, finishLyricsAppSwitch } from "../shared/app-state.mjs";
 import { channelApp, channelBundleUrl, channelVersionUrl, readChannelVersion } from "../shared/build-paths.mjs";
+import { beginLyricsLoad, finishLyricsLoad } from "../shared/integration.mjs";
+import { getGitHubBundle, importGitHubBundle } from "../shared/github-release.mjs";
 
 const ownsEntrypoint = !globalThis.__LYSSNA_LYRICS_ENTRYPOINT__;
 if (ownsEntrypoint) globalThis.__LYSSNA_LYRICS_ENTRYPOINT__ = true;
+if (ownsEntrypoint) beginLyricsLoad();
 
 const BUILT_IN_CHANNELS = Object.keys(CHANNEL_MAP);
 const DEFAULT_API_HOST = DEFAULT_BUILD_HOST;
@@ -676,14 +679,23 @@ function showFailure(error) {
 async function load() {
   if (loading || initializationFailed) return;
   loading = true;
+  beginLyricsLoad();
   notice?.remove();
   try {
     const channel = selectChannel();
     const app = channelApp(channel);
+    if (app !== "lyssna") finishLyricsLoad(false);
     if (app === "spicy" && channel.fixedVersion) {
       throw new Error("Spicy Lyrics serves its current public build through the official loader. Choose the built-in Spicy Lyrics channel without a fixed version.");
     }
     let version = channel.fixedVersion;
+    let githubBundle;
+    if (channel.name === "Lyssna" && !version) {
+      try {
+        githubBundle = await getGitHubBundle("lyssna-lyrics", value => `lyssna-lyrics@${value}.mjs`);
+        version = githubBundle.version;
+      } catch (error) { console.warn("GitHub release unavailable; checking the Lyssna website:", error); }
+    }
     if (!version) {
       const response = await fetch(channelVersionUrl(channel), { cache: "no-store", signal: AbortSignal.timeout(5000) });
       if (!response.ok) throw new Error("Version request failed: " + response.status);
@@ -707,18 +719,21 @@ async function load() {
     window._lyssna_lyrics_channel = { name: channel.name, fixedVersion: channel.fixedVersion };
     const url = channelBundleUrl(channel, version) + "?attempt=" + attempt++;
     try {
-      await import(url);
+      if (githubBundle) await importGitHubBundle(githubBundle);
+      else await import(url);
     } catch (error) {
       // Retrying a bundle that already ran can duplicate its event listeners.
       initializationFailed = !(error instanceof TypeError && /dynamically imported module|importing a module script failed/i.test(error.message));
       throw error;
     }
     recordActiveLyricsApp(Spicetify.LocalStorage, app, version);
+    finishLyricsLoad(app === "lyssna");
     finishLyricsAppSwitch(Spicetify.LocalStorage);
     if (app === "spicy" && previousApp === "lyssna") {
       void showSpicyStartupDialog(version).catch(error => console.warn("Could not show the Spicy Lyrics startup dialog:", error));
     }
   } catch (error) {
+    finishLyricsLoad(false);
     showFailure(error);
   } finally {
     loading = false;

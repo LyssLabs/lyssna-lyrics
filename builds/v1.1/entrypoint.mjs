@@ -1,4 +1,9 @@
-// Keep existing Pixel installations on the same fork and branch as this entrypoint.
-const entrypoint = new URL("https://ipixelgalaxy.com/lyssna-plugin/entrypoint.mjs");
-entrypoint.searchParams.set("v", String(Date.now()));
-import(entrypoint.href);
+const integration = globalThis.__LYSSNA_LYRICS_INTEGRATION__ ??= { protocol: 1, phase: "loading", hasEnhancements: false };
+window.dispatchEvent(new Event("lyssna-lyrics:integration-state"));
+import(`https://ipixelgalaxy.com/lyssna-plugin/entrypoint.mjs?v=${Date.now()}`).catch(error => {
+  if (integration.phase === "loading") {
+    integration.phase = "standalone";
+    window.dispatchEvent(new Event("lyssna-lyrics:integration-state"));
+  }
+  console.error("[Lyssna Lyrics] Could not load the launcher:", error);
+});
