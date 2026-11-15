@@ -1,6 +1,6 @@
 import { BUILT_IN_CHANNELS as CHANNEL_MAP, CHANNELS_CHANGED_EVENT, DEFAULT_CHANNEL, DEFAULT_BUILD_HOST, getChannelMap as getFullChannelMap, getCurrentChannel, isAllowedBuildHost, isReservedChannelName, readCustomChannels as getCustomChannels, saveCustomChannels, selectedChannel as selectChannel, setCurrentChannel } from "../shared/channels.mjs";
 import { readActiveLyricsApp, recordActiveLyricsApp } from "../shared/app-state.mjs";
-import { channelApp, channelBundleUrl, channelVersionUrl } from "../shared/build-paths.mjs";
+import { channelApp, channelBundleUrl, channelVersionUrl, readChannelVersion } from "../shared/build-paths.mjs";
 
 const ownsEntrypoint = !globalThis.__LYSSNA_LYRICS_ENTRYPOINT__;
 if (ownsEntrypoint) globalThis.__LYSSNA_LYRICS_ENTRYPOINT__ = true;
@@ -573,14 +573,17 @@ async function load() {
   notice?.remove();
   try {
     const channel = selectChannel();
+    const app = channelApp(channel);
+    if (app === "spicy" && channel.fixedVersion) {
+      throw new Error("Spicy Lyrics serves its current public build through the official loader. Choose the built-in Spicy Lyrics channel without a fixed version.");
+    }
     let version = channel.fixedVersion;
     if (!version) {
       const response = await fetch(channelVersionUrl(channel), { cache: "no-store", signal: AbortSignal.timeout(5000) });
       if (!response.ok) throw new Error("Version request failed: " + response.status);
-      version = (await response.text()).trim();
+      version = await readChannelVersion(channel, response);
     }
-    if (!VERSION_PATTERN.test(version)) throw new Error("Invalid build version");
-    const app = channelApp(channel);
+    if (typeof version !== "string" || !VERSION_PATTERN.test(version)) throw new Error("Invalid build version");
     const configured = Spicetify.Config?.extensions ?? [];
     const enabled = Array.isArray(configured) ? configured : String(configured).split("|");
     const separateSpicy = enabled.some(name => /^spicy-lyrics\.(?:mjs|js)$/.test(name.trim()));

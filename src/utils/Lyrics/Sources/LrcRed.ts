@@ -33,7 +33,8 @@ export async function fetchLrcRedLyrics(track: TrackLyricsInfo): Promise<Externa
     const ttml = await response.text();
     if (ttml.length > 2_000_000) return null;
     const lyrics = parseTTMLToLyrics(ttml);
-    return createProviderResult({ ...lyrics, source: "lrcred", sourceDisplayName: "lrc.red" }, "lrcred");
+    // The public catalog does not expose the original sync provider.
+    return createProviderResult({ ...lyrics, source: "unknown", sourceDisplayName: "Unknown source", source_via: "lrc-red" }, "lrcred");
   } catch {
     return null;
   }

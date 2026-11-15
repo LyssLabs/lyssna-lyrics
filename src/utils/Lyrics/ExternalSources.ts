@@ -2,7 +2,8 @@ import Defaults from "../../components/Global/Defaults.ts";
 import type { LyricsSourceProviderId } from "./LyricsSourcePreferences.ts";
 import type { ExternalLyricsResult } from "./Sources/Types.ts";
 import { getTrackLyricsInfo } from "./Sources/Track.ts";
-import { fetchLyssnaLyricsRaw, fetchSpicyLyrics, fetchAppleMusicLyrics } from "./Sources/Spicy.ts";
+import { fetchLyssnaLyricsRaw, fetchSpicyLyrics, fetchAppleMusicLyrics, fetchSpicySongWriters } from "./Sources/Spicy.ts";
+import { applySongWriters, tryGetSongWriters } from "./Sources/Shared.ts";
 import { fetchMusixmatchLyrics } from "./Sources/Musixmatch.ts";
 import { fetchSpotifyLyrics } from "./Sources/Spotify.ts";
 import { fetchLRCLIBLyrics } from "./Sources/Lrclib.ts";
@@ -37,14 +38,19 @@ type FetchLyricsFromProvidersOptions = {
   onFirstLyrics?: (lyrics: any) => void;
 };
 
-function withProviderTimeout<T>(
+async function withProviderTimeout<T>(
   promise: Promise<T | null>,
   ms: number
 ): Promise<T | null> {
-  return Promise.race([
-    promise,
-    new Promise<null>((resolve) => setTimeout(() => resolve(null), ms)),
-  ]);
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      promise,
+      new Promise<null>((resolve) => { timer = setTimeout(() => resolve(null), ms); }),
+    ]);
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 export async function fetchLyricsFromProviders(
@@ -57,6 +63,7 @@ export async function fetchLyricsFromProviders(
     return null;
   }
 
+  const writerOrder = [...order];
   const prioritizeApple = Defaults.PrioritizeAppleMusicQuality;
   order = [...order];
   const appleIndex = order.indexOf("apple");
@@ -95,11 +102,36 @@ export async function fetchLyricsFromProviders(
     LyricsSourceProviderId,
     Promise<ExternalLyricsResult | null>
   >();
+  const getProviderRequest = (provider: LyricsSourceProviderId) => {
+    let request = providerRequests.get(provider);
+    if (!request) {
+      request = startProviderRequest(provider).catch(() => null);
+      providerRequests.set(provider, request);
+    }
+    return request;
+  };
+
+  const finishResult = async (result: ExternalLyricsResult | null) => {
+    if (result?.lyrics?.fetchProvider !== "lrcred" || tryGetSongWriters(result.lyrics)) return result;
+    // Reuse enabled requests without delaying missing-credit results indefinitely.
+    const writerRequests = writerOrder.filter(provider => provider !== "lrcred").map(provider =>
+      withProviderTimeout(
+        provider === "spicy" || provider === "apple"
+          ? fetchSpicySongWriters(getSpicyRaw())
+          : getProviderRequest(provider).then(value => tryGetSongWriters(value?.lyrics)),
+        FALLBACK_PROVIDER_TIMEOUT_MS
+      ).catch(() => null)
+    );
+    for (const request of writerRequests) {
+      const writers = await request;
+      if (writers?.length) return { ...result, lyrics: applySongWriters(result.lyrics, writers) };
+    }
+    return result;
+  };
   let firstLyricsDelivered = false;
   for (const provider of order) {
     if (provider === "lrcred") continue;
-    const request = startProviderRequest(provider).catch(() => null);
-    providerRequests.set(provider, request);
+    const request = getProviderRequest(provider);
     void request
       .then((result) => {
         if (firstLyricsDelivered || !result?.lyrics) return;
@@ -114,7 +146,7 @@ export async function fetchLyricsFromProviders(
   let bestScore = 0;
   let bestProvider: LyricsSourceProviderId | null = null;
   for (const provider of order) {
-    const result = await (providerRequests.get(provider) ?? startProviderRequest(provider));
+    const result = await getProviderRequest(provider);
     pendingPreferred.delete(provider);
     if (result?.status === 503) queuedResult = result;
     if (result?.lyrics) {
@@ -127,8 +159,8 @@ export async function fetchLyricsFromProviders(
       }
     }
     // Quality wins first; configured order breaks ties unless Apple preference is enabled.
-    if (bestScore === 3 && (pendingPreferred.size === 0 || (bestProvider !== null && preferredProviders.has(bestProvider)))) return bestResult;
+    if (bestScore === 3 && (pendingPreferred.size === 0 || (bestProvider !== null && preferredProviders.has(bestProvider)))) return finishResult(bestResult);
   }
-  return bestResult ?? queuedResult;
+  return finishResult(bestResult ?? queuedResult);
 }
 

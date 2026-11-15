@@ -10,11 +10,23 @@ export function channelApp(channel) {
 const hostUrl = host => `https://${host.replace(/\/+$/, "")}`;
 
 export function channelVersionUrl(channel) {
-  return `${hostUrl(channel.apiHost)}${channelApp(channel) === "spicy" ? "" : `/${PLUGIN_DIRECTORY}`}/version`;
+  return channelApp(channel) === "spicy"
+    ? `${hostUrl(channel.apiHost)}/bp/loader/grabClientInfo`
+    : `${hostUrl(channel.apiHost)}/${PLUGIN_DIRECTORY}/version`;
+}
+
+export async function readChannelVersion(channel, response) {
+  if (channelApp(channel) === "spicy") {
+    const info = await response.json();
+    return Array.isArray(info?.branches)
+      ? info.branches.find(branch => branch?.tag === "public")?.version
+      : undefined;
+  }
+  return (await response.text()).trim();
 }
 
 export function channelBundleUrl(channel, version) {
   const official = channelApp(channel) === "spicy";
-  const base = official ? "" : `/${PLUGIN_DIRECTORY}/${BUNDLES_DIRECTORY}`;
-  return `${hostUrl(channel.storageHost)}${base}/${official ? "spicy-lyrics" : "lyssna-lyrics"}@${encodeURIComponent(version)}.mjs`;
+  if (official) return `${hostUrl(channel.apiHost)}/bp/loader/grabPluginFile`;
+  return `${hostUrl(channel.storageHost)}/${PLUGIN_DIRECTORY}/${BUNDLES_DIRECTORY}/lyssna-lyrics@${encodeURIComponent(version)}.mjs`;
 }

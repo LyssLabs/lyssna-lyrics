@@ -1,5 +1,5 @@
 import { selectedChannel } from "./Channels.ts";
-import { channelVersionUrl } from "../../../builds/shared/build-paths.mjs";
+import { channelVersionUrl, readChannelVersion } from "../../../builds/shared/build-paths.mjs";
 const VERSION_TIMEOUT_MS = 5000;
 // A branch selection takes effect on reload; check updates for the app running now.
 const loadedChannel = selectedChannel();
@@ -16,9 +16,9 @@ export async function fetchSelectedChannelVersion(): Promise<string | undefined>
       signal: controller.signal,
     });
     if (!response.ok) throw new Error(`Version request failed with HTTP ${response.status}`);
-    const version = (await response.text()).trim();
-    if (!/^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/.test(version)) {
-      throw new Error(`Unexpected version response: ${JSON.stringify(version.slice(0, 40))}`);
+    const version = await readChannelVersion(channel, response);
+    if (typeof version !== "string" || !/^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/.test(version)) {
+      throw new Error(`Unexpected version response: ${JSON.stringify(String(version).slice(0, 40))}`);
     }
     return version;
   } finally {

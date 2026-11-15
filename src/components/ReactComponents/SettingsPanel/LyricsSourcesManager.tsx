@@ -127,6 +127,17 @@ export default function LyricsSourcesManager() {
                   <div className="ll-sp-source-copy">
                     <span className="ll-sp-source-label">{definition.label}</span>
                     <span className="ll-sp-source-description">{definition.description}</span>
+                    {id === "lrcred" && (
+                      <a href="https://lrc.red/" target="_blank" rel="noopener noreferrer"
+                        className="ll-sp-source-description"
+                        onClick={(event) => {
+                          event.preventDefault();
+                          event.stopPropagation();
+                          window.open("https://lrc.red/", "_blank", "noopener,noreferrer");
+                        }}>
+                        Open lrc.red
+                      </a>
+                    )}
                   </div>
                   <div className="ll-sp-source-actions">
                     <div className="ll-sp-source-priority">
