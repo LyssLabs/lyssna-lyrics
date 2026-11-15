@@ -32,8 +32,11 @@ export function PlaceLyricsFooter(
   const page = lyricsContent?.closest<HTMLElement>("#LyssnaLyricsPage");
   const cardMode = page?.classList.contains("CardMode") ?? false;
 
-  if (spaceGravityMode) {
+  if (spaceGravityMode || cardMode) {
     footer.classList.remove("PinnedLyricsFooter");
+    footer.dataset.pinnedFooterMode = "Off";
+    getFooterState(footer).pinnedFooterLayer = null;
+    noWriterPinnedLayers.delete(footer);
     const pinnedFooterLayer = lyricsContent?.parentElement?.querySelector<HTMLElement>(
       ".LyricsPinnedFooter"
     );

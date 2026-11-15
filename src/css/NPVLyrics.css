@@ -509,6 +509,10 @@ html.LyssnaLyrics_NPVMorph::view-transition-new(lyssna-npv-card) {
   );
 }
 
+#LyssnaLyricsNPVCard #LyssnaLyricsPage.CardMode .LyricsContent > .simplebar-track.simplebar-vertical {
+  bottom: 16px;
+}
+
 /* Pull the lyrics up to the top of the card (default is margin-top: 25cqh);
    keep a small padding so the fade mask doesn't swallow the first line. */
 #LyssnaLyricsNPVCard
