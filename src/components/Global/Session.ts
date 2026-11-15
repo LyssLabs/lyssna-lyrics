@@ -21,13 +21,66 @@ type VersionParsedData =
 
 let sessionHistory: Location[] = [];
 const LYRICS_PATH = "/LyssnaLyrics";
+const LYRICS_SESSION_KEY = "LL:lyricsViewSession";
 let lyricsReturnLocation: Location | null = null;
+let navigationInitialized = false;
+let restoreLyricsOnStartup = false;
+let navigatedDuringStartup = false;
+let stopStartupTracking: (() => void) | undefined;
+
+function savedReturnLocation(value: unknown): Location | null {
+  if (!value || typeof value !== "object") return null;
+  const route = value as Partial<Location>;
+  if (typeof route.pathname !== "string" || !route.pathname.startsWith("/") || route.pathname.startsWith("//") ||
+    route.pathname === LYRICS_PATH || route.pathname.startsWith(`${LYRICS_PATH}/`)) return null;
+  return {
+    pathname: route.pathname,
+    search: typeof route.search === "string" ? route.search : "",
+    hash: typeof route.hash === "string" ? route.hash : "",
+  };
+}
+
+function saveLyricsSession(location: Location) {
+  try {
+    const value = JSON.stringify({ open: location.pathname === LYRICS_PATH, returnLocation: savedReturnLocation(lyricsReturnLocation) });
+    if (Spicetify.LocalStorage.get(LYRICS_SESSION_KEY) !== value) Spicetify.LocalStorage.set(LYRICS_SESSION_KEY, value);
+  } catch (error) { console.warn("Lyssna Lyrics could not save its view:", error); }
+}
 
 function sameLocation(a: Location, b: Location): boolean {
   return a.pathname === b.pathname && (a.search ?? "") === (b.search ?? "") && (a.hash ?? "") === (b.hash ?? "");
 }
 
 const Session = {
+  InitializeNavigation: () => {
+    if (navigationInitialized) return;
+    navigationInitialized = true;
+    // Branch handoffs already choose their destination; an older Lyssna session must not override it.
+    if (window._lyssna_lyrics_metadata?.PreviousApp !== "spicy") {
+      try {
+        const saved = JSON.parse(Spicetify.LocalStorage.get(LYRICS_SESSION_KEY) ?? "null");
+        restoreLyricsOnStartup = saved?.open === true;
+        lyricsReturnLocation = savedReturnLocation(saved?.returnLocation);
+      } catch { /* Ignore a damaged session record. */ }
+    }
+    stopStartupTracking = Spicetify.Platform.History.listen(() => { navigatedDuringStartup = true; });
+    const saveBeforeReload = () => saveLyricsSession(Spicetify.Platform.History.location);
+    window.addEventListener("beforeunload", saveBeforeReload);
+    window.addEventListener("pagehide", saveBeforeReload);
+  },
+  RestoreLyricsView: () => {
+    stopStartupTracking?.();
+    stopStartupTracking = undefined;
+    const shouldRestore = restoreLyricsOnStartup && !navigatedDuringStartup;
+    restoreLyricsOnStartup = false;
+    const history = Spicetify.Platform.History;
+    const current = history.location;
+    if (!shouldRestore || !current || current.pathname === LYRICS_PATH) return;
+    if (current.pathname !== "/" && (!lyricsReturnLocation || !sameLocation(current, lyricsReturnLocation))) return;
+    // Rebuild a real Back destination before reopening lyrics from Spotify's startup Home page.
+    if (lyricsReturnLocation && !sameLocation(current, lyricsReturnLocation)) history.replace(lyricsReturnLocation);
+    Session.Navigate({ pathname: LYRICS_PATH });
+  },
   Navigate: (data: Location) => {
     const history = Spicetify.Platform.History;
     const current = history.location;
@@ -78,6 +131,7 @@ const Session = {
   },
   RecordNavigation: (data: Location) => {
     if (data.pathname !== LYRICS_PATH) lyricsReturnLocation = { ...data };
+    saveLyricsSession(data);
     Session.PushToHistory(data);
     Global.Event.evoke("session:navigation", data);
   },

@@ -265,6 +265,8 @@ async function main() {
     return;
   }
 
+  Session.InitializeNavigation();
+
   Global.SetScope("fullscreen.open", false);
 
   Global.SetScope("fullscreen.onopen", (cb: any) => {
@@ -1420,6 +1422,7 @@ async function main() {
         Global.Event.evoke("platform:history", e);
       });
       Spicetify.Platform.History.listen(Session.RecordNavigation);
+      Session.RestoreLyricsView();
       Session.RecordNavigation(Spicetify.Platform.History.location);
 
       Global.Event.listen("session:navigation", (data: Location) => {
