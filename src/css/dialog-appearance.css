@@ -29,6 +29,9 @@ lyssna-lyrics-modal.LyssnaLyricsModal.LyssnaLiquidGlass {
 }
 
 lyssna-lyrics-modal.LyssnaLyricsModal .ll-modal-overlay .ll-modal {
+  /* Spotify's native title-bar drag strip overlaps dialogs near the top of the window. */
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
   border-radius: 20px;
   border: 1px solid var(--lyssna-dialog-edge);
   background-color: var(--lyssna-dialog-surface);
