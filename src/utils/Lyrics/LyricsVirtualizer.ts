@@ -923,6 +923,16 @@ class LyricsVirtualizer {
       // screen offset is outside the scroll content, so reserve its height
       // only; that preserves the normal writer-to-source gap.
       bottomMargin = footerHeight + 4;
+      const scrollEl = this._scrollEl;
+      if (scrollEl && page.classList.contains("Exp_PopupDock") && page.closest(".lyssna-pip-wrapper")) {
+        // The popup has a shorter viewport above its dock; align the terminal writer row to the pinned source.
+        const currentMargin = parseFloat(this._window().getComputedStyle(scrollContainer).marginBottom);
+        const terminalBottomAtMaxScroll = scrollContainer.getBoundingClientRect().bottom + scrollEl.scrollTop + this._smoothFraction -
+          Math.max(0, scrollEl.scrollHeight - scrollEl.clientHeight);
+        if (Number.isFinite(currentMargin)) {
+          bottomMargin = Math.max(0, currentMargin + terminalBottomAtMaxScroll - footerLayer.getBoundingClientRect().top + 4);
+        }
+      }
     } else {
       const scrollEl = this._scrollEl;
       if (scrollEl && lastMeasurement) {

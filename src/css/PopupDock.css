@@ -13,6 +13,7 @@
   /* vw/vh: the popup's viewport is the window, and unlike cq units they resolve the same in every
      container down the tree. */
   --PD_U: min(1vw, 1.2vh);
+  --PD_LyricsSize: calc(clamp(1.25rem, min(7vw, 12vh), 4rem) * var(--LL-LyricsScale, 1));
   --PD_Gutter: clamp(12px, calc(var(--PD_U) * 5), 28px);
   --PD_Bottom: clamp(8px, calc(var(--PD_U) * 3.5), 20px);
   --PD_Gap: clamp(3px, calc(var(--PD_U) * 1.5), 8px);
@@ -58,6 +59,25 @@
   height: calc(100% - var(--PD_IdleH));
   margin-top: 0 !important;
   margin-bottom: auto;
+}
+
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .ContentBox .LyricsContainer .LyricsContent {
+  --DefaultLyricsSize: var(--PD_LyricsSize);
+}
+
+/* The dock already reserves space below the viewport; the old compact layout's 64cqh tail does not apply. */
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .LyricsContainer .LyricsContent .LyssnaLyricsScrollContainer {
+  margin-top: 0 !important;
+  margin-bottom: var(--LL-PinnedFooterBottomMargin, 16px) !important;
+}
+
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock:is(.CompactMode, .ForcedCompactMode):not(.SpicyRenderer) .LyricsContainer .LyricsContent > div {
+  --bottom-push: 0px;
+}
+
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock:is(.PinnedFooterMode_NoWriters, .PinnedFooterMode_Full):not(.SpaceGravityMode):not(.CardMode) .LyricsContainer .LyricsPinnedFooter {
+  --DefaultLyricsSize: var(--PD_LyricsSize);
+  font-size: var(--PD_LyricsSize);
 }
 
 /* The NowBar spans the window so the dock can pin to its bottom; only the dock takes the pointer. */
@@ -146,7 +166,9 @@
 
 /* Title and artist: a caption on the gutter, above the control rows. */
 .lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .ContentBox .NowBar .CenteredView .Header .Metadata {
+  --Compact_HoverMetaOpacity: 1;
   position: absolute;
+  top: auto;
   left: 0;
   right: 0;
   bottom: calc(var(--PD_Bottom) + var(--PD_BoxH));
