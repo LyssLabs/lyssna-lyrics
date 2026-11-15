@@ -46,7 +46,7 @@ export function ApplyLyricsProvider(data: any, LyricsContainer: HTMLElement): vo
     ? data.experimentalWordSyncSource === "Static"
       ? " (+ estimated line and word timing)"
       : " (+ estimated word timing)"
-    : "";
+    : providerLabel === "Apple Music" && data.experimentalAppleWordSplitting ? " (+ extra splits)" : "";
   CreditsRow(ProviderElement, "Provided by", `${providerLabel}${timingNote}`);
 
   const via = typeof data.source_via === "string" && Object.hasOwn(ViaMap, data.source_via)

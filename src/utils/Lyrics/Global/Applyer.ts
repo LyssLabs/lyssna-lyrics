@@ -11,6 +11,8 @@ import { ApplySyllableLyrics, ClearSyllableRenderSession } from "../Applyer/Sync
 import {
   ConvertLineLyricsToExperimentalWordSync,
   ConvertStaticLyricsToExperimentalWordSync,
+  HasAppleWordSyncRepairs,
+  SplitAppleMusicSyllableWords,
 } from "../ExperimentalWordSync.ts";
 import { getDynamicAudioAnalysis } from "../../audioAnalysis.ts";
 import fetchLyrics, { ClearLyricsPageContainer, getSongKey } from "../fetchLyrics.ts";
@@ -37,10 +39,15 @@ export type LyricsData = {
   [key: string]: any;
 };
 
+function isAppleMusicLyrics(lyrics: LyricsData): boolean {
+  return lyrics.sourceDisplayName?.trim().toLowerCase() === "apple music" ||
+    [lyrics.source, lyrics.fetchProvider].some(value => value?.toLowerCase() === "aml" || value?.toLowerCase() === "apple");
+}
+
 let currentAbortController: AbortController | null = null;
 let appliedLyricsIdentity: string | null = null;
 let renderedLyrics: LyricsData | null = null;
-let sourceLyricsType: string | null = null;
+let sourceNeedsExperimentalWordSync = true;
 let applyGeneration = 0;
 let fontCheckGeneration = 0;
 const watchedFontDocuments = new WeakSet<Document>();
@@ -90,11 +97,11 @@ $customFontEnabled.listen(() => { void refreshLyricsFontFallback(); });
  */
 export function InvalidatePendingLyricsApplication(): void {
   applyGeneration += 1;
-  sourceLyricsType = null;
+  sourceNeedsExperimentalWordSync = true;
 }
 
 export function ShouldReapplyRenderedLyricsForExperimentalWordSync(): boolean {
-  return sourceLyricsType !== "Syllable";
+  return sourceNeedsExperimentalWordSync;
 }
 
 export function ShouldReapplyRenderedLyricsForSpaceGravity(enabled: boolean): boolean {
@@ -193,7 +200,7 @@ export default async function ApplyLyrics(lyricsContent: [object | string, numbe
   const uri = SpotifyPlayer.GetUri();
   setBlurringLastLine(null);
   const [descriptor, _status] = lyricsContent;
-  sourceLyricsType = descriptor && typeof descriptor === "object" ? (descriptor as LyricsData).Type : null;
+  sourceNeedsExperimentalWordSync = true;
   SyncTtmlReviewerForLyrics(typeof descriptor === "object" ? descriptor : null, uri);
   if (descriptor === "lyrics-queued") {
     ShowQueueLoader();
@@ -215,6 +222,8 @@ export default async function ApplyLyrics(lyricsContent: [object | string, numbe
     lyrics = descriptor as LyricsData;
     NormalizeLyricsCommaSpacing(lyrics);
     const sourceNeedsWordSync = lyrics.Type === "Line" || lyrics.Type === "Static";
+    const needsAppleRepairs = lyrics.Type === "Syllable" && isAppleMusicLyrics(lyrics) && HasAppleWordSyncRepairs(lyrics);
+    sourceNeedsExperimentalWordSync = sourceNeedsWordSync || needsAppleRepairs;
     const shouldUseExperimentalWordSync =
       sourceNeedsWordSync && (Defaults.EnableExperimentalWordSync || $spaceGravityMode.get());
 
@@ -254,6 +263,9 @@ export default async function ApplyLyrics(lyricsContent: [object | string, numbe
           ApplyMemeFormat(lyrics);
         }
       }
+    } else if (Defaults.EnableExperimentalWordSync && needsAppleRepairs) {
+      lyrics = SplitAppleMusicSyllableWords(lyrics) as LyricsData;
+      if (lyrics !== descriptor && Defaults.MemeFormat !== "Off") ApplyMemeFormat(lyrics);
     }
 
     // Word-sync conversion may introduce new syllables, so normalize its output
