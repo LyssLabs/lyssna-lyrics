@@ -28,6 +28,15 @@ const injectStyles = () => {
   const style = document.createElement("style");
   style.id = "lyssna-lyrics-entry-styles";
   style.textContent = `
+    .lyssna-entry-channel-control{display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap;}
+    .lyssna-entry-channel-control select{min-width:0;max-width:100%;flex:1;}
+    #lyssna-lyrics-spotify-channel-group{margin-bottom:24px;}
+    #lyssna-lyrics-spotify-channel-group .x-settings-row{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:12px 0;}
+    #lyssna-lyrics-spotify-channel-group .x-settings-firstColumn{flex:1;min-width:180px;}
+    #lyssna-lyrics-spotify-channel-group label{display:block;color:var(--text-base,#fff);}
+    #lyssna-lyrics-spotify-channel-group p{margin:4px 0 0;color:var(--text-subdued,#b3b3b3);font-size:13px;}
+    #lyssna-lyrics-spotify-channel-group select,#lyssna-lyrics-spotify-channel-group button{background:var(--background-tinted-base,#292929);color:var(--text-base,#fff);border:1px solid var(--essential-subdued,#727272);border-radius:6px;padding:7px 12px;font:inherit;}
+    .lyssna-entry-channel-control :is(select,button):focus-visible{outline:2px solid currentColor;outline-offset:3px;}
     .LyssnaLyricsSettingsOverlay{position:fixed;inset:0;z-index:9998;background:transparent;}
     .LyssnaLyricsSettingsContainer{position:fixed;z-index:9999;background:rgba(46,46,46,.72);border:1px solid var(--lyssna-hairline,rgba(255,255,255,.16));border-radius:var(--lyssna-radius-md,12px);display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--lyssna-liquid-cast-soft,0 18px 52px rgba(0,0,0,.42)),inset 0 1px 0 rgba(255,255,255,.08);-webkit-backdrop-filter:var(--lyssna-material-regular-blur,blur(24px));backdrop-filter:var(--lyssna-material-regular-blur,blur(24px));}
     .LyssnaLyricsSettingsHeader{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--lyssna-hairline,rgba(255,255,255,.1));flex-shrink:0;}
@@ -423,63 +432,42 @@ if (ownsEntrypoint) window._lyssna_lyrics_channels = {
   getMap: getFullChannelMap,
 };
 
-// ─── Stable Settings Injection ───
-// Stable renders its own settings modal. Observe that modal and add one native
-// row without importing or patching the upstream bundle.
-
-const CHANNEL_SETTING_ROW_ID = "lyssna-lyrics-entry-channel-row";
+// Add the switcher to upstream settings without modifying its downloaded bundle.
 const CHANNEL_SETTING_GROUP_ID = "lyssna-lyrics-entry-channel-group";
+const SPOTIFY_CHANNEL_GROUP_ID = "lyssna-lyrics-spotify-channel-group";
 let channelSettingsObserver = null;
 let channelSettingsRenderQueued = false;
+const settingsRootObservers = new Map();
 
-const renderChannelSettings = () => {
-  const modal = document.querySelector(
-    "lyssna-lyrics-modal.LyssnaLyricsModal .llmodal-settingsPanel"
-  );
-  if (!modal || document.getElementById(CHANNEL_SETTING_ROW_ID)) return;
-
-  // Pixel builds already render their own channel control.
-  if (Array.from(modal.querySelectorAll(".ll-sp-label"))
-    .some((element) => element.textContent?.trim() === "Build Channel")) return;
-
-  const advancedPane = modal.querySelector(
-    '#ll-sp-panel[aria-labelledby="ll-sp-tab-advanced"] .ll-sp-pane-body'
-  );
-  const developerTitle = Array.from(modal.querySelectorAll(".ll-sp-section-title"))
-    .find((element) => element.textContent?.trim() === "Developer");
-  if (!advancedPane && !developerTitle) return;
-
+const createChannelSettingsRow = (prefix, rowId) => {
+  const spotify = prefix === "spotify";
   const channels = getFullChannelMap();
   const current = channels[getCurrentChannel()] ? getCurrentChannel() : DEFAULT_CHANNEL;
   const row = document.createElement("div");
-  row.id = CHANNEL_SETTING_ROW_ID;
-  row.className = advancedPane ? "ll-sp-row ll-sp-row--stacked" : "ll-sp-row ll-list-row";
+  row.id = rowId;
+  row.className = spotify ? "x-settings-row" : `${prefix}-sp-row ${prefix}-sp-row--stacked`;
 
   const labelWrap = document.createElement("div");
-  labelWrap.className = "ll-sp-label-wrap";
-  const label = document.createElement("span");
-  label.className = "ll-sp-label";
+  labelWrap.className = spotify ? "x-settings-firstColumn" : `${prefix}-sp-label-wrap`;
+  const label = document.createElement("label");
+  label.className = spotify ? "encore-text-body-small" : `${prefix}-sp-label`;
+  label.htmlFor = `${rowId}-select`;
   label.textContent = "Build Channel";
-  const description = document.createElement("span");
-  description.className = "ll-sp-description";
-  description.textContent = "Choose the release stream used after reload.";
+  const description = document.createElement(spotify ? "p" : "span");
+  description.className = spotify ? "encore-text-body-small" : `${prefix}-sp-description`;
+  description.textContent = "Switch between Lyssna Lyrics, Spicy Lyrics and saved branches. Reloads Spotify.";
   labelWrap.append(label, description);
 
   const control = document.createElement("div");
-  control.className = "ll-sp-control";
-  control.style.display = "flex";
-  control.style.alignItems = "center";
-  control.style.gap = "8px";
-  control.style.minWidth = "0";
+  control.className = `lyssna-entry-channel-control ${spotify ? "x-settings-secondColumn" : `${prefix}-sp-control`}`;
   const manage = document.createElement("button");
   manage.type = "button";
-  manage.className = "ll-sp-btn";
+  manage.className = spotify ? "x-settings-button" : `${prefix}-sp-btn`;
   manage.textContent = "Manage";
   manage.addEventListener("click", showChannelManager);
   const select = document.createElement("select");
-  select.className = "ll-sp-select";
-  select.style.minWidth = "0";
-  select.style.maxWidth = "100%";
+  select.id = label.htmlFor;
+  select.className = spotify ? "x-settings-dropdown" : `${prefix}-sp-select`;
   select.setAttribute("aria-label", "Build Channel");
   for (const name of Object.keys(channels)) {
     const option = document.createElement("option");
@@ -494,18 +482,45 @@ const renderChannelSettings = () => {
   });
   control.append(select, manage);
   row.append(labelWrap, control);
-  if (advancedPane) {
+  return row;
+};
+
+const renderChannelSettings = () => {
+  for (const modal of document.querySelectorAll(".slmodal-settingsPanel, .llmodal-settingsPanel")) {
+    const prefix = modal.matches(".slmodal-settingsPanel") ? "sl" : "ll";
+    const advancedPane = modal.querySelector(
+      `#${prefix}-sp-panel[aria-labelledby="${prefix}-sp-tab-advanced"] .${prefix}-sp-pane-body`
+    );
+    const injected = modal.querySelector(`#${CHANNEL_SETTING_GROUP_ID}`);
+    if (injected && injected.parentElement === advancedPane) continue;
+    injected?.remove();
+    if (!advancedPane) continue;
+    // Current Lyssna builds already own a channel control.
+    if (Array.from(modal.querySelectorAll(".sl-sp-label, .ll-sp-label"))
+      .some(element => element.textContent?.trim() === "Build Channel")) continue;
     const group = document.createElement("div");
     group.id = CHANNEL_SETTING_GROUP_ID;
-    group.className = "ll-sp-group";
+    group.className = `${prefix}-sp-group`;
     const card = document.createElement("div");
-    card.className = "ll-sp-card";
-    card.appendChild(row);
+    card.className = `${prefix}-sp-card`;
+    card.appendChild(createChannelSettingsRow(prefix, `${CHANNEL_SETTING_GROUP_ID}-row`));
     group.appendChild(card);
     advancedPane.prepend(group);
-  } else {
-    developerTitle.after(row);
   }
+
+  if (Spicetify.Platform.History.location.pathname !== "/preferences") return;
+  const language = document.getElementById("desktop.settings.selectLanguage");
+  const container = language?.closest(".x-settings-section")?.parentElement ??
+    (language ? document.querySelector(".main-view-container__scroll-node-child main > div") : null);
+  if (!container || document.getElementById(SPOTIFY_CHANNEL_GROUP_ID)) return;
+  const group = document.createElement("section");
+  group.id = SPOTIFY_CHANNEL_GROUP_ID;
+  group.className = "x-settings-section";
+  const title = document.createElement("h2");
+  title.className = "encore-text-body-medium-bold";
+  title.textContent = "Lyrics build channel";
+  group.append(title, createChannelSettingsRow("spotify", `${SPOTIFY_CHANNEL_GROUP_ID}-row`));
+  container.prepend(group);
 };
 
 const registerChannelSettings = () => {
@@ -515,15 +530,33 @@ const registerChannelSettings = () => {
     channelSettingsRenderQueued = true;
     queueMicrotask(() => {
       channelSettingsRenderQueued = false;
+      const roots = new Set(document.querySelectorAll(
+        "sl-generic-modal.SpicyLyricsModal, lyssna-lyrics-modal.LyssnaLyricsModal"
+      ));
+      if (Spicetify.Platform.History.location.pathname === "/preferences") {
+        const settingsPage = document.querySelector(".main-view-container, .Root__main-view");
+        if (settingsPage) roots.add(settingsPage);
+      }
+      for (const [root, observer] of settingsRootObservers) {
+        if (!roots.has(root)) {
+          observer.disconnect();
+          settingsRootObservers.delete(root);
+        }
+      }
+      for (const root of roots) {
+        if (settingsRootObservers.has(root)) continue;
+        const observer = new MutationObserver(scheduleRender);
+        observer.observe(root, { childList: true, subtree: true, attributes: true, attributeFilter: ["aria-labelledby"] });
+        settingsRootObservers.set(root, observer);
+      }
       renderChannelSettings();
     });
   };
   channelSettingsObserver = new MutationObserver(scheduleRender);
   channelSettingsObserver.observe(document.body, { childList: true });
+  Spicetify.Platform.History.listen(scheduleRender);
   window.addEventListener(CHANNELS_CHANGED_EVENT, () => {
-    const injected = document.getElementById(CHANNEL_SETTING_GROUP_ID) ??
-      document.getElementById(CHANNEL_SETTING_ROW_ID);
-    injected?.remove();
+    document.querySelectorAll(`#${CHANNEL_SETTING_GROUP_ID}, #${SPOTIFY_CHANNEL_GROUP_ID}`).forEach(element => element.remove());
     scheduleRender();
   });
   scheduleRender();
@@ -595,6 +628,11 @@ async function load() {
       throw new Error("Pixel Edition versions predate coexistence support. Select a current Lyssna version to run alongside Spicy Lyrics.");
     }
     const previousApp = readActiveLyricsApp(Spicetify.LocalStorage)?.app;
+    const history = Spicetify.Platform.History;
+    const lyricsRoutes = { lyssna: "/LyssnaLyrics", spicy: "/SpicyLyrics" };
+    if (previousApp && previousApp !== app && history.location?.pathname === lyricsRoutes[previousApp]) {
+      history.replace({ pathname: lyricsRoutes[app] });
+    }
     if (app === "lyssna") window._lyssna_lyrics_metadata = { LoadedVersion: version, PreviousApp: previousApp ?? null };
     else window._spicy_lyrics_metadata = { LoadedVersion: version };
     window._lyssna_lyrics_channel = { name: channel.name, fixedVersion: channel.fixedVersion };
@@ -623,9 +661,8 @@ async function load() {
 
 async function run() {
   if (!ownsEntrypoint) return;
-  while (!window.Spicetify?.React || !Spicetify.ReactDOM || !Spicetify.ReactDOMServer || !Spicetify.LocalStorage) await sleep(100);
+  while (!window.Spicetify?.React || !Spicetify.ReactDOM || !Spicetify.ReactDOMServer || !Spicetify.LocalStorage || !Spicetify.Platform?.History?.listen) await sleep(100);
   injectStyles();
-  if (Spicetify.Menu?.Item) new Spicetify.Menu.Item("Lyssna Lyrics build channel", false, showChannelSwitcher).register();
   registerChannelSettings();
   await load();
 }
