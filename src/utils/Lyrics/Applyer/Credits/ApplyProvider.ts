@@ -56,7 +56,7 @@ export function ApplyLyricsProvider(data: any, LyricsContainer: HTMLElement): vo
     viaElement.classList.add("LyricsProviderVia");
     const viaLabel = LyricsContainer.ownerDocument.createElement("span");
     viaLabel.classList.add("LyricsProviderViaLabel");
-    viaLabel.textContent = "via ";
+    viaLabel.textContent = "(via ";
     viaElement.appendChild(viaLabel);
 
     if (via.url) {
@@ -76,6 +76,7 @@ export function ApplyLyricsProvider(data: any, LyricsContainer: HTMLElement): vo
       viaLabel.append(via.label);
     }
 
+    viaElement.append(")");
     ProviderElement.append(" ", viaElement);
   }
 
