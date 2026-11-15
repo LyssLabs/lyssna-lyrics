@@ -10,6 +10,7 @@ import ApplyLyrics, {
   ApplyLyricsIfCurrent,
   cleanupApplyLyricsAbortController,
   InvalidatePendingLyricsApplication,
+  ShouldReapplyRenderedLyricsForExperimentalWordSync,
   ShouldReapplyRenderedLyricsForSpaceGravity,
   UpdateRenderedRomanization,
 } from "../../utils/Lyrics/Global/Applyer.ts";
@@ -1027,7 +1028,7 @@ function rebuildLyrics() {
   if (!PageContainer || IsChangingReviewerProfile()) return;
   const uri = SpotifyPlayer.GetUri();
   if (!HoldsTemporaryUpload(uri)) $currentLyricsData.set("");
-  if (uri) fetchLyrics(uri).then(ApplyLyrics);
+  if (uri) fetchLyrics(uri).then(lyrics => ApplyLyricsIfCurrent(uri, lyrics));
 }
 
 // The letter split, word springs and line timing are fixed when the lyrics are
@@ -1057,7 +1058,7 @@ $minimalLyricsMode.listen((v) => {
 });
 
 $enableExperimentalWordSync.listen(() => {
-  rebuildLyrics();
+  if (ShouldReapplyRenderedLyricsForExperimentalWordSync()) rebuildLyrics();
   AppendViewControls(true);
 });
 

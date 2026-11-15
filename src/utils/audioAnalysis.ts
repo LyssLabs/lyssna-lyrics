@@ -43,13 +43,30 @@ const AudioAnalysisNotFoundStore = GetExpireStore<true>("LyssnaLyrics_AudioAnaly
     Unit: "Hours"
 });
 
+const pendingAnalysis = new Map<string, Promise<AudioAnalysisData | null>>();
+
+function isOrderedIntervals(value: unknown): boolean {
+    if (!Array.isArray(value)) return false;
+    let previousStart = -Infinity;
+    let previousEnd = -Infinity;
+    return value.every(interval => {
+        if (!interval || !Number.isFinite(interval.start) || !Number.isFinite(interval.duration) || interval.duration < 0) return false;
+        const end = interval.start + interval.duration;
+        if (!Number.isFinite(end) || interval.start < previousStart || end < previousEnd) return false;
+        previousStart = interval.start;
+        previousEnd = end;
+        return true;
+    });
+}
+
 function isAudioAnalysisData(data: unknown): data is AudioAnalysisData {
     if (!data || typeof data !== "object") {
         return false;
     }
 
     const parsed = data as Partial<AudioAnalysisData>;
-    return !!parsed.track && Array.isArray(parsed.sections) && Array.isArray(parsed.beats);
+    return !!parsed.track && Number.isFinite(parsed.track.duration) && parsed.track.duration > 0 &&
+        Array.isArray(parsed.sections) && isOrderedIntervals(parsed.beats) && isOrderedIntervals(parsed.segments);
 }
 
 function isSpotifyTrackId(trackId: string): boolean {
@@ -57,8 +74,7 @@ function isSpotifyTrackId(trackId: string): boolean {
 }
 
 /**
- * Gets and validates the Spotify audio analysis for a given track URI.
- * * @param uri The Spotify track URI (e.g., 'spotify:track:4uLU6hMCjMI75M1A2tKUQC')
+ * Gets and validates audio analysis for a Spotify track URI or bare track ID.
  * @returns The parsed AudioAnalysisData, or null if the fetch fails
  */
 export async function getDynamicAudioAnalysis(uri: string): Promise<AudioAnalysisData | null> {
@@ -72,32 +88,35 @@ export async function getDynamicAudioAnalysis(uri: string): Promise<AudioAnalysi
         return null;
     }
 
-    const trackId = uri.split(":")[2];
-    if (!trackId) {
-        return null;
-    }
-
+    const trackId = uri.startsWith("spotify:track:") ? uri.slice("spotify:track:".length) : uri;
     if (!isSpotifyTrackId(trackId)) {
         return null;
     }
 
-    if (await AudioAnalysisNotFoundStore.GetItem(trackId)) {
-        return null;
-    }
-    const cached = await AudioAnalysisStore.GetItem(trackId);
-    if (cached?.analysis && isAudioAnalysisData(cached.analysis)) {
-        return cached.analysis;
-    }
+    const pending = pendingAnalysis.get(trackId);
+    if (pending) return pending;
+    const request = loadAudioAnalysis(trackId).finally(() => pendingAnalysis.delete(trackId));
+    pendingAnalysis.set(trackId, request);
+    return request;
+}
 
-    const url = `https://spclient.wg.spotify.com/audio-attributes/v1/audio-analysis/${trackId}?format=json`;
+async function loadAudioAnalysis(trackId: string): Promise<AudioAnalysisData | null> {
     try {
-        // Bounded: the caller keeps this promise as the track's in-flight request,
-        // so a hang here would block audio analysis for the track until reload.
+        if (await AudioAnalysisNotFoundStore.GetItem(trackId)) {
+            return null;
+        }
+        const cached = await AudioAnalysisStore.GetItem(trackId);
+        if (cached?.analysis && isAudioAnalysisData(cached.analysis)) {
+            return cached.analysis;
+        }
+
+        const url = `https://spclient.wg.spotify.com/audio-attributes/v1/audio-analysis/${trackId}?format=json`;
+        // Shared by lyrics, static scrolling, and backgrounds; keep the request bounded.
         const res = await SpotifyFetch(url, { signal: AbortSignal.timeout(getRemoteConfig().audioAnalysis.timeoutMs) });
         if (!res.ok) throw Object.assign(new Error(`HTTP ${res.status}`), { status: res.status });
         const data = await res.json() as unknown;
         if (!isAudioAnalysisData(data)) {
-            throw new Error("Payload is missing required audio analysis arrays (sections/beats).");
+            throw new Error("Invalid audio analysis duration or interval arrays.");
         }
 
         await AudioAnalysisStore.SetItem(trackId, {
@@ -113,7 +132,7 @@ export async function getDynamicAudioAnalysis(uri: string): Promise<AudioAnalysi
 
         if (httpStatus === 404) {
             console.error("Analysis not found (404)");
-            await AudioAnalysisNotFoundStore.SetItem(trackId, true);
+            await AudioAnalysisNotFoundStore.SetItem(trackId, true).catch(() => {});
         } else if (httpStatus === 429) {
             console.error("Rate limited (429)");
         } else {
