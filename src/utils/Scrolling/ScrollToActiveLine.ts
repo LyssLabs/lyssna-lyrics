@@ -26,6 +26,8 @@ import { ScrollIntoCenterViewCSS } from "../ScrollIntoView/Center.ts";
 import { ScrollIntoTopViewCSS } from "../ScrollIntoView/Top.ts";
 import {
   getLyricsVirtualizer,
+  holdLyricsScrollPosition,
+  releaseLyricsScrollHold,
   clearLyricsScrollFraction,
   fadesAwayPreviousLines,
   lyricsCenterScrollTopAt,
@@ -69,7 +71,7 @@ let writersCanHold = true;
 
 function releaseWriterHold(): void {
   writersRevealed = false;
-  getLyricsVirtualizer()?.releaseScrollHold();
+  releaseLyricsScrollHold();
   // A seek/return must leave the credits before they can take scrolling again.
   writersCanHold = false;
 }
@@ -96,7 +98,7 @@ function updateWriterHold(): void {
   if (row.top < viewport.top + (defaultFade + topPadding) * scale - 1 ||
       row.bottom > viewport.bottom - (fadeStart * (1 - reveal) + padding) * scale + 1) return;
   writersRevealed = true;
-  getLyricsVirtualizer()?.holdScrollPosition();
+  holdLyricsScrollPosition();
   UpdateScrollToActiveButton();
 }
 
@@ -112,7 +114,7 @@ function observeWriterCredits(container: HTMLElement): void {
       writersCanHold = true;
       if (isUserScrolling) {
         writersRevealed = false;
-        getLyricsVirtualizer()?.releaseScrollHold();
+        releaseLyricsScrollHold();
       }
     }
     updateWriterHold();
@@ -490,7 +492,7 @@ function LineAfter(
 function handleUserScroll(ScrollSimplebar: any | null) {
   // Allow null
   if (!ScrollSimplebar) return; // Add null check
-  getLyricsVirtualizer()?.releaseScrollHold();
+  releaseLyricsScrollHold();
   staticReturning = false;
   if (!isUserScrolling) {
     isUserScrolling = true;
@@ -743,7 +745,7 @@ function ScrollStaticLyrics(ScrollSimplebar: any) {
   const scrolledAway = lastUserScrollTime !== 0 && Math.abs(distance) > container.clientHeight / 2;
   SetScrollToActiveDirection(scrolledAway || (writersRevealed && Math.abs(distance) > 1) ? (distance < 0 ? "Above" : "Below") : null);
   if (writersRevealed) {
-    getLyricsVirtualizer()?.holdScrollPosition();
+    holdLyricsScrollPosition();
     ReleaseStaticScroll();
     return;
   }
@@ -847,7 +849,7 @@ export function ScrollToActiveLine(ScrollSimplebar: any) {
   const sideContainer = ScrollSimplebar?.getScrollElement() as HTMLElement | undefined;
   if (sideTarget && sideContainer) TrackActiveLineSide(sideContainer, sideTarget);
   if (writersRevealed) {
-    getLyricsVirtualizer()?.holdScrollPosition();
+    holdLyricsScrollPosition();
     lastPosition = Position;
     forceScrollQueued = false;
     smoothForceScrollQueued = false;
@@ -1237,7 +1239,7 @@ export function ResetLastLine() {
 // --- NEW: Cleanup Function ---
 export function CleanupScrollEvents() {
   cleanupScrollButtonObserver();
-  getLyricsVirtualizer()?.releaseScrollHold();
+  releaseLyricsScrollHold();
   writersObserver?.disconnect();
   writersObserver = null;
   writersRow = null;

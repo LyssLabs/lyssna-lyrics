@@ -2893,6 +2893,14 @@ export function getLyricsVirtualizer(): Virtualizer<HTMLElement, HTMLElement> | 
   return lyricsVirtualizer.getVirtualizer();
 }
 
+export function holdLyricsScrollPosition(): void {
+  lyricsVirtualizer.holdScrollPosition();
+}
+
+export function releaseLyricsScrollHold(): void {
+  lyricsVirtualizer.releaseScrollHold();
+}
+
 export function scrollLyricsToIndex(
   index: number,
   align: "start" | "center" | "end" | "auto" = "center",
