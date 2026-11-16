@@ -204,6 +204,21 @@ function syncCreditsSpace(positions: ReturnType<typeof footerPositions>, left: n
   }
 }
 
+function canvasCaptionBounds(box: HTMLElement) {
+  const page = box.closest("#LyssnaLyricsPage");
+  if (!page?.matches(".CanvasImmersive.NowBarSide__Left:not(.CompactMode, .ForcedCompactMode)")) return null;
+  const rows = [...box.querySelectorAll<HTMLElement>(".NowBar.Active .Header > .Metadata :is(.SongName, .Artists, .ArtistYear)")];
+  const visible = rows.map(row => {
+    const rect = row.getBoundingClientRect();
+    const track = row.matches(".SongName") ? row.firstElementChild as HTMLElement | null : null;
+    // Use the visible text width, not the caption's full-width marquee window.
+    const width = track ? Math.min(rect.width, track.offsetWidth * (rect.width / row.offsetWidth || 1)) : rect.width;
+    return { top: rect.top, bottom: rect.bottom, right: rect.left + width, width, height: rect.height };
+  }).filter(rect => rect.width > 0 && rect.height > 0);
+  if (!visible.length) return null;
+  return { top: Math.min(...visible.map(rect => rect.top)), bottom: Math.max(...visible.map(rect => rect.bottom)), right: Math.max(...visible.map(rect => rect.right)) };
+}
+
 function syncPlacement(box: HTMLElement): void {
   if (!root) return;
   const placement = $nextUpPlacement.get();
@@ -212,13 +227,17 @@ function syncPlacement(box: HTMLElement): void {
   const positions = placement === "topLeft" ? [] : footerPositions(box);
   const cornerLeft = parent.left + PLACEMENT_GAP_PX;
   const cornerRight = parent.right - PLACEMENT_GAP_PX;
-  let widthLimit = cornerRight - cornerLeft;
-  for (const { left, right } of positions) {
+  const caption = placement === "bottomLeft" ? canvasCaptionBounds(box) : null;
+  const availableWidth = (edge: number) => positions.reduce((available, { left, right }) => {
     const minimumCredits = Math.min(right - left, Math.max(64, Math.min(160, (right - left) / 2)));
-    widthLimit = Math.min(widthLimit, placement === "bottomLeft"
-      ? right - minimumCredits - FOOTER_GAP_PX - cornerLeft
+    return Math.min(available, placement === "bottomLeft"
+      ? right - minimumCredits - FOOTER_GAP_PX - edge
       : cornerRight - left - minimumCredits - FOOTER_GAP_PX);
-  }
+  }, cornerRight - edge);
+  const captionEdge = caption ? Math.max(cornerLeft, caption.right + FOOTER_GAP_PX) : cornerLeft;
+  const besideCaption = !!caption && availableWidth(captionEdge) >= 144;
+  const placementLeft = besideCaption ? captionEdge : cornerLeft;
+  const widthLimit = availableWidth(placementLeft);
   const limit = `${Math.max(0, Math.floor(widthLimit))}px`;
   if (root.style.maxWidth !== limit) root.style.maxWidth = limit;
   root.toggleAttribute("data-compact", widthLimit < 144);
@@ -252,8 +271,9 @@ function syncPlacement(box: HTMLElement): void {
 
   root.removeAttribute("data-toolbar-overlap");
 
-  const left = placement === "bottomLeft" ? cornerLeft : clampLeft(cornerRight - width);
-  let bottom = Math.min(parent.bottom - PLACEMENT_GAP_PX, ...positions.map(position => position.bottom));
+  const left = placement === "bottomLeft" ? placementLeft : clampLeft(cornerRight - width);
+  const captionBottom = caption ? (besideCaption ? caption.bottom : caption.top - FOOTER_GAP_PX) : parent.bottom - PLACEMENT_GAP_PX;
+  let bottom = Math.min(parent.bottom - PLACEMENT_GAP_PX, captionBottom, ...positions.map(position => position.bottom));
   const viewSwitch = box.classList.contains("ViewSwitchAwake") ? box.querySelector<HTMLElement>(".ViewSwitch")?.getBoundingClientRect() : null;
   if (viewSwitch && left < viewSwitch.right + FOOTER_GAP_PX && left + width > viewSwitch.left - FOOTER_GAP_PX && bottom > viewSwitch.top) {
     bottom = Math.min(bottom, viewSwitch.top - FOOTER_GAP_PX);
@@ -282,7 +302,7 @@ function stopLayoutObservers() {
 function observeLayout(box: HTMLElement) {
   stopLayoutObservers();
   layoutObserver = new ResizeObserver(() => { if (host() === box) syncShownLayout(box); });
-  for (const element of [box, root, ...box.querySelectorAll<HTMLElement>(".NowBar.Active, .MediaBox, .ViewControls.LyssnaToolbar, .ViewSwitch, .LyricsPinnedFooter, .LyricsPinnedCredits")]) {
+  for (const element of [box, root, ...box.querySelectorAll<HTMLElement>(".NowBar.Active, .Metadata, .Metadata .SongName > span, .Metadata .Artists, .Metadata .ArtistYear, .MediaBox, .ViewControls.LyssnaToolbar, .ViewSwitch, .LyricsPinnedFooter, .LyricsPinnedCredits")]) {
     if (element) layoutObserver.observe(element);
   }
   controlsObserver = new MutationObserver(() => { if (host() === box) syncShownLayout(box); });
