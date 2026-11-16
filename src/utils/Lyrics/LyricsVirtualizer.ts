@@ -367,8 +367,9 @@ class LyricsVirtualizer {
   private _trailingObserver: MutationObserver | null = null;
   // Total size at the last layout pass, so the credits can glide when it changes.
   private _lastTotalSize = 0;
-  private _heldBottomDistance: number | null = null;
-  private _heldFooter: HTMLElement | null = null;
+  private _heldListHeight: number | null = null;
+  private _heldInitialOffset = 0;
+  private _heldListOffset = 0;
   private _beforeLayoutChange: (() => void) | null = null;
 
   setBeforeLayoutChange(callback: (() => void) | null): void {
@@ -431,7 +432,7 @@ class LyricsVirtualizer {
     if (next === this._refreshed) return;
     this._refreshed = next;
     // As in init(): the ripple needs scroll anchoring off.
-    if (this._scrollEl) this._scrollEl.style.overflowAnchor = next ? "none" : "";
+    if (this._scrollEl) this._scrollEl.style.overflowAnchor = next || this._heldListHeight !== null ? "none" : "";
     if (!next) this._stopCascade();
   }
 
@@ -859,7 +860,8 @@ class LyricsVirtualizer {
   }
 
   private _bottomSpacerHeight(clientHeight: number): number {
-    return Math.min(24, Math.max(8, clientHeight * 0.03));
+    const reserve = this._heldListHeight === null ? 0 : Math.max(0, -this._heldInitialOffset);
+    return Math.min(24, Math.max(8, clientHeight * 0.03)) + reserve;
   }
 
   private _syncBottomMask = (): void => {
@@ -1307,7 +1309,7 @@ class LyricsVirtualizer {
         }
         this._pinnedFooterLayoutKey = null;
         this._updatePinnedFooterLayout();
-        if (this._restoreHeldBottom() && this._virtualizer) this._queueChange(this._virtualizer);
+        if (this._syncHeldLayout() && this._virtualizer) this._queueChange(this._virtualizer);
         this._syncBottomMask();
       }));
       this._pinnedFooterObserver.observe(footerLayer, { box: "border-box" });
@@ -1325,7 +1327,9 @@ class LyricsVirtualizer {
       gap: 0,
       scrollToFn: elementScroll,
       observeElementRect,
-      observeElementOffset,
+      observeElementOffset: (instance, callback) => observeElementOffset(instance, (offset, scrolling) => {
+        callback(offset - this._heldListOffset, scrolling);
+      }),
       onChange: (v) => this._queueChange(v),
       measureElement: this._measureHeight,
     });
@@ -1643,7 +1647,7 @@ class LyricsVirtualizer {
       this._beforeLayoutChange?.();
       this._virtualContainer.style.height = height;
     }
-    this._restoreHeldBottom();
+    this._syncHeldLayout();
     const sizeDelta = totalSize - this._lastTotalSize;
     if (
       this._lastTotalSize > 0 &&
@@ -1782,7 +1786,7 @@ class LyricsVirtualizer {
       });
     }
     this._updatePinnedFooterLayout();
-    if (this._restoreHeldBottom()) this._onChangePending = true;
+    if (this._syncHeldLayout()) this._onChangePending = true;
     this._syncBottomMask();
   }
 
@@ -1801,7 +1805,7 @@ class LyricsVirtualizer {
   }
 
   private _setTrailingOffset(offset: number): void {
-    if (this._heldBottomDistance !== null) offset = 0;
+    if (this._heldListHeight !== null) offset = 0;
     if (Math.abs(offset - this._trailingOffset) < 0.01 && offset !== 0) return;
     if (offset === 0 && this._trailingOffset === 0) return;
     this._trailingOffset = offset;
@@ -1813,7 +1817,7 @@ class LyricsVirtualizer {
   // start the credits where they were and glide them along with the last row.
   // Additive, so a glide started mid-glide stacks instead of jumping.
   private _glideTrailing(delta: number): void {
-    if (this._heldBottomDistance !== null) return;
+    if (this._heldListHeight !== null) return;
     for (const el of this._trailingElements()) {
       el.animate(
         [{ transform: `translateY(${-delta}px)` }, { transform: "translateY(0)" }],
@@ -1908,20 +1912,29 @@ class LyricsVirtualizer {
   /** Keep the revealed footer in place as interludes expand or collapse above it. */
   holdScrollPosition(): void {
     const scrollEl = this._scrollEl;
-    if (!scrollEl || scrollEl.clientHeight === 0 || this._heldBottomDistance !== null ||
+    const container = this._virtualContainer;
+    if (!scrollEl || !container || scrollEl.clientHeight === 0 || this._heldListHeight !== null ||
         this._scrollbarRoot?.classList.contains("simplebar-dragging")) return;
     const trailing = this._trailingElements();
     const footer = trailing.find(element => element.classList.contains("SongCredits"));
     if (!footer) return;
     const before = footer.getBoundingClientRect().bottom;
-    this._heldFooter = footer;
-    this._heldBottomDistance = 0;
+    const viewportHeight = scrollEl.clientHeight;
+    const transform = this._window().getComputedStyle(footer).transform;
+    const glideOffset = transform === "none" ? 0 : new DOMMatrixReadOnly(transform).m42;
+    const reserve = Math.max(0, this._trailingOffset + glideOffset);
+    if (this._spacer && reserve > 0) {
+      this._spacer.style.height = `${this._bottomSpacerHeight(viewportHeight) + reserve}px`;
+    }
+    this._heldListHeight = parseFloat(container.style.height) || container.offsetHeight;
+    scrollEl.style.overflowAnchor = "none";
     if (this._scrollVerifyRAF !== null) {
       this._window().cancelAnimationFrame(this._scrollVerifyRAF);
       this._scrollVerifyRAF = null;
     }
     this._lastRetryTarget = null;
     this._stopSmoothScroll();
+    this._stopCascade();
     this._setTrailingOffset(0);
     for (const element of trailing) {
       for (const animation of element.getAnimations()) {
@@ -1930,34 +1943,56 @@ class LyricsVirtualizer {
     }
     const viewport = scrollEl.getBoundingClientRect();
     const scale = viewport.height / scrollEl.clientHeight || 1;
-    const shift = (footer.getBoundingClientRect().bottom - before) / scale;
-    if (Math.abs(shift) >= 0.5) scrollEl.scrollTo({ top: scrollEl.scrollTop + shift, behavior: "instant" });
-    this._heldBottomDistance = (viewport.bottom - footer.getBoundingClientRect().bottom) / scale;
+    this._heldInitialOffset = (before - footer.getBoundingClientRect().bottom) / scale;
+    this._syncHeldLayout();
     if (this._virtualizer) {
-      this._virtualizer.scrollOffset = scrollEl.scrollTop;
       this._queueChange(this._virtualizer);
     }
     this._setConverging(false);
   }
 
   releaseScrollHold(): void {
-    this._heldBottomDistance = null;
-    this._heldFooter = null;
+    if (this._heldListHeight === null) return;
+    const offset = this._heldListOffset;
+    const scrollEl = this._scrollEl;
+    const scrollTop = scrollEl?.scrollTop ?? 0;
+    this._heldListHeight = null;
+    this._heldInitialOffset = 0;
+    this._heldListOffset = 0;
+    this._virtualContainer?.style.removeProperty("margin-top");
+    if (scrollEl) {
+      if (this._spacer) this._spacer.style.height = `${this._bottomSpacerHeight(this._containerHeight)}px`;
+      // Only explicit navigation/hand scrolling releases the reversed layout.
+      // Keep the current text in place while returning to normal document flow.
+      if (Math.abs(offset) >= 0.5) scrollEl.scrollTo({ top: scrollTop - offset, behavior: "instant" });
+      scrollEl.style.overflowAnchor = this._refreshed ? "none" : "";
+      if (this._virtualizer) {
+        this._virtualizer.scrollOffset = scrollEl.scrollTop;
+        this._queueChange(this._virtualizer);
+      }
+    }
   }
 
-  private _restoreHeldBottom(): boolean {
+  private _syncHeldLayout(): boolean {
     const scrollEl = this._scrollEl;
-    if (!scrollEl || scrollEl.clientHeight === 0 || !this._heldFooter?.isConnected || this._heldBottomDistance === null ||
-        this._scrollbarRoot?.classList.contains("simplebar-dragging")) return false;
-    const viewport = scrollEl.getBoundingClientRect();
-    const scale = viewport.height / scrollEl.clientHeight || 1;
-    const currentDistance = (viewport.bottom - this._heldFooter.getBoundingClientRect().bottom) / scale;
-    const shift = this._heldBottomDistance - currentDistance;
-    if (Math.abs(shift) < 0.5) return false;
-    const before = scrollEl.scrollTop;
-    scrollEl.scrollTo({ top: before + shift, behavior: "instant" });
-    if (this._virtualizer) this._virtualizer.scrollOffset = scrollEl.scrollTop;
-    return Math.abs(scrollEl.scrollTop - before) >= 0.5;
+    const container = this._virtualContainer;
+    if (!scrollEl || !container || this._heldListHeight === null) return false;
+    const height = parseFloat(container.style.height) || 0;
+    const offset = this._heldInitialOffset + this._heldListHeight - height;
+    const changed = Math.abs(offset - this._heldListOffset) >= 0.01;
+    // Grow the list upward, keeping its net flow height and the footer stationary.
+    // The spacer preserves the existing scroll range when capturing an in-flight glide.
+    if (this._spacer) {
+      const spacerHeight = `${this._bottomSpacerHeight(this._containerHeight)}px`;
+      if (this._spacer.style.height !== spacerHeight) this._spacer.style.height = spacerHeight;
+    }
+    if (changed) {
+      this._heldListOffset = offset;
+      container.style.marginTop = `${offset}px`;
+    }
+    // Rows are still measured at their full height; only their viewport origin moves.
+    if (this._virtualizer) this._virtualizer.scrollOffset = scrollEl.scrollTop - offset;
+    return changed;
   }
 
   /**
@@ -2540,7 +2575,7 @@ class LyricsVirtualizer {
 
   private _layoutGlideEnabled(): boolean {
     return (
-      this._heldBottomDistance === null &&
+      this._heldListHeight === null &&
       ($smoothScrolling.get() || this._refreshed) &&
       performance.now() >= this._layoutGlideBlockedUntil
     );
@@ -2564,7 +2599,7 @@ class LyricsVirtualizer {
     _delta: number,
     instance: Virtualizer<HTMLElement, HTMLElement>
   ): boolean => {
-    if (this._heldBottomDistance !== null) return false;
+    if (this._heldListHeight !== null) return false;
     if (this._converging) return false;
     // romanizationToggled moves scrollTop itself.
     if (this._holdForRowResize) return false;
@@ -2833,8 +2868,10 @@ class LyricsVirtualizer {
     this._trailingCache = null;
     this._trailingObserver = null;
     this._lastTotalSize = 0;
-    this._heldBottomDistance = null;
-    this._heldFooter = null;
+    this._virtualContainer?.style.removeProperty("margin-top");
+    this._heldListHeight = null;
+    this._heldInitialOffset = 0;
+    this._heldListOffset = 0;
     this._gapFontPx = 0;
     this._smoothSpring = null;
     this._layoutGlideBlockedUntil = 0;
