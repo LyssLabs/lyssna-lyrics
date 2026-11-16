@@ -1,3 +1,29 @@
+## v0.2.0
+
+- **Return to your lyrics**
+  Reloading Spotify now reopens Lyssna Lyrics if it was your last view. Closing lyrics still returns you to the page you came from, and startup restoration respects navigation you make while the plugin loads.
+
+- **More Up Next placements**
+  Choose Off, Top Left, Bottom Left or Bottom Right. The old Bottom selection becomes Bottom Right automatically. Up Next fits around pinned credits, sharing space with contributor information when possible instead of covering it. The top-left card stays in the corner across artwork, Canvas and fullscreen layouts.
+
+- **Smoother controls and Up Next transitions**
+  The toolbar fades out before Up Next returns to their shared corner. Up Next steps aside while overlapping controls are visible, then fades back in when they clear.
+
+- **Clearer, more flexible credits**
+  Refined source and contributor credits use the softer tones of the original credits. The source can span the full row above contributors and Up Next. Maker and uploader details stay together when space allows, or split into left-aligned rows without a stray separator. Overflowing contributor lines scroll their labels, avatars and names together. Bracketed timing notes stay inline when they fit and move together to the next line when they do not.
+
+- **Smoother songwriter credits**
+  Written by reveals gradually as you reach the bottom. Once the writers are fully visible, instrumental dots make room above them with an upward lyric glide, keeping the footer and viewport steady. Scrolling writers stay above pinned source credits, including in short windows. The hold re-arms after seeks and fade changes settle, while manual scrolling and returning to the current line remain available.
+
+- **Larger, responsive Canvas captions**
+  Canvas titles and artist text are up to 1.75 times their previous size, shrinking toward the original size in smaller windows. Bottom-left Up Next sits to the right of the caption on the bottom baseline. Caption width adjusts to leave room for it, and a card beside the Canvas no longer raises the lyrics fade unnecessarily or clips songwriter credits.
+
+- **Custom-font fixes**
+  Added room for tall and slanted glyphs in contributor credits, Up Next, queue entries, song metadata and popup credits, reducing clipping as text scrolls.
+
+- **More reliable dialog controls**
+  Fixed Spotify's draggable window regions interfering with settings and other dialog buttons. The settings close button keeps its larger click area without enlarging the icon.
+
 ## v0.1.3
 
 - **Spotify+ enhancements**
