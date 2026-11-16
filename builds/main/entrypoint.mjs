@@ -1,6 +1,6 @@
 import { BUILT_IN_CHANNELS as CHANNEL_MAP, CHANNELS_CHANGED_EVENT, DEFAULT_CHANNEL, DEFAULT_BUILD_HOST, getChannelMap as getFullChannelMap, getCurrentChannel, isAllowedBuildHost, isReservedChannelName, readCustomChannels as getCustomChannels, saveCustomChannels, selectedChannel as selectChannel, setCurrentChannel } from "../shared/channels.mjs";
 import { readActiveLyricsApp, recordActiveLyricsApp, rememberLyricsAppSwitch, restoreLyricsAppView, finishLyricsAppSwitch } from "../shared/app-state.mjs";
-import { channelApp, channelBundleUrl, channelVersionUrl, readChannelVersion } from "../shared/build-paths.mjs";
+import { channelApp, channelBundleUrl, channelVersionUrl, readChannelVersion, TEST_BUILD_VERSION } from "../shared/build-paths.mjs";
 import { beginLyricsLoad, finishLyricsLoad } from "../shared/integration.mjs";
 import { getGitHubBundle, importGitHubBundle } from "../shared/github-release.mjs";
 import { CHANNEL_PICKER_STYLES, createChannelPicker } from "../shared/channel-picker.mjs";
@@ -759,7 +759,8 @@ async function load() {
     if (app === "lyssna") window._lyssna_lyrics_metadata = { LoadedVersion: version, PreviousApp: previousApp ?? null };
     else window._spicy_lyrics_metadata = { LoadedVersion: version };
     window._lyssna_lyrics_channel = { name: channel.name, fixedVersion: channel.fixedVersion };
-    const url = channelBundleUrl(channel, version) + "?attempt=" + attempt++;
+    const refresh = app === "lyssna" && version === TEST_BUILD_VERSION ? `&v=${Date.now()}` : "";
+    const url = channelBundleUrl(channel, version) + "?attempt=" + attempt++ + refresh;
     try {
       if (githubBundle) await importGitHubBundle(githubBundle);
       else await import(url);
