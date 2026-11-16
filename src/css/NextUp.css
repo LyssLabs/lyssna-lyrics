@@ -46,7 +46,8 @@
 
 #LyssnaLyricsPage .LyricsContainer > :is(.LyricsPinnedFooter, .LyricsPinnedCredits).NextUpBeside {
   min-width: 0;
-  overflow: hidden;
+  overflow: clip;
+  overflow-clip-margin: 0.35em;
   overflow-wrap: anywhere;
 }
 
@@ -71,7 +72,8 @@
   inset-inline-start: var(--LL-NextUpSideLeft, 0px);
   width: calc(100% - var(--LL-NextUpSideLeft, 0px) - var(--LL-NextUpSideRight, 0px)) !important;
   min-width: 0;
-  overflow: hidden;
+  overflow: clip;
+  overflow-clip-margin: 0.35em;
   overflow-wrap: anywhere;
 }
 
@@ -208,7 +210,9 @@
    the line clips its track, which moves on translate. */
 #LyssnaLyricsPage .NextUp :is(.NextUpTitle, .NextUpArtist) {
   min-width: 0;
-  max-width: 100%;
+  max-width: calc(100% + 0.6em);
+  padding: 0.15em 0.3em;
+  margin: -0.15em -0.3em;
   overflow: hidden;
   white-space: nowrap;
 }
@@ -216,6 +220,8 @@
 #LyssnaLyricsPage .NextUp .NextUpTrack {
   display: block;
   width: max-content;
+  padding: 0.15em 0.3em;
+  margin: -0.15em -0.3em;
 }
 
 /* Only a line that overflows fades at its edges. The left fade sits in padding the negative margin
@@ -223,6 +229,7 @@
 #LyssnaLyricsPage .NextUp :is(.NextUpTitle, .NextUpArtist).Overflowing {
   --NextUpFadeStart: 0.35em;
   --NextUpFadeEnd: 0.6em;
+  max-width: calc(100% + var(--NextUpFadeStart) + var(--NextUpFadeEnd));
   margin-left: calc(var(--NextUpFadeStart) * -1);
   padding-left: var(--NextUpFadeStart);
   padding-right: var(--NextUpFadeEnd);

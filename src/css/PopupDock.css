@@ -343,9 +343,14 @@
   overflow: hidden;
   /* Room under the line for the names' underline, which the clip would cut at small sizes;
      the negative margin keeps the row as tall as the times. */
-  padding-bottom: 0.25em;
-  margin-bottom: -0.25em;
+  padding-block: 0.15em 0.25em;
+  margin-block: -0.15em -0.25em;
   animation: lyssna-TimelineCreditsIn 0.36s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .NowBar .TimelineCredits > .SongCredits {
+  padding: 0.15em 0.3em;
+  margin: -0.15em -0.3em;
 }
 
 .lyssna-pip-wrapper #LyssnaLyricsPage.Exp_PopupDock .NowBar .Timeline .TimelineCredits.Leaving {

@@ -332,7 +332,9 @@
    QueueView.ts): the line clips its track, which moves on translate. */
 #LyssnaLyricsPage .QueuePanel :is(.QueueNameText, .QueueArtists) {
   min-width: 0;
-  max-width: 100%;
+  max-width: calc(100% + 0.6em);
+  padding: 0.15em 0.3em;
+  margin: -0.15em -0.3em;
   overflow: hidden;
   white-space: nowrap;
 }
@@ -340,6 +342,8 @@
 #LyssnaLyricsPage .QueuePanel .QueueTrack {
   display: block;
   width: max-content;
+  padding: 0.15em 0.3em;
+  margin: -0.15em -0.3em;
 }
 
 /* Only a line that overflows fades at its edges. The left fade sits in padding the negative margin
@@ -348,6 +352,7 @@
   /* The left fade is narrower, so text sliding out keeps clear of the artwork across the gap. */
   --QueueFadeStart: 0.35em;
   --QueueFadeEnd: 0.6em;
+  max-width: calc(100% + var(--QueueFadeStart) + var(--QueueFadeEnd));
   margin-left: calc(var(--QueueFadeStart) * -1);
   padding-left: var(--QueueFadeStart);
   padding-right: var(--QueueFadeEnd);

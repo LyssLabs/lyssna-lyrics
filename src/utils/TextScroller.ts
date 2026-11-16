@@ -198,8 +198,12 @@ export function CreateTextScroller(
     const windowLeft = box.clientLeft + paddingLeft;
     const windowRight = box.clientLeft + box.clientWidth - paddingRight;
 
-    const from = windowLeft - left;
-    const to = windowRight - (left + track.offsetWidth);
+    // Ink padding uses negative margins to leave layout unchanged. Align the margin box,
+    // keeping that extra compositing space out of the overflow distance.
+    const marginLeft = parseFloat(trackStyle.marginLeft) || 0;
+    const marginRight = parseFloat(trackStyle.marginRight) || 0;
+    const from = windowLeft - (left - marginLeft);
+    const to = windowRight - (left + track.offsetWidth + marginRight);
     const fontSize = parseFloat(trackStyle.fontSize) || 16;
     member.shape = [from, to, fontSize];
     const distance = from - to;

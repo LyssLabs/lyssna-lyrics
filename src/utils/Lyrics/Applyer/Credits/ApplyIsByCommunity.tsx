@@ -7,10 +7,10 @@ import { registerLyricsCleanup } from "../CreateLyricsContainer.ts";
 function watchContributorRows(credits: HTMLElement): void {
   const maker = credits.querySelector<HTMLElement>(".Maker");
   const uploader = credits.querySelector<HTMLElement>(".Uploader");
-  const names = [...credits.querySelectorAll<HTMLElement>(".SongInfoName")];
-  if (!names.length) return;
+  const contributors = [...credits.querySelectorAll<HTMLElement>(".Maker, .Uploader")];
+  if (!contributors.length) return;
   const view = credits.ownerDocument.defaultView ?? window;
-  const scroller = CreateTextScroller(names, { holdOnReducedMotion: true, overflowClass: "NameOverflowing", paused: true });
+  const scroller = CreateTextScroller(contributors, { holdOnReducedMotion: true, overflowClass: "ContributorOverflowing", paused: true });
   let visible = false;
   let running = false;
   let disposed = false;
@@ -97,13 +97,10 @@ export function ApplyIsByCommunity(data: any, lyricsContainer: HTMLElement): voi
     roleLabel.textContent = label;
     const nameLabel = doc.createElement("span");
     nameLabel.className = "SongInfoName";
-    nameLabel.title = `@${name}`;
-    const nameTrack = doc.createElement("span");
-    nameTrack.className = "SongInfoNameTrack";
+    link.title = `${label} @${name}`;
     const username = doc.createElement("span");
     username.textContent = name;
-    nameTrack.append("@", username);
-    nameLabel.append(nameTrack);
+    nameLabel.append("@", username);
     link.append(roleLabel, " ", nameLabel);
     let avatar: HTMLImageElement | undefined;
     const showAvatar = (source?: string) => {
@@ -126,7 +123,7 @@ export function ApplyIsByCommunity(data: any, lyricsContainer: HTMLElement): voi
         if ($discordCreditUsernames.get()) {
           const matchedName = existing?.trim();
           username.textContent = override ?? (matchedName?.toLowerCase() === identity.username.toLowerCase() ? matchedName : identity.username);
-          nameLabel.title = `@${username.textContent}`;
+          link.title = `${label} @${username.textContent}`;
         }
         if (!avatar) showAvatar(identity.avatarUrl);
       });

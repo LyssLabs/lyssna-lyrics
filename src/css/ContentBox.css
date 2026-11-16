@@ -452,6 +452,14 @@
   padding: 0 3cqw 0 2.5cqw;
 }
 
+/* Preserve the compact/popup variants' horizontal insets while giving custom font ink
+   space in both the clipping windows and their composited scrolling tracks. */
+#LyssnaLyricsPage .ContentBox .NowBar .Header .Metadata :is(.SongName, .ArtistsRow, .Artists),
+#LyssnaLyricsPage .ContentBox .NowBar .Header .Metadata :is(.SongName, .Artists) > span {
+  padding-block: 0.15em !important;
+  margin-block: -0.15em !important;
+}
+
 #LyssnaLyricsPage .ContentBox .NowBar .Header .Metadata .Artists.CanMarquee > span {
   animation: lyssna-Marquee_Artists 25s linear infinite alternate !important;
 }
