@@ -12,6 +12,12 @@ type LyricsContainerReturnObject = {
 };
 
 const LyricsContainerInstances = new Map<number, LyricsContainerReturnObject>();
+const lyricsCleanupCallbacks = new Set<() => void>();
+
+export function registerLyricsCleanup(cleanup: () => void): () => void {
+  lyricsCleanupCallbacks.add(cleanup);
+  return () => { lyricsCleanupCallbacks.delete(cleanup); };
+}
 
 let lastMapIndex = -1;
 
@@ -79,6 +85,8 @@ const GetCurrentLyricsContainerInstance = (): LyricsContainerReturnObject | unde
 };
 
 const DestroyAllLyricsContainers = () => {
+  for (const cleanup of [...lyricsCleanupCallbacks]) cleanup();
+  lyricsCleanupCallbacks.clear();
   destroyLyricsVirtualizer();
   destroySpaceGravity();
   LyricsContainerInstances.forEach((Instance) => {

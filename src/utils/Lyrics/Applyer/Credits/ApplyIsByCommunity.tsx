@@ -1,14 +1,31 @@
 import { PinFooterDetailWithoutWriters } from "./CreateLyricsFooter.ts";
 import { CREDIT_NAME_OVERRIDES, DISCORD_ID, lookupDiscordUser, safeAvatarUrl } from "../../../discordLookup.ts";
 import { $discordCreditUsernames, $discordLookupEndpoint } from "../../../stores.ts";
+import { CreateTextScroller } from "../../../TextScroller.ts";
+import { registerLyricsCleanup } from "../CreateLyricsContainer.ts";
 
 function watchContributorRows(credits: HTMLElement): void {
   const maker = credits.querySelector<HTMLElement>(".Maker");
   const uploader = credits.querySelector<HTMLElement>(".Uploader");
-  if (!maker || !uploader) return;
+  const names = [...credits.querySelectorAll<HTMLElement>(".SongInfoName")];
+  if (!names.length) return;
   const view = credits.ownerDocument.defaultView ?? window;
+  const scroller = CreateTextScroller(names, { holdOnReducedMotion: true, overflowClass: "NameOverflowing", paused: true });
+  let visible = false;
+  let running = false;
+  let disposed = false;
+  let unregisterCleanup = () => {};
+  const syncVisibility = () => {
+    const next = visible && !credits.ownerDocument.hidden;
+    if (disposed || next === running) return;
+    running = next;
+    if (running) scroller.resume();
+    else scroller.pause();
+  };
   const observer = new view.ResizeObserver(() => {
-    if (!credits.isConnected) { observer.disconnect(); return; }
+    if (disposed) return;
+    if (!credits.isConnected) { dispose(); return; }
+    if (!maker || !uploader) return;
     const first = maker.getBoundingClientRect();
     const second = uploader.getBoundingClientRect();
     const inline = first.width > 0 && second.width > 0 &&
@@ -16,7 +33,24 @@ function watchContributorRows(credits: HTMLElement): void {
     // The separator is positioned in the flex gap, so hiding it cannot change the wrap decision.
     credits.toggleAttribute("data-contributors-inline", inline);
   });
-  for (const element of [credits, maker, uploader]) observer.observe(element);
+  const visibilityObserver = new view.IntersectionObserver(entries => {
+    if (disposed) return;
+    if (!credits.isConnected) { dispose(); return; }
+    visible = entries.some(entry => entry.isIntersecting);
+    syncVisibility();
+  });
+  function dispose() {
+    disposed = true;
+    observer.disconnect();
+    visibilityObserver.disconnect();
+    scroller.destroy();
+    credits.ownerDocument.removeEventListener("visibilitychange", syncVisibility);
+    unregisterCleanup();
+  }
+  for (const element of [credits, maker, uploader]) if (element) observer.observe(element);
+  visibilityObserver.observe(credits);
+  credits.ownerDocument.addEventListener("visibilitychange", syncVisibility);
+  unregisterCleanup = registerLyricsCleanup(dispose);
 }
 
 export function ApplyIsByCommunity(data: any, lyricsContainer: HTMLElement): void {
@@ -63,9 +97,13 @@ export function ApplyIsByCommunity(data: any, lyricsContainer: HTMLElement): voi
     roleLabel.textContent = label;
     const nameLabel = doc.createElement("span");
     nameLabel.className = "SongInfoName";
+    nameLabel.title = `@${name}`;
+    const nameTrack = doc.createElement("span");
+    nameTrack.className = "SongInfoNameTrack";
     const username = doc.createElement("span");
     username.textContent = name;
-    nameLabel.append("@", username);
+    nameTrack.append("@", username);
+    nameLabel.append(nameTrack);
     link.append(roleLabel, " ", nameLabel);
     let avatar: HTMLImageElement | undefined;
     const showAvatar = (source?: string) => {
@@ -88,6 +126,7 @@ export function ApplyIsByCommunity(data: any, lyricsContainer: HTMLElement): voi
         if ($discordCreditUsernames.get()) {
           const matchedName = existing?.trim();
           username.textContent = override ?? (matchedName?.toLowerCase() === identity.username.toLowerCase() ? matchedName : identity.username);
+          nameLabel.title = `@${username.textContent}`;
         }
         if (!avatar) showAvatar(identity.avatarUrl);
       });

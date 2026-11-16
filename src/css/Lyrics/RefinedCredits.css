@@ -250,3 +250,36 @@
   outline: 2px solid var(--lyssna-accent);
   outline-offset: 2px;
 }
+
+#LyssnaLyricsPage.SpicyRenderer .LyricsContainer .CommunityCredits :is(.Maker, .Uploader, .song-info-profile-section) {
+  min-width: 0;
+  max-width: 100%;
+}
+
+#LyssnaLyricsPage.SpicyRenderer .LyricsContainer .CommunityCredits :is(.SongInfoRole, img) {
+  flex-shrink: 0;
+}
+
+#LyssnaLyricsPage.SpicyRenderer .LyricsContainer .CommunityCredits .SongInfoName {
+  display: block;
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+#LyssnaLyricsPage.SpicyRenderer .LyricsContainer .CommunityCredits .SongInfoNameTrack {
+  display: block;
+  width: max-content;
+}
+
+#LyssnaLyricsPage.SpicyRenderer .LyricsContainer .CommunityCredits .SongInfoName.NameOverflowing {
+  --NameFadeStart: 0.25em;
+  --NameFadeEnd: 0.5em;
+  margin-inline-start: calc(var(--NameFadeStart) * -1);
+  padding-inline-start: var(--NameFadeStart);
+  padding-inline-end: var(--NameFadeEnd);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 var(--NameFadeStart), #000 calc(100% - var(--NameFadeEnd)), transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 var(--NameFadeStart), #000 calc(100% - var(--NameFadeEnd)), transparent 100%);
+}
