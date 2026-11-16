@@ -50,6 +50,29 @@
   overflow-wrap: anywhere;
 }
 
+/* Extra padding keeps the lifted credits in the footer's measured height and scroll clearance. */
+#LyssnaLyricsPage .LyricsContainer > .LyricsPinnedFooter.NextUpAbove {
+  padding-bottom: calc(1.25rem + var(--LL-NextUpCreditsLift, 0px)) !important;
+}
+
+#LyssnaLyricsPage .LyricsContainer > .LyricsPinnedCredits.NextUpAbove {
+  padding-bottom: var(--LL-NextUpCreditsLift, 0px);
+}
+
+#LyssnaLyricsPage .NextUpAbove .SongCredits {
+  grid-template-columns: minmax(0, 1fr) !important;
+  max-width: 100% !important;
+}
+
+#LyssnaLyricsPage .NextUpAbove .SongCredits > .CommunityCredits {
+  grid-column: 1 / -1 !important;
+  grid-row: 2 !important;
+}
+
+#LyssnaLyricsPage .NextUpAbove .SongCredits:has(> .Credits) > .CommunityCredits {
+  grid-row: 3 !important;
+}
+
 /* The corner sits behind artwork controls; it yields only when the pill covers its slot. */
 #LyssnaLyricsPage .ContentBox > .NextUp[data-placement="topLeft"] {
   z-index: 9;
