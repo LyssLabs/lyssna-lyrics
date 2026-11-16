@@ -151,8 +151,8 @@ function pinnedRows(box: HTMLElement): HTMLElement[] {
 }
 
 function releaseCreditRow(row: HTMLElement): void {
-  row.classList.remove("NextUpBeside", "NextUpAbove");
-  for (const property of ["--LL-NextUpReserveLeft", "--LL-NextUpReserveRight", "--LL-NextUpCreditsLift"]) row.style.removeProperty(property);
+  row.classList.remove("NextUpBeside", "NextUpShared");
+  for (const property of ["--LL-NextUpReserveLeft", "--LL-NextUpReserveRight", "--LL-NextUpSideLeft", "--LL-NextUpSideRight", "--LL-NextUpRowHeight"]) row.style.removeProperty(property);
 }
 
 function clearCreditsSpace(): void {
@@ -166,34 +166,11 @@ function footerPositions(box: HTMLElement) {
     // Recover the full footer width so successive layouts do not keep shrinking it.
     const left = rect.left - (parseFloat(row.style.getPropertyValue("--LL-NextUpReserveLeft")) || 0);
     const right = rect.right + (parseFloat(row.style.getPropertyValue("--LL-NextUpReserveRight")) || 0);
-    const lift = parseFloat(row.style.getPropertyValue("--LL-NextUpCreditsLift")) || 0;
-    return { row, rect, left, right, bottom: rect.bottom - (parseFloat(getComputedStyle(row).paddingBottom) || 0) + lift };
+    return { row, rect, left, right, bottom: rect.bottom - (parseFloat(getComputedStyle(row).paddingBottom) || 0) };
   });
 }
 
-function canUseFullFooter(row: HTMLElement, besideWidth: number, fullWidth: number, aboveHeight: number): boolean {
-  if (!PageContainer?.classList.contains("Exp_RefinedCredits")) return false;
-  const community = row.querySelector<HTMLElement>(".CommunityCredits");
-  const maker = community?.querySelector<HTMLElement>(".Maker");
-  const uploader = community?.querySelector<HTMLElement>(".Uploader");
-  if (!community || !maker || !uploader) return false;
-  const view = row.ownerDocument.defaultView ?? window;
-  const makerRect = maker.getBoundingClientRect();
-  const uploaderRect = uploader.getBoundingClientRect();
-  const requiredWidth = makerRect.width + uploaderRect.width + (parseFloat(view.getComputedStyle(community).columnGap) || 0);
-  if (requiredWidth <= besideWidth + 1 || requiredWidth > fullWidth - 1) return false;
-
-  const blocks = [...row.querySelectorAll<HTMLElement>(".LyricsProvider, .Credits, .CommunityCredits")]
-    .filter(block => block.getClientRects().length > 0);
-  const spacing = Math.max(0, ...blocks.map(block => parseFloat(view.getComputedStyle(block).marginTop) || 0),
-    parseFloat(view.getComputedStyle(row.querySelector(".SongCredits") ?? row).rowGap) || 0);
-  const contentHeight = blocks.reduce((total, block) => total + (block === community
-    ? Math.max(makerRect.height, uploaderRect.height)
-    : block.getBoundingClientRect().height), 0) + Math.max(0, blocks.length - 1) * spacing;
-  return contentHeight + (parseFloat(view.getComputedStyle(row).paddingTop) || 0) <= aboveHeight;
-}
-
-function syncCreditsSpace(positions: ReturnType<typeof footerPositions>, left: number, top: number, width: number, height: number, parentTop: number): void {
+function syncCreditsSpace(positions: ReturnType<typeof footerPositions>, left: number, top: number, width: number, height: number): void {
   const current = new Set(positions.map(({ row }) => row));
   for (const row of reservedCredits) {
     if (current.has(row)) continue;
@@ -202,22 +179,27 @@ function syncCreditsSpace(positions: ReturnType<typeof footerPositions>, left: n
   }
   for (const { row, rect, left: footerLeft, right: footerRight, bottom } of positions) {
     const overlaps = left < footerRight + FOOTER_GAP_PX && left + width > footerLeft - FOOTER_GAP_PX && top < rect.bottom && top + height > rect.top;
-    let reserveLeft = overlaps && $nextUpPlacement.get() === "bottomLeft" ? Math.max(0, Math.ceil(left + width + FOOTER_GAP_PX - footerLeft)) : 0;
-    let reserveRight = overlaps && $nextUpPlacement.get() === "bottomRight" ? Math.max(0, Math.ceil(footerRight - left + FOOTER_GAP_PX)) : 0;
-    const above = overlaps && canUseFullFooter(row, footerRight - footerLeft - reserveLeft - reserveRight,
-      footerRight - footerLeft, top - FOOTER_GAP_PX - parentTop - PLACEMENT_GAP_PX);
-    const lift = above ? Math.max(0, Math.ceil(bottom - top + FOOTER_GAP_PX)) : 0;
-    if (above) reserveLeft = reserveRight = 0;
-    for (const [property, reserve] of [["--LL-NextUpReserveLeft", reserveLeft], ["--LL-NextUpReserveRight", reserveRight], ["--LL-NextUpCreditsLift", lift]] as const) {
+    const reserveLeft = overlaps && $nextUpPlacement.get() === "bottomLeft" ? Math.max(0, Math.ceil(left + width + FOOTER_GAP_PX - footerLeft)) : 0;
+    const reserveRight = overlaps && $nextUpPlacement.get() === "bottomRight" ? Math.max(0, Math.ceil(footerRight - left + FOOTER_GAP_PX)) : 0;
+    const shared = !!(reserveLeft || reserveRight) && !!PageContainer?.classList.contains("Exp_RefinedCredits") &&
+      !!row.querySelector(".CommunityCredits :is(.Maker, .Uploader)");
+    // Only the contributor row gives up width; the provider spans the row above both columns.
+    for (const [property, reserve] of [
+      ["--LL-NextUpReserveLeft", shared ? 0 : reserveLeft],
+      ["--LL-NextUpReserveRight", shared ? 0 : reserveRight],
+      ["--LL-NextUpSideLeft", shared ? reserveLeft : 0],
+      ["--LL-NextUpSideRight", shared ? reserveRight : 0],
+      ["--LL-NextUpRowHeight", shared ? Math.max(height, Math.ceil(bottom - top)) : 0],
+    ] as const) {
       const value = reserve ? `${reserve}px` : "";
       if (row.style.getPropertyValue(property) !== value) {
         if (value) row.style.setProperty(property, value);
         else row.style.removeProperty(property);
       }
     }
-    row.classList.toggle("NextUpBeside", !!(reserveLeft || reserveRight));
-    row.classList.toggle("NextUpAbove", above);
-    if (reserveLeft || reserveRight || lift) reservedCredits.add(row);
+    row.classList.toggle("NextUpBeside", !shared && !!(reserveLeft || reserveRight));
+    row.classList.toggle("NextUpShared", shared);
+    if (reserveLeft || reserveRight) reservedCredits.add(row);
     else reservedCredits.delete(row);
   }
 }
@@ -277,7 +259,7 @@ function syncPlacement(box: HTMLElement): void {
     bottom = Math.min(bottom, viewSwitch.top - FOOTER_GAP_PX);
   }
   const top = setPosition(left, bottom - height);
-  syncCreditsSpace(positions, left, top, width, height, parent.top);
+  syncCreditsSpace(positions, left, top, width, height);
 }
 
 function clearanceTop(box: HTMLElement): number {

@@ -50,27 +50,34 @@
   overflow-wrap: anywhere;
 }
 
-/* Extra padding keeps the lifted credits in the footer's measured height and scroll clearance. */
-#LyssnaLyricsPage .LyricsContainer > .LyricsPinnedFooter.NextUpAbove {
-  padding-bottom: calc(1.25rem + var(--LL-NextUpCreditsLift, 0px)) !important;
-}
-
-#LyssnaLyricsPage .LyricsContainer > .LyricsPinnedCredits.NextUpAbove {
-  padding-bottom: var(--LL-NextUpCreditsLift, 0px);
-}
-
-#LyssnaLyricsPage .NextUpAbove .SongCredits {
+/* Provider above; contributors and the next-track card share the lower row. */
+#LyssnaLyricsPage .NextUpShared .SongCredits {
+  display: grid !important;
   grid-template-columns: minmax(0, 1fr) !important;
   max-width: 100% !important;
 }
 
-#LyssnaLyricsPage .NextUpAbove .SongCredits > .CommunityCredits {
+#LyssnaLyricsPage .NextUpShared .SongCredits > .CommunityCredits {
   grid-column: 1 / -1 !important;
   grid-row: 2 !important;
 }
 
-#LyssnaLyricsPage .NextUpAbove .SongCredits:has(> .Credits) > .CommunityCredits {
+#LyssnaLyricsPage .NextUpShared .SongCredits:has(> .Credits) > .CommunityCredits {
   grid-row: 3 !important;
+}
+
+#LyssnaLyricsPage .NextUpShared :is(.CommunityCredits, .Credits) {
+  position: relative;
+  inset-inline-start: var(--LL-NextUpSideLeft, 0px);
+  width: calc(100% - var(--LL-NextUpSideLeft, 0px) - var(--LL-NextUpSideRight, 0px)) !important;
+  min-width: 0;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+
+#LyssnaLyricsPage .NextUpShared .CommunityCredits {
+  min-height: var(--LL-NextUpRowHeight, 0px);
+  align-content: center;
 }
 
 /* The corner sits behind artwork controls; it yields only when the pill covers its slot. */
