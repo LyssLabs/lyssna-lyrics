@@ -204,9 +204,16 @@ function syncCreditsSpace(positions: ReturnType<typeof footerPositions>, left: n
   }
 }
 
-function canvasCaptionBounds(box: HTMLElement) {
+function canvasCaptionBounds(box: HTMLElement, rightEdge: number) {
   const page = box.closest("#LyssnaLyricsPage");
-  if (!page?.matches(".CanvasImmersive.NowBarSide__Left:not(.CompactMode, .ForcedCompactMode)")) return null;
+  if (!page?.matches(".CanvasImmersive.NowBarSide__Left:not(.CompactMode, .ForcedCompactMode)")) {
+    box.style.removeProperty("--LyssnaCanvasCaptionMaxWidth");
+    return null;
+  }
+  const metadata = box.querySelector<HTMLElement>(".NowBar.Active .Header > .Metadata");
+  if (!metadata || metadata.offsetHeight === 0) return null;
+  const captionWidth = `${Math.max(56, Math.floor(rightEdge - metadata.getBoundingClientRect().left - 144 - FOOTER_GAP_PX))}px`;
+  if (box.style.getPropertyValue("--LyssnaCanvasCaptionMaxWidth") !== captionWidth) box.style.setProperty("--LyssnaCanvasCaptionMaxWidth", captionWidth);
   const rows = [...box.querySelectorAll<HTMLElement>(".NowBar.Active .Header > .Metadata :is(.SongName, .Artists, .ArtistYear)")];
   const visible = rows.map(row => {
     const rect = row.getBoundingClientRect();
@@ -227,16 +234,19 @@ function syncPlacement(box: HTMLElement): void {
   const positions = placement === "topLeft" ? [] : footerPositions(box);
   const cornerLeft = parent.left + PLACEMENT_GAP_PX;
   const cornerRight = parent.right - PLACEMENT_GAP_PX;
-  const caption = placement === "bottomLeft" ? canvasCaptionBounds(box) : null;
+  const lyricColumn = box.querySelector<HTMLElement>(".LyricsContent .VirtualLyricsContainer")?.getBoundingClientRect();
+  const canvasRight = lyricColumn && lyricColumn.width > 0 ? Math.min(cornerRight, lyricColumn.left - FOOTER_GAP_PX) : cornerRight;
+  if (placement !== "bottomLeft") box.style.removeProperty("--LyssnaCanvasCaptionMaxWidth");
+  const caption = placement === "bottomLeft" ? canvasCaptionBounds(box, canvasRight) : null;
+  const availableRight = caption ? canvasRight : cornerRight;
   const availableWidth = (edge: number) => positions.reduce((available, { left, right }) => {
     const minimumCredits = Math.min(right - left, Math.max(64, Math.min(160, (right - left) / 2)));
     return Math.min(available, placement === "bottomLeft"
       ? right - minimumCredits - FOOTER_GAP_PX - edge
       : cornerRight - left - minimumCredits - FOOTER_GAP_PX);
-  }, cornerRight - edge);
+  }, availableRight - edge);
   const captionEdge = caption ? Math.max(cornerLeft, caption.right + FOOTER_GAP_PX) : cornerLeft;
-  const besideCaption = !!caption && availableWidth(captionEdge) >= 144;
-  const placementLeft = besideCaption ? captionEdge : cornerLeft;
+  const placementLeft = caption ? captionEdge : cornerLeft;
   const widthLimit = availableWidth(placementLeft);
   const limit = `${Math.max(0, Math.floor(widthLimit))}px`;
   if (root.style.maxWidth !== limit) root.style.maxWidth = limit;
@@ -272,8 +282,7 @@ function syncPlacement(box: HTMLElement): void {
   root.removeAttribute("data-toolbar-overlap");
 
   const left = placement === "bottomLeft" ? placementLeft : clampLeft(cornerRight - width);
-  const captionBottom = caption ? (besideCaption ? caption.bottom : caption.top - FOOTER_GAP_PX) : parent.bottom - PLACEMENT_GAP_PX;
-  let bottom = Math.min(parent.bottom - PLACEMENT_GAP_PX, captionBottom, ...positions.map(position => position.bottom));
+  let bottom = caption ? parent.bottom - PLACEMENT_GAP_PX : Math.min(parent.bottom - PLACEMENT_GAP_PX, ...positions.map(position => position.bottom));
   const viewSwitch = box.classList.contains("ViewSwitchAwake") ? box.querySelector<HTMLElement>(".ViewSwitch")?.getBoundingClientRect() : null;
   if (viewSwitch && left < viewSwitch.right + FOOTER_GAP_PX && left + width > viewSwitch.left - FOOTER_GAP_PX && bottom > viewSwitch.top) {
     bottom = Math.min(bottom, viewSwitch.top - FOOTER_GAP_PX);
@@ -319,7 +328,8 @@ function liftLyrics(box: HTMLElement, lift: boolean) {
   if (!container || !content) return;
   const card = root?.getBoundingClientRect();
   const contentRect = content.getBoundingClientRect();
-  if (!lift || !root || !card || root.offsetHeight === 0 || root.hasAttribute("data-no-room") || $nextUpPlacement.get() === "topLeft" || card.right <= contentRect.left || card.left >= contentRect.right) {
+  const column = content.querySelector<HTMLElement>(".VirtualLyricsContainer")?.getBoundingClientRect() ?? contentRect;
+  if (!lift || !root || !card || root.offsetHeight === 0 || root.hasAttribute("data-no-room") || $nextUpPlacement.get() === "topLeft" || card.right <= column.left || card.left >= column.right) {
     container.classList.remove("NextUpRoom");
     return;
   }
@@ -359,7 +369,10 @@ function hide() {
     if (body === hiding && !root?.classList.contains("Shown")) hiding?.scroller?.pause();
   }, EXIT_MS);
   const box = host();
-  if (box) liftLyrics(box, false);
+  if (box) {
+    box.style.removeProperty("--LyssnaCanvasCaptionMaxWidth");
+    liftLyrics(box, false);
+  }
 }
 
 function unmount() {
@@ -368,7 +381,10 @@ function unmount() {
   if (ticker) clearInterval(ticker);
   ticker = null;
   const box = PageContainer?.querySelector<HTMLElement>(".ContentBox");
-  if (box) liftLyrics(box, false);
+  if (box) {
+    box.style.removeProperty("--LyssnaCanvasCaptionMaxWidth");
+    liftLyrics(box, false);
+  }
   if (body) dropBody(body, false);
   body = null;
   root?.remove();

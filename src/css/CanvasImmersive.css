@@ -178,7 +178,7 @@
 #LyssnaLyricsPage .ContentBox .NowBar {
   --DockGutter: 4cqw;
   --DockBottom: 5cqw;
-  --DockMetaH: 17.5cqw;
+  --DockMetaH: min(17.5cqw, max(10cqw, 15vh));
   --DockGap: 2.5cqw;
   --DockTimelineH: 7cqw;
   --DockControlsH: 7.5cqw;
@@ -274,6 +274,10 @@
   max-width: calc(100% - var(--DockGutter) * 2);
 }
 
+#LyssnaLyricsPage.CanvasImmersive:not(.CompactMode, .ForcedCompactMode) .ContentBox .NowBar .Header > .Metadata :is(.SongName, .ArtistsRow) {
+  max-width: min(calc(100% - var(--DockGutter) * 2), var(--LyssnaCanvasCaptionMaxWidth, 100%));
+}
+
 #LyssnaLyricsPage.CanvasImmersive:not(.CompactMode, .ForcedCompactMode) .ContentBox .NowBar .Header > .Metadata :is(.SongName, .Artists) > span {
   text-align: left;
 }
@@ -303,13 +307,13 @@
 
 /* Keep the Canvas title and artist together; the base typography uses !important. */
 #LyssnaLyricsPage.CanvasImmersive:not(.CompactMode, .ForcedCompactMode) .ContentBox .NowBar .Header > .Metadata .SongName {
-  font-size: calc(var(--default-font-size) * 2.625) !important;
+  font-size: clamp(calc(var(--default-font-size) * 1.5), min(calc(var(--default-font-size) * 2.625), 2.5vw, 4.5vh), calc(var(--default-font-size) * 2.625)) !important;
   line-height: 1.2 !important;
   letter-spacing: -0.01em;
 }
 
 #LyssnaLyricsPage.CanvasImmersive:not(.CompactMode, .ForcedCompactMode) .ContentBox .NowBar .Header > .Metadata :is(.Artists, .ArtistYear) {
-  font-size: calc(var(--default-font-size) * 1.8375) !important;
+  font-size: clamp(calc(var(--default-font-size) * 1.05), min(calc(var(--default-font-size) * 1.8375), 1.75vw, 3.15vh), calc(var(--default-font-size) * 1.8375)) !important;
   line-height: 1.35 !important;
 }
 
