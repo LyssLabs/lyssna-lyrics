@@ -29,6 +29,7 @@ import {
   holdLyricsScrollPosition,
   releaseLyricsScrollHold,
   setBeforeLyricsLayoutChange,
+  isLyricsListMoving,
   clearLyricsScrollFraction,
   fadesAwayPreviousLines,
   lyricsCenterScrollTopAt,
@@ -68,6 +69,10 @@ let writersRow: HTMLElement | null = null;
 let writersFullyIntersecting = false;
 let writersRevealed = false;
 let writersCanHold = true;
+let writerHoldInputTime = 0;
+let writerCheckTimer: number | null = null;
+let writerCheckWindow: Window | null = null;
+let writerPlaybackTarget: HTMLElement | null = null;
 // --- END NEW ---
 
 function releaseWriterHold(): void {
@@ -78,7 +83,11 @@ function releaseWriterHold(): void {
 }
 
 function updateWriterHold(beforeLayout = false): void {
-  if ((!beforeLayout && !writersFullyIntersecting) || writersRevealed || !writersCanHold || !writersRow?.isConnected) return;
+  if ((!beforeLayout && !writersFullyIntersecting) || writersRevealed || !writersRow?.isConnected) return;
+  if (!writersCanHold) {
+    if (isLyricsListMoving()) return;
+    writersCanHold = true;
+  }
   const container = currentSimpleBarInstance?.getScrollElement() as HTMLElement | undefined;
   const content = container?.closest<HTMLElement>(".LyricsContent");
   if (!container || !content || content.classList.contains("InitialPositionPending")) return;
@@ -101,6 +110,7 @@ function updateWriterHold(beforeLayout = false): void {
   if (row.top < viewport.top + (defaultFade + topPadding) * scale - 1 ||
       row.bottom > viewport.bottom - (floor + (fadeStart - floor) * (1 - reveal) + padding) * scale + 1) return;
   writersRevealed = true;
+  writerHoldInputTime = lastUserScrollTime;
   holdLyricsScrollPosition();
   UpdateScrollToActiveButton();
 }
@@ -115,7 +125,7 @@ function observeWriterCredits(container: HTMLElement): void {
     writersFullyIntersecting = entry.isIntersecting && entry.intersectionRatio >= 0.999;
     if (!writersFullyIntersecting) {
       writersCanHold = true;
-      if (isUserScrolling) {
+      if (isUserScrolling && lastUserScrollTime > writerHoldInputTime) {
         writersRevealed = false;
         releaseLyricsScrollHold();
       }
@@ -123,6 +133,28 @@ function observeWriterCredits(container: HTMLElement): void {
     updateWriterHold();
   }, { root: container, threshold: [0, 1] });
   writersObserver.observe(writersRow);
+}
+
+function checkSettledWriterCredits(): void {
+  if (writerCheckTimer !== null) writerCheckWindow?.clearTimeout(writerCheckTimer);
+  writerCheckWindow = writersRow?.ownerDocument.defaultView ?? window;
+  let attempts = 20;
+  const check = () => {
+    writerCheckTimer = null;
+    if (!writersRow?.isConnected || writersRevealed) return;
+    if (!isLyricsListMoving()) updateWriterHold(true);
+    // Fade transitions and the final smooth-scroll step can settle after scrollend.
+    if (!writersRevealed && writersFullyIntersecting && --attempts > 0) {
+      writerCheckTimer = writerCheckWindow!.setTimeout(check, 100);
+    }
+  };
+  writerCheckTimer = writerCheckWindow.setTimeout(check, 0);
+}
+
+function writerFadeFinished(event: TransitionEvent): void {
+  if (event.target === writersRow?.closest(".LyricsContent") && event.propertyName.startsWith("--LL-LyricsContent_MaskBottom")) {
+    checkSettledWriterCredits();
+  }
 }
 
 function getActiveLineDirection(
@@ -541,7 +573,10 @@ export function InitializeScrollEvents(ScrollSimplebar: any) {
     scrollElement.addEventListener("wheel", wheelHandler);
     scrollElement.addEventListener("touchmove", touchMoveHandler);
     scrollElement.addEventListener("scroll", scrollHandler, { passive: true });
+    scrollElement.addEventListener("scrollend", checkSettledWriterCredits, { passive: true });
     observeWriterCredits(scrollElement);
+    scrollElement.closest(".LyricsContent")?.addEventListener("transitionend", writerFadeFinished);
+    checkSettledWriterCredits();
     setBeforeLyricsLayoutChange(() => updateWriterHold(true));
   }
 }
@@ -840,6 +875,12 @@ export function ScrollToActiveLine(ScrollSimplebar: any) {
   const isPlaybackBacktrack = lastPosition !== 0 && Position < lastPosition - 250;
   const currentLine = GetScrollLine(Lines, ProcessedPosition) as EnhancedLyricsItem | null;
   const playbackTargetLine = currentLine ?? getPlaybackTargetLine(Lines, ProcessedPosition);
+  const writerTarget = playbackTargetLine?.HTMLElement ?? null;
+  if (writerTarget !== writerPlaybackTarget) {
+    writerPlaybackTarget = writerTarget;
+    if (lastLine && writersFullyIntersecting && !isForceScrollQueued && !isSmoothForceScrollQueued &&
+        !wasDrasticPositionChange(lastPosition, Position)) updateWriterHold(true);
+  }
 
   if (!currentLine) {
     UpdateScrollToActiveButton();
@@ -1243,6 +1284,9 @@ export function ResetLastLine() {
 // --- NEW: Cleanup Function ---
 export function CleanupScrollEvents() {
   cleanupScrollButtonObserver();
+  if (writerCheckTimer !== null) writerCheckWindow?.clearTimeout(writerCheckTimer);
+  writerCheckTimer = null;
+  writerCheckWindow = null;
   setBeforeLyricsLayoutChange(null);
   releaseLyricsScrollHold();
   writersObserver?.disconnect();
@@ -1251,9 +1295,13 @@ export function CleanupScrollEvents() {
   writersFullyIntersecting = false;
   writersRevealed = false;
   writersCanHold = true;
+  writerHoldInputTime = 0;
+  writerPlaybackTarget = null;
   // Remove scroll listeners
   const scrollElement = currentSimpleBarInstance?.getScrollElement();
   if (scrollElement) {
+    scrollElement.removeEventListener("scrollend", checkSettledWriterCredits);
+    scrollElement.closest(".LyricsContent")?.removeEventListener("transitionend", writerFadeFinished);
     if (wheelHandler) {
       scrollElement.removeEventListener("wheel", wheelHandler);
     }
