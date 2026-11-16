@@ -93,12 +93,13 @@ function updateWriterHold(beforeLayout = false): void {
   const fadeValue = style.getPropertyValue("--LL-LyricsContent_MaskBottomFadeStart").trim();
   const fade = Number.parseFloat(fadeValue);
   const fadeStart = Number.isFinite(fade) ? fade * (fadeValue.endsWith("%") ? height / 100 : 1) : defaultFade;
+  const floor = Number.parseFloat(style.getPropertyValue("--LL-LyricsContent_MaskBottomFloor")) || 0;
   const reveal = Number.parseFloat(content.style.getPropertyValue("--LL-LyricsContent_FooterReveal")) || 0;
   const padding = Number.parseFloat(style.getPropertyValue("--LL-LyricsContent_MaskBottomPadding")) || 0;
   const topPadding = Number.parseFloat(style.getPropertyValue("--LL-LyricsContent_MaskTopPadding")) || 0;
   const scale = viewport.height / container.clientHeight || 1;
   if (row.top < viewport.top + (defaultFade + topPadding) * scale - 1 ||
-      row.bottom > viewport.bottom - (fadeStart * (1 - reveal) + padding) * scale + 1) return;
+      row.bottom > viewport.bottom - (floor + (fadeStart - floor) * (1 - reveal) + padding) * scale + 1) return;
   writersRevealed = true;
   holdLyricsScrollPosition();
   UpdateScrollToActiveButton();
