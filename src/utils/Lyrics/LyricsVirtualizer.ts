@@ -923,8 +923,11 @@ class LyricsVirtualizer {
       this._allElements.length - 1
     ] as { end: number } | undefined;
     const noWriters = page.classList.contains("PinnedFooterMode_NoWriters");
+    const nextUpClearance = lyricsContent.parentElement?.classList.contains("NextUpRoom")
+      ? parseFloat(lyricsContent.parentElement.style.getPropertyValue("--LL-NextUpRoom")) || 0
+      : 0;
     const layoutKey = [
-      footerHeight, footerLayer.childElementCount, noWriters,
+      footerHeight, footerLayer.childElementCount, noWriters, nextUpClearance,
       this._containerWidth, this._containerHeight,
       lastMeasurement?.end, this._virtualizer?.getTotalSize(),
     ].join(":");
@@ -950,8 +953,14 @@ class LyricsVirtualizer {
         const currentMargin = parseFloat(this._window().getComputedStyle(scrollContainer).marginBottom);
         const terminalBottomAtMaxScroll = scrollContainer.getBoundingClientRect().bottom + scrollEl.scrollTop + this._smoothFraction -
           Math.max(0, scrollEl.scrollHeight - scrollEl.clientHeight);
+        // Up Next moves the mask above the pinned source. Writers must finish
+        // above that boundary too, rather than underneath the additional mask.
+        const writerBoundary = Math.min(
+          footerLayer.getBoundingClientRect().top,
+          scrollEl.getBoundingClientRect().bottom - trackBottom - nextUpClearance
+        );
         if (Number.isFinite(currentMargin)) {
-          bottomMargin = Math.max(0, currentMargin + terminalBottomAtMaxScroll - footerLayer.getBoundingClientRect().top + 4);
+          bottomMargin = Math.max(0, currentMargin + terminalBottomAtMaxScroll - writerBoundary + 4);
         }
       }
     } else {
@@ -963,7 +972,7 @@ class LyricsVirtualizer {
         const terminalBottomAtMaxScroll =
           scrollRect.top + containerOffset + lastMeasurement.end -
           Math.max(0, scrollEl.scrollHeight - scrollEl.clientHeight);
-        const terminalOpaqueBoundary = scrollRect.bottom - trackBottom - fadeHeight;
+        const terminalOpaqueBoundary = scrollRect.bottom - trackBottom - fadeHeight - nextUpClearance;
         const currentMargin = parseFloat(this._window().getComputedStyle(scrollContainer).marginBottom);
         if (Number.isFinite(currentMargin)) {
           bottomMargin = Math.max(0, currentMargin + terminalBottomAtMaxScroll - terminalOpaqueBoundary);
@@ -1017,6 +1026,18 @@ class LyricsVirtualizer {
 
   public remeasure(): void {
     this._remeasureVisible();
+  }
+
+  public syncFooterClearance(): void {
+    const scrollEl = this._scrollEl;
+    if (!scrollEl) return;
+    const keepBottom = this._heldListHeight !== null ||
+      scrollEl.scrollHeight - scrollEl.clientHeight - scrollEl.scrollTop <= 1;
+    this._pinnedFooterLayoutKey = null;
+    this._updatePinnedFooterLayout();
+    if (this._syncHeldLayout() && this._virtualizer) this._queueChange(this._virtualizer);
+    if (keepBottom) this.setScrollPosition(scrollEl.scrollHeight - scrollEl.clientHeight);
+    this._syncBottomMask();
   }
 
   // Push the live viewport size into TanStack's cached scrollRect when it has gone
@@ -1314,10 +1335,7 @@ class LyricsVirtualizer {
             this._pinnedFooterHeight = Math.round(entry.borderBoxSize[0]?.blockSize ?? footerLayer.offsetHeight);
           }
         }
-        this._pinnedFooterLayoutKey = null;
-        this._updatePinnedFooterLayout();
-        if (this._syncHeldLayout() && this._virtualizer) this._queueChange(this._virtualizer);
-        this._syncBottomMask();
+        this.syncFooterClearance();
       }));
       this._pinnedFooterObserver.observe(footerLayer, { box: "border-box" });
       if (virtualContainer.parentElement) {
@@ -3056,4 +3074,8 @@ export function romanizedRowsToggled(flip: () => void): void {
 
 export function triggerRemeasureLV(): void {
   lyricsVirtualizer.remeasure();
+}
+
+export function syncLyricsFooterClearance(): void {
+  lyricsVirtualizer.syncFooterClearance();
 }

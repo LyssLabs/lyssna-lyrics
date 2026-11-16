@@ -5,6 +5,7 @@ import { PageContainer } from "../Pages/PageView.ts";
 import { IsPIP } from "./PopupLyrics.ts";
 import { $nextUpPlacement } from "../../utils/stores.ts";
 import { CreateTextScroller, type TextScroller } from "../../utils/TextScroller.ts";
+import { syncLyricsFooterClearance } from "../../utils/Lyrics/LyricsVirtualizer.ts";
 
 /** The next track appears in a page corner for the last 30 seconds, sharing the footer when needed. */
 
@@ -330,7 +331,10 @@ function liftLyrics(box: HTMLElement, lift: boolean) {
   const contentRect = content.getBoundingClientRect();
   const column = content.querySelector<HTMLElement>(".VirtualLyricsContainer")?.getBoundingClientRect() ?? contentRect;
   if (!lift || !root || !card || root.offsetHeight === 0 || root.hasAttribute("data-no-room") || $nextUpPlacement.get() === "topLeft" || card.right <= column.left || card.left >= column.right) {
+    const hadRoom = container.classList.contains("NextUpRoom");
     container.classList.remove("NextUpRoom");
+    container.style.removeProperty("--LL-NextUpRoom");
+    if (hadRoom) syncLyricsFooterClearance();
     return;
   }
   const contentBottom = contentRect.bottom;
@@ -342,8 +346,11 @@ function liftLyrics(box: HTMLElement, lift: boolean) {
     : 16);
   const room = Math.max(0, Math.round(contentBottom - top + LYRICS_CLEARANCE_PX - fadeEnd));
   const value = `${room}px`;
+  const changed = !container.classList.contains("NextUpRoom") ||
+    container.style.getPropertyValue("--LL-NextUpRoom") !== value;
   if (container.style.getPropertyValue("--LL-NextUpRoom") !== value) container.style.setProperty("--LL-NextUpRoom", value);
   container.classList.add("NextUpRoom");
+  if (changed) syncLyricsFooterClearance();
 }
 
 function show(box: HTMLElement) {
