@@ -370,6 +370,7 @@ class LyricsVirtualizer {
   private _heldListHeight: number | null = null;
   private _heldInitialOffset = 0;
   private _heldListOffset = 0;
+  private _reducedMotion: MediaQueryList | null = null;
   private _beforeLayoutChange: (() => void) | null = null;
 
   setBeforeLayoutChange(callback: (() => void) | null): void {
@@ -1215,6 +1216,11 @@ class LyricsVirtualizer {
     this._wrappers = new Array(lineElements.length).fill(null);
     this._virtualContainer = virtualContainer;
     this._scrollEl = scrollEl;
+    const reducedMotion = this._window().matchMedia("(prefers-reduced-motion: reduce)");
+    this._reducedMotion = reducedMotion;
+    const cancelReducedMotion = () => { if (reducedMotion.matches) this._cancelHeldRowGlides(); };
+    reducedMotion.addEventListener("change", cancelReducedMotion);
+    this._maid.Give(() => reducedMotion.removeEventListener("change", cancelReducedMotion));
     this._trailingCache = null;
     const listParent = virtualContainer.parentElement;
     if (listParent) {
@@ -1643,9 +1649,11 @@ class LyricsVirtualizer {
 
     const totalSize = v.getTotalSize();
     const height = `${totalSize}px`;
+    let previousHeldOffset = this._heldListOffset;
     if (this._virtualContainer.style.height !== height) {
       // The footer still occupies its old position here; observers run after layout.
       this._beforeLayoutChange?.();
+      previousHeldOffset = this._heldListOffset;
       this._virtualContainer.style.height = height;
     }
     this._syncHeldLayout();
@@ -1717,6 +1725,7 @@ class LyricsVirtualizer {
     }
     for (const wrapper of unmountWrappers) v.measureElement(wrapper);
     for (const wrapper of unmountWrappers) {
+      this._cancelHeldRowGlides(wrapper);
       this._resizeObserver?.unobserve(wrapper);
       wrapper.parentElement?.removeChild(wrapper);
     }
@@ -1735,6 +1744,7 @@ class LyricsVirtualizer {
     const toMeasure: HTMLElement[] = [];
     let mountedAny = false;
     const glide = this._layoutGlideEnabled();
+    const heldGlide = this._heldListHeight !== null && !this._reducedMotion?.matches;
     for (const item of rendered) {
       const wrapper = this._getOrCreateWrapper(item.index);
       const gap = this._itemGap(item.index);
@@ -1750,8 +1760,20 @@ class LyricsVirtualizer {
         wrapper.style.transition = wantGlide ? LAYOUT_GLIDE_TRANSITION : "";
         wrapper.dataset.glide = wantGlide ? "1" : "";
       }
-      const transform = `translateY(${Math.round(item.start)}px)`;
+      const start = Math.round(item.start);
+      const previousStart = parseFloat(wrapper.style.transform.slice("translateY(".length));
+      const transform = `translateY(${start}px)`;
       if (wrapper.style.transform !== transform) wrapper.style.transform = transform;
+      if (heldGlide && this._mountedIndices.has(item.index) &&
+          !this._allElements[item.index]?.classList.contains("musical-line")) {
+        const inverse = previousStart + previousHeldOffset - start - this._heldListOffset;
+        if (Number.isFinite(inverse) && Math.abs(inverse) >= 0.5) {
+          wrapper.animate(
+            [{ transform: `translateY(${inverse}px)` }, { transform: "translateY(0)" }],
+            { id: "LL_HeldRowGlide", duration: LAYOUT_GLIDE_MS, easing: LAYOUT_GLIDE_EASING, composite: "add" }
+          );
+        }
+      }
 
       if (!this._mountedIndices.has(item.index)) {
         this._virtualContainer.appendChild(wrapper);
@@ -1937,6 +1959,15 @@ class LyricsVirtualizer {
     this._stopSmoothScroll();
     this._stopCascade();
     this._setTrailingOffset(0);
+    const rows = [...this._mountedIndices].map(index => this._wrappers[index]).filter((row): row is HTMLElement => !!row?.isConnected);
+    const positions = rows.map(row => new DOMMatrixReadOnly(this._window().getComputedStyle(row).transform).m42);
+    for (let index = 0; index < rows.length; index++) {
+      const row = rows[index];
+      this._cancelHeldRowGlides(row);
+      row.style.transition = "";
+      row.dataset.glide = "";
+      row.style.transform = `translateY(${positions[index]}px)`;
+    }
     for (const element of trailing) {
       for (const animation of element.getAnimations()) {
         if (animation.id === "LL_TrailingLayoutGlide") animation.cancel();
@@ -1970,6 +2001,15 @@ class LyricsVirtualizer {
       if (this._virtualizer) {
         this._virtualizer.scrollOffset = scrollEl.scrollTop;
         this._queueChange(this._virtualizer);
+      }
+    }
+  }
+
+  private _cancelHeldRowGlides(row?: HTMLElement): void {
+    const rows = row ? [row] : [...this._mountedIndices].map(index => this._wrappers[index]);
+    for (const wrapper of rows) {
+      for (const animation of wrapper?.getAnimations() ?? []) {
+        if (animation.id === "LL_HeldRowGlide") animation.cancel();
       }
     }
   }
@@ -2873,6 +2913,8 @@ class LyricsVirtualizer {
     this._heldListHeight = null;
     this._heldInitialOffset = 0;
     this._heldListOffset = 0;
+    this._cancelHeldRowGlides();
+    this._reducedMotion = null;
     this._gapFontPx = 0;
     this._smoothSpring = null;
     this._layoutGlideBlockedUntil = 0;
