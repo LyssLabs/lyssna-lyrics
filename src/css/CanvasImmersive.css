@@ -178,7 +178,7 @@
 #LyssnaLyricsPage .ContentBox .NowBar {
   --DockGutter: 4cqw;
   --DockBottom: 5cqw;
-  --DockMetaH: 25cqw;
+  --DockMetaH: 17.5cqw;
   --DockGap: 2.5cqw;
   --DockTimelineH: 7cqw;
   --DockControlsH: 7.5cqw;
@@ -303,13 +303,13 @@
 
 /* Keep the Canvas title and artist together; the base typography uses !important. */
 #LyssnaLyricsPage.CanvasImmersive:not(.CompactMode, .ForcedCompactMode) .ContentBox .NowBar .Header > .Metadata .SongName {
-  font-size: calc(var(--default-font-size) * 3.75) !important;
+  font-size: calc(var(--default-font-size) * 2.625) !important;
   line-height: 1.2 !important;
   letter-spacing: -0.01em;
 }
 
 #LyssnaLyricsPage.CanvasImmersive:not(.CompactMode, .ForcedCompactMode) .ContentBox .NowBar .Header > .Metadata :is(.Artists, .ArtistYear) {
-  font-size: calc(var(--default-font-size) * 2.625) !important;
+  font-size: calc(var(--default-font-size) * 1.8375) !important;
   line-height: 1.35 !important;
 }
 
