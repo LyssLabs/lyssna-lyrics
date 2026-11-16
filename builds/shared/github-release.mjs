@@ -4,7 +4,6 @@ const CACHE_NAME = "lyrics-release-runtimes-v1";
 const manifestKey = repo => `release-loader:${OWNER}/${repo}`;
 const runtimeKey = repo => `https://api.github.com/repos/${OWNER}/${repo}/cached-runtime`;
 const releaseRequests = new Map();
-const refreshRequests = new Map();
 
 function validRelease(repo, release, assetName) {
   if (!release || !VERSION.test(release.version) || release.assetName !== assetName(release.version)) return false;
@@ -22,9 +21,9 @@ function readRelease(repo, assetName) {
   return validRelease(repo, cached, assetName) ? cached : undefined;
 }
 
-export function fetchGitHubRelease(repo, assetName) {
+export function fetchGitHubRelease(repo, assetName, { force = false } = {}) {
   const cached = readRelease(repo, assetName);
-  if (cached && Date.now() - cached.checkedAt >= 0 && Date.now() - cached.checkedAt < 60_000) return Promise.resolve(cached);
+  if (!force && cached && Date.now() - cached.checkedAt >= 0 && Date.now() - cached.checkedAt < 60_000) return Promise.resolve(cached);
   if (releaseRequests.has(repo)) return releaseRequests.get(repo);
   const request = requestRelease(repo, assetName, cached).finally(() => releaseRequests.delete(repo));
   releaseRequests.set(repo, request);
@@ -94,16 +93,6 @@ async function downloadBundle(repo, release, cache, onProgress) {
   throw failure;
 }
 
-function refreshBundle(repo, assetName, cache, cached) {
-  if (refreshRequests.has(repo)) return;
-  const request = (async () => {
-    const release = await fetchGitHubRelease(repo, assetName);
-    if (!matchesRelease(cached, release)) await downloadBundle(repo, release, cache);
-  })().catch(error => console.warn(`[Lyssna Lyrics] Background update unavailable:`, error))
-    .finally(() => refreshRequests.delete(repo));
-  refreshRequests.set(repo, request);
-}
-
 export async function getGitHubBundle(repo, assetName, onProgress) {
   let cache, cached;
   try {
@@ -111,19 +100,10 @@ export async function getGitHubBundle(repo, assetName, onProgress) {
     cached = await cache.match(runtimeKey(repo));
   } catch { /* The loader can run without an offline cache. */ }
   try {
-    const saved = readRelease(repo, assetName);
-    // A newer saved manifest means Update and reload must fetch the advertised version first.
-    if (saved?.digest && matchesRelease(cached, saved)) {
-      try {
-        onProgress?.("Loading the saved plugin…");
-        const bytes = await cached.clone().arrayBuffer();
-        await verify(bytes, saved.digest);
-        refreshBundle(repo, assetName, cache, cached);
-        return { version: saved.version, bytes };
-      } catch { cached = undefined; }
-    }
     onProgress?.("Checking for updates…");
-    const release = await fetchGitHubRelease(repo, assetName);
+    // A startup must choose its runtime after the lookup, including channel switches.
+    // Cached bytes still avoid a download when the current release has not changed.
+    const release = await fetchGitHubRelease(repo, assetName, { force: true });
     if (matchesRelease(cached, release)) {
       try {
         const bytes = await cached.clone().arrayBuffer();
