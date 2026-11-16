@@ -6,7 +6,7 @@ import { NoticeLink, showNotice } from "./NoticeDialog.tsx";
 
 const PATCH_NOTES_URL = "https://raw.githubusercontent.com/iPixelGalaxy/lyssna-lyrics/dev/.change-notes/PATCH_NOTES.md";
 const PATCH_NOTES_PAGE_URL = "https://github.com/iPixelGalaxy/lyssna-lyrics/blob/dev/.change-notes/PATCH_NOTES.md";
-const FEATURE_GUIDE_URL = "https://github.com/iPixelGalaxy/lyssna-lyrics/blob/dev/.change-notes/FEATURE_CHANGES.md";
+const FEATURE_GUIDE_URL = "https://github.com/iPixelGalaxy/lyssna-lyrics#in-the-lyrics-view";
 const FETCH_TIMEOUT_MS = 10_000;
 
 type PatchNote = { text: string; version: string; };

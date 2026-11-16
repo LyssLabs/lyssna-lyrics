@@ -183,6 +183,19 @@ VOLUME_SLIDER_PLAN.md
 
 api-backend/
 
-docs/
+/docs/*
+!/docs/devtools.md
+!/docs/integration.md
+!/docs/archive/
 
 perf/
+
+# Local assistant and editor configuration
+/.agents/
+/.claude/
+/.cursor/
+/CLAUDE.md
+/AGENTS.md
+/GEMINI.md
+/AI_INSTRUCTIONS.md
+/skills-lock.json

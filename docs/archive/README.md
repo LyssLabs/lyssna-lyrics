@@ -1,6 +1,8 @@
+> Archived documentation. Installation instructions and feature descriptions below may be outdated. See the [current README](../../README.md).
+
 # Lyssna Lyrics
 
-![Lyssna logo](src/assets/lyssna-microphone.svg)
+![Lyssna logo](../../src/assets/lyssna-microphone.svg)
 
 Synchronized lyrics for Spotify through Spicetify. Maintained by iPixelGalaxy, based on the official [Spicy Lyrics plugin](https://github.com/Spikerko/spicy-lyrics) by Spikerko and its contributors. The Lyssna name and icon come from [Arashii’s Lyssna project](https://github.com/Stormanzanii/Lyssna).
 
@@ -23,7 +25,7 @@ Lyssna-only settings live in `LL:settings`, and its interface bookkeeping lives 
 
 The channel picker always lists **Lyssna** first and selects it by default, using `ipixelgalaxy.com` for both version and storage hosts. A Lyssna host serves `/lyssna-plugin/version` and `/lyssna-plugin/builds/lyssna-lyrics@<version>.mjs`. **Spicy Lyrics** loads the official Stable build using its original paths. Beta is removed. Custom channels and their Add controls are always visible. The entrypoint and plugin share channel selection, including changes made through older launchers. Switching to the official branch is an explicit opt-in to that plugin and its own services.
 
-Community and Apple Music lyrics use the public developer API with Lyssna's publishable client key through a page hosted on this project's website. The key owner must allow `https://ipixelgalaxy.com`; see [integration setup](docs/lyssna-lyrics-migration.md). Both apps share its allowance. Provider, maker, and uploader credits appear with the lyrics. The private plugin API, sessions, embedded contributor profiles, remote configuration, and remote experiment controls are removed. Motion artwork falls back to static covers because its signing service belonged to the private integration; saved artwork preferences remain available for compatibility. Spotify Canvas still works.
+Community and Apple Music lyrics use the public developer API with Lyssna's publishable client key through a page hosted on this project's website. The key owner must allow `https://ipixelgalaxy.com`; see [integration setup](../integration.md). Both apps share its allowance. Provider, maker, and uploader credits appear with the lyrics. The private plugin API, sessions, embedded contributor profiles, remote configuration, and remote experiment controls are removed. Motion artwork falls back to static covers because its signing service belonged to the private integration; saved artwork preferences remain available for compatibility. Spotify Canvas still works.
 
 ## Lyssna Standalone
 

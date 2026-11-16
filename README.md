@@ -24,7 +24,7 @@ This is iPixelGalaxy's fork of [Spicy Lyrics](https://github.com/Spikerko/spicy-
 | :-- | :-- |
 | **Follow the song** | Word and line timing, duet alignment, romanization, and a button to return to the active line. Timing depends on the lyrics available for each track. |
 | **Pick a view** | Keep lyrics on the page, go fullscreen or Cinema, open a popout, or use the Now Playing sidebar. |
-| **Make it yours** | Change the font and lyric size, choose Spring or Bloom, try Space Gravity, and adjust backgrounds and animation limits. Dialogs are solid by default, with optional Liquid Glass. |
+| **Make it yours** | Change the font and lyric size, choose the Lyssna or Apple Music visual style, try Space Gravity, and adjust backgrounds and animation limits. Dialogs are solid by default, with optional Liquid Glass. |
 | **Work with TTML** | Load lyrics temporarily, for the session, or persistently. Browse your local TTML database and apply a reviewer profile while checking a file. |
 | **Choose your sources** | Reorder and enable lyric sources, choose the toolbar's cache action, and keep provider and contributor credits beside the lyrics. |
 
@@ -95,7 +95,7 @@ The Lyssna channel follows the latest published GitHub release automatically whe
 
 Lyssna's release series begins at **0.1.0**. Historical **100.10.x** Pixel Edition versions come before the new series in update checks and patch notes.
 
-Community and Apple Music lyrics use the public Spicy Lyrics developer API. Other available sources include Musixmatch, Spotify, LRCLIB, and NetEase. Source availability varies by track; manage their order in **Settings → Sources**. The fork's private plugin API integration has been removed.
+Community and Apple Music lyrics use the public Spicy Lyrics developer API. Other available sources include lrc.red, Musixmatch, Spotify, LRCLIB, and NetEase. Source availability varies by track; manage their order in **Settings → Sources**. The fork's private plugin API integration has been removed.
 
 ## Want a break from the lag?
 
@@ -123,4 +123,4 @@ Release notes and full versioned plugin downloads are available on **[GitHub Rel
 
 See [LICENSE](LICENSE) for the GNU Affero General Public License, version 3, and [the icon license](src/assets/LUCIDE_LICENSE.txt) for the microphone artwork.
 
-[GitHub Releases](https://github.com/iPixelGalaxy/lyssna-lyrics/releases) · [Feature notes](.change-notes/FEATURE_CHANGES.md) · **[Archived README and release history](README.archive.md)**
+[GitHub Releases](https://github.com/iPixelGalaxy/lyssna-lyrics/releases) · [DevTools help](docs/devtools.md) · [Integration notes](docs/integration.md) · **[Archived README](docs/archive/README.md)**
