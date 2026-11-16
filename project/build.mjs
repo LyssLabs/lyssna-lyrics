@@ -122,7 +122,6 @@ if (!isLyricsVersion(version)) {
 const projectName = readProjectName();
 const defaultDist = resolve("dist");
 const outputFile = `${projectName}@${version}.mjs`;
-const outputFiles = [...new Set([outputFile, `spicy-lyrics@${version}.mjs`])];
 const creatorBin = require.resolve("@spicemod/creator/bin");
 
 const result = spawnSync(process.execPath, [creatorBin, "build", "--no-copy"], {
@@ -147,51 +146,24 @@ if (entrypointBuild.status !== 0) process.exit(entrypointBuild.status ?? 1);
 
 try {
   const builtFile = getBuiltJsFile(defaultDist, projectName);
-  for (const filename of outputFiles) {
-    copyFileReplacing(builtFile, join(defaultDist, filename));
-  }
+  copyFileReplacing(builtFile, join(defaultDist, outputFile));
   const bridgeName = "lyssna-lyrics-bridge.html";
   const bridgeSource = readFileSync(resolve("website", bridgeName), "utf8");
   for (const script of bridgeSource.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)) {
     new Script(script[1], { filename: bridgeName });
   }
-  const launcherFiles = ["lyssna-lyrics.mjs", "spicy-lyrics.mjs", "spicy-lyrics-pixel.mjs"];
-
   function publishOutput(dest) {
     const pluginDir = join(dest, PLUGIN_DIRECTORY);
     const bundlesDir = join(pluginDir, BUNDLES_DIRECTORY);
     mkdirSync(bundlesDir, { recursive: true });
     copyFileReplacing(resolve("website", "download.html"), join(pluginDir, "download.html"));
 
-    // Copy existing releases before publishing the new manifest or entrypoint.
-    // Canonical filenames take precedence when both older aliases exist.
-    const existing = readdirSync(dest).filter(name => /^(?:lyssna|spicy)-lyrics@.+\.mjs$/.test(name)).sort();
-    for (const filename of existing) {
-      const releaseVersion = filename.match(/@(.+)\.mjs$/)?.[1];
-      if (!isLyricsVersion(releaseVersion)) continue;
-      for (const alias of [filename, `lyssna-lyrics@${releaseVersion}.mjs`]) {
-        const migrated = join(bundlesDir, alias);
-        if (!existsSync(migrated)) copyFileReplacing(join(dest, filename), migrated);
-      }
-    }
-    for (const filename of outputFiles) {
-      const source = join(defaultDist, filename);
-      copyFileReplacing(source, join(bundlesDir, filename));
-      if (resolve(dest) !== defaultDist) copyFileReplacing(source, join(dest, filename));
-    }
-    for (const directory of [pluginDir, dest]) {
-      copyFileReplacing(resolve("website", bridgeName), join(directory, bridgeName));
-      if (resolve(directory) !== defaultDist) copyFileReplacing(entrypointFile, join(directory, "entrypoint.mjs"));
-      for (const filename of launcherFiles) copyFileReplacing(resolve("builds", filename), join(directory, filename));
-    }
+    copyFileReplacing(join(defaultDist, outputFile), join(bundlesDir, outputFile));
+    copyFileReplacing(resolve("website", bridgeName), join(pluginDir, bridgeName));
+    copyFileReplacing(entrypointFile, join(pluginDir, "entrypoint.mjs"));
+    copyFileReplacing(resolve("builds", "lyssna-lyrics.mjs"), join(pluginDir, "lyssna-lyrics.mjs"));
     if (!parsedArgs.testBuild) {
       writeFileReplacing(join(pluginDir, "version"), version);
-      writeFileReplacing(join(dest, "version"), version);
-    } else if (!existsSync(join(pluginDir, "version")) && existsSync(join(dest, "version"))) {
-      const stableVersion = readFileSync(join(dest, "version"), "utf8").trim();
-      if (isLyricsVersion(stableVersion) && existsSync(join(bundlesDir, `lyssna-lyrics@${stableVersion}.mjs`))) {
-        copyFileReplacing(join(dest, "version"), join(pluginDir, "version"));
-      }
     }
   }
 

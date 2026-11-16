@@ -3,7 +3,7 @@ import { getRemoteConfig } from "../remoteConfig.ts";
 
 declare const __LYSSNA_LYRICS_CLIENT_KEY__: string;
 
-const BRIDGE_URL = "https://ipixelgalaxy.com/lyssna-lyrics-bridge.html?v=2";
+const BRIDGE_URL = "https://ipixelgalaxy.com/lyssna-plugin/lyssna-lyrics-bridge.html?v=2";
 const BRIDGE_ORIGIN = new URL(BRIDGE_URL).origin;
 const CHANNEL = "lyssna-lyrics-api-v1";
 type BridgeResponse = { status: number; body: any; retryAfter?: string };
