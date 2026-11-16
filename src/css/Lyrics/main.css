@@ -38,6 +38,12 @@
   initial-value: 0px;
 }
 
+@property --LL-LyricsContent_FooterReveal {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
 /* Animated gradients must not invalidate every lyric descendant through inheritance. */
 @property --lyssna-lyrics-mask {
   syntax: "*";
@@ -75,8 +81,8 @@
     transparent 0,
     transparent 16px,
     var(--spice-sidebar) calc(64px + var(--LL-LyricsContent_MaskTopPadding)),
-    var(--spice-sidebar) calc(100% - var(--LL-LyricsContent_MaskBottomFadeStart) - var(--LL-LyricsContent_MaskBottomPadding)),
-    transparent calc(100% - var(--LL-LyricsContent_MaskBottomFadeEnd) - var(--LL-LyricsContent_MaskBottomPadding)),
+    var(--spice-sidebar) calc(100% - var(--LL-LyricsContent_MaskBottomFadeStart) * (1 - var(--LL-LyricsContent_FooterReveal)) - var(--LL-LyricsContent_MaskBottomPadding)),
+    transparent calc(100% - var(--LL-LyricsContent_MaskBottomFadeEnd) * (1 - var(--LL-LyricsContent_FooterReveal)) - var(--LL-LyricsContent_MaskBottomPadding)),
     transparent
   );
 
@@ -122,8 +128,8 @@
     transparent 0,
     transparent min(16px, 6%),
     var(--spice-sidebar) calc(min(64px, 25%) + var(--LL-LyricsContent_MaskTopPadding)),
-    var(--spice-sidebar) calc(100% - var(--LL-LyricsContent_MaskBottomFadeStart)),
-    transparent calc(100% - var(--LL-LyricsContent_MaskBottomFadeEnd)),
+    var(--spice-sidebar) calc(100% - var(--LL-LyricsContent_MaskBottomFadeStart) * (1 - var(--LL-LyricsContent_FooterReveal))),
+    transparent calc(100% - var(--LL-LyricsContent_MaskBottomFadeEnd) * (1 - var(--LL-LyricsContent_FooterReveal))),
     transparent
   );
 }
@@ -251,11 +257,6 @@ body.LyssnaLyrics_LegacyNav.LyssnaLyrics_LegacyNav #LyssnaLyricsPage .LyricsCont
 #LyssnaLyricsPage:is(.PinnedFooterMode_NoWriters, .PinnedFooterMode_Full):not(.SpaceGravityMode):not(.CardMode) .LyricsContainer .LyricsContent {
   --LL-LyricsContent_MaskBottomFadeStart: calc(var(--LL-PinnedFooterTrackBottom, 0px) + var(--LL-PinnedFooterFadeHeight, 48px));
   --LL-LyricsContent_MaskBottomFadeEnd: var(--LL-PinnedFooterTrackBottom, 0px);
-}
-
-#LyssnaLyricsPage:not(.PinnedFooterMode_Full):not(.SpaceGravityMode):not(.CardMode) .LyricsContainer .LyricsContent.LyricsScrollAtBottom {
-  --LL-LyricsContent_MaskBottomFadeStart: 0px;
-  --LL-LyricsContent_MaskBottomFadeEnd: 0px;
 }
 
 #LyssnaLyricsPage.PinnedFooterMode_NoWriters:not(.SpaceGravityMode):not(.CardMode) .LyricsContainer .LyricsContent.PinnedFooterSingleLine.LyricsScrollAtBottom .line.Active,

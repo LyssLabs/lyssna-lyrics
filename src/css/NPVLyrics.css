@@ -484,19 +484,14 @@ html.LyssnaLyrics_NPVMorph::view-transition-new(lyssna-npv-card) {
     transparent 0,
     transparent 8px,
     var(--spice-sidebar) calc(28px + var(--LL-LyricsContent_MaskTopPadding, 0px)),
-    var(--spice-sidebar) calc(100% - var(--LL-LyricsContent_MaskBottomFadeStart)),
-    transparent calc(100% - var(--LL-LyricsContent_MaskBottomFadeEnd)),
+    var(--spice-sidebar) calc(100% - var(--LL-LyricsContent_MaskBottomFadeStart) * (1 - var(--LL-LyricsContent_FooterReveal))),
+    transparent calc(100% - var(--LL-LyricsContent_MaskBottomFadeEnd) * (1 - var(--LL-LyricsContent_FooterReveal))),
     transparent
   );
 }
 
 #LyssnaLyricsNPVCard #LyssnaLyricsPage.CardMode.PinnedFooterMode_NoWriters:not(.SpaceGravityMode) .LyricsContainer .LyricsContent .LyssnaLyricsScrollContainer {
   margin-bottom: 0;
-}
-
-#LyssnaLyricsNPVCard #LyssnaLyricsPage.CardMode.PinnedFooterMode_NoWriters:not(.SpaceGravityMode) .LyricsContainer .LyricsContent.LyricsScrollAtBottom {
-  --LL-LyricsContent_MaskBottomFadeStart: 0px;
-  --LL-LyricsContent_MaskBottomFadeEnd: 0px;
 }
 
 #LyssnaLyricsNPVCard #LyssnaLyricsPage.CardMode .LyricsContent > .simplebar-track.simplebar-vertical {

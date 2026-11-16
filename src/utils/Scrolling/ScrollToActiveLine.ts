@@ -60,7 +60,61 @@ let wheelHandler: (() => void) | null = null;
 let touchMoveHandler: (() => void) | null = null;
 let scrollHandler: (() => void) | null = null;
 let holdScrollToActiveButton = false;
+let writersObserver: IntersectionObserver | null = null;
+let writersRow: HTMLElement | null = null;
+let writersFullyIntersecting = false;
+let writersRevealed = false;
+let writersCanHold = true;
 // --- END NEW ---
+
+function releaseWriterHold(): void {
+  writersRevealed = false;
+  // A seek/return must leave the credits before they can take scrolling again.
+  writersCanHold = false;
+}
+
+function updateWriterHold(): void {
+  if (!writersFullyIntersecting || writersRevealed || !writersCanHold || !writersRow?.isConnected) return;
+  const container = currentSimpleBarInstance?.getScrollElement() as HTMLElement | undefined;
+  const content = container?.closest<HTMLElement>(".LyricsContent");
+  if (!container || !content || content.classList.contains("InitialPositionPending")) return;
+  const view = content.ownerDocument.defaultView ?? window;
+  const style = view.getComputedStyle(content);
+  const height = content.clientHeight;
+  const card = content.closest("#LyssnaLyricsPage")?.classList.contains("CardMode");
+  const defaultFade = card ? 28 : IsPIP ? Math.min(64, height * 0.25) : 64;
+  const fadeValue = style.getPropertyValue("--LL-LyricsContent_MaskBottomFadeStart").trim();
+  const fade = Number.parseFloat(fadeValue);
+  const fadeStart = Number.isFinite(fade) ? fade * (fadeValue.endsWith("%") ? height / 100 : 1) : defaultFade;
+  const reveal = Number.parseFloat(content.style.getPropertyValue("--LL-LyricsContent_FooterReveal")) || 0;
+  const padding = Number.parseFloat(style.getPropertyValue("--LL-LyricsContent_MaskBottomPadding")) || 0;
+  const topPadding = Number.parseFloat(style.getPropertyValue("--LL-LyricsContent_MaskTopPadding")) || 0;
+  const viewport = container.getBoundingClientRect();
+  const row = writersRow.getBoundingClientRect();
+  const scale = viewport.height / container.clientHeight || 1;
+  if (row.top < viewport.top + (defaultFade + topPadding) * scale - 1 ||
+      row.bottom > viewport.bottom - (fadeStart * (1 - reveal) + padding) * scale + 1) return;
+  writersRevealed = true;
+  getLyricsVirtualizer()?.holdScrollPosition();
+  UpdateScrollToActiveButton();
+}
+
+function observeWriterCredits(container: HTMLElement): void {
+  writersRow = container.querySelector<HTMLElement>(".SongCredits > .Credits");
+  if (!writersRow?.querySelector(".CreditsValue")?.textContent?.trim()) return;
+  const view = container.ownerDocument.defaultView ?? window;
+  writersObserver = new view.IntersectionObserver(entries => {
+    const entry = entries[entries.length - 1];
+    if (!entry || entry.target !== writersRow) return;
+    writersFullyIntersecting = entry.isIntersecting && entry.intersectionRatio >= 0.999;
+    if (!writersFullyIntersecting) {
+      writersCanHold = true;
+      if (isUserScrolling) writersRevealed = false;
+    }
+    updateWriterHold();
+  }, { root: container, threshold: [0, 1] });
+  writersObserver.observe(writersRow);
+}
 
 function getActiveLineDirection(
   container: HTMLElement,
@@ -264,6 +318,7 @@ function GetScrollToActiveButton(): HTMLButtonElement | null {
       content: "Scroll to the current line",
     });
   button.addEventListener("click", () => {
+    releaseWriterHold();
     lastUserScrollTime = 0;
     if ($currentLyricsType.get() === "Static") staticReturning = true;
     else ScrollBackToLine();
@@ -332,7 +387,7 @@ let sideItem: EnhancedLyricsItem | null = null;
 // Shown only while a hand scroll holds auto-scroll off, so the glide back from a click (whose
 // scroll keeps the line out of view until it lands) never brings it up again.
 function ShowActiveLineSide() {
-  SetScrollToActiveDirection(isUserScrolling && allowForceScrolling ? side : null);
+  SetScrollToActiveDirection((isUserScrolling || writersRevealed) && allowForceScrolling ? side : null);
 }
 
 function StopObservingActiveLine() {
@@ -411,6 +466,7 @@ function ScrollBackToLine() {
   const container = currentSimpleBarInstance?.getScrollElement() as HTMLElement | undefined;
   const LineElem = sideItem?.HTMLElement as HTMLElement | undefined;
   if (!container || !sideItem || !LineElem || !allowForceScrolling) return;
+  releaseWriterHold();
   isUserScrolling = false;
   lastLine = LineElem;
   PageContainer?.querySelector(".LyricsContainer .LyricsContent")?.classList.remove("HideLineBlur");
@@ -459,7 +515,10 @@ export function InitializeScrollEvents(ScrollSimplebar: any) {
   currentSimpleBarInstance = ScrollSimplebar;
   wheelHandler = () => handleUserScroll(currentSimpleBarInstance);
   touchMoveHandler = () => handleUserScroll(currentSimpleBarInstance);
-  scrollHandler = RefreshActiveLineSide;
+  scrollHandler = () => {
+    RefreshActiveLineSide();
+    updateWriterHold();
+  };
   // --- END NEW ---
 
   // Setup the observer
@@ -472,6 +531,7 @@ export function InitializeScrollEvents(ScrollSimplebar: any) {
     scrollElement.addEventListener("wheel", wheelHandler);
     scrollElement.addEventListener("touchmove", touchMoveHandler);
     scrollElement.addEventListener("scroll", scrollHandler, { passive: true });
+    observeWriterCredits(scrollElement);
   }
 }
 
@@ -560,6 +620,7 @@ const ScrollTo = (
   // Glides however far the line is (the scroll-to-active button).
   glide: boolean = false
 ) => {
+  if (writersRevealed) return;
   if (lineIndex !== undefined && getLyricsVirtualizer()) {
     // instantScroll is effectively always true in the virtualizer path
     // (we set scrollTop directly), but passing the flag keeps the intent
@@ -658,7 +719,10 @@ function ScrollStaticLyrics(ScrollSimplebar: any) {
   lastStaticFrame = now;
   const position = SpotifyPlayer.GetPosition();
   // A seek takes the list back from a hand scroll, as it does for synced lyrics.
-  if (wasDrasticPositionChange(lastStaticPosition, position)) lastUserScrollTime = 0;
+  if (wasDrasticPositionChange(lastStaticPosition, position)) {
+    lastUserScrollTime = 0;
+    releaseWriterHold();
+  }
   lastStaticPosition = position;
   if (IsScrollbarDragging()) handleUserScroll(ScrollSimplebar);
 
@@ -672,7 +736,11 @@ function ScrollStaticLyrics(ScrollSimplebar: any) {
   const distance = target - staticScrollY;
   // A hand scroll that left the point being sung half a screen or more away holds auto-scroll off.
   const scrolledAway = lastUserScrollTime !== 0 && Math.abs(distance) > container.clientHeight / 2;
-  SetScrollToActiveDirection(scrolledAway ? (distance < 0 ? "Above" : "Below") : null);
+  SetScrollToActiveDirection(scrolledAway || (writersRevealed && Math.abs(distance) > 1) ? (distance < 0 ? "Above" : "Below") : null);
+  if (writersRevealed) {
+    ReleaseStaticScroll();
+    return;
+  }
   // After a hand scroll, take over again once it has settled with the point being sung in view.
   if (lastUserScrollTime) {
     // The hand has the list: let it sit on scrollTop, with no offset of ours left over.
@@ -739,6 +807,7 @@ export function ScrollToActiveLine(ScrollSimplebar: any) {
 
   //if (Spicetify.Platform.History.location.pathname === "/LyssnaLyrics") {
   const Position = SpotifyPlayer.GetPosition();
+  if (lastPosition !== 0 && wasDrasticPositionChange(lastPosition, Position)) releaseWriterHold();
   // Early scroll: pick the scroll target as if the clock were this far ahead, so
   // the list starts moving before the line lights up instead of snapping to it
   // the moment it does. Only the target changes — line states (Status) still
@@ -771,6 +840,12 @@ export function ScrollToActiveLine(ScrollSimplebar: any) {
   const sideTarget = currentLine ?? LineAfter(Lines, ProcessedPosition);
   const sideContainer = ScrollSimplebar?.getScrollElement() as HTMLElement | undefined;
   if (sideTarget && sideContainer) TrackActiveLineSide(sideContainer, sideTarget);
+  if (writersRevealed) {
+    lastPosition = Position;
+    forceScrollQueued = false;
+    smoothForceScrollQueued = false;
+    return;
+  }
 
   let notSungCount = 0;
   let activeCount = 0;
@@ -1155,6 +1230,12 @@ export function ResetLastLine() {
 // --- NEW: Cleanup Function ---
 export function CleanupScrollEvents() {
   cleanupScrollButtonObserver();
+  writersObserver?.disconnect();
+  writersObserver = null;
+  writersRow = null;
+  writersFullyIntersecting = false;
+  writersRevealed = false;
+  writersCanHold = true;
   // Remove scroll listeners
   const scrollElement = currentSimpleBarInstance?.getScrollElement();
   if (scrollElement) {

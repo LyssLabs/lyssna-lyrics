@@ -858,8 +858,18 @@ class LyricsVirtualizer {
   private _syncBottomMask = (): void => {
     const scrollEl = this._scrollEl;
     if (!scrollEl?.isConnected) return;
-    const atBottom = scrollEl.scrollTop + scrollEl.clientHeight >= scrollEl.scrollHeight - 1;
+    const remaining = Math.max(0, scrollEl.scrollHeight - scrollEl.clientHeight - scrollEl.scrollTop);
+    const atBottom = remaining <= 1;
     const content = scrollEl.closest<HTMLElement>(".LyricsContent");
+    const page = content?.closest("#LyssnaLyricsPage");
+    const canReveal = page && !page.classList.contains("PinnedFooterMode_Full") &&
+      !page.classList.contains("SpaceGravityMode") &&
+      (!page.classList.contains("CardMode") || page.classList.contains("PinnedFooterMode_NoWriters"));
+    // Release the fade over the last stretch of scrolling, rather than uncovering
+    // the writers only on the final pixel. The registered property doesn't inherit into words.
+    const revealDistance = Math.min(128, Math.max(48, scrollEl.clientHeight * 0.2));
+    const reveal = canReveal ? Math.max(0, 1 - remaining / revealDistance) : 0;
+    setPinnedFooterProperty(content, "--LL-LyricsContent_FooterReveal", reveal.toFixed(3));
     if (content && content.classList.contains("LyricsScrollAtBottom") !== atBottom) {
       content.classList.toggle("LyricsScrollAtBottom", atBottom);
     }
@@ -1219,6 +1229,7 @@ class LyricsVirtualizer {
     this._maid.Give(() => {
       scrollEl.removeEventListener("scroll", this._syncBottomMask);
       lyricsContent?.classList.remove("LyricsScrollAtBottom");
+      lyricsContent?.style.removeProperty("--LL-LyricsContent_FooterReveal");
     });
     this._window().requestAnimationFrame(() => {
       if (this._scrollEl === scrollEl) this._syncBottomMask();
@@ -1876,6 +1887,17 @@ class LyricsVirtualizer {
   /** Drops the sub-pixel offset left by setScrollPosition, so the list sits on scrollTop. */
   clearScrollFraction(): void {
     if (this._smoothRAF === null) this._setSmoothFraction(0);
+  }
+
+  /** Cancel scroll movement and retries without snapping a visual ripple to its end. */
+  holdScrollPosition(): void {
+    if (this._scrollVerifyRAF !== null) {
+      this._window().cancelAnimationFrame(this._scrollVerifyRAF);
+      this._scrollVerifyRAF = null;
+    }
+    this._lastRetryTarget = null;
+    this._stopSmoothScroll();
+    this._setConverging(false);
   }
 
   /**
