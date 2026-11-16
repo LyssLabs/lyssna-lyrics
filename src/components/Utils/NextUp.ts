@@ -22,6 +22,12 @@ const LYRICS_CLEARANCE_PX = 24;
 const PLACEMENT_GAP_PX = 24;
 const FOOTER_GAP_PX = 16;
 const reservedCredits = new Set<HTMLElement>();
+const sharedWriters = new Map<HTMLElement, {
+  original: HTMLElement;
+  copy: HTMLElement;
+  key: string;
+  fits: boolean;
+}>();
 
 type NextTrack = { uri: string; title: string; artist: string; image: string | null };
 type Body = { el: HTMLElement; scroller: TextScroller | null };
@@ -152,8 +158,62 @@ function pinnedRows(box: HTMLElement): HTMLElement[] {
 }
 
 function releaseCreditRow(row: HTMLElement): void {
+  releaseSharedWriters(row);
   row.classList.remove("NextUpBeside", "NextUpShared");
   for (const property of ["--LL-NextUpReserveLeft", "--LL-NextUpReserveRight", "--LL-NextUpSideLeft", "--LL-NextUpSideRight", "--LL-NextUpRowHeight"]) row.style.removeProperty(property);
+}
+
+function releaseSharedWriters(row: HTMLElement): void {
+  const state = sharedWriters.get(row);
+  if (!state) return;
+  state.original.classList.remove("NextUpWritersMirrored");
+  state.copy.remove();
+  sharedWriters.delete(row);
+}
+
+function syncSharedWriters(row: HTMLElement, height: number): void {
+  const content = row.parentElement?.querySelector<HTMLElement>(".LyricsContent");
+  const original = content?.querySelector<HTMLElement>(".SongCredits > .Credits");
+  const provider = row.querySelector<HTMLElement>(":scope > .LyricsProvider");
+  const revealed = content?.classList.contains("WriterCreditsRevealed") || content?.classList.contains("LyricsScrollAtBottom");
+  const existing = sharedWriters.get(row);
+  if (!row.classList.contains("NextUpBeside") || !provider || !original || !revealed ||
+      !row.closest(".PinnedFooterMode_NoWriters") ||
+      [...row.children].some(child => child !== provider && child !== existing?.copy)) {
+    releaseSharedWriters(row);
+    return;
+  }
+  if (existing && existing.original !== original) releaseSharedWriters(row);
+  let state = sharedWriters.get(row);
+  if (!state) {
+    const copy = row.ownerDocument.createElement("div");
+    copy.className = "SongCredits NextUpWriterCredits";
+    // Keep the original accessible and in flow for the scroll/reveal observers.
+    copy.setAttribute("aria-hidden", "true");
+    copy.hidden = true;
+    row.prepend(copy);
+    state = { original, copy, key: "", fits: false };
+    sharedWriters.set(row, state);
+  }
+  const style = row.ownerDocument.defaultView!.getComputedStyle(original);
+  const key = [row.clientWidth, height, provider.offsetHeight, original.textContent, style.fontFamily, style.fontSize, style.lineHeight].join(":");
+  if (state.key !== key) {
+    state.key = key;
+    const copy = state.copy;
+    copy.replaceChildren(original.cloneNode(true));
+    (copy.firstElementChild as HTMLElement).classList.remove("NextUpWritersMirrored");
+    copy.style.setProperty("font-size", style.fontSize, "important");
+    copy.hidden = false;
+    copy.classList.add("MeasuringNextUpWriters");
+    if (copy.parentElement !== row) row.prepend(copy);
+    const lineHeight = parseFloat(style.lineHeight) || parseFloat(style.fontSize) * 1.35;
+    const budget = Math.max(height, lineHeight * 3 + 4);
+    state.fits = copy.offsetHeight + provider.offsetHeight + 4 <= budget;
+    copy.classList.remove("MeasuringNextUpWriters");
+  }
+  state.copy.hidden = !state.fits;
+  if (!state.fits) state.copy.remove();
+  original.classList.toggle("NextUpWritersMirrored", state.fits);
 }
 
 function clearCreditsSpace(): void {
@@ -190,7 +250,9 @@ function syncCreditsSpace(positions: ReturnType<typeof footerPositions>, left: n
       ["--LL-NextUpReserveRight", shared ? 0 : reserveRight],
       ["--LL-NextUpSideLeft", shared ? reserveLeft : 0],
       ["--LL-NextUpSideRight", shared ? reserveRight : 0],
-      ["--LL-NextUpRowHeight", shared ? Math.max(height, Math.ceil(bottom - top)) : 0],
+      ["--LL-NextUpRowHeight", reserveLeft || reserveRight
+        ? Math.max(height, Math.ceil(bottom - top)) + (shared ? 0 : rect.bottom - bottom)
+        : 0],
     ] as const) {
       const value = reserve ? `${reserve}px` : "";
       if (row.style.getPropertyValue(property) !== value) {
@@ -200,6 +262,7 @@ function syncCreditsSpace(positions: ReturnType<typeof footerPositions>, left: n
     }
     row.classList.toggle("NextUpBeside", !shared && !!(reserveLeft || reserveRight));
     row.classList.toggle("NextUpShared", shared);
+    syncSharedWriters(row, Math.max(height, Math.ceil(bottom - top)));
     if (reserveLeft || reserveRight) reservedCredits.add(row);
     else reservedCredits.delete(row);
   }
@@ -313,6 +376,8 @@ function observeLayout(box: HTMLElement) {
   }
   controlsObserver = new MutationObserver(() => { if (host() === box) syncShownLayout(box); });
   controlsObserver.observe(box, { attributes: true, attributeFilter: ["class"] });
+  const content = box.querySelector(".LyricsContent");
+  if (content) controlsObserver.observe(content, { attributes: true, attributeFilter: ["class"] });
 }
 
 /**
@@ -336,7 +401,7 @@ function liftLyrics(box: HTMLElement, lift: boolean) {
   const contentBottom = contentRect.bottom;
   // Pinned credits already reserve their own height. Only lift farther when
   // the card extends above them, using the same compact gap as the credits.
-  const clearance = pinnedRows(box).length ? 4 : LYRICS_CLEARANCE_PX;
+  const clearance = pinnedRows(box).length ? 0 : LYRICS_CLEARANCE_PX;
   // Where the fade reaches transparent without the lift, measured from the bottom of the lyrics
   // (main.css; PinnedCredits.css moves it above the pinned rows).
   const fadeEnd = parseFloat(content.style.getPropertyValue("--LL-PinnedFooterTrackBottom")) || (container.classList.contains("HasPinnedCredits")

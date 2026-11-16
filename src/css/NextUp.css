@@ -46,9 +46,34 @@
 
 #LyssnaLyricsPage .LyricsContainer > :is(.LyricsPinnedFooter, .LyricsPinnedCredits).NextUpBeside {
   min-width: 0;
+  min-height: var(--LL-NextUpRowHeight, 0px);
   overflow: clip;
   overflow-clip-margin: 0.35em;
   overflow-wrap: anywhere;
+}
+
+#LyssnaLyricsPage .NextUpBeside > .NextUpWriterCredits {
+  position: relative;
+  margin: 0 0 4px !important;
+  max-width: 100% !important;
+  width: 100%;
+}
+
+#LyssnaLyricsPage .NextUpBeside > .NextUpWriterCredits > .Credits {
+  grid-area: auto !important;
+}
+
+#LyssnaLyricsPage .NextUpBeside > .NextUpWriterCredits.MeasuringNextUpWriters {
+  position: absolute;
+  visibility: hidden;
+}
+
+#LyssnaLyricsPage .NextUpBeside > .NextUpWriterCredits[hidden] {
+  display: none !important;
+}
+
+#LyssnaLyricsPage .LyricsContent .NextUpWritersMirrored {
+  opacity: 0 !important;
 }
 
 /* Provider above; contributors and the next-track card share the lower row. */

@@ -75,8 +75,14 @@ let writerCheckWindow: Window | null = null;
 let writerPlaybackTarget: HTMLElement | null = null;
 // --- END NEW ---
 
+function setWritersRevealed(value: boolean): void {
+  writersRevealed = value;
+  const scrollElement = currentSimpleBarInstance?.getScrollElement() as HTMLElement | undefined;
+  scrollElement?.closest(".LyricsContent")?.classList.toggle("WriterCreditsRevealed", value);
+}
+
 function releaseWriterHold(): void {
-  writersRevealed = false;
+  setWritersRevealed(false);
   releaseLyricsScrollHold();
   // A seek/return must leave the credits before they can take scrolling again.
   writersCanHold = false;
@@ -109,7 +115,7 @@ function updateWriterHold(beforeLayout = false): void {
   const scale = viewport.height / container.clientHeight || 1;
   if (row.top < viewport.top + (defaultFade + topPadding) * scale - 1 ||
       row.bottom > viewport.bottom - (floor + (fadeStart - floor) * (1 - reveal) + padding) * scale + 1) return;
-  writersRevealed = true;
+  setWritersRevealed(true);
   writerHoldInputTime = lastUserScrollTime;
   holdLyricsScrollPosition();
   UpdateScrollToActiveButton();
@@ -126,7 +132,7 @@ function observeWriterCredits(container: HTMLElement): void {
     if (!writersFullyIntersecting) {
       writersCanHold = true;
       if (isUserScrolling && lastUserScrollTime > writerHoldInputTime) {
-        writersRevealed = false;
+        setWritersRevealed(false);
         releaseLyricsScrollHold();
       }
     }
@@ -1293,7 +1299,7 @@ export function CleanupScrollEvents() {
   writersObserver = null;
   writersRow = null;
   writersFullyIntersecting = false;
-  writersRevealed = false;
+  setWritersRevealed(false);
   writersCanHold = true;
   writerHoldInputTime = 0;
   writerPlaybackTarget = null;
