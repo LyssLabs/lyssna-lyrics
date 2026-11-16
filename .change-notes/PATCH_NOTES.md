@@ -1,3 +1,8 @@
+## v0.2.1
+
+- **Up Next and songwriter credits**
+  Fixed Written by being clipped beside bottom-positioned Up Next. Restored compact spacing above source credits and preserved the bottom lock during footer changes.
+
 ## v0.2.0
 
 - **Return to your lyrics**
