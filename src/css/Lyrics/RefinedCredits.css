@@ -3,6 +3,10 @@
   content: ":";
 }
 
+#LyssnaLyricsPage .LyricsContainer .LyricsProvider :is(.LyricsCreditNote, .LyricsProviderVia) {
+  display: block;
+}
+
 #LyssnaLyricsPage.SpicyRenderer:not(.Exp_RefinedCredits) .LyricsContainer :is(.LyricsContent, .LyricsPinnedFooter) :is(.SongInfoNote, .SongInfoRole) {
   opacity: 0.5;
 }
@@ -136,7 +140,7 @@
   text-wrap: pretty;
 }
 
-#LyssnaLyricsPage.SpicyRenderer.Exp_RefinedCredits .LyricsContainer :is(.SongCredits, .LyricsPinnedFooter) :is(.CreditsLabel, .CreditsValue, .LyricsProviderVia, .LyricsProviderViaLabel, .SongInfoLead, .Maker, .Uploader, .song-info-profile-section, .SongInfoRole, .SongInfoName > span) {
+#LyssnaLyricsPage.SpicyRenderer.Exp_RefinedCredits .LyricsContainer :is(.SongCredits, .LyricsPinnedFooter) :is(.CreditsLabel, .CreditsValue, .LyricsCreditNote, .LyricsProviderVia, .LyricsProviderViaLabel, .SongInfoLead, .Maker, .Uploader, .song-info-profile-section, .SongInfoRole, .SongInfoName > span) {
   font-weight: inherit !important;
 }
 

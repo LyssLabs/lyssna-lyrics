@@ -44,10 +44,16 @@ export function ApplyLyricsProvider(data: any, LyricsContainer: HTMLElement): vo
   }
   const timingNote = data.experimentalWordSync
     ? data.experimentalWordSyncSource === "Static"
-      ? " (+ estimated line and word timing)"
-      : " (+ estimated word timing)"
-    : providerLabel === "Apple Music" && data.experimentalAppleWordSplitting ? " (+ extra splits)" : "";
-  CreditsRow(ProviderElement, "Provided by", `${providerLabel}${timingNote}`);
+      ? "(+ estimated line and word timing)"
+      : "(+ estimated word timing)"
+    : providerLabel === "Apple Music" && data.experimentalAppleWordSplitting ? "(+ extra splits)" : "";
+  CreditsRow(ProviderElement, "Provided by", providerLabel);
+  if (timingNote) {
+    const note = LyricsContainer.ownerDocument.createElement("span");
+    note.className = "LyricsCreditNote";
+    note.textContent = timingNote;
+    ProviderElement.append(" ", note);
+  }
   const via = typeof data.source_via === "string" && Object.hasOwn(ViaMap, data.source_via)
     ? ViaMap[data.source_via]
     : undefined;
