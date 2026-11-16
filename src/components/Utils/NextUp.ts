@@ -292,10 +292,6 @@ function syncPlacement(box: HTMLElement): void {
   syncCreditsSpace(positions, left, top, width, height);
 }
 
-function clearanceTop(box: HTMLElement): number {
-  return Math.min(root!.getBoundingClientRect().top, ...pinnedRows(box).map(row => row.getBoundingClientRect().top));
-}
-
 function syncShownLayout(box: HTMLElement) {
   if (!root?.classList.contains("Shown")) return;
   syncPlacement(box);
@@ -338,13 +334,15 @@ function liftLyrics(box: HTMLElement, lift: boolean) {
     return;
   }
   const contentBottom = contentRect.bottom;
-  const top = clearanceTop(box);
+  // Pinned credits already reserve their own height. Only lift farther when
+  // the card extends above them, using the same compact gap as the credits.
+  const clearance = pinnedRows(box).length ? 4 : LYRICS_CLEARANCE_PX;
   // Where the fade reaches transparent without the lift, measured from the bottom of the lyrics
   // (main.css; PinnedCredits.css moves it above the pinned rows).
   const fadeEnd = parseFloat(content.style.getPropertyValue("--LL-PinnedFooterTrackBottom")) || (container.classList.contains("HasPinnedCredits")
     ? (parseFloat(container.style.getPropertyValue("--LL-PinnedCreditsHeight")) || 0) + 24 + 8
     : 16);
-  const room = Math.max(0, Math.round(contentBottom - top + LYRICS_CLEARANCE_PX - fadeEnd));
+  const room = Math.max(0, Math.round(contentBottom - card.top + clearance - fadeEnd));
   const value = `${room}px`;
   const changed = !container.classList.contains("NextUpRoom") ||
     container.style.getPropertyValue("--LL-NextUpRoom") !== value;
