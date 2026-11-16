@@ -367,6 +367,8 @@ class LyricsVirtualizer {
   private _trailingObserver: MutationObserver | null = null;
   // Total size at the last layout pass, so the credits can glide when it changes.
   private _lastTotalSize = 0;
+  private _heldBottomDistance: number | null = null;
+  private _heldMaxScroll = 0;
 
   setOnNewElementMounted(cb: (() => void) | null): void {
     this._onNewElementMounted = cb;
@@ -1300,6 +1302,7 @@ class LyricsVirtualizer {
         }
         this._pinnedFooterLayoutKey = null;
         this._updatePinnedFooterLayout();
+        if (this._restoreHeldBottom() && this._virtualizer) this._queueChange(this._virtualizer);
         this._syncBottomMask();
       }));
       this._pinnedFooterObserver.observe(footerLayer, { box: "border-box" });
@@ -1631,6 +1634,7 @@ class LyricsVirtualizer {
     const totalSize = v.getTotalSize();
     const height = `${totalSize}px`;
     if (this._virtualContainer.style.height !== height) this._virtualContainer.style.height = height;
+    this._restoreHeldBottom();
     const sizeDelta = totalSize - this._lastTotalSize;
     if (
       this._lastTotalSize > 0 &&
@@ -1769,6 +1773,7 @@ class LyricsVirtualizer {
       });
     }
     this._updatePinnedFooterLayout();
+    if (this._restoreHeldBottom()) this._onChangePending = true;
     this._syncBottomMask();
   }
 
@@ -1787,6 +1792,7 @@ class LyricsVirtualizer {
   }
 
   private _setTrailingOffset(offset: number): void {
+    if (this._heldBottomDistance !== null) offset = 0;
     if (Math.abs(offset - this._trailingOffset) < 0.01 && offset !== 0) return;
     if (offset === 0 && this._trailingOffset === 0) return;
     this._trailingOffset = offset;
@@ -1798,10 +1804,11 @@ class LyricsVirtualizer {
   // start the credits where they were and glide them along with the last row.
   // Additive, so a glide started mid-glide stacks instead of jumping.
   private _glideTrailing(delta: number): void {
+    if (this._heldBottomDistance !== null) return;
     for (const el of this._trailingElements()) {
       el.animate(
         [{ transform: `translateY(${-delta}px)` }, { transform: "translateY(0)" }],
-        { duration: LAYOUT_GLIDE_MS, easing: LAYOUT_GLIDE_EASING, composite: "add" }
+        { id: "LL_TrailingLayoutGlide", duration: LAYOUT_GLIDE_MS, easing: LAYOUT_GLIDE_EASING, composite: "add" }
       );
     }
   }
@@ -1889,15 +1896,57 @@ class LyricsVirtualizer {
     if (this._smoothRAF === null) this._setSmoothFraction(0);
   }
 
-  /** Cancel scroll movement and retries without snapping a visual ripple to its end. */
+  /** Keep the revealed footer in place as interludes expand or collapse above it. */
   holdScrollPosition(): void {
+    const scrollEl = this._scrollEl;
+    if (!scrollEl || scrollEl.clientHeight === 0 || this._heldBottomDistance !== null ||
+        this._scrollbarRoot?.classList.contains("simplebar-dragging")) return;
+    const trailing = this._trailingElements();
+    const footer = trailing.find(element => element.classList.contains("SongCredits"));
+    const before = footer?.getBoundingClientRect().bottom;
+    this._heldBottomDistance = 0;
     if (this._scrollVerifyRAF !== null) {
       this._window().cancelAnimationFrame(this._scrollVerifyRAF);
       this._scrollVerifyRAF = null;
     }
     this._lastRetryTarget = null;
     this._stopSmoothScroll();
+    this._setTrailingOffset(0);
+    for (const element of trailing) {
+      for (const animation of element.getAnimations()) {
+        if (animation.id === "LL_TrailingLayoutGlide") animation.cancel();
+      }
+    }
+    if (footer && before !== undefined) {
+      const scale = scrollEl.getBoundingClientRect().height / scrollEl.clientHeight || 1;
+      const shift = (footer.getBoundingClientRect().bottom - before) / scale;
+      if (Math.abs(shift) >= 0.5) scrollEl.scrollTo({ top: scrollEl.scrollTop + shift, behavior: "instant" });
+    }
+    this._heldMaxScroll = Math.max(0, scrollEl.scrollHeight - scrollEl.clientHeight);
+    this._heldBottomDistance = Math.max(0, this._heldMaxScroll - scrollEl.scrollTop);
+    if (this._virtualizer) {
+      this._virtualizer.scrollOffset = scrollEl.scrollTop;
+      this._queueChange(this._virtualizer);
+    }
     this._setConverging(false);
+  }
+
+  releaseScrollHold(): void {
+    this._heldBottomDistance = null;
+  }
+
+  private _restoreHeldBottom(): boolean {
+    const scrollEl = this._scrollEl;
+    if (!scrollEl || this._heldBottomDistance === null ||
+        this._scrollbarRoot?.classList.contains("simplebar-dragging")) return false;
+    const maxScroll = Math.max(0, scrollEl.scrollHeight - scrollEl.clientHeight);
+    if (maxScroll === this._heldMaxScroll) return false;
+    this._heldMaxScroll = maxScroll;
+    const target = Math.max(0, maxScroll - this._heldBottomDistance);
+    if (Math.abs(scrollEl.scrollTop - target) < 0.5) return false;
+    scrollEl.scrollTo({ top: target, behavior: "instant" });
+    if (this._virtualizer) this._virtualizer.scrollOffset = scrollEl.scrollTop;
+    return true;
   }
 
   /**
@@ -2457,6 +2506,7 @@ class LyricsVirtualizer {
   // The user is about to move the list themselves: let go of any glide, and hold
   // off row glides so measurement corrections while they scroll stay instant.
   private _onUserScrollIntent = (): void => {
+    this.releaseScrollHold();
     this._blockLayoutGlide(LAYOUT_GLIDE_BLOCK_MS);
     this._lastRetryTarget = null;
     if (this._smoothRAF !== null) {
@@ -2502,6 +2552,7 @@ class LyricsVirtualizer {
     _delta: number,
     instance: Virtualizer<HTMLElement, HTMLElement>
   ): boolean => {
+    if (this._heldBottomDistance !== null) return false;
     if (this._converging) return false;
     // romanizationToggled moves scrollTop itself.
     if (this._holdForRowResize) return false;
@@ -2770,6 +2821,8 @@ class LyricsVirtualizer {
     this._trailingCache = null;
     this._trailingObserver = null;
     this._lastTotalSize = 0;
+    this._heldBottomDistance = null;
+    this._heldMaxScroll = 0;
     this._gapFontPx = 0;
     this._smoothSpring = null;
     this._layoutGlideBlockedUntil = 0;

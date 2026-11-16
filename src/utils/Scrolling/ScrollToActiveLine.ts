@@ -69,6 +69,7 @@ let writersCanHold = true;
 
 function releaseWriterHold(): void {
   writersRevealed = false;
+  getLyricsVirtualizer()?.releaseScrollHold();
   // A seek/return must leave the credits before they can take scrolling again.
   writersCanHold = false;
 }
@@ -109,7 +110,10 @@ function observeWriterCredits(container: HTMLElement): void {
     writersFullyIntersecting = entry.isIntersecting && entry.intersectionRatio >= 0.999;
     if (!writersFullyIntersecting) {
       writersCanHold = true;
-      if (isUserScrolling) writersRevealed = false;
+      if (isUserScrolling) {
+        writersRevealed = false;
+        getLyricsVirtualizer()?.releaseScrollHold();
+      }
     }
     updateWriterHold();
   }, { root: container, threshold: [0, 1] });
@@ -486,6 +490,7 @@ function LineAfter(
 function handleUserScroll(ScrollSimplebar: any | null) {
   // Allow null
   if (!ScrollSimplebar) return; // Add null check
+  getLyricsVirtualizer()?.releaseScrollHold();
   staticReturning = false;
   if (!isUserScrolling) {
     isUserScrolling = true;
@@ -738,6 +743,7 @@ function ScrollStaticLyrics(ScrollSimplebar: any) {
   const scrolledAway = lastUserScrollTime !== 0 && Math.abs(distance) > container.clientHeight / 2;
   SetScrollToActiveDirection(scrolledAway || (writersRevealed && Math.abs(distance) > 1) ? (distance < 0 ? "Above" : "Below") : null);
   if (writersRevealed) {
+    getLyricsVirtualizer()?.holdScrollPosition();
     ReleaseStaticScroll();
     return;
   }
@@ -841,6 +847,7 @@ export function ScrollToActiveLine(ScrollSimplebar: any) {
   const sideContainer = ScrollSimplebar?.getScrollElement() as HTMLElement | undefined;
   if (sideTarget && sideContainer) TrackActiveLineSide(sideContainer, sideTarget);
   if (writersRevealed) {
+    getLyricsVirtualizer()?.holdScrollPosition();
     lastPosition = Position;
     forceScrollQueued = false;
     smoothForceScrollQueued = false;
@@ -1230,6 +1237,7 @@ export function ResetLastLine() {
 // --- NEW: Cleanup Function ---
 export function CleanupScrollEvents() {
   cleanupScrollButtonObserver();
+  getLyricsVirtualizer()?.releaseScrollHold();
   writersObserver?.disconnect();
   writersObserver = null;
   writersRow = null;
