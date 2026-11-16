@@ -368,7 +368,12 @@ class LyricsVirtualizer {
   // Total size at the last layout pass, so the credits can glide when it changes.
   private _lastTotalSize = 0;
   private _heldBottomDistance: number | null = null;
-  private _heldMaxScroll = 0;
+  private _heldFooter: HTMLElement | null = null;
+  private _beforeLayoutChange: (() => void) | null = null;
+
+  setBeforeLayoutChange(callback: (() => void) | null): void {
+    this._beforeLayoutChange = callback;
+  }
 
   setOnNewElementMounted(cb: (() => void) | null): void {
     this._onNewElementMounted = cb;
@@ -1633,7 +1638,11 @@ class LyricsVirtualizer {
 
     const totalSize = v.getTotalSize();
     const height = `${totalSize}px`;
-    if (this._virtualContainer.style.height !== height) this._virtualContainer.style.height = height;
+    if (this._virtualContainer.style.height !== height) {
+      // The footer still occupies its old position here; observers run after layout.
+      this._beforeLayoutChange?.();
+      this._virtualContainer.style.height = height;
+    }
     this._restoreHeldBottom();
     const sizeDelta = totalSize - this._lastTotalSize;
     if (
@@ -1903,7 +1912,9 @@ class LyricsVirtualizer {
         this._scrollbarRoot?.classList.contains("simplebar-dragging")) return;
     const trailing = this._trailingElements();
     const footer = trailing.find(element => element.classList.contains("SongCredits"));
-    const before = footer?.getBoundingClientRect().bottom;
+    if (!footer) return;
+    const before = footer.getBoundingClientRect().bottom;
+    this._heldFooter = footer;
     this._heldBottomDistance = 0;
     if (this._scrollVerifyRAF !== null) {
       this._window().cancelAnimationFrame(this._scrollVerifyRAF);
@@ -1917,13 +1928,11 @@ class LyricsVirtualizer {
         if (animation.id === "LL_TrailingLayoutGlide") animation.cancel();
       }
     }
-    if (footer && before !== undefined) {
-      const scale = scrollEl.getBoundingClientRect().height / scrollEl.clientHeight || 1;
-      const shift = (footer.getBoundingClientRect().bottom - before) / scale;
-      if (Math.abs(shift) >= 0.5) scrollEl.scrollTo({ top: scrollEl.scrollTop + shift, behavior: "instant" });
-    }
-    this._heldMaxScroll = Math.max(0, scrollEl.scrollHeight - scrollEl.clientHeight);
-    this._heldBottomDistance = Math.max(0, this._heldMaxScroll - scrollEl.scrollTop);
+    const viewport = scrollEl.getBoundingClientRect();
+    const scale = viewport.height / scrollEl.clientHeight || 1;
+    const shift = (footer.getBoundingClientRect().bottom - before) / scale;
+    if (Math.abs(shift) >= 0.5) scrollEl.scrollTo({ top: scrollEl.scrollTop + shift, behavior: "instant" });
+    this._heldBottomDistance = (viewport.bottom - footer.getBoundingClientRect().bottom) / scale;
     if (this._virtualizer) {
       this._virtualizer.scrollOffset = scrollEl.scrollTop;
       this._queueChange(this._virtualizer);
@@ -1933,20 +1942,22 @@ class LyricsVirtualizer {
 
   releaseScrollHold(): void {
     this._heldBottomDistance = null;
+    this._heldFooter = null;
   }
 
   private _restoreHeldBottom(): boolean {
     const scrollEl = this._scrollEl;
-    if (!scrollEl || this._heldBottomDistance === null ||
+    if (!scrollEl || scrollEl.clientHeight === 0 || !this._heldFooter?.isConnected || this._heldBottomDistance === null ||
         this._scrollbarRoot?.classList.contains("simplebar-dragging")) return false;
-    const maxScroll = Math.max(0, scrollEl.scrollHeight - scrollEl.clientHeight);
-    if (maxScroll === this._heldMaxScroll) return false;
-    this._heldMaxScroll = maxScroll;
-    const target = Math.max(0, maxScroll - this._heldBottomDistance);
-    if (Math.abs(scrollEl.scrollTop - target) < 0.5) return false;
-    scrollEl.scrollTo({ top: target, behavior: "instant" });
+    const viewport = scrollEl.getBoundingClientRect();
+    const scale = viewport.height / scrollEl.clientHeight || 1;
+    const currentDistance = (viewport.bottom - this._heldFooter.getBoundingClientRect().bottom) / scale;
+    const shift = this._heldBottomDistance - currentDistance;
+    if (Math.abs(shift) < 0.5) return false;
+    const before = scrollEl.scrollTop;
+    scrollEl.scrollTo({ top: before + shift, behavior: "instant" });
     if (this._virtualizer) this._virtualizer.scrollOffset = scrollEl.scrollTop;
-    return true;
+    return Math.abs(scrollEl.scrollTop - before) >= 0.5;
   }
 
   /**
@@ -2529,6 +2540,7 @@ class LyricsVirtualizer {
 
   private _layoutGlideEnabled(): boolean {
     return (
+      this._heldBottomDistance === null &&
       ($smoothScrolling.get() || this._refreshed) &&
       performance.now() >= this._layoutGlideBlockedUntil
     );
@@ -2822,7 +2834,7 @@ class LyricsVirtualizer {
     this._trailingObserver = null;
     this._lastTotalSize = 0;
     this._heldBottomDistance = null;
-    this._heldMaxScroll = 0;
+    this._heldFooter = null;
     this._gapFontPx = 0;
     this._smoothSpring = null;
     this._layoutGlideBlockedUntil = 0;
@@ -2899,6 +2911,10 @@ export function holdLyricsScrollPosition(): void {
 
 export function releaseLyricsScrollHold(): void {
   lyricsVirtualizer.releaseScrollHold();
+}
+
+export function setBeforeLyricsLayoutChange(callback: (() => void) | null): void {
+  lyricsVirtualizer.setBeforeLayoutChange(callback);
 }
 
 export function scrollLyricsToIndex(

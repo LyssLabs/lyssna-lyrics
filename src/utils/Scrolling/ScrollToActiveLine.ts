@@ -28,6 +28,7 @@ import {
   getLyricsVirtualizer,
   holdLyricsScrollPosition,
   releaseLyricsScrollHold,
+  setBeforeLyricsLayoutChange,
   clearLyricsScrollFraction,
   fadesAwayPreviousLines,
   lyricsCenterScrollTopAt,
@@ -76,11 +77,14 @@ function releaseWriterHold(): void {
   writersCanHold = false;
 }
 
-function updateWriterHold(): void {
-  if (!writersFullyIntersecting || writersRevealed || !writersCanHold || !writersRow?.isConnected) return;
+function updateWriterHold(beforeLayout = false): void {
+  if ((!beforeLayout && !writersFullyIntersecting) || writersRevealed || !writersCanHold || !writersRow?.isConnected) return;
   const container = currentSimpleBarInstance?.getScrollElement() as HTMLElement | undefined;
   const content = container?.closest<HTMLElement>(".LyricsContent");
   if (!container || !content || content.classList.contains("InitialPositionPending")) return;
+  const viewport = container.getBoundingClientRect();
+  const row = writersRow.getBoundingClientRect();
+  if (row.top < viewport.top - 1 || row.bottom > viewport.bottom + 1) return;
   const view = content.ownerDocument.defaultView ?? window;
   const style = view.getComputedStyle(content);
   const height = content.clientHeight;
@@ -92,8 +96,6 @@ function updateWriterHold(): void {
   const reveal = Number.parseFloat(content.style.getPropertyValue("--LL-LyricsContent_FooterReveal")) || 0;
   const padding = Number.parseFloat(style.getPropertyValue("--LL-LyricsContent_MaskBottomPadding")) || 0;
   const topPadding = Number.parseFloat(style.getPropertyValue("--LL-LyricsContent_MaskTopPadding")) || 0;
-  const viewport = container.getBoundingClientRect();
-  const row = writersRow.getBoundingClientRect();
   const scale = viewport.height / container.clientHeight || 1;
   if (row.top < viewport.top + (defaultFade + topPadding) * scale - 1 ||
       row.bottom > viewport.bottom - (fadeStart * (1 - reveal) + padding) * scale + 1) return;
@@ -539,6 +541,7 @@ export function InitializeScrollEvents(ScrollSimplebar: any) {
     scrollElement.addEventListener("touchmove", touchMoveHandler);
     scrollElement.addEventListener("scroll", scrollHandler, { passive: true });
     observeWriterCredits(scrollElement);
+    setBeforeLyricsLayoutChange(() => updateWriterHold(true));
   }
 }
 
@@ -1239,6 +1242,7 @@ export function ResetLastLine() {
 // --- NEW: Cleanup Function ---
 export function CleanupScrollEvents() {
   cleanupScrollButtonObserver();
+  setBeforeLyricsLayoutChange(null);
   releaseLyricsScrollHold();
   writersObserver?.disconnect();
   writersObserver = null;
