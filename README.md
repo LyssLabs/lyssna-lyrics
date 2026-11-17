@@ -10,7 +10,7 @@
 
 **Rewrite planned.**
 
-**[Discord & support](https://discord.gg/qfYAsFQawp) · [Download the launcher](https://ipixelgalaxy.com/lyssna-plugin/download.html) · [Releases](https://github.com/iPixelGalaxy/lyssna-lyrics/releases) · [Lyssna Standalone](https://clypdat.xyz/lyssna.exe)**
+**[Discord & support](https://discord.gg/qfYAsFQawp) · [Download the launcher](https://ipixelgalaxy.com/lyssna-plugin/download.html) · [Releases](https://github.com/iPixelGalaxy/lyssna-lyrics/releases) · [Lyssna Standalone](https://lyssna.org/lyssna_setup.exe)**
 
 </div>
 
@@ -99,7 +99,7 @@ Community and Apple Music lyrics use the public Spicy Lyrics developer API. Othe
 
 ## Want a break from the lag?
 
-**[Download Lyssna Standalone for Windows](https://clypdat.xyz/lyssna.exe)**, or visit [Arashii's Lyssna project](https://github.com/Stormanzanii/Lyssna).
+**[Download Lyssna Standalone for Windows](https://lyssna.org/lyssna_setup.exe)**, or visit [Arashii's Lyssna project](https://github.com/Stormanzanii/Lyssna).
 
 If you're staying in Spotify, try **Limit Animation Frame Rate** in Appearance and turn off effects you don't use.
 

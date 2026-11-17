@@ -47,7 +47,7 @@ export const LYSSNA_LOGO = __LYSSNA_LOGO__;
 export const LYSSNA_MICROPHONE_PATHS = __LYSSNA_MICROPHONE_PATHS__;
 document.documentElement.style.setProperty("--lyssna-logo", `url("${LYSSNA_LOGO}")`);
 export const DISCORD_URL = "https://discord.gg/qfYAsFQawp";
-export const STANDALONE_DOWNLOAD_URL = "https://clypdat.xyz/lyssna.exe";
+export const STANDALONE_DOWNLOAD_URL = "https://lyssna.org/lyssna_setup.exe";
 export const WEBSITE_URL = "https://github.com/Stormanzanii/Lyssna";
 
 export function openExternal(url: string): void {
