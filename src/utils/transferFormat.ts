@@ -138,12 +138,11 @@ function mapped(input: SettingsRecord, toStandalone: boolean): SettingsRecord {
   for (const [plugin, standalone] of animatorFields) {
     const value = toStandalone ? input[plugin] : isRecord(input.lyrics_animator) ? input.lyrics_animator[standalone] : undefined;
     if (value !== undefined) {
-      const converted = toStandalone && standalone === "preset" && value === "Pixel" ? "Custom" : value;
+      const converted = standalone !== "preset" ? value : toStandalone ? ({ Pixel: "Lyssna", Default: "Legacy" } as SettingsRecord)[value as string] ?? value : ({ Lyssna: "Pixel", Legacy: "Default" } as SettingsRecord)[value as string] ?? value;
       if (toStandalone) animator[standalone] = converted;
       else output[plugin] = converted;
     }
   }
-  if (toStandalone && input.animatorPreset === "Pixel" && isRecord(input.animatorEffectiveValues)) animator.custom = input.animatorEffectiveValues;
   if (toStandalone && Object.keys(animator).length) output.lyrics_animator = animator;
   if (toStandalone && typeof input.customFontEnabled === "boolean") output.lyric_font = input.customFontEnabled && typeof input.customFont === "string" ? input.customFont : "";
   if (!toStandalone && typeof input.lyric_font === "string") {
