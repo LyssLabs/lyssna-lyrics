@@ -97,6 +97,14 @@ Lyssna's release series begins at **0.1.0**. Historical **100.10.x** Pixel Editi
 
 Community and Apple Music lyrics use the public Spicy Lyrics developer API. Other available sources include lrc.red, Musixmatch, Spotify, LRCLIB, and NetEase. Source availability varies by track; manage their order in **Settings → Sources**. The fork's private plugin API integration has been removed.
 
+## Transfer settings between Lyssna apps
+
+Open **Settings → Advanced → Import and export settings** in either Lyssna Lyrics or Lyssna Standalone. Choose **Export settings**, then open the resulting `.lyssna.json` file with **Import settings** in the other app. Review the settings and lyric counts, then choose **Apply import**.
+
+Exports include preferences, animator presets, per-song timing offsets, and the local lyrics database with its track associations. Compatible settings apply immediately. App-specific settings are kept in subsequent exports so they can be restored when moving back. Matching local lyrics are replaced; other saved songs remain. Each import saves a backup, available through **Download previous backup**.
+
+The plugin uses TTML files. Standalone LRC and older JSON lyric entries remain in the transfer file for restoring in standalone. Build-channel selection and Spotify sign-in sessions stay local. Standalone window and editor preferences take effect when reopened. Custom font files must also be available on the destination. Exported plugin preferences can contain saved provider tokens, so keep transfer files private.
+
 ## Want a break from the lag?
 
 **[Download Lyssna Standalone for Windows](https://lyssna.org/lyssna_setup.exe)**, or visit [Arashii's Lyssna project](https://github.com/Stormanzanii/Lyssna).

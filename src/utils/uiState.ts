@@ -32,6 +32,8 @@ function migrateUiStateKeys(blob: Record<string, any>): Record<string, any> {
 
 const _uiState: Record<string, any> = migrateUiStateKeys(uiStorage.load());
 
+export const PersistedUiState = new Map<string, { get: () => unknown; set: (value: any) => void; defaultValue: unknown }>();
+
 export function syncUiStateToSpicy(): void {
   saveUiStateBlob(_uiState);
 }
@@ -39,6 +41,7 @@ export function syncUiStateToSpicy(): void {
 function persistAtom<T>(key: string, defaultValue: T) {
   MANAGED_UI_KEYS.add(key);
   const store = atom<T>(_uiState[key] !== undefined ? _uiState[key] : defaultValue);
+  PersistedUiState.set(key, { get: () => store.get(), set: value => store.set(value), defaultValue });
   store.listen((v) => {
     _uiState[key] = v;
     saveUiStateBlob(_uiState);

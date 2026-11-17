@@ -965,6 +965,33 @@ lyssna-lyrics-modal.LyssnaLyricsModal .ll-modal-overlay {
 
   }
 
+  .ll-settings-transfer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    min-width: 0;
+
+    p {
+      margin: 0 0 8px;
+      color: var(--lyssna-color-text-primary);
+      font-size: var(--lyssna-text-caption-size);
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    button {
+      min-height: 44px;
+      max-width: 100%;
+      white-space: normal;
+    }
+
+    button:focus-visible {
+      outline: 2px solid currentColor;
+      outline-offset: 2px;
+    }
+  }
+
   .ll-sp-btn-group {
     display: flex;
     align-items: center;

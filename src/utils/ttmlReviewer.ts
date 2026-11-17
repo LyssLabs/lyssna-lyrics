@@ -131,6 +131,16 @@ function resumeProfile() {
 }
 
 export const $ttmlReviewer = atom<boolean>(readBackup() !== null);
+
+export function userSettingsForExport(): Record<string, unknown> {
+  const backup = readBackup();
+  return Object.fromEntries([...PersistedSettings].flatMap(([key, entry]) => {
+    const value = backup && Object.hasOwn(backup, key)
+      ? backup[key] === null ? entry.defaultValue : backup[key]
+      : entry.get();
+    return value === undefined ? [] : [[key, value]];
+  }));
+}
 if ($ttmlReviewer.get() && !PersistedSettings.get("ttmlReviewerMode")?.isStored()) $ttmlReviewerMode.set("always");
 
 /** Whether the mode holds this settings row (by id) still. */
