@@ -8,7 +8,7 @@ import { PersistedUiState } from "./uiState.ts";
 import { $songOffsets, OFFSET_LIMIT_MS } from "./songOffsets.ts";
 import { $ttmlReviewer, setTtmlReviewerMode, userSettingsForExport } from "./ttmlReviewer.ts";
 import { ANIMATOR_PARAMETERS } from "./Lyrics/Animator/Tuning.ts";
-import parseTTMLToLyrics from "./Lyrics/ParseTTML.ts";
+import { lyricFileKind, parseLyricFile, type LyricFileKind } from "./Lyrics/manager/lyricFile.ts";
 import { defaultSettings, getSettings, getCachedPlaylistFolders, setCachedPlaylistFolders, setSetting, type EnhancementKey, type PlaylistFolderEntry } from "../enhancements/config.ts";
 import { isRecord, mergeLyrics, pluginPreferences, type SettingsTransfer, type SettingsRecord, type TransferLyrics } from "./transferFormat.ts";
 
@@ -21,6 +21,10 @@ function getTransferState() {
 }
 let importing = false;
 
+function isLocalLyric(item: TransferLyrics): item is TransferLyrics & { kind: LyricFileKind } {
+  return Boolean(item.uri) && (item.kind === "ttml" || item.kind === "lrc");
+}
+
 export async function exportPluginSettings(): Promise<SettingsTransfer> {
   const state = await getTransferState();
   const preserved = await state.get("state", "preserved") as SettingsTransfer | undefined;
@@ -30,7 +34,7 @@ export async function exportPluginSettings(): Promise<SettingsTransfer> {
   await read.done;
   const lyrics: TransferLyrics[] = keys.map((key, index) => {
     if (typeof key !== "string" || typeof values[index] !== "string") throw new Error("A local lyric entry could not be exported. Existing data was kept.");
-    return { uri: key, kind: "ttml", text: values[index] };
+    return { uri: key, kind: lyricFileKind(values[index]), text: values[index] };
   });
   const rawSettings: unknown = JSON.parse(Spicetify.LocalStorage.get("LL:settings") ?? "{}");
   if (!isRecord(rawSettings)) throw new Error("Existing settings could not be read; export was cancelled.");
@@ -105,10 +109,10 @@ export function preparePluginImport(file: SettingsTransfer) {
     if (Array.isArray(value) && value.some(item => typeof item !== "string")) throw new Error("Invalid playlist folder IDs.");
   }
   if (preferences.playlistFolders.some(folder => !isRecord(folder) || typeof folder.id !== "string" || typeof folder.label !== "string" || typeof folder.path !== "string" || !Array.isArray(folder.playlists) || folder.playlists.some(item => !isRecord(item) || typeof item.name !== "string" || !(item.uri === null || typeof item.uri === "string")))) throw new Error("Invalid playlist folder cache.");
-  const lyrics = file.lyrics.filter(item => item.kind === "ttml" && item.uri);
+  const lyrics = file.lyrics.filter(isLocalLyric);
   for (const item of lyrics) {
-    try { parseTTMLToLyrics(item.text); }
-    catch { throw new Error(`Invalid or unsupported TTML for ${item.uri}.`); }
+    try { parseLyricFile(item.text, item.kind); }
+    catch { throw new Error(`Invalid ${item.kind.toUpperCase()} for ${item.uri}.`); }
   }
   return { file, preferences, settings, uiState, lyrics, preserved: preserved + file.lyrics.length - lyrics.length };
 }
@@ -130,7 +134,9 @@ export async function importPluginSettings(plan: ReturnType<typeof preparePlugin
     const previousPreserved = await state.get("state", "preserved");
     await state.put("state", before, "backup");
     const db = await dbPromise;
-    const previousLyrics = new Map(before.lyrics.filter(item => item.kind === "ttml" && item.uri).map(item => [item.uri, item.text]));
+    const previousLyrics = new Map(await Promise.all(plan.lyrics.map(async item =>
+      [item.uri, await db.get(ObjectStores.LyricsStore, item.uri)] as const
+    )));
     const apply = (settings: SettingsRecord, uiState: SettingsRecord, offsets: Record<string, number>, enhancements: SettingsRecord, folders: unknown[]) => {
       setTtmlReviewerMode("off");
       if ($ttmlReviewer.get()) throw new Error("TTML Reviewer's original settings could not be restored.");
@@ -150,7 +156,7 @@ export async function importPluginSettings(plan: ReturnType<typeof preparePlugin
       const write = db.transaction(ObjectStores.LyricsStore, "readwrite");
       for (const item of plan.lyrics) await write.store.put(item.text, item.uri);
       await write.done;
-      await state.put("state", { ...plan.file, lyrics: plan.file.lyrics.filter(item => item.kind !== "ttml" || !item.uri) }, "preserved");
+      await state.put("state", { ...plan.file, lyrics: plan.file.lyrics.filter(item => !isLocalLyric(item)) }, "preserved");
       if (typeof plan.settings.ttmlReviewerMode === "string") setTtmlReviewerMode(plan.settings.ttmlReviewerMode as "off" | "temporary" | "always");
     } catch (error) {
       try {
@@ -177,7 +183,7 @@ export async function importPluginSettings(plan: ReturnType<typeof preparePlugin
       $currentLyricsData.set("");
       void fetchLyrics(uri).then(lyrics => ApplyLyricsIfCurrent(uri, lyrics)).catch(error => console.warn("Lyssna Lyrics could not refresh lyrics after importing settings", error));
     }
-    return `Imported ${Object.keys(plan.settings).length} settings and ${plan.lyrics.length} TTML files. ${plan.preserved ? `${plan.preserved} unsupported entries kept for future exports. ` : ""}Previous backup is available below.`;
+    return `Imported ${Object.keys(plan.settings).length} settings and ${plan.lyrics.length} lyric files. ${plan.preserved ? `${plan.preserved} unsupported entries kept for future exports. ` : ""}Previous backup is available below.`;
   } finally {
     importing = false;
   }

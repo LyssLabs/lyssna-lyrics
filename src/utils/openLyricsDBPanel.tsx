@@ -1,6 +1,7 @@
 import { PopupModal } from "../components/Modal.ts";
 import LyricsDBPanel from "../components/ReactComponents/LyricsManager/index.tsx";
 import UploadTTMLModal from "../components/ReactComponents/LyricsManager/components/UploadTTMLModal.tsx";
+import { BulkLoadTTMLModal } from "../components/ReactComponents/LyricsManager/components/BulkLoadTTMLModal.tsx";
 import { createReactModalContent, getModalScrollTop } from "./reactModalContent.tsx";
 import { ReviewerPane } from "../components/ReactComponents/SettingsPanel/ReviewerSection.tsx";
 
@@ -50,7 +51,7 @@ function _openUpload(targetDocument: Document = PopupModal.ownerDocument) {
   const options = {
     title: "Load TTML",
     ...createReactModalContent(
-      <UploadTTMLModal onOpenDB={() => _openDB()} onDone={() => PopupModal.hide()} onShowReviewerDetails={() => PopupModal.transition({
+      <UploadTTMLModal onOpenDB={() => _openDB()} onOpenBulk={files => _openBulk(files, targetDocument)} onDone={() => PopupModal.hide()} onShowReviewerDetails={() => PopupModal.transition({
         title: "TTML Reviewer changes",
         ...createReactModalContent(<ReviewerPane onBack={() => _openUpload(targetDocument)} />, targetDocument),
         isLarge: true,
@@ -66,4 +67,15 @@ function _openUpload(targetDocument: Document = PopupModal.ownerDocument) {
   } else {
     PopupModal.display({ ...options, targetDocument });
   }
+}
+
+function _openBulk(files: File[], targetDocument: Document) {
+  PopupModal.transition({
+    title: "Bulk Load",
+    ...createReactModalContent(
+      <BulkLoadTTMLModal files={files} onBack={() => _openUpload(targetDocument)} onDone={() => PopupModal.hide()} />,
+      targetDocument,
+    ),
+    isLarge: true,
+  });
 }

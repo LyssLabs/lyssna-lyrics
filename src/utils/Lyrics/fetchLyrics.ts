@@ -149,6 +149,7 @@ async function presentLyrics(uri: string, lyricsData: any): Promise<void> {
 
 type FetchLyricsOptions = {
   keepCurrentLyricsVisible?: boolean;
+  reloadLocalLyrics?: boolean;
 };
 
 async function presentStoredLyrics(
@@ -170,7 +171,8 @@ export default async function fetchLyrics(
   if (existingFetch) {
     if (isCurrentTrack(uri) && !options.keepCurrentLyricsVisible) ShowLoaderContainer(uri);
     const result = await existingFetch;
-    return isCurrentTrack(uri) ? result : null;
+    if (!isCurrentTrack(uri)) return null;
+    return options.reloadLocalLyrics ? fetchLyrics(uri, options) : result;
   }
 
   const promise = fetchLyricsInternal(uri, options);
@@ -247,7 +249,7 @@ async function fetchLyricsInternal(
   const savedLyricsData = $currentLyricsData.get();
 
   // Dev builds always refetch, except for an upload that nothing could refetch.
-  if (savedLyricsData && (!isDev || HoldsTemporaryUpload(uri))) {
+  if (!options.reloadLocalLyrics && savedLyricsData && (!isDev || HoldsTemporaryUpload(uri))) {
     try {
       if (savedLyricsData.startsWith("NO_LYRICS:")) {
         const savedUri = savedLyricsData.slice("NO_LYRICS:".length);
@@ -293,7 +295,7 @@ async function fetchLyricsInternal(
     return presentStoredLyrics(uri, { ...sessionLyric, id: trackId, fromCache: true });
   }
 
-  const localLyric = await LocalLyricsManager.get(uri);
+  const localLyric = await LocalLyricsManager.get(uri, SpotifyPlayer.GetDuration());
   if (localLyric) {
     if (isCurrentTrack(uri)) lastAnswer = { uri, from: "Local DB" };
     return presentStoredLyrics(uri, { ...localLyric, id: trackId });

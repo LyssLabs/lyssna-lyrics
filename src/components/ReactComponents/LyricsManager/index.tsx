@@ -13,6 +13,7 @@ import { ApplyLyricsIfCurrent } from "../../../utils/Lyrics/Global/Applyer";
 import { $currentLyricsData } from "../../../utils/stores";
 import { $lastFetchedUri } from "../../../utils/uiState";
 import Logger from "../../../utils/Logger.ts";
+import { lyricFileKind } from "../../../utils/Lyrics/manager/lyricFile.ts";
 
 const lyricsManagerLogger = new Logger("Lyrics Manager");
 
@@ -52,16 +53,15 @@ export default function LyricsDBPanel({ onBack }: LyricsDBPanelProps) {
   }
 
   async function handleDownload(uri: string) {
-    const ttml = await getRaw(uri);
-    if (!ttml) {
-      toast.error("Could not retrieve TTML for this track.", { duration: 4000 });
+    const contents = await getRaw(uri);
+    if (!contents) {
+      toast.error("Could not retrieve lyrics for this track.", { duration: 4000 });
       return;
     }
     const track = tracksByUri.get(uri);
-    const filename = track
-      ? `${sanitizeFilename(track.name)}.ttml`
-      : `${sanitizeFilename(uri)}.ttml`;
-    const blob = new Blob([ttml], { type: "application/ttml+xml" });
+    const kind = lyricFileKind(contents);
+    const filename = `${sanitizeFilename(track?.name ?? uri)}.${kind}`;
+    const blob = new Blob([contents], { type: kind === "ttml" ? "application/ttml+xml" : "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;

@@ -269,6 +269,7 @@ lyssna-lyrics-modal.LyssnaLyricsModal .ll-modal-overlay .ll-ldb-upload-root {
 
   .ll-ldb-upload-header {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: var(--lyssna-space-3);
@@ -286,10 +287,12 @@ lyssna-lyrics-modal.LyssnaLyricsModal .ll-modal-overlay .ll-ldb-upload-root {
     .ll-ldb-upload-actions {
       flex: 0 0 auto;
       display: inline-flex;
+      flex-wrap: wrap;
       align-items: center;
       justify-content: flex-end;
       gap: var(--lyssna-space-2);
       min-width: 0;
+      max-width: 100%;
     }
 
   }

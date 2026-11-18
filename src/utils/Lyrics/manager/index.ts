@@ -1,6 +1,6 @@
 import { dbPromise, ObjectStores } from "../../db";
 import Logger from "../../Logger";
-import { ParseTTML } from "./parseTTML";
+import { lyricFileKind, parseLyricFile } from "./lyricFile.ts";
 
 const logger = new Logger("Local Lyrics Manager");
 
@@ -22,23 +22,12 @@ async function put(uri: string, ttml: unknown) {
   }
 }
 
-async function get(uri: string): Promise<any | null> {
+async function get(uri: string, durationMs = 0): Promise<any | null> {
   try {
     const db = await dbPromise;
     const data = await db.get(objStore, uri);
-    if (data == null) {
-      return null;
-    }
-
-    const parsed = await ParseTTML(data);
-    if (parsed == null || typeof parsed !== "object") {
-      return null;
-    }
-
-    const result = "Result" in parsed ? (parsed as Record<string, unknown>).Result : undefined;
-    return (result && typeof result === "object" && result !== null)
-      ? Object.assign({}, result as object, { source: "ldb" })
-      : null;
+    if (typeof data !== "string") return null;
+    return { ...parseLyricFile(data, lyricFileKind(data), durationMs), source: "ldb" };
   } catch (error) {
     logCaught("get", error, { uri });
     return null;

@@ -11,19 +11,22 @@ import { REVIEWER_MODES, setTtmlReviewerMode, SyncTtmlReviewerForLyrics, SyncTtm
 import { $lastFetchedUri } from "../../../../utils/uiState";
 import { LocalLyricsManager } from "../../../../utils/Lyrics/manager";
 import { DatabaseIcon, GuideIcon, ResetIcon, UploadIcon } from "./Icons";
+import { BulkIcon } from "./BulkLoadTTMLModal.tsx";
 
 type UploadMode = "persistent" | "session" | "temporary";
 
 type UploadTTMLModalProps = {
   onOpenDB: () => void;
+  onOpenBulk: (files: File[]) => void;
   onDone: (mode: UploadMode) => void;
   onShowReviewerDetails: () => void;
 };
 
-export default function UploadTTMLModal({ onOpenDB, onDone, onShowReviewerDetails }: UploadTTMLModalProps) {
+export default function UploadTTMLModal({ onOpenDB, onOpenBulk, onDone, onShowReviewerDetails }: UploadTTMLModalProps) {
   const reviewerMode = useStore($ttmlReviewerMode);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const bulkInputRef = useRef<HTMLInputElement>(null);
   const pendingModeRef = useRef<UploadMode>("persistent");
 
   const songName = SpotifyPlayer.GetName() ?? "Unknown Song";
@@ -184,6 +187,20 @@ export default function UploadTTMLModal({ onOpenDB, onDone, onShowReviewerDetail
           <button
             type="button"
             className="ll-ldb-database-link"
+            title="Load many lyric files at once, each saved for its own song"
+            disabled={uploading}
+            onClick={() => {
+              if (!bulkInputRef.current) return;
+              bulkInputRef.current.value = "";
+              bulkInputRef.current.click();
+            }}
+          >
+            <BulkIcon name="files" size={14} />
+            <span>Bulk Load</span>
+          </button>
+          <button
+            type="button"
+            className="ll-ldb-database-link"
             onClick={onOpenDB}
             disabled={uploading}
           >
@@ -192,6 +209,19 @@ export default function UploadTTMLModal({ onOpenDB, onDone, onShowReviewerDetail
           </button>
         </div>
       </div>
+
+      <input
+        ref={bulkInputRef}
+        type="file"
+        accept=".ttml,.xml,.lrc"
+        multiple
+        hidden
+        aria-label="Lyric files"
+        onChange={event => {
+          const files = Array.from(event.currentTarget.files ?? []);
+          if (files.length) onOpenBulk(files);
+        }}
+      />
 
       <input
         ref={fileInputRef}
