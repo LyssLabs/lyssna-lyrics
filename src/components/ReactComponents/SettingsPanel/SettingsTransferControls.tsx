@@ -36,7 +36,7 @@ export default function SettingsTransferControls() {
       });
     }} />
     {pending && <div>
-      <p>Import {Object.keys(pending.settings).length} settings and {pending.lyrics.length} TTML files from {pending.file.source === "plugin" ? "Lyssna Lyrics" : "Lyssna Standalone"}? Matching songs are replaced; other saved songs stay. A backup is saved first.</p>
+      <p>Import {Object.keys(pending.settings).length} settings and {pending.lyrics.length} lyric files from {pending.file.source === "plugin" ? "Lyssna Lyrics" : "Lyssna Standalone"}? Matching songs are replaced. A backup is saved first.</p>
       {pending.preserved > 0 && <p>{pending.preserved} unsupported entries will be kept for future exports.</p>}
       <div className="ll-sp-btn-group">
         <button className="ll-sp-btn" type="button" disabled={busy} onClick={() => void run(async () => {

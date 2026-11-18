@@ -103,7 +103,7 @@ Open **Settings → Advanced → Import and export settings** in either Lyssna L
 
 Exports include preferences, animator presets, per-song timing offsets, and the local lyrics database with its track associations. Compatible settings apply immediately. App-specific settings are kept in subsequent exports so they can be restored when moving back. Matching local lyrics are replaced; other saved songs remain. Each import saves a backup, available through **Download previous backup**.
 
-The plugin uses TTML files. Standalone LRC and older JSON lyric entries remain in the transfer file for restoring in standalone. Build-channel selection and Spotify sign-in sessions stay local. Standalone window and editor preferences take effect when reopened. Custom font files must also be available on the destination. Exported plugin preferences can contain saved provider tokens, so keep transfer files private.
+TTML and LRC files transfer in both directions. Older JSON lyric entries remain in the transfer file for restoring in standalone. Build-channel selection and Spotify sign-in sessions stay local. Standalone window and editor preferences take effect when reopened. Custom font files must also be available on the destination. Exported plugin preferences can contain saved provider tokens, so keep transfer files private.
 
 ## Want a break from the lag?
 

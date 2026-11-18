@@ -20,10 +20,10 @@ export default function DeveloperSection({ query, sectionFilter, onOpenHiddenSet
   const hidingHit = matches(query, "Show Hide Settings Tab", "Show the Hide Settings action and eye buttons beside settings.");
   const manageHiddenHit = matches(query, "Manage Hidden Settings", "Restore settings hidden from the main panel.");
   const rememberLocationHit = matches(query, "Remember Menu Location After Close", "Reopen Settings at the tab or submenu you last used.");
-  const transferHit = matches(query, "Import and export settings", "Transfer preferences, animator presets, per-song offsets and local TTML between Lyssna Lyrics and Lyssna Standalone.");
+  const transferHit = matches(query, "Import and export settings", "Transfer preferences, animator presets, per-song offsets and saved TTML and LRC lyrics between Lyssna Lyrics and Lyssna Standalone.");
   if (showHidden || (!developerModeHit && !syncHit && !buildChannelHit && !hidingHit && !manageHiddenHit && !rememberLocationHit && !transferHit)) return null;
   return <SettingsSection title="Advanced">
-    {transferHit && <Row label="Import and export settings" description="Transfer preferences, animator presets, per-song offsets and local TTML between Lyssna Lyrics and Lyssna Standalone." stacked><SettingsTransferControls /></Row>}
+    {transferHit && <Row label="Import and export settings" description="Transfer preferences, animator presets, per-song offsets and saved TTML and LRC lyrics between Lyssna Lyrics and Lyssna Standalone." stacked><SettingsTransferControls /></Row>}
     {syncHit && <Row label="Don't sync settings to Spicy Lyrics counterparts" description="Keep Lyssna preferences independent. Turn off to share compatible settings again."><Toggle checked={dontSyncSpicySettings} onChange={(value) => $dontSyncSpicySettings.set(value)} /></Row>}
     {!showHidden && buildChannelHit && <Row label="Build Channel" description="Reloads Spotify."><BuildChannelSettingControl onManage={onManageBuildChannels} /></Row>}
     {!showHidden && hidingHit && <Row label="Show Hide Settings Tab" description="Show the Hide Settings action and eye buttons beside settings."><Toggle checked={allowHidingSettings} onChange={(value) => $allowHidingSettings.set(value)} /></Row>}
