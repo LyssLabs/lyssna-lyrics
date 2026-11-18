@@ -95,7 +95,7 @@ The Lyssna channel follows the latest published GitHub release automatically whe
 
 Lyssna's release series begins at **0.1.0**. Historical **100.10.x** Pixel Edition versions come before the new series in update checks and patch notes.
 
-When the official Spicy Lyrics extension is running alongside Lyssna, **Spicy Lyrics (local TTML)** reads lyrics and credits from its saved TTML library. Online sources include lrc.red, Musixmatch, Spotify, LRCLIB, and NetEase. Manage source order in **Settings → Sources**.
+The Lyssna launcher runs the official Spicy Lyrics plugin in a hidden frame. **Spicy Lyrics** reads lyrics and credits from that plugin's track cache and saved TTML library. Other sources include lrc.red, Musixmatch, Spotify, LRCLIB, and NetEase. Manage source order in **Settings → Sources**.
 
 ## Transfer settings between Lyssna apps
 

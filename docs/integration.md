@@ -19,7 +19,9 @@ The GitHub launcher uses the v2 entrypoint wrapper. The default Lyssna channel c
 
 ## Official plugin integration
 
-Lyssna reads saved TTML and its credits through `SpicyLyrics.db.objectStores.lyricsStore.manager.get(uri)` when the official Spicy Lyrics extension is running independently. The provider retains the `spicy` settings ID and respects its existing order and enabled state. The exposed manager serves user-saved TTML. Online tracks can use the other enabled providers.
+The launcher loads the official module in an invisible Spotify-origin frame for Lyssna channels. The frame mounts the official lyrics page on its own route and receives playback changes from Spotify. Selecting the Spicy Lyrics channel reloads into the regular official UI.
+
+The `spicy` provider reads the official plugin's versioned track cache and its saved TTML manager. Expired entries and results for a different track are ignored. The official plugin makes its own lyrics requests. Other enabled providers can supply lyrics when no result arrives within the provider's wait.
 
 ## Public lyrics API bridge for older builds
 

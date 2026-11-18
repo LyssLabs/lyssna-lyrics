@@ -33,8 +33,7 @@ export const LyricsStore = GetExpireStore<any>("LyssnaLyrics_LyricsStore_g1", 6,
 }, isDev as true);
 
 export const SessionTTMLStore = new Map<string, any>();
-// The previous cache signature includes results from the retired developer transport.
-const LYRICS_SOURCE_CACHE_VERSION = 11;
+const LYRICS_SOURCE_CACHE_VERSION = 12;
 const inFlightLyricsFetches = new Map<string, Promise<[object | string, number] | null>>();
 export type FetchLyricsResult = [object | string, number] | null;
 export type LyricsFetchFailure = { uri: string; source: string; detail?: string };
@@ -393,7 +392,7 @@ async function fetchLyricsInternal(
       }
     }
 
-    if (isCurrentTrack(uri)) lastAnswer = { uri, from: lyrics.fetchProvider === "spicy" ? "Spicy Lyrics local TTML" : "API" };
+    if (isCurrentTrack(uri)) lastAnswer = { uri, from: lyrics.fetchProvider === "spicy" ? "Spicy Lyrics plugin" : "API" };
     await presentLyrics(uri, lyricsWithId);
     return [{ ...lyricsWithId, fromCache: false }, 200];
   } catch (error) {

@@ -12,8 +12,8 @@ type LyricsSourceDefinition = {
 };
 
 export const DEFAULT_LYRICS_SOURCE_ORDER: LyricsSourceProviderId[] = [
-  "lrcred",
   "spicy",
+  "lrcred",
   "musixmatch",
   "spotify",
   "lrclib",
@@ -25,8 +25,8 @@ export const LYRICS_SOURCE_PROVIDER_DEFINITIONS: Record<
   LyricsSourceDefinition
 > = {
   spicy: {
-    label: "Spicy Lyrics (local TTML)",
-    description: "Read saved TTML and its credits if the official extension is running alongside Lyssna.",
+    label: "Spicy Lyrics",
+    description: "Uses lyrics and credits produced by the official plugin in the background.",
   },
   musixmatch: {
     label: "Musixmatch",

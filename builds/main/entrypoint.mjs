@@ -4,6 +4,7 @@ import { channelApp, channelBundleUrl, channelVersionUrl, readChannelVersion, TE
 import { beginLyricsLoad, finishLyricsLoad } from "../shared/integration.mjs";
 import { getGitHubBundle, importGitHubBundle } from "../shared/github-release.mjs";
 import { CHANNEL_PICKER_STYLES, createChannelPicker } from "../shared/channel-picker.mjs";
+import { startSpicyLyricsBackground } from "./spicy-background.mjs";
 
 const ownsEntrypoint = !globalThis.__LYSSNA_LYRICS_ENTRYPOINT__;
 if (ownsEntrypoint) globalThis.__LYSSNA_LYRICS_ENTRYPOINT__ = true;
@@ -754,6 +755,7 @@ async function load() {
     if (app === "lyssna" && /^100\.10\./.test(version) && separateSpicy) {
       throw new Error("Pixel Edition versions predate coexistence support. Select a current Lyssna version to run alongside Spicy Lyrics.");
     }
+    if (app === "lyssna") startSpicyLyricsBackground();
     const previousApp = readActiveLyricsApp(Spicetify.LocalStorage)?.app;
     restoreLyricsAppView(Spicetify.LocalStorage, Spicetify.Platform.History, app);
     if (app === "lyssna") window._lyssna_lyrics_metadata = { LoadedVersion: version, PreviousApp: previousApp ?? null };

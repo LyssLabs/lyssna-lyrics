@@ -128,6 +128,7 @@ export async function fetchLyricsFromProviders(
     const result = await getProviderRequest(provider);
     if (result?.status === 503) queuedResult = result;
     if (result?.lyrics) {
+      if (provider === "spicy" && order[0] === provider) return result;
       const score = getLyricsTypeScore(result.lyrics);
       if (score > bestScore) {
         bestResult = result;
