@@ -2,7 +2,7 @@ import { BUILT_IN_CHANNELS as CHANNEL_MAP, CHANNELS_CHANGED_EVENT, DEFAULT_CHANN
 import { readActiveLyricsApp, recordActiveLyricsApp, rememberLyricsAppSwitch, restoreLyricsAppView, finishLyricsAppSwitch } from "../shared/app-state.mjs";
 import { channelApp, channelBundleUrl, channelVersionUrl, readChannelVersion, TEST_BUILD_VERSION } from "../shared/build-paths.mjs";
 import { beginLyricsLoad, finishLyricsLoad } from "../shared/integration.mjs";
-import { getGitHubBundle, importGitHubBundle } from "../shared/github-release.mjs";
+import { fetchGitHubRelease, getCachedGitHubBundle, getGitHubBundle, importGitHubBundle } from "../shared/github-release.mjs";
 import { CHANNEL_PICKER_STYLES, createChannelPicker } from "../shared/channel-picker.mjs";
 import { startSpicyLyricsBackground } from "./spicy-background.mjs";
 
@@ -715,6 +715,34 @@ function showFailure(error) {
   document.body.append(notice);
 }
 
+async function fetchChannelVersion(channel) {
+  const response = await fetch(channelVersionUrl(channel), { cache: "no-store", signal: AbortSignal.timeout(5000) });
+  if (!response.ok) throw new Error("Version request failed: " + response.status);
+  const version = await readChannelVersion(channel, response);
+  if (typeof version !== "string" || !VERSION_PATTERN.test(version)) throw new Error("Invalid build version");
+  return version;
+}
+
+async function resolveStableBuild(channel) {
+  const repo = "lyssna-lyrics";
+  let release;
+  try {
+    release = await fetchGitHubRelease(repo, version => `lyssna-lyrics@${version}.mjs`, { force: true });
+  } catch (error) {
+    console.warn("GitHub release unavailable; checking the Lyssna website:", error);
+    try {
+      return { version: await fetchChannelVersion(channel) };
+    } catch (websiteError) {
+      const githubBundle = await getCachedGitHubBundle(repo);
+      if (!githubBundle) throw websiteError;
+      console.warn("Using the cached Lyssna Lyrics release after both version lookups failed:", websiteError);
+      return { version: githubBundle.version, githubBundle };
+    }
+  }
+  const githubBundle = await getGitHubBundle(repo, release);
+  return { version: githubBundle.version, githubBundle };
+}
+
 async function load() {
   if (loading || initializationFailed) return;
   loading = true;
@@ -734,16 +762,9 @@ async function load() {
     let version = channel.fixedVersion;
     let githubBundle;
     if (channel.name === "Lyssna" && !version) {
-      try {
-        githubBundle = await getGitHubBundle("lyssna-lyrics", value => `lyssna-lyrics@${value}.mjs`);
-        version = githubBundle.version;
-      } catch (error) { console.warn("GitHub release unavailable; checking the Lyssna website:", error); }
+      ({ version, githubBundle } = await resolveStableBuild(channel));
     }
-    if (!version) {
-      const response = await fetch(channelVersionUrl(channel), { cache: "no-store", signal: AbortSignal.timeout(5000) });
-      if (!response.ok) throw new Error("Version request failed: " + response.status);
-      version = await readChannelVersion(channel, response);
-    }
+    if (!version) version = await fetchChannelVersion(channel);
     if (typeof version !== "string" || !VERSION_PATTERN.test(version)) throw new Error("Invalid build version");
     const configured = Spicetify.Config?.extensions ?? [];
     const enabled = Array.isArray(configured) ? configured : String(configured).split("|");

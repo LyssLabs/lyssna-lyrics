@@ -1,8 +1,9 @@
-const OWNER = "iPixelGalaxy";
+const OWNER = "LyssLabs";
 const VERSION = /^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/;
 const CACHE_NAME = "lyrics-release-runtimes-v1";
-const manifestKey = repo => `release-loader:${OWNER}/${repo}`;
-const runtimeKey = repo => `https://api.github.com/repos/${OWNER}/${repo}/cached-runtime`;
+// Keep the original storage keys so verified offline bundles survive the repository transfer.
+const manifestKey = repo => `release-loader:iPixelGalaxy/${repo}`;
+const runtimeKey = repo => `https://api.github.com/repos/iPixelGalaxy/${repo}/cached-runtime`;
 const releaseRequests = new Map();
 
 function validRelease(repo, release, assetName) {
@@ -25,29 +26,24 @@ export function fetchGitHubRelease(repo, assetName, { force = false } = {}) {
   const cached = readRelease(repo, assetName);
   if (!force && cached && Date.now() - cached.checkedAt >= 0 && Date.now() - cached.checkedAt < 60_000) return Promise.resolve(cached);
   if (releaseRequests.has(repo)) return releaseRequests.get(repo);
-  const request = requestRelease(repo, assetName, cached).finally(() => releaseRequests.delete(repo));
+  const request = requestRelease(repo, assetName).finally(() => releaseRequests.delete(repo));
   releaseRequests.set(repo, request);
   return request;
 }
 
-async function requestRelease(repo, assetName, cached) {
-  try {
-    const response = await fetch(`https://api.github.com/repos/${OWNER}/${repo}/releases/latest`, {
-      credentials: "omit", cache: "no-store", headers: { Accept: "application/vnd.github+json" }, signal: AbortSignal.timeout(5000),
-    });
-    if (!response.ok) throw new Error(`GitHub release lookup failed: ${response.status}`);
-    const data = await response.json();
-    const version = typeof data.tag_name === "string" ? data.tag_name.replace(/^v/, "") : "";
-    if (!VERSION.test(version) || data.draft || data.prerelease || !Array.isArray(data.assets)) throw new Error("Invalid published release");
-    const asset = data.assets.find(item => item.name === assetName(version));
-    const release = { version, tag: data.tag_name, assetName: assetName(version), url: asset?.browser_download_url, digest: asset?.digest ?? null, checkedAt: Date.now() };
-    if (!validRelease(repo, release, assetName)) throw new Error("Published release is missing its runtime asset");
-    try { globalThis.Spicetify.LocalStorage.set(manifestKey(repo), JSON.stringify(release)); } catch { /* Cache storage is optional. */ }
-    return release;
-  } catch (error) {
-    if (cached) return cached;
-    throw error;
-  }
+async function requestRelease(repo, assetName) {
+  const response = await fetch(`https://api.github.com/repos/${OWNER}/${repo}/releases/latest`, {
+    credentials: "omit", cache: "no-store", headers: { Accept: "application/vnd.github+json" }, signal: AbortSignal.timeout(5000),
+  });
+  if (!response.ok) throw new Error(`GitHub release lookup failed: ${response.status}`);
+  const data = await response.json();
+  const version = typeof data.tag_name === "string" ? data.tag_name.replace(/^v/, "") : "";
+  if (!VERSION.test(version) || data.draft || data.prerelease || !Array.isArray(data.assets)) throw new Error("Invalid published release");
+  const asset = data.assets.find(item => item.name === assetName(version));
+  const release = { version, tag: data.tag_name, assetName: assetName(version), url: asset?.browser_download_url, digest: asset?.digest ?? null, checkedAt: Date.now() };
+  if (!validRelease(repo, release, assetName)) throw new Error("Published release is missing its runtime asset");
+  try { globalThis.Spicetify.LocalStorage.set(manifestKey(repo), JSON.stringify(release)); } catch { /* Cache storage is optional. */ }
+  return release;
 }
 
 async function verify(bytes, digest) {
@@ -93,33 +89,46 @@ async function downloadBundle(repo, release, cache, onProgress) {
   throw failure;
 }
 
-export async function getGitHubBundle(repo, assetName, onProgress) {
-  let cache, cached;
+async function openRuntimeCache(repo) {
   try {
-    cache = await caches.open(CACHE_NAME);
-    cached = await cache.match(runtimeKey(repo));
-  } catch { /* The loader can run without an offline cache. */ }
-  try {
-    onProgress?.("Checking for updates…");
-    // A startup must choose its runtime after the lookup, including channel switches.
-    // Cached bytes still avoid a download when the current release has not changed.
-    const release = await fetchGitHubRelease(repo, assetName, { force: true });
-    if (matchesRelease(cached, release)) {
-      try {
-        const bytes = await cached.clone().arrayBuffer();
-        await verify(bytes, release.digest);
-        return { version: release.version, bytes };
-      } catch { cached = undefined; }
+    const cache = await caches.open(CACHE_NAME);
+    return { cache, cached: await cache.match(runtimeKey(repo)) };
+  } catch {
+    return {};
+  }
+}
+
+async function readCachedBundle(cached) {
+  const version = cached?.headers.get("x-release-version");
+  if (!version || !VERSION.test(version) || cached.bodyUsed) return undefined;
+  const bytes = await cached.arrayBuffer();
+  await verify(bytes, cached.headers.get("x-release-digest"));
+  return { version, bytes };
+}
+
+export async function getCachedGitHubBundle(repo) {
+  const { cached } = await openRuntimeCache(repo);
+  return readCachedBundle(cached);
+}
+
+export async function getGitHubBundle(repo, release, onProgress) {
+  const { cache, cached } = await openRuntimeCache(repo);
+  let offline = cached;
+  if (matchesRelease(cached, release)) {
+    try {
+      const bundle = await readCachedBundle(cached);
+      if (bundle) return bundle;
+    } catch {
+      offline = undefined;
     }
+  }
+  try {
     return await downloadBundle(repo, release, cache, onProgress);
   } catch (error) {
-    if (!cached || cached.bodyUsed) throw error;
-    const version = cached.headers.get("x-release-version");
-    if (!version || !VERSION.test(version)) throw error;
-    const bytes = await cached.arrayBuffer();
-    await verify(bytes, cached.headers.get("x-release-digest"));
-    console.warn(`Using the cached ${repo} release after an update lookup failure:`, error);
-    return { version, bytes };
+    const bundle = await readCachedBundle(offline);
+    if (!bundle) throw error;
+    console.warn(`Using the cached ${repo} release after a download failure:`, error);
+    return bundle;
   }
 }
 
