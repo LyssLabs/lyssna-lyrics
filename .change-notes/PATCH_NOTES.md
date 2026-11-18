@@ -1,3 +1,26 @@
+## v0.3.0
+
+- **Bulk Load**
+  Pick multiple `.ttml`, `.xml`, or `.lrc` files from Load TTML. Files with a Spotify ID or ISRC match automatically. Search for the remaining songs, select one or more releases, or skip a file. The summary shows what was saved to your local lyrics database.
+
+- **Settings transfer**
+  Use Import and export settings under Advanced to move preferences, animator presets, per-song timing offsets, and saved TTML and LRC lyrics between Lyssna Lyrics and compatible versions of Lyssna Standalone. Each import saves a backup first.
+
+- **Spicy Lyrics and Apple Music sources**
+  Lyssna reads lyrics and songwriter credits from the official Spicy Lyrics plugin running in the background. Manage Sources starts with Spicy Lyrics, Apple Music, and lrc.red in the default order. Apple Music is used when the official plugin identifies it, and community results show Spicy Lyrics Community in the credits.
+
+- **lrc.red credits and backing vocals**
+  lrc.red lyrics are credited to lrc.red. Bracketed phrases in line- and word-synced lyrics render as backing vocals using the source timing.
+
+- **Automatic timing repairs and compact spacing**
+  Apple Music word timing and backing-vocal repairs now apply automatically. Removed the extra splits credit note. Bloom uses the same compact line spacing as Spring.
+
+- **Songwriters beside Up Next**
+  With pinned credits set to No Writers, revealed songwriter credits can sit beside a bottom-positioned Up Next card when they fit.
+
+- **Lyssna Standalone download**
+  The Windows download in Settings now links to the installer on lyssna.org.
+
 ## v0.2.1
 
 - **Up Next and songwriter credits**
