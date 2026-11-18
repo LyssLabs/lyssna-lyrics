@@ -39,11 +39,6 @@ export type LyricsData = {
   [key: string]: any;
 };
 
-function isAppleMusicLyrics(lyrics: LyricsData): boolean {
-  return lyrics.sourceDisplayName?.trim().toLowerCase() === "apple music" ||
-    [lyrics.source, lyrics.fetchProvider].some(value => value?.toLowerCase() === "aml" || value?.toLowerCase() === "apple");
-}
-
 let currentAbortController: AbortController | null = null;
 let appliedLyricsIdentity: string | null = null;
 let renderedLyrics: LyricsData | null = null;
@@ -222,7 +217,7 @@ export default async function ApplyLyrics(lyricsContent: [object | string, numbe
     lyrics = descriptor as LyricsData;
     NormalizeLyricsCommaSpacing(lyrics);
     const sourceNeedsWordSync = lyrics.Type === "Line" || lyrics.Type === "Static";
-    const needsAppleRepairs = lyrics.Type === "Syllable" && isAppleMusicLyrics(lyrics) && HasAppleWordSyncRepairs(lyrics);
+    const needsAppleRepairs = lyrics.Type === "Syllable" && lyrics.fetchProvider === "apple" && HasAppleWordSyncRepairs(lyrics);
     sourceNeedsExperimentalWordSync = sourceNeedsWordSync || needsAppleRepairs;
     const shouldUseExperimentalWordSync =
       sourceNeedsWordSync && (Defaults.EnableExperimentalWordSync || $spaceGravityMode.get());

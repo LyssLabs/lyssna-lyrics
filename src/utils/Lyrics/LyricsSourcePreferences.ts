@@ -1,5 +1,6 @@
 export type LyricsSourceProviderId =
   | "spicy"
+  | "apple"
   | "musixmatch"
   | "lrcred"
   | "spotify"
@@ -13,6 +14,7 @@ type LyricsSourceDefinition = {
 
 export const DEFAULT_LYRICS_SOURCE_ORDER: LyricsSourceProviderId[] = [
   "spicy",
+  "apple",
   "lrcred",
   "musixmatch",
   "spotify",
@@ -27,6 +29,10 @@ export const LYRICS_SOURCE_PROVIDER_DEFINITIONS: Record<
   spicy: {
     label: "Spicy Lyrics",
     description: "Uses lyrics and credits produced by the official plugin in the background.",
+  },
+  apple: {
+    label: "Apple Music",
+    description: "Uses lyrics the official Spicy Lyrics plugin identifies as Apple Music.",
   },
   musixmatch: {
     label: "Musixmatch",
@@ -58,6 +64,7 @@ const LYRICS_SOURCE_LABELS: Record<string, string> = {
   spl: "Spicy Lyrics Community",
   spt: "Spotify",
   aml: "Apple Music",
+  apple: "Apple Music",
   lrcred: "lrc.red",
   spicy: "Spicy Lyrics",
   spotify: "Spotify",
@@ -93,6 +100,10 @@ export function normalizeLyricsSourceOrder(
   value: unknown
 ): LyricsSourceProviderId[] {
   const deduped = normalizeProviderIds(value);
+  const spicyPosition = deduped.indexOf("spicy");
+  if (spicyPosition !== -1 && !deduped.includes("apple")) {
+    deduped.splice(spicyPosition + 1, 0, "apple");
+  }
 
   DEFAULT_LYRICS_SOURCE_ORDER.forEach((id) => {
     if (!deduped.includes(id)) {

@@ -15,7 +15,7 @@ import {
 } from "./LyricsSourcePreferences.ts";
 
 import { isCurrentTrack } from "./Sources/Track.ts";
-import { canReadOfficialPluginLyrics, readOfficialPluginLyrics } from "./Sources/OfficialPlugin.ts";
+import { canReadOfficialPluginLyrics, isOfficialPluginSource, readOfficialPluginLyrics } from "./Sources/OfficialPlugin.ts";
 import { SyncTtmlReviewerWithCurrentLyrics } from "../ttmlReviewer.ts";
 import { LyricsQueueRetry } from "./LyricsQueueRetry.ts";
 import { HideLoaderContainer, ShowLoaderContainer } from "./LyricsLoader.ts";
@@ -33,7 +33,7 @@ export const LyricsStore = GetExpireStore<any>("LyssnaLyrics_LyricsStore_g1", 6,
 }, isDev as true);
 
 export const SessionTTMLStore = new Map<string, any>();
-const LYRICS_SOURCE_CACHE_VERSION = 12;
+const LYRICS_SOURCE_CACHE_VERSION = 13;
 const inFlightLyricsFetches = new Map<string, Promise<[object | string, number] | null>>();
 export type FetchLyricsResult = [object | string, number] | null;
 export type LyricsFetchFailure = { uri: string; source: string; detail?: string };
@@ -95,7 +95,7 @@ function getActiveLyricsSourceOrder(): LyricsSourceProviderId[] {
   const order = normalizeLyricsSourceOrder(Defaults.LyricsSourceOrder);
   const disabled = new Set(Defaults.DisabledLyricsSourceIds);
   const officialReaderAvailable = canReadOfficialPluginLyrics();
-  return order.filter(provider => !disabled.has(provider) && (provider !== "spicy" || officialReaderAvailable));
+  return order.filter(provider => !disabled.has(provider) && (!isOfficialPluginSource(provider) || officialReaderAvailable));
 }
 
 function getLyricsSourceCacheSignature(): string {
@@ -252,7 +252,7 @@ async function fetchLyricsInternal(
       if (savedLyricsData.startsWith("NO_LYRICS:")) {
         const savedUri = savedLyricsData.slice("NO_LYRICS:".length);
         const activeSources = getActiveLyricsSourceOrder();
-        if ((savedUri === uri || getSongKey(savedUri) === trackId) && activeSources.length <= 1 && !activeSources.includes("spicy")) {
+        if ((savedUri === uri || getSongKey(savedUri) === trackId) && activeSources.length <= 1 && !activeSources.some(isOfficialPluginSource)) {
           finishFetching(uri);
           HideLoaderContainer(uri);
           noteFailure(uri, "saved state");
@@ -299,11 +299,14 @@ async function fetchLyricsInternal(
     return presentStoredLyrics(uri, { ...localLyric, id: trackId });
   }
 
-  if ((isLocalTrack || !navigator.onLine) && getActiveLyricsSourceOrder().includes("spicy")) {
-    const official = await readOfficialPluginLyrics(uri);
-    if (official && isCurrentTrack(uri)) {
-      lastAnswer = { uri, from: "Spicy Lyrics local TTML" };
-      return presentStoredLyrics(uri, attachLyricsSourceCacheMetadata({ ...official.lyrics, id: trackId, uri }));
+  if (isLocalTrack || !navigator.onLine) {
+    const officialSources = getActiveLyricsSourceOrder().filter(isOfficialPluginSource);
+    if (officialSources.length) {
+      const official = await readOfficialPluginLyrics(uri);
+      if (official && officialSources.includes(official.lyrics.fetchProvider) && isCurrentTrack(uri)) {
+        lastAnswer = { uri, from: "Spicy Lyrics plugin" };
+        return presentStoredLyrics(uri, attachLyricsSourceCacheMetadata({ ...official.lyrics, id: trackId, uri }));
+      }
     }
   }
 
@@ -384,7 +387,7 @@ async function fetchLyricsInternal(
     const lyricsWithId = attachLyricsSourceCacheMetadata({ ...lyrics, id: trackId, uri });
     if (isCurrentTrack(uri)) $currentLyricsData.set(JSON.stringify(lyricsWithId));
 
-    if (LyricsStore && romanizedInFull && lyrics.fetchProvider !== "spicy") {
+    if (LyricsStore && romanizedInFull && !isOfficialPluginSource(lyrics.fetchProvider)) {
       try {
         await LyricsStore.SetItem(trackId, lyricsWithId);
       } catch (error) {
@@ -392,7 +395,7 @@ async function fetchLyricsInternal(
       }
     }
 
-    if (isCurrentTrack(uri)) lastAnswer = { uri, from: lyrics.fetchProvider === "spicy" ? "Spicy Lyrics plugin" : "API" };
+    if (isCurrentTrack(uri)) lastAnswer = { uri, from: isOfficialPluginSource(lyrics.fetchProvider) ? "Spicy Lyrics plugin" : "API" };
     await presentLyrics(uri, lyricsWithId);
     return [{ ...lyricsWithId, fromCache: false }, 200];
   } catch (error) {

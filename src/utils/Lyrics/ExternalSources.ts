@@ -1,7 +1,7 @@
 import type { LyricsSourceProviderId } from "./LyricsSourcePreferences.ts";
 import type { ExternalLyricsResult } from "./Sources/Types.ts";
 import { getTrackLyricsInfo } from "./Sources/Track.ts";
-import { readOfficialPluginLyrics } from "./Sources/OfficialPlugin.ts";
+import { isOfficialPluginSource, readOfficialPluginLyrics } from "./Sources/OfficialPlugin.ts";
 import { applySongWriters, tryGetSongWriters } from "./Sources/Shared.ts";
 import { fetchMusixmatchLyrics } from "./Sources/Musixmatch.ts";
 import { fetchSpotifyLyrics } from "./Sources/Spotify.ts";
@@ -62,9 +62,13 @@ export async function fetchLyricsFromProviders(
     return null;
   }
 
+  let officialRequest: Promise<ExternalLyricsResult | null> | undefined;
   function startProviderRequest(provider: LyricsSourceProviderId): Promise<ExternalLyricsResult | null> {
     switch (provider) {
-      case "spicy": return withProviderTimeout(readOfficialPluginLyrics(uri), FALLBACK_PROVIDER_TIMEOUT_MS);
+      case "spicy":
+      case "apple":
+        officialRequest ??= withProviderTimeout(readOfficialPluginLyrics(uri), FALLBACK_PROVIDER_TIMEOUT_MS);
+        return officialRequest.then(result => result?.lyrics?.fetchProvider === provider ? result : null);
       case "musixmatch": return fetchMusixmatchLyrics(trackInfo);
       case "lrcred": return fetchLrcRedLyrics(trackInfo);
       case "spotify": return fetchSpotifyLyrics(trackInfo);
@@ -90,13 +94,14 @@ export async function fetchLyricsFromProviders(
 
   const finishResult = async (result: ExternalLyricsResult | null) => {
     if (!result?.lyrics || tryGetSongWriters(result.lyrics)) return result;
-    const officialWriters = order.includes("spicy")
-      ? tryGetSongWriters((await getProviderRequest("spicy"))?.lyrics) : null;
+    const officialLyrics = (await officialRequest)?.lyrics;
+    const officialWriters = order.includes(officialLyrics?.fetchProvider)
+      ? tryGetSongWriters(officialLyrics) : null;
     if (officialWriters?.length) return { ...result, lyrics: applySongWriters(result.lyrics, officialWriters) };
     if (result.lyrics.fetchProvider !== "lrcred") return result;
 
     // Reuse enabled requests for lrc.red's remaining writer fallbacks.
-    const writerRequests = order.filter(provider => provider !== "lrcred" && provider !== "spicy").map(provider =>
+    const writerRequests = order.filter(provider => provider !== "lrcred" && !isOfficialPluginSource(provider)).map(provider =>
       withProviderTimeout(
         getProviderRequest(provider).then(value => tryGetSongWriters(value?.lyrics)),
         FALLBACK_PROVIDER_TIMEOUT_MS
@@ -128,7 +133,6 @@ export async function fetchLyricsFromProviders(
     const result = await getProviderRequest(provider);
     if (result?.status === 503) queuedResult = result;
     if (result?.lyrics) {
-      if (provider === "spicy" && order[0] === provider) return result;
       const score = getLyricsTypeScore(result.lyrics);
       if (score > bestScore) {
         bestResult = result;

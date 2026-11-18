@@ -15,6 +15,10 @@ const CACHE_VERSION = 6;
 const READ_TIMEOUT_MS = 3500;
 const CACHE_RETRY_MS = 200;
 
+export function isOfficialPluginSource(provider: unknown): provider is "spicy" | "apple" {
+  return provider === "spicy" || provider === "apple";
+}
+
 function getLocalReader(pluginWindow: OfficialPluginWindow | null | undefined): LocalLyricsReader | undefined {
   const reader = pluginWindow?.SpicyLyrics?.db?.objectStores?.lyricsStore?.manager;
   return typeof reader?.get === "function" ? reader : undefined;
@@ -33,11 +37,17 @@ function toProviderResult(data: unknown, uri: string, local = false): ExternalLy
   const entries = lyrics.Type === "Static" ? lyrics.Lines
     : lyrics.Type === "Line" || lyrics.Type === "Syllable" ? lyrics.Content : null;
   if (!Array.isArray(entries) || !entries.length) return null;
+  const source = typeof lyrics.source === "string" ? lyrics.source.trim().toLowerCase() : "";
+  const sourceIds = source.split(/[^a-z0-9]+/);
+  const provider = !local && (source === "apple_music" || (sourceIds.includes("aml") && !sourceIds.includes("spl")))
+    ? "apple"
+    : "spicy";
   return createProviderResult({
     ...lyrics,
     sourceDisplayName: local ? "Spicy Lyrics (local TTML)"
+      : provider === "apple" ? "Apple Music"
       : typeof lyrics.sourceDisplayName === "string" ? lyrics.sourceDisplayName : undefined,
-  }, "spicy");
+  }, provider);
 }
 
 async function readCachedLyrics(uri: string, trackId: string): Promise<ExternalLyricsResult | null> {

@@ -8,16 +8,13 @@ export const ProviderMap = {
     "ldb": "Local DB",
     "uns": "Unison",
     "spicy": "Spicy Lyrics",
+    "lrcred": "lrc.red",
     "spotify": "Spotify",
     "apple": "Apple Music",
     "musixmatch": "Musixmatch",
     "lrclib": "LRCLIB",
     "netease": "Netease",
 }
-
-const ViaMap: Record<string, { label: string; url?: string }> = {
-  "lrc-red": { label: "lrc.red", url: "https://lrc.red/?utm_source=lyssna-lyrics" },
-};
 
 export function ApplyLyricsProvider(data: any, LyricsContainer: HTMLElement): void {
   if ((!data?.source && !data?.fetchProvider && !data?.sourceDisplayName) || !LyricsContainer) return;
@@ -47,48 +44,31 @@ export function ApplyLyricsProvider(data: any, LyricsContainer: HTMLElement): vo
       ? "(+ estimated line and word timing)"
       : "(+ estimated word timing)"
     : providerLabel === "Apple Music" && data.experimentalAppleWordSplitting ? "(+ extra splits)" : "";
-  const displayLabel = data.fetchProvider === "spicy" && data.source !== "ldb"
-    ? ProviderMap.spl
+  const isLrcRed = data.fetchProvider === "lrcred" || data.source_via === "lrc-red";
+  const displayLabel = isLrcRed ? ProviderMap.lrcred
+    : data.fetchProvider === "spicy" && data.source !== "ldb" ? ProviderMap.spl
     : providerLabel;
-  CreditsRow(ProviderElement, "Provided by", displayLabel);
+  const valueElement = CreditsRow(ProviderElement, "Provided by", displayLabel);
+  if (isLrcRed) {
+    const link = LyricsContainer.ownerDocument.createElement("a");
+    link.className = "LyricsProviderViaLink";
+    link.href = "https://lrc.red/?utm_source=lyssna-lyrics";
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = displayLabel;
+    // Open through the main window so popouts use the external browser too.
+    link.addEventListener("click", (event) => {
+      event.preventDefault();
+      window.open(link.href, "_blank", "noopener,noreferrer");
+    });
+    valueElement.replaceChildren(link);
+  }
   if (timingNote) {
     const note = LyricsContainer.ownerDocument.createElement("span");
     note.className = "LyricsCreditNote";
     note.textContent = timingNote;
     ProviderElement.append(" ", note);
   }
-  const via = typeof data.source_via === "string" && Object.hasOwn(ViaMap, data.source_via)
-    ? ViaMap[data.source_via]
-    : undefined;
-  if (via) {
-    const viaElement = LyricsContainer.ownerDocument.createElement("span");
-    viaElement.classList.add("LyricsProviderVia");
-    const viaLabel = LyricsContainer.ownerDocument.createElement("span");
-    viaLabel.classList.add("LyricsProviderViaLabel");
-    viaLabel.textContent = "(via ";
-    viaElement.appendChild(viaLabel);
-
-    if (via.url) {
-      const link = LyricsContainer.ownerDocument.createElement("a");
-      link.classList.add("LyricsProviderViaLink");
-      link.href = via.url;
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
-      link.textContent = via.label;
-      // Open through the main window so popouts use the external browser too.
-      link.addEventListener("click", (event) => {
-        event.preventDefault();
-        window.open(via.url!, "_blank", "noopener,noreferrer");
-      });
-      viaElement.appendChild(link);
-    } else {
-      viaLabel.append(via.label);
-    }
-
-    viaElement.append(")");
-    ProviderElement.append(" ", viaElement);
-  }
-
   LyricsContainer.appendChild(ProviderElement);
   PinFooterDetailWithoutWriters(ProviderElement, LyricsContainer);
 }

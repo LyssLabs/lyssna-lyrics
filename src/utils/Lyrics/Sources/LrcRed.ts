@@ -32,13 +32,10 @@ export async function fetchLrcRedLyrics(track: TrackLyricsInfo): Promise<Externa
     if (!response.ok) return null;
     const ttml = await response.text();
     if (ttml.length > 2_000_000) return null;
-    const lyrics = parseTTMLToLyrics(ttml);
-    // Assume Apple Music for word-sync credits; keep unverified provenance out of source-specific processing.
     return createProviderResult({
-      ...lyrics,
-      source: "unknown",
-      sourceDisplayName: lyrics.Type === "Syllable" ? "Apple Music" : "Unknown source",
-      source_via: "lrc-red",
+      ...parseTTMLToLyrics(ttml),
+      source: "lrcred",
+      sourceDisplayName: "lrc.red",
     }, "lrcred");
   } catch {
     return null;
