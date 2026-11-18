@@ -4,7 +4,7 @@ import { PinFooterDetailWithoutWriters } from "./CreateLyricsFooter.ts";
 export const ProviderMap = {
     "spt": "Spotify",
     "aml": "Apple Music",
-    "spl": "Spicy Lyrics",
+    "spl": "Spicy Lyrics Community",
     "ldb": "Local DB",
     "uns": "Unison",
     "spicy": "Spicy Lyrics",
@@ -47,7 +47,10 @@ export function ApplyLyricsProvider(data: any, LyricsContainer: HTMLElement): vo
       ? "(+ estimated line and word timing)"
       : "(+ estimated word timing)"
     : providerLabel === "Apple Music" && data.experimentalAppleWordSplitting ? "(+ extra splits)" : "";
-  CreditsRow(ProviderElement, "Provided by", providerLabel);
+  const displayLabel = data.fetchProvider === "spicy" && data.source !== "ldb"
+    ? ProviderMap.spl
+    : providerLabel;
+  CreditsRow(ProviderElement, "Provided by", displayLabel);
   if (timingNote) {
     const note = LyricsContainer.ownerDocument.createElement("span");
     note.className = "LyricsCreditNote";
