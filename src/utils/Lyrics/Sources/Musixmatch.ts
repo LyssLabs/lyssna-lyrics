@@ -2,7 +2,6 @@ import Defaults from "../../../components/Global/Defaults.ts";
 import storage from "../../storage.ts";
 import {
   createProviderResult,
-  applySongWriters,
   buildLineLyrics,
   buildStaticLyrics,
   buildSyllableLyrics,
@@ -12,7 +11,6 @@ import {
   removeSongFeat,
   stripBracketCharacters,
 } from "./Shared.ts";
-import { fetchSpicySongWriters } from "./Spicy.ts";
 import type { TrackLyricsInfo, ExternalLyricsResult, TimedLine, TimedWord, TimedWordLine } from "./Types.ts";
 
 const DEFAULT_MUSIXMATCH_TOKEN =
@@ -534,8 +532,7 @@ function getMusixmatchKaraokeLines(richsync: any): TimedWordLine[] | null {
 }
 
 export async function fetchMusixmatchLyrics(
-  trackInfo: TrackLyricsInfo,
-  getSpicyRaw: () => Promise<ExternalLyricsResult | null>
+  trackInfo: TrackLyricsInfo
 ): Promise<ExternalLyricsResult | null> {
   try {
     const macroCalls = await fetchMusixmatchMacro(trackInfo);
@@ -555,16 +552,8 @@ export async function fetchMusixmatchLyrics(
       ? null
       : getMusixmatchKaraokeLines(richsync);
     if (karaokeLines) {
-      const spicySongWriters = await fetchSpicySongWriters(getSpicyRaw());
-      const syllableLyrics = applySongWriters(
-        applyMusixmatchBracketBackgrounds(
-          buildSyllableLyrics(
-            karaokeLines,
-            "musixmatch",
-            "Musixmatch"
-          )
-        ),
-        spicySongWriters
+      const syllableLyrics = applyMusixmatchBracketBackgrounds(
+        buildSyllableLyrics(karaokeLines, "musixmatch", "Musixmatch")
       );
 
       if (syllableLyrics) {
@@ -574,16 +563,7 @@ export async function fetchMusixmatchLyrics(
 
     const syncedLines = getMusixmatchSyncedLines(macroCalls);
     if (syncedLines) {
-      const spicySongWriters = await fetchSpicySongWriters(getSpicyRaw());
-      const lineLyrics = applySongWriters(
-        buildLineLyrics(
-          syncedLines,
-          trackInfo.durationMs,
-          "musixmatch",
-          "Musixmatch"
-        ),
-        spicySongWriters
-      );
+      const lineLyrics = buildLineLyrics(syncedLines, trackInfo.durationMs, "musixmatch", "Musixmatch");
       if (lineLyrics) {
         return createProviderResult(lineLyrics, "musixmatch");
       }

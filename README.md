@@ -95,7 +95,7 @@ The Lyssna channel follows the latest published GitHub release automatically whe
 
 Lyssna's release series begins at **0.1.0**. Historical **100.10.x** Pixel Edition versions come before the new series in update checks and patch notes.
 
-Community and Apple Music lyrics use the public Spicy Lyrics developer API. Other available sources include lrc.red, Musixmatch, Spotify, LRCLIB, and NetEase. Source availability varies by track; manage their order in **Settings → Sources**. The fork's private plugin API integration has been removed.
+When the official Spicy Lyrics extension is running alongside Lyssna, **Spicy Lyrics (local TTML)** reads lyrics and credits from its saved TTML library. Online sources include lrc.red, Musixmatch, Spotify, LRCLIB, and NetEase. Manage source order in **Settings → Sources**.
 
 ## Transfer settings between Lyssna apps
 

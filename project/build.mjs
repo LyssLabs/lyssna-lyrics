@@ -1,8 +1,7 @@
 import { spawnSync } from "node:child_process";
-import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, unlinkSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readdirSync, unlinkSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { createRequire } from "node:module";
-import { Script } from "node:vm";
 import { PLUGIN_DIRECTORY, BUNDLES_DIRECTORY, TEST_BUILD_VERSION } from "../builds/shared/build-paths.mjs";
 import { isLyricsVersion } from "../builds/shared/app-state.mjs";
 
@@ -147,11 +146,6 @@ if (entrypointBuild.status !== 0) process.exit(entrypointBuild.status ?? 1);
 try {
   const builtFile = getBuiltJsFile(defaultDist, projectName);
   copyFileReplacing(builtFile, join(defaultDist, outputFile));
-  const bridgeName = "lyssna-lyrics-bridge.html";
-  const bridgeSource = readFileSync(resolve("website", bridgeName), "utf8");
-  for (const script of bridgeSource.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)) {
-    new Script(script[1], { filename: bridgeName });
-  }
   function publishOutput(dest) {
     const pluginDir = join(dest, PLUGIN_DIRECTORY);
     const bundlesDir = join(pluginDir, BUNDLES_DIRECTORY);
@@ -159,7 +153,6 @@ try {
     copyFileReplacing(resolve("website", "download.html"), join(pluginDir, "download.html"));
 
     copyFileReplacing(join(defaultDist, outputFile), join(bundlesDir, outputFile));
-    copyFileReplacing(resolve("website", bridgeName), join(pluginDir, bridgeName));
     copyFileReplacing(entrypointFile, join(pluginDir, "entrypoint.mjs"));
     copyFileReplacing(resolve("builds", "lyssna-lyrics.mjs"), join(pluginDir, "lyssna-lyrics.mjs"));
     if (!parsedArgs.testBuild) {

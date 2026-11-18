@@ -5,7 +5,7 @@ import { PageContainer } from "../components/Pages/PageView.ts";
 import { IsCompactMode } from "../components/Utils/CompactMode.ts";
 import Fullscreen from "../components/Utils/Fullscreen.ts";
 import { onAnimationFrame } from "./AnimationFrameLoop.ts";
-import { IsOpen as IsBreakerOpen, RetryAfterMs } from "./API/CircuitBreaker.ts";
+import { canReadOfficialPluginLyrics } from "./Lyrics/Sources/OfficialPlugin.ts";
 import App from "./app.ts";
 import { TEST_BUILD_VERSION } from "./version/Channels.ts";
 import { getExperiments, isExperimentEnabled } from "./experiments.ts";
@@ -359,7 +359,7 @@ export function BuildBugReport(options: BugReportOptions = {}): string {
     ["Window", describeWindow()],
     ["Smoothness", describeSmoothness()],
     ["Online", navigator.onLine ? "yes" : "no"],
-    ["Service", IsBreakerOpen() ? `paused, retry in ${Math.ceil(RetryAfterMs() / 1000)}s` : "ok"],
+    ["Official TTML", canReadOfficialPluginLyrics() ? "available" : "unavailable"],
     ["Time", new Date().toISOString().replace("T", " ").replace(/\.\d+Z$/, " UTC")],
   ];
 

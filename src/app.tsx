@@ -54,6 +54,7 @@ import {
   $dontSyncSpicySettings,
 } from "./utils/stores.ts";
 import Defaults from "./components/Global/Defaults.ts";
+import { DEFAULT_LYRICS_SOURCE_ORDER } from "./utils/Lyrics/LyricsSourcePreferences.ts";
 import Global from "./components/Global/Global.ts";
 import Platform from "./components/Global/Platform.ts";
 import Session from "./components/Global/Session.ts";
@@ -222,7 +223,7 @@ function bindForkDefaults() {
     try {
       Defaults.LyricsSourceOrder = JSON.parse(value);
     } catch {
-      Defaults.LyricsSourceOrder = ["spicy", "musixmatch", "apple", "spotify", "lrclib", "netease"];
+      Defaults.LyricsSourceOrder = [...DEFAULT_LYRICS_SOURCE_ORDER];
     }
   });
   bindDefault($disabledLyricsSources, (value) => {

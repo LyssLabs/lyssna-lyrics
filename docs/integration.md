@@ -13,13 +13,17 @@ The canonical website directory is `/lyssna-plugin/`:
 - `version`: the stable version manifest.
 - `builds/lyssna-lyrics@<version>.mjs`: full versioned bundles.
 - `entrypoint.mjs`: the hosted channel loader.
-- `lyssna-lyrics-bridge.html`: the public API transport.
+- `lyssna-lyrics-bridge.html`: the public API transport for older builds.
 
 The GitHub launcher uses the v2 entrypoint wrapper. The default Lyssna channel checks the latest GitHub release before selecting a cached bundle; custom branches and fixed pins retain their configured source. Older website paths can forward to the canonical directory without duplicating full bundles.
 
-## Public lyrics API bridge
+## Official plugin integration
 
-`config/spicy-lyrics-client-key.txt` contains a publishable client key shared with Lyssna. Builds accept only `sl_pk_` keys. Never substitute a secret key. Rotating the shared key requires updating both clients.
+Lyssna reads saved TTML and its credits through `SpicyLyrics.db.objectStores.lyricsStore.manager.get(uri)` when the official Spicy Lyrics extension is running independently. The provider retains the `spicy` settings ID and respects its existing order and enabled state. The exposed manager serves user-saved TTML. Online tracks can use the other enabled providers.
+
+## Public lyrics API bridge for older builds
+
+`config/spicy-lyrics-client-key.txt` contains the publishable client key used by older builds and shared with Lyssna. Keep the existing bridge deployed for those clients. New builds omit the key and publish their bundles without replacing the bridge.
 
 The key owner must allow **https://ipixelgalaxy.com** in the developer application's origin settings. The plugin loads **https://ipixelgalaxy.com/lyssna-plugin/lyssna-lyrics-bridge.html?v=2** in a hidden frame. That page requests community and Apple Music lyrics from the public Spicy Lyrics API. Other enabled providers remain available when the bridge fails.
 

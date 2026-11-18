@@ -1,7 +1,7 @@
 import type { LyricsSourceProviderId } from "./LyricsSourcePreferences.ts";
 import type { ExternalLyricsResult } from "./Sources/Types.ts";
 import { getTrackLyricsInfo } from "./Sources/Track.ts";
-import { fetchLyssnaLyricsRaw, fetchSpicyLyrics, fetchAppleMusicLyrics, fetchSpicySongWriters } from "./Sources/Spicy.ts";
+import { readOfficialPluginLyrics } from "./Sources/OfficialPlugin.ts";
 import { applySongWriters, tryGetSongWriters } from "./Sources/Shared.ts";
 import { fetchMusixmatchLyrics } from "./Sources/Musixmatch.ts";
 import { fetchSpotifyLyrics } from "./Sources/Spotify.ts";
@@ -62,20 +62,10 @@ export async function fetchLyricsFromProviders(
     return null;
   }
 
-  const writerOrder = [...order];
-  order = [...order];
-  let spicyRawPromise: Promise<ExternalLyricsResult | null> | null = null;
-  const getSpicyRaw = () => {
-    if (!order.includes("spicy") && !order.includes("apple")) return Promise.resolve(null);
-    spicyRawPromise ??= fetchLyssnaLyricsRaw(trackInfo.id);
-    return spicyRawPromise;
-  };
-
   function startProviderRequest(provider: LyricsSourceProviderId): Promise<ExternalLyricsResult | null> {
     switch (provider) {
-      case "spicy": return fetchSpicyLyrics(getSpicyRaw());
-      case "musixmatch": return fetchMusixmatchLyrics(trackInfo, getSpicyRaw);
-      case "apple": return fetchAppleMusicLyrics(getSpicyRaw());
+      case "spicy": return withProviderTimeout(readOfficialPluginLyrics(uri), FALLBACK_PROVIDER_TIMEOUT_MS);
+      case "musixmatch": return fetchMusixmatchLyrics(trackInfo);
       case "lrcred": return fetchLrcRedLyrics(trackInfo);
       case "spotify": return fetchSpotifyLyrics(trackInfo);
       case "lrclib": return withProviderTimeout(fetchLRCLIBLyrics(trackInfo), FALLBACK_PROVIDER_TIMEOUT_MS);
@@ -99,13 +89,16 @@ export async function fetchLyricsFromProviders(
   };
 
   const finishResult = async (result: ExternalLyricsResult | null) => {
-    if (result?.lyrics?.fetchProvider !== "lrcred" || tryGetSongWriters(result.lyrics)) return result;
-    // Reuse enabled requests without delaying missing-credit results indefinitely.
-    const writerRequests = writerOrder.filter(provider => provider !== "lrcred").map(provider =>
+    if (!result?.lyrics || tryGetSongWriters(result.lyrics)) return result;
+    const officialWriters = order.includes("spicy")
+      ? tryGetSongWriters((await getProviderRequest("spicy"))?.lyrics) : null;
+    if (officialWriters?.length) return { ...result, lyrics: applySongWriters(result.lyrics, officialWriters) };
+    if (result.lyrics.fetchProvider !== "lrcred") return result;
+
+    // Reuse enabled requests for lrc.red's remaining writer fallbacks.
+    const writerRequests = order.filter(provider => provider !== "lrcred" && provider !== "spicy").map(provider =>
       withProviderTimeout(
-        provider === "spicy" || provider === "apple"
-          ? fetchSpicySongWriters(getSpicyRaw())
-          : getProviderRequest(provider).then(value => tryGetSongWriters(value?.lyrics)),
+        getProviderRequest(provider).then(value => tryGetSongWriters(value?.lyrics)),
         FALLBACK_PROVIDER_TIMEOUT_MS
       ).catch(() => null)
     );

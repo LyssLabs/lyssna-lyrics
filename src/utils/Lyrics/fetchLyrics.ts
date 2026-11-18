@@ -15,6 +15,7 @@ import {
 } from "./LyricsSourcePreferences.ts";
 
 import { isCurrentTrack } from "./Sources/Track.ts";
+import { canReadOfficialPluginLyrics, readOfficialPluginLyrics } from "./Sources/OfficialPlugin.ts";
 import { SyncTtmlReviewerWithCurrentLyrics } from "../ttmlReviewer.ts";
 import { LyricsQueueRetry } from "./LyricsQueueRetry.ts";
 import { HideLoaderContainer, ShowLoaderContainer } from "./LyricsLoader.ts";
@@ -32,8 +33,8 @@ export const LyricsStore = GetExpireStore<any>("LyssnaLyrics_LyricsStore_g1", 6,
 }, isDev as true);
 
 export const SessionTTMLStore = new Map<string, any>();
-// Retry cached fallbacks written while the website bridge could not start.
-const LYRICS_SOURCE_CACHE_VERSION = 10;
+// The previous cache signature includes results from the retired developer transport.
+const LYRICS_SOURCE_CACHE_VERSION = 11;
 const inFlightLyricsFetches = new Map<string, Promise<[object | string, number] | null>>();
 export type FetchLyricsResult = [object | string, number] | null;
 export type LyricsFetchFailure = { uri: string; source: string; detail?: string };
@@ -94,14 +95,14 @@ export function getSongKey(uri: string): string {
 function getActiveLyricsSourceOrder(): LyricsSourceProviderId[] {
   const order = normalizeLyricsSourceOrder(Defaults.LyricsSourceOrder);
   const disabled = new Set(Defaults.DisabledLyricsSourceIds);
-  return order.filter((provider) => !disabled.has(provider));
+  const officialReaderAvailable = canReadOfficialPluginLyrics();
+  return order.filter(provider => !disabled.has(provider) && (provider !== "spicy" || officialReaderAvailable));
 }
 
 function getLyricsSourceCacheSignature(): string {
   return JSON.stringify({
     version: LYRICS_SOURCE_CACHE_VERSION,
-    order: normalizeLyricsSourceOrder(Defaults.LyricsSourceOrder),
-    disabled: Defaults.DisabledLyricsSourceIds,
+    order: getActiveLyricsSourceOrder(),
     ignoreMusixmatchWordSync: Defaults.IgnoreMusixmatchWordSync,
   });
 }
@@ -251,7 +252,8 @@ async function fetchLyricsInternal(
     try {
       if (savedLyricsData.startsWith("NO_LYRICS:")) {
         const savedUri = savedLyricsData.slice("NO_LYRICS:".length);
-        if ((savedUri === uri || getSongKey(savedUri) === trackId) && getActiveLyricsSourceOrder().length <= 1) {
+        const activeSources = getActiveLyricsSourceOrder();
+        if ((savedUri === uri || getSongKey(savedUri) === trackId) && activeSources.length <= 1 && !activeSources.includes("spicy")) {
           finishFetching(uri);
           HideLoaderContainer(uri);
           noteFailure(uri, "saved state");
@@ -296,6 +298,14 @@ async function fetchLyricsInternal(
   if (localLyric) {
     if (isCurrentTrack(uri)) lastAnswer = { uri, from: "Local DB" };
     return presentStoredLyrics(uri, { ...localLyric, id: trackId });
+  }
+
+  if ((isLocalTrack || !navigator.onLine) && getActiveLyricsSourceOrder().includes("spicy")) {
+    const official = await readOfficialPluginLyrics(uri);
+    if (official && isCurrentTrack(uri)) {
+      lastAnswer = { uri, from: "Spicy Lyrics local TTML" };
+      return presentStoredLyrics(uri, attachLyricsSourceCacheMetadata({ ...official.lyrics, id: trackId, uri }));
+    }
   }
 
   // Local files have no real track id (uri.split(":")[2] is the URL-encoded
@@ -375,7 +385,7 @@ async function fetchLyricsInternal(
     const lyricsWithId = attachLyricsSourceCacheMetadata({ ...lyrics, id: trackId, uri });
     if (isCurrentTrack(uri)) $currentLyricsData.set(JSON.stringify(lyricsWithId));
 
-    if (LyricsStore && romanizedInFull) {
+    if (LyricsStore && romanizedInFull && lyrics.fetchProvider !== "spicy") {
       try {
         await LyricsStore.SetItem(trackId, lyricsWithId);
       } catch (error) {
@@ -383,7 +393,7 @@ async function fetchLyricsInternal(
       }
     }
 
-    if (isCurrentTrack(uri)) lastAnswer = { uri, from: "API" };
+    if (isCurrentTrack(uri)) lastAnswer = { uri, from: lyrics.fetchProvider === "spicy" ? "Spicy Lyrics local TTML" : "API" };
     await presentLyrics(uri, lyricsWithId);
     return [{ ...lyricsWithId, fromCache: false }, 200];
   } catch (error) {

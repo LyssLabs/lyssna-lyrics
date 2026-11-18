@@ -5,7 +5,6 @@ import { openSettingsPanel } from "./settings";
 import { OpenLyricsDBPanel } from "./openLyricsDBPanel";
 import { DeepFreeze } from "./utils";
 import { triggerLyssnaLyricsFakeUpdate } from "./version/CheckForUpdates";
-import { BreakerDebug } from "./API/CircuitBreaker";
 import { showUpdatedDialog } from "../components/ReactComponents/UpdateDialog.tsx";
 import GetProgress from "./Gets/GetProgress";
 import ApplyLyrics from "./Lyrics/Global/Applyer.ts";
@@ -36,9 +35,6 @@ export function exposeToWindow() {
         },
         testing: {
             toaster: toast,
-            // Escape hatch: a bad persisted breaker state would otherwise mean
-            // telling users to clear localStorage by hand.
-            breaker: BreakerDebug,
             autoUpdate: {
                 triggerFakeUpdate: triggerLyssnaLyricsFakeUpdate,
                 showUpdatedDialog: (fromVersion: string, toVersion: string) => showUpdatedDialog(fromVersion, toVersion),
@@ -51,11 +47,6 @@ export function exposeToWindow() {
             showLyricsNotice: (descriptor: string, status: number = 0) =>
                 ApplyLyrics([descriptor, status, SpotifyPlayer.GetUri()]),
         },
-        request: {
-            QueryAPI: {
-                breaker: BreakerDebug,
-            },
-        }
     };
 
     (window as any).LyssnaLyrics = DeepFreeze(api);

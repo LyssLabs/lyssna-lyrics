@@ -1,7 +1,6 @@
 export type LyricsSourceProviderId =
   | "spicy"
   | "musixmatch"
-  | "apple"
   | "lrcred"
   | "spotify"
   | "lrclib"
@@ -13,7 +12,6 @@ type LyricsSourceDefinition = {
 };
 
 export const DEFAULT_LYRICS_SOURCE_ORDER: LyricsSourceProviderId[] = [
-  "apple",
   "lrcred",
   "spicy",
   "musixmatch",
@@ -27,19 +25,13 @@ export const LYRICS_SOURCE_PROVIDER_DEFINITIONS: Record<
   LyricsSourceDefinition
 > = {
   spicy: {
-    label: "Spicy Lyrics",
-    description:
-      "Community-contributed lyrics through the public Spicy Lyrics developer API.",
+    label: "Spicy Lyrics (local TTML)",
+    description: "Read saved TTML and its credits if the official extension is running alongside Lyssna.",
   },
   musixmatch: {
     label: "Musixmatch",
     description:
       "Uses Musixmatch as a fallback and can provide richer synced or word-timed lyrics when available.",
-  },
-  apple: {
-    label: "Apple Music",
-    description:
-      "Apple Music lyrics through the developer API.",
   },
   lrcred: {
     label: "lrc.red",
