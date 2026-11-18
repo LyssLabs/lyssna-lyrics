@@ -11,8 +11,8 @@ import { ApplySyllableLyrics, ClearSyllableRenderSession } from "../Applyer/Sync
 import {
   ConvertLineLyricsToExperimentalWordSync,
   ConvertStaticLyricsToExperimentalWordSync,
-  HasAppleWordSyncRepairs,
-  SplitAppleMusicSyllableWords,
+  ExtractBracketBackgroundVocals,
+  RepairAppleMusicWordSync,
 } from "../ExperimentalWordSync.ts";
 import { getDynamicAudioAnalysis } from "../../audioAnalysis.ts";
 import fetchLyrics, { ClearLyricsPageContainer, getSongKey } from "../fetchLyrics.ts";
@@ -103,7 +103,7 @@ export function ShouldReapplyRenderedLyricsForSpaceGravity(enabled: boolean): bo
   if (!renderedLyrics) return false;
 
   if (enabled) {
-    return renderedLyrics.Type === "Line" || renderedLyrics.Type === "Static";
+    return renderedLyrics.Type === "Line" || renderedLyrics.Type === "Static" || renderedLyrics.lineTimingOnly === true;
   }
 
   return renderedLyrics.experimentalWordSyncReason === "SpaceGravity";
@@ -217,8 +217,8 @@ export default async function ApplyLyrics(lyricsContent: [object | string, numbe
     lyrics = descriptor as LyricsData;
     NormalizeLyricsCommaSpacing(lyrics);
     const sourceNeedsWordSync = lyrics.Type === "Line" || lyrics.Type === "Static";
-    const needsAppleRepairs = lyrics.Type === "Syllable" && lyrics.fetchProvider === "apple" && HasAppleWordSyncRepairs(lyrics);
-    sourceNeedsExperimentalWordSync = sourceNeedsWordSync || needsAppleRepairs;
+    const isAppleWordSync = lyrics.Type === "Syllable" && lyrics.fetchProvider === "apple";
+    sourceNeedsExperimentalWordSync = sourceNeedsWordSync;
     const shouldUseExperimentalWordSync =
       sourceNeedsWordSync && (Defaults.EnableExperimentalWordSync || $spaceGravityMode.get());
 
@@ -251,21 +251,19 @@ export default async function ApplyLyrics(lyricsContent: [object | string, numbe
         if (forceWordSyncForSpaceGravity && lyrics.experimentalWordSync) {
           lyrics.experimentalWordSyncReason = "SpaceGravity";
         }
-
-        // Re-apply gibberish for newly-created syllables. Original formatting
-        // ran before conversion, while lyrics were still Line/Static.
-        if (Defaults.MemeFormat !== "Off") {
-          ApplyMemeFormat(lyrics);
-        }
       }
-    } else if (Defaults.EnableExperimentalWordSync && needsAppleRepairs) {
-      lyrics = SplitAppleMusicSyllableWords(lyrics) as LyricsData;
-      if (lyrics !== descriptor && Defaults.MemeFormat !== "Off") ApplyMemeFormat(lyrics);
+    } else if (isAppleWordSync) {
+      lyrics = RepairAppleMusicWordSync(lyrics) as LyricsData;
     }
 
-    // Word-sync conversion may introduce new syllables, so normalize its output
-    // before the renderer and any regenerated display text consume it.
-    if (lyrics !== descriptor) NormalizeLyricsCommaSpacing(lyrics);
+    if (!isAppleWordSync && (lyrics.fetchProvider === "lrcred" || lyrics.source_via === "lrc-red")) {
+      lyrics = ExtractBracketBackgroundVocals(lyrics) as LyricsData;
+    }
+
+    if (lyrics !== descriptor) {
+      if (Defaults.MemeFormat !== "Off") ApplyMemeFormat(lyrics);
+      NormalizeLyricsCommaSpacing(lyrics);
+    }
   }
 
   if (generation !== applyGeneration || PageContainer !== page || SpotifyPlayer.GetUri() !== uri) return;

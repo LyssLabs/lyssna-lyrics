@@ -94,6 +94,7 @@ interface LyricsData {
   fetchProvider?: string;
   userUploaded?: boolean;
   experimentalWordSync?: boolean;
+  lineTimingOnly?: boolean;
   experimentalWordSyncReason?: "SpaceGravity" | string;
   classes?: string;
   styles?: Record<string, string>;
@@ -507,7 +508,7 @@ export function ApplySyllableLyrics(
   // Gravity's mounted-session switch owns the subsequent DOM transition.
   const spaceGravityMode = false;
   const syllableMode = "Default";
-  const allowLetterEmphasis = !data.experimentalWordSync;
+  const allowLetterEmphasis = !data.experimentalWordSync && !data.lineTimingOnly;
 
   if (data.StartTime >= getLyricsBetweenShow()) {
     const musicalLine = document.createElement("div");

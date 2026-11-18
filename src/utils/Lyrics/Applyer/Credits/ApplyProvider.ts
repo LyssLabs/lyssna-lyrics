@@ -43,7 +43,7 @@ export function ApplyLyricsProvider(data: any, LyricsContainer: HTMLElement): vo
     ? data.experimentalWordSyncSource === "Static"
       ? "(+ estimated line and word timing)"
       : "(+ estimated word timing)"
-    : providerLabel === "Apple Music" && data.experimentalAppleWordSplitting ? "(+ extra splits)" : "";
+    : "";
   const isLrcRed = data.fetchProvider === "lrcred" || data.source_via === "lrc-red";
   const displayLabel = isLrcRed ? ProviderMap.lrcred
     : data.fetchProvider === "spicy" && data.source !== "ldb" ? ProviderMap.spl

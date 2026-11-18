@@ -92,12 +92,7 @@ const LAYOUT_GLIDE_TRANSITION = `transform ${LAYOUT_GLIDE_MS / 1000}s ${LAYOUT_G
 const LAYOUT_GLIDE_BLOCK_INIT_MS = 1500;
 const LAYOUT_GLIDE_BLOCK_MS = 800;
 
-// Bloom (Spring with Increased Line Spacing uses SPRING_WIDE_GAP_EM). Lines sit further apart, by a share of
-// the lyrics' own font size rather than of the container, so the spacing keeps
-// its proportion where the font size is clamped.
-const REFRESHED_GAP_EM = 0.8;
-
-// It also follows the active line in a ripple instead of moving the list as one
+// Bloom follows the active line in a ripple instead of moving the list as one
 // block: the list jumps to its new place, every row is held where it was, and
 // each lets go a moment after the row above it and springs home.
 const CASCADE_FREQUENCY = 2.1; // Hz
@@ -168,10 +163,6 @@ function stepCascadeRow(row: CascadeRow, dt: number, w: number): void {
 
 const isRefreshedSimpleLyrics = (): boolean =>
   isBloomRenderer();
-
-// Bloom uses font-relative gaps; Spring keeps its compact window-relative gaps.
-const wideLineGapEm = (): number =>
-  isRefreshedSimpleLyrics() ? REFRESHED_GAP_EM : 0;
 
 // Background Vocal Pop-Out only applies to the refreshed layout. The animator
 // folds lines by the same gate, so the two agree on which rows collapse.
@@ -331,13 +322,8 @@ class LyricsVirtualizer {
   private _window(): Window {
     return this._document().defaultView ?? window;
   }
-  // Refreshed Simple Lyrics state (see REFRESHED_GAP_EM / CASCADE_*). The flag
-  // is cached because _itemGap runs for every row on every estimate.
+  // Bloom's ripple scroll state.
   private _refreshed = false;
-  // Line gap in em of the font size (wideLineGapEm), 0 for the 1cqw gap; cached like _refreshed.
-  private _gapEm = 0;
-  // Font size of a lyrics line, for the wide gap; 0 until one is mounted.
-  private _gapFontPx = 0;
   // Background Vocal Pop-Out (experiment), cached like _refreshed. While it's on,
   // a background line without GroupActive is collapsed (Mixed.css) and sized 0.
   private _bgPop = false;
@@ -408,24 +394,7 @@ class LyricsVirtualizer {
     if (el?.classList.contains("musical-line") && !isOpenInterlude(el)) return 0;
     const cqw = this._containerWidth / 100;
     if (this._isNextBgLine(index)) return GAP_LINE_TO_BG * cqw;
-    if (this._gapEm > 0 && this._gapFontPx > 0) return this._gapFontPx * this._gapEm;
     return GAP_NORMAL * cqw;
-  }
-
-  // Reads a mounted lyrics line's font size into _gapFontPx. Costs a style
-  // recalc, so it only runs where a layout read follows anyway. True on change.
-  private _readGapFont(): boolean {
-    for (const idx of this._mountedIndices) {
-      const el = this._allElements[idx];
-      if (!el?.isConnected) continue;
-      if (el.classList.contains("musical-line") || el.classList.contains("bg-line")) continue;
-      const px = parseFloat(getComputedStyle(el).fontSize);
-      if (!(px > 0)) continue;
-      const changed = Math.abs(px - this._gapFontPx) >= 0.5;
-      if (changed) this._gapFontPx = px;
-      return changed;
-    }
-    return false;
   }
 
   // The renderer style changed: only Bloom ripples.
@@ -435,37 +404,6 @@ class LyricsVirtualizer {
     // As in init(): the ripple needs scroll anchoring off.
     if (this._scrollEl) this._scrollEl.style.overflowAnchor = next || this._heldListHeight !== null ? "none" : "";
     if (!next) this._stopCascade();
-  }
-
-  // The line gap changed (renderer style, or Increased Line Spacing). Rows off
-  // screen keep their measured height, so it is moved by the change in their gap;
-  // otherwise the list would shift as each one next mounts.
-  private _applyGapEm(next: number): void {
-    if (next === this._gapEm) return;
-    const v = this._virtualizer;
-    const sizes = v
-      ? (v as unknown as { itemSizeCache?: Map<number, number> }).itemSizeCache
-      : undefined;
-    const oldGaps = new Map<number, number>();
-    if (sizes) {
-      for (const idx of sizes.keys()) {
-        if (!this._mountedIndices.has(idx)) oldGaps.set(idx, this._itemGap(idx));
-      }
-    }
-    this._gapEm = next;
-    if (next > 0) this._readGapFont();
-    if (!v || !sizes) return;
-    for (const [idx, oldGap] of oldGaps) {
-      const size = sizes.get(idx);
-      const gap = this._itemGap(idx);
-      const delta = gap - oldGap;
-      if (size === undefined || Math.abs(delta) < 0.5) continue;
-      v.resizeItem(idx, size + delta);
-      const wrapper = this._wrappers[idx];
-      if (wrapper) wrapper.style.paddingBottom = `${gap}px`;
-    }
-    this._blockLayoutGlide(LAYOUT_GLIDE_BLOCK_MS);
-    this._remeasureVisible();
   }
 
   // Background Vocal Pop-Out turned on or off (the experiment, or the refreshed
@@ -516,24 +454,15 @@ class LyricsVirtualizer {
     const v = this._virtualizer;
     if (!v) return;
     const sizes = (v as unknown as { itemSizeCache?: Map<number, number> }).itemSizeCache;
-    const oldGaps = new Map<number, number>();
-    if (sizes) {
-      for (const idx of sizes.keys()) {
-        if (!this._mountedIndices.has(idx)) oldGaps.set(idx, this._itemGap(idx));
-      }
-    }
-    // Refreshed Simple Lyrics sizes its gaps from the font; the unrefreshed gaps don't move.
-    if (this._refreshed) this._readGapFont();
     this._blockLayoutGlide(LAYOUT_GLIDE_BLOCK_MS);
     // The list jumps to its new layout; anything moving there would aim at the old one.
     this._stopSmoothScroll();
     this._stopCascade();
     if (sizes) {
-      for (const [idx, oldGap] of oldGaps) {
-        const size = sizes.get(idx);
-        if (size === undefined) continue;
+      for (const [idx, size] of Array.from(sizes)) {
+        if (this._mountedIndices.has(idx)) continue;
         const gap = this._itemGap(idx);
-        v.resizeItem(idx, (size - oldGap) * ratio + gap);
+        v.resizeItem(idx, (size - gap) * ratio + gap);
         const wrapper = this._wrappers[idx];
         if (wrapper) wrapper.style.paddingBottom = `${gap}px`;
       }
@@ -996,8 +925,6 @@ class LyricsVirtualizer {
       mountedCount: this._mountedIndices.size,
       containerWidth: this._containerWidth,
     });
-    // The font can change with the width (it is clamped), so re-read it here.
-    if (this._gapEm > 0) this._readGapFont();
     const toMeasure: HTMLElement[] = [];
     for (const idx of this._mountedIndices) {
       const wrapper = this._wrappers[idx];
@@ -1254,7 +1181,6 @@ class LyricsVirtualizer {
       this._trailingObserver.observe(listParent, { childList: true });
     }
     this._refreshed = isRefreshedSimpleLyrics();
-    this._gapEm = wideLineGapEm();
     this._bgPop = isBgPopActive();
     // The ripple holds rows back with `translate` as the list scrolls past them,
     // and Chromium's scroll anchoring reads that as the rows moving down, so it
@@ -1389,9 +1315,7 @@ class LyricsVirtualizer {
         if (!enabled) this._handOffSmoothScroll();
       })
     );
-    // In this order: each one resizes rows relative to the other's current state.
     const syncLayout = () => {
-      this._applyGapEm(wideLineGapEm());
       this._applyRefreshed(isRefreshedSimpleLyrics());
       this._applyBgPop(isBgPopActive());
     };
@@ -1802,16 +1726,6 @@ class LyricsVirtualizer {
         if (this._cascadeRows.size > 0) this._joinCascade(item.index);
       } else if (gapChanged) {
         toMeasure.push(wrapper);
-      }
-    }
-    // The first rows of a list: the wide gap needs a mounted line's font,
-    // so set their padding again now that there is one.
-    if (mountedAny && this._gapEm > 0 && this._gapFontPx === 0 && this._readGapFont()) {
-      for (const item of rendered) {
-        const wrapper = this._wrappers[item.index];
-        if (!wrapper) continue;
-        wrapper.style.paddingBottom = `${this._itemGap(item.index)}px`;
-        if (!toMeasure.includes(wrapper)) toMeasure.push(wrapper);
       }
     }
     for (const wrapper of toMeasure) v.measureElement(wrapper);
@@ -2933,7 +2847,6 @@ class LyricsVirtualizer {
     this._heldListOffset = 0;
     this._cancelHeldRowGlides();
     this._reducedMotion = null;
-    this._gapFontPx = 0;
     this._smoothSpring = null;
     this._layoutGlideBlockedUntil = 0;
     this._lastRetryTarget = null;
