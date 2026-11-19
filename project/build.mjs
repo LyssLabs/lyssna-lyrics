@@ -6,6 +6,7 @@ import { PLUGIN_DIRECTORY, BUNDLES_DIRECTORY, TEST_BUILD_VERSION } from "../buil
 import { isLyricsVersion } from "../builds/shared/app-state.mjs";
 
 const require = createRequire(import.meta.url);
+const launcherName = "lyssna-lyrics-legacy.mjs";
 
 function parseArgs(args) {
   let version;
@@ -154,6 +155,7 @@ try {
 
     copyFileReplacing(join(defaultDist, outputFile), join(bundlesDir, outputFile));
     copyFileReplacing(entrypointFile, join(pluginDir, "entrypoint.mjs"));
+    copyFileReplacing(resolve("builds", launcherName), join(pluginDir, launcherName));
     copyFileReplacing(resolve("builds", "lyssna-lyrics.mjs"), join(pluginDir, "lyssna-lyrics.mjs"));
     if (!parsedArgs.testBuild) {
       writeFileReplacing(join(pluginDir, "version"), version);

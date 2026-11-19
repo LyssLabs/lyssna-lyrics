@@ -3,7 +3,7 @@
     "name": "Lyssna Lyrics",
     "description": "Synchronized lyrics for Spotify, based on Spicy Lyrics, with custom animation presets, multiple lyric sources, and popout windows.",
     "preview": "./src/assets/lyssna-microphone.svg",
-    "main": "./builds/lyssna-lyrics.mjs",
+    "main": "./builds/lyssna-lyrics-legacy.mjs",
     "readme": "README.md",
     "branch": "dev",
     "authors": [

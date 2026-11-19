@@ -4,7 +4,7 @@
 
 Lyssna stores its own preferences in `LL:settings` and its version history and UI state in `LL:uiState`. Compatible preferences synchronize with Spicy Lyrics by default. **Advanced → Don't sync settings to Spicy Lyrics counterparts** keeps a local snapshot and stops shared reads and writes. Unknown upstream fields are preserved.
 
-Build selection uses `LyssnaLyrics-` keys. The Lyssna and Spicy Lyrics branches have separate page routes, runtime identifiers, lyric databases, caches, and version histories. Older launcher filenames remain as compatibility wrappers for existing installations. Keep those wrappers until their callers have migrated.
+Build selection uses `LyssnaLyrics-` keys. The Lyssna and Spicy Lyrics branches have separate page routes, runtime identifiers, lyric databases, caches, and version histories. Installers use `lyssna-lyrics-legacy.mjs` and disable earlier Legacy launchers they recognize. Older filenames remain available for existing download links.
 
 ## Hosted files
 

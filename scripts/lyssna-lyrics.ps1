@@ -5,9 +5,10 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$launcherName = 'lyssna-lyrics.mjs'
+$launcherName = 'lyssna-lyrics-legacy.mjs'
 $pixelLauncherName = 'spicy-lyrics-pixel.mjs'
-$launcherUrl = 'https://raw.githubusercontent.com/LyssnaHQ/lyssna-lyrics-legacy/refs/heads/dev/builds/lyssna-lyrics.mjs'
+$previousLauncherName = 'lyssna-lyrics.mjs'
+$launcherUrl = "https://raw.githubusercontent.com/LyssnaHQ/lyssna-lyrics-legacy/refs/heads/dev/builds/$launcherName"
 $spicetifyCommand = Get-Command spicetify -ErrorAction SilentlyContinue
 if (-not $spicetifyCommand) {
     throw 'Install and set up Spicetify first: https://spicetify.app/docs/getting-started'
@@ -31,6 +32,14 @@ if (-not $configFile -or -not (Test-Path -LiteralPath $configFile -PathType Leaf
 }
 $extensionDirectory = Join-Path (Split-Path -Parent $configFile) 'Extensions'
 $launcherPath = Join-Path $extensionDirectory $launcherName
+$previousLauncherPath = Join-Path $extensionDirectory $previousLauncherName
+$supersededLaunchers = @($pixelLauncherName)
+# The rewrite also uses the old filename. Only migrate copies that point to Legacy.
+$legacyEntrypoint = 'https://(cdn\.jsdelivr\.net/gh/(iPixelGalaxy/(lyssna-lyrics|spicy-lyrics)|LyssnaHQ/lyssna-lyrics-legacy)@[^/]+/builds/(v2\.0|main)/entrypoint\.mjs|ipixelgalaxy\.com/(lyssna-plugin/)?entrypoint\.mjs)'
+if ((Test-Path -LiteralPath $previousLauncherPath -PathType Leaf) -and
+    (Get-Content -LiteralPath $previousLauncherPath -Raw) -match $legacyEntrypoint) {
+    $supersededLaunchers += $previousLauncherName
+}
 
 if ($Action -eq 'install') {
     New-Item -ItemType Directory -Path $extensionDirectory -Force | Out-Null
@@ -46,15 +55,18 @@ if ($Action -eq 'install') {
     }
 
     Invoke-Spicetify -CliArguments @('config', 'extensions', $launcherName)
-    Invoke-Spicetify -CliArguments @('config', 'extensions', ($pixelLauncherName + '-'))
-    Invoke-Spicetify -CliArguments @('apply')
-    Write-Host 'Lyssna Lyrics installed. Open lyrics with the microphone button in Spotify.'
-} else {
-    foreach ($name in @($launcherName, $pixelLauncherName)) {
+    foreach ($name in $supersededLaunchers) {
         Invoke-Spicetify -CliArguments @('config', 'extensions', ($name + '-'))
     }
     Invoke-Spicetify -CliArguments @('apply')
-    foreach ($name in @($launcherName, $pixelLauncherName)) {
+    Write-Host 'Lyssna Lyrics installed. Open lyrics with the microphone button in Spotify.'
+} else {
+    $installedLaunchers = @($launcherName) + $supersededLaunchers
+    foreach ($name in $installedLaunchers) {
+        Invoke-Spicetify -CliArguments @('config', 'extensions', ($name + '-'))
+    }
+    Invoke-Spicetify -CliArguments @('apply')
+    foreach ($name in $installedLaunchers) {
         $installedPath = Join-Path $extensionDirectory $name
         if (Test-Path -LiteralPath $installedPath -PathType Leaf) {
             Remove-Item -LiteralPath $installedPath -Force
