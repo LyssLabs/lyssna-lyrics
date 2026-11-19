@@ -4,9 +4,9 @@ import { coerce } from "semver";
 import { compareLyssnaVersions } from "../../utils/version/VersionOrder.ts";
 import { NoticeLink, showNotice } from "./NoticeDialog.tsx";
 
-const PATCH_NOTES_URL = "https://raw.githubusercontent.com/iPixelGalaxy/lyssna-lyrics/dev/.change-notes/PATCH_NOTES.md";
-const PATCH_NOTES_PAGE_URL = "https://github.com/iPixelGalaxy/lyssna-lyrics/blob/dev/.change-notes/PATCH_NOTES.md";
-const FEATURE_GUIDE_URL = "https://github.com/iPixelGalaxy/lyssna-lyrics#in-the-lyrics-view";
+const PATCH_NOTES_URL = "https://raw.githubusercontent.com/LyssnaHQ/lyssna-lyrics-legacy/dev/.change-notes/PATCH_NOTES.md";
+const PATCH_NOTES_PAGE_URL = "https://github.com/LyssnaHQ/lyssna-lyrics-legacy/blob/dev/.change-notes/PATCH_NOTES.md";
+const FEATURE_GUIDE_URL = "https://github.com/LyssnaHQ/lyssna-lyrics-legacy#in-the-lyrics-view";
 const FETCH_TIMEOUT_MS = 10_000;
 
 type PatchNote = { text: string; version: string; };

@@ -15,7 +15,7 @@ The canonical website directory is `/lyssna-plugin/`:
 - `entrypoint.mjs`: the hosted channel loader.
 - `lyssna-lyrics-bridge.html`: the public API transport for older builds.
 
-The GitHub launcher uses the v2 entrypoint wrapper. The default Lyssna channel checks the latest GitHub release before selecting a cached bundle; custom branches and fixed pins retain their configured source. Older website paths can forward to the canonical directory without duplicating full bundles.
+The launchers import `builds/main/entrypoint.mjs` from `LyssnaHQ/lyssna-lyrics-legacy` through jsDelivr. The default Lyssna channel checks that repository's latest GitHub release before selecting a cached bundle. Custom branches and fixed pins retain their configured source. Older website paths can forward to the canonical directory without duplicating full bundles.
 
 ## Official plugin integration
 

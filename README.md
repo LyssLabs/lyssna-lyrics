@@ -10,7 +10,7 @@
 
 **Rewrite planned.**
 
-**[Discord & support](https://discord.gg/qfYAsFQawp) · [Download the launcher](https://ipixelgalaxy.com/lyssna-plugin/download.html) · [Releases](https://github.com/iPixelGalaxy/lyssna-lyrics/releases) · [Lyssna Standalone](https://lyssna.org/lyssna_setup.exe)**
+**[Discord & support](https://discord.gg/qfYAsFQawp) · [Launcher file](https://raw.githubusercontent.com/LyssnaHQ/lyssna-lyrics-legacy/dev/builds/lyssna-lyrics.mjs) · [Releases](https://github.com/LyssnaHQ/lyssna-lyrics-legacy/releases) · [Lyssna Standalone](https://lyssna.org/lyssna_setup.exe)**
 
 </div>
 
@@ -37,23 +37,23 @@ Start with **Spotify's desktop app and a working [Spicetify installation](https:
 ### Windows · PowerShell
 
 ```powershell
-& ([scriptblock]::Create((irm 'https://raw.githubusercontent.com/iPixelGalaxy/lyssna-lyrics/dev/scripts/lyssna-lyrics.ps1'))) -Action install
+& ([scriptblock]::Create((irm 'https://raw.githubusercontent.com/LyssnaHQ/lyssna-lyrics-legacy/dev/scripts/lyssna-lyrics.ps1'))) -Action install
 ```
 
 ### macOS / Linux · Terminal
 
 ```sh
-sh -c 'lyssna_script=$(curl -fsSL https://raw.githubusercontent.com/iPixelGalaxy/lyssna-lyrics/dev/scripts/lyssna-lyrics.sh) && sh -c "$lyssna_script" -- install'
+sh -c 'lyssna_script=$(curl -fsSL https://raw.githubusercontent.com/LyssnaHQ/lyssna-lyrics-legacy/dev/scripts/lyssna-lyrics.sh) && sh -c "$lyssna_script" -- install'
 ```
 
-The installer downloads **[lyssna-lyrics.mjs](https://ipixelgalaxy.com/lyssna-plugin/download.html)** from this GitHub repo and enables that filename. It replaces the old `spicy-lyrics-pixel.mjs` entry. Spicy Lyrics can stay installed and enabled alongside Lyssna, with a separate button and settings panel for each.
+The installer downloads `lyssna-lyrics.mjs` from this GitHub repo and enables that filename. It replaces the old `spicy-lyrics-pixel.mjs` entry. Spicy Lyrics can stay installed and enabled alongside Lyssna, with a separate button and settings panel for each.
 
-You can read the [launcher source](builds/lyssna-lyrics.mjs), [PowerShell script](scripts/lyssna-lyrics.ps1), or [shell script](scripts/lyssna-lyrics.sh) here. The launcher loads the repository's v2 entrypoint through jsDelivr. Running the install command again replaces the launcher with the current copy.
+You can read the [launcher source](builds/lyssna-lyrics.mjs), [PowerShell script](scripts/lyssna-lyrics.ps1), or [shell script](scripts/lyssna-lyrics.sh) here. The launcher loads this repository's main entrypoint through jsDelivr. Run the install command again to update an existing Legacy installation.
 
 <details>
 <summary><strong>Install manually</strong></summary>
 
-1. Download [lyssna-lyrics.mjs](https://ipixelgalaxy.com/lyssna-plugin/download.html) and save it with that exact filename.
+1. Use **Save link as** on [lyssna-lyrics.mjs](https://raw.githubusercontent.com/LyssnaHQ/lyssna-lyrics-legacy/dev/builds/lyssna-lyrics.mjs) and keep that exact filename.
 2. Run `spicetify config-dir` and place the file in its **Extensions** folder.
 3. Enable Lyssna and replace the old Pixel entry:
 
@@ -72,13 +72,13 @@ After Spotify reloads, open lyrics with the microphone button. [Spicetify's exte
 ### Windows · PowerShell
 
 ```powershell
-& ([scriptblock]::Create((irm 'https://raw.githubusercontent.com/iPixelGalaxy/lyssna-lyrics/dev/scripts/lyssna-lyrics.ps1'))) -Action uninstall
+& ([scriptblock]::Create((irm 'https://raw.githubusercontent.com/LyssnaHQ/lyssna-lyrics-legacy/dev/scripts/lyssna-lyrics.ps1'))) -Action uninstall
 ```
 
 ### macOS / Linux · Terminal
 
 ```sh
-sh -c 'lyssna_script=$(curl -fsSL https://raw.githubusercontent.com/iPixelGalaxy/lyssna-lyrics/dev/scripts/lyssna-lyrics.sh) && sh -c "$lyssna_script" -- uninstall'
+sh -c 'lyssna_script=$(curl -fsSL https://raw.githubusercontent.com/LyssnaHQ/lyssna-lyrics-legacy/dev/scripts/lyssna-lyrics.sh) && sh -c "$lyssna_script" -- uninstall'
 ```
 
 This disables the Lyssna and old Pixel entries, reapplies Spicetify, and removes their launcher files. **Your saved lyric preferences are kept**, including settings shared with Spicy Lyrics.
@@ -117,9 +117,9 @@ If you're staying in Spotify, try **Limit Animation Frame Rate** in Appearance a
 
 For a bug report, open **Settings → Report a bug** and copy the diagnostics. Post them in **#extension-bugs**, along with what happened, how to reproduce it, and a screenshot when it helps. The report includes the versions, lyric source, and settings that help us investigate.
 
-You can also [open a GitHub issue](https://github.com/iPixelGalaxy/lyssna-lyrics/issues). Please include the song and the affected view when reporting a lyrics problem.
+Please include the song and the affected view when reporting a lyrics problem.
 
-Release notes and full versioned plugin downloads are available on **[GitHub Releases](https://github.com/iPixelGalaxy/lyssna-lyrics/releases)**. The launcher remains available for following your selected update branch.
+Release notes and full versioned plugin downloads are available on **[GitHub Releases](https://github.com/LyssnaHQ/lyssna-lyrics-legacy/releases)**. The launcher remains available for following your selected update branch.
 
 ## Credits
 
@@ -131,4 +131,4 @@ Release notes and full versioned plugin downloads are available on **[GitHub Rel
 
 See [LICENSE](LICENSE) for the GNU Affero General Public License, version 3, and [the icon license](src/assets/LUCIDE_LICENSE.txt) for the microphone artwork.
 
-[GitHub Releases](https://github.com/iPixelGalaxy/lyssna-lyrics/releases) · [DevTools help](docs/devtools.md) · [Integration notes](docs/integration.md) · **[Archived README](docs/archive/README.md)**
+[GitHub Releases](https://github.com/LyssnaHQ/lyssna-lyrics-legacy/releases) · [DevTools help](docs/devtools.md) · [Integration notes](docs/integration.md) · **[Archived README](docs/archive/README.md)**

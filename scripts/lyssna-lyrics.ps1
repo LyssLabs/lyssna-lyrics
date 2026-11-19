@@ -7,7 +7,7 @@ param(
 $ErrorActionPreference = 'Stop'
 $launcherName = 'lyssna-lyrics.mjs'
 $pixelLauncherName = 'spicy-lyrics-pixel.mjs'
-$launcherUrl = 'https://raw.githubusercontent.com/iPixelGalaxy/lyssna-lyrics/dev/builds/lyssna-lyrics.mjs'
+$launcherUrl = 'https://raw.githubusercontent.com/LyssnaHQ/lyssna-lyrics-legacy/dev/builds/lyssna-lyrics.mjs'
 $spicetifyCommand = Get-Command spicetify -ErrorAction SilentlyContinue
 if (-not $spicetifyCommand) {
     throw 'Install and set up Spicetify first: https://spicetify.app/docs/getting-started'

@@ -1,6 +1,6 @@
-const OWNER = "LyssLabs";
 const VERSION = /^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/;
 const CACHE_NAME = "lyrics-release-runtimes-v1";
+const releaseRepo = repo => `LyssnaHQ/${repo === "lyssna-lyrics" ? "lyssna-lyrics-legacy" : repo}`;
 // Keep the original storage keys so verified offline bundles survive the repository transfer.
 const manifestKey = repo => `release-loader:iPixelGalaxy/${repo}`;
 const runtimeKey = repo => `https://api.github.com/repos/iPixelGalaxy/${repo}/cached-runtime`;
@@ -11,7 +11,7 @@ function validRelease(repo, release, assetName) {
   try {
     const url = new URL(release.url);
     return url.origin === "https://github.com" && url.pathname ===
-      `/${OWNER}/${repo}/releases/download/${encodeURIComponent(release.tag)}/${encodeURIComponent(release.assetName)}` &&
+      `/${releaseRepo(repo)}/releases/download/${encodeURIComponent(release.tag)}/${encodeURIComponent(release.assetName)}` &&
       (!release.digest || /^sha256:[a-f0-9]{64}$/i.test(release.digest));
   } catch { return false; }
 }
@@ -32,7 +32,7 @@ export function fetchGitHubRelease(repo, assetName, { force = false } = {}) {
 }
 
 async function requestRelease(repo, assetName) {
-  const response = await fetch(`https://api.github.com/repos/${OWNER}/${repo}/releases/latest`, {
+  const response = await fetch(`https://api.github.com/repos/${releaseRepo(repo)}/releases/latest`, {
     credentials: "omit", cache: "no-store", headers: { Accept: "application/vnd.github+json" }, signal: AbortSignal.timeout(5000),
   });
   if (!response.ok) throw new Error(`GitHub release lookup failed: ${response.status}`);

@@ -53,7 +53,7 @@ export function ExperimentSettings({ title = false, experimentIds, advancedOnly 
         labelAccessory={
           <a
             className="ll-sp-help-link"
-            href="https://github.com/iPixelGalaxy/lyssna-lyrics/blob/dev/docs/devtools.md"
+            href="https://github.com/LyssnaHQ/lyssna-lyrics-legacy/blob/dev/docs/devtools.md"
             target="_blank"
             rel="noreferrer"
             onClick={(event) => event.stopPropagation()}

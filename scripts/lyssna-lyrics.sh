@@ -20,7 +20,7 @@ fi
 extension_directory="${config_file%/*}/Extensions"
 launcher_name='lyssna-lyrics.mjs'
 pixel_launcher_name='spicy-lyrics-pixel.mjs'
-launcher_url='https://raw.githubusercontent.com/iPixelGalaxy/lyssna-lyrics/dev/builds/lyssna-lyrics.mjs'
+launcher_url='https://raw.githubusercontent.com/LyssnaHQ/lyssna-lyrics-legacy/dev/builds/lyssna-lyrics.mjs'
 download_path=''
 cleanup() {
     if [ -n "$download_path" ]; then
