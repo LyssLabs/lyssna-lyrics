@@ -10,7 +10,7 @@
 
 **Rewrite planned.**
 
-**[Discord & support](https://discord.gg/qfYAsFQawp) · [Launcher file](https://raw.githubusercontent.com/LyssnaHQ/lyssna-lyrics-legacy/dev/builds/lyssna-lyrics.mjs) · [Releases](https://github.com/LyssnaHQ/lyssna-lyrics-legacy/releases) · [Lyssna Standalone](https://lyssna.org/lyssna_setup.exe)**
+**[Discord & support](https://discord.gg/qfYAsFQawp) · [Launcher file](https://raw.githubusercontent.com/LyssnaHQ/lyssna-lyrics-legacy/refs/heads/dev/builds/lyssna-lyrics.mjs) · [Releases](https://github.com/LyssnaHQ/lyssna-lyrics-legacy/releases) · [Lyssna Standalone](https://lyssna.org/lyssna_setup.exe)**
 
 </div>
 
@@ -37,13 +37,13 @@ Start with **Spotify's desktop app and a working [Spicetify installation](https:
 ### Windows · PowerShell
 
 ```powershell
-& ([scriptblock]::Create((irm 'https://raw.githubusercontent.com/LyssnaHQ/lyssna-lyrics-legacy/dev/scripts/lyssna-lyrics.ps1'))) -Action install
+& ([scriptblock]::Create((irm 'https://raw.githubusercontent.com/LyssnaHQ/lyssna-lyrics-legacy/refs/heads/dev/scripts/lyssna-lyrics.ps1'))) -Action install
 ```
 
 ### macOS / Linux · Terminal
 
 ```sh
-sh -c 'lyssna_script=$(curl -fsSL https://raw.githubusercontent.com/LyssnaHQ/lyssna-lyrics-legacy/dev/scripts/lyssna-lyrics.sh) && sh -c "$lyssna_script" -- install'
+sh -c 'lyssna_script=$(curl -fsSL https://raw.githubusercontent.com/LyssnaHQ/lyssna-lyrics-legacy/refs/heads/dev/scripts/lyssna-lyrics.sh) && sh -c "$lyssna_script" -- install'
 ```
 
 The installer downloads `lyssna-lyrics.mjs` from this GitHub repo and enables that filename. It replaces the old `spicy-lyrics-pixel.mjs` entry. Spicy Lyrics can stay installed and enabled alongside Lyssna, with a separate button and settings panel for each.
@@ -53,7 +53,7 @@ You can read the [launcher source](builds/lyssna-lyrics.mjs), [PowerShell script
 <details>
 <summary><strong>Install manually</strong></summary>
 
-1. Use **Save link as** on [lyssna-lyrics.mjs](https://raw.githubusercontent.com/LyssnaHQ/lyssna-lyrics-legacy/dev/builds/lyssna-lyrics.mjs) and keep that exact filename.
+1. Use **Save link as** on [lyssna-lyrics.mjs](https://raw.githubusercontent.com/LyssnaHQ/lyssna-lyrics-legacy/refs/heads/dev/builds/lyssna-lyrics.mjs) and keep that exact filename.
 2. Run `spicetify config-dir` and place the file in its **Extensions** folder.
 3. Enable Lyssna and replace the old Pixel entry:
 
@@ -72,13 +72,13 @@ After Spotify reloads, open lyrics with the microphone button. [Spicetify's exte
 ### Windows · PowerShell
 
 ```powershell
-& ([scriptblock]::Create((irm 'https://raw.githubusercontent.com/LyssnaHQ/lyssna-lyrics-legacy/dev/scripts/lyssna-lyrics.ps1'))) -Action uninstall
+& ([scriptblock]::Create((irm 'https://raw.githubusercontent.com/LyssnaHQ/lyssna-lyrics-legacy/refs/heads/dev/scripts/lyssna-lyrics.ps1'))) -Action uninstall
 ```
 
 ### macOS / Linux · Terminal
 
 ```sh
-sh -c 'lyssna_script=$(curl -fsSL https://raw.githubusercontent.com/LyssnaHQ/lyssna-lyrics-legacy/dev/scripts/lyssna-lyrics.sh) && sh -c "$lyssna_script" -- uninstall'
+sh -c 'lyssna_script=$(curl -fsSL https://raw.githubusercontent.com/LyssnaHQ/lyssna-lyrics-legacy/refs/heads/dev/scripts/lyssna-lyrics.sh) && sh -c "$lyssna_script" -- uninstall'
 ```
 
 This disables the Lyssna and old Pixel entries, reapplies Spicetify, and removes their launcher files. **Your saved lyric preferences are kept**, including settings shared with Spicy Lyrics.
